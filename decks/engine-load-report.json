@@ -1,0 +1,192 @@
+{
+  "engine": {
+    "ok": true,
+    "engine": "XMage",
+    "version": "1.4.63",
+    "implementedCards": 32950
+  },
+  "decks": [
+    {
+      "id": "modern-boros-burn",
+      "format": "Modern",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "modern-green-tron",
+      "format": "Modern",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "modern-merfolk",
+      "format": "Modern",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "modern-azorius-control",
+      "format": "Modern",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "modern-jund",
+      "format": "Modern",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "standard-white-lifegain",
+      "format": "Standard",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "standard-blue-tempo",
+      "format": "Standard",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "standard-black-midrange",
+      "format": "Standard",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "standard-red-aggro",
+      "format": "Standard",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "standard-green-stompy",
+      "format": "Standard",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "pioneer-izzet-phoenix",
+      "format": "Pioneer",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "pioneer-lotus-field",
+      "format": "Pioneer",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "pioneer-rakdos-midrange",
+      "format": "Pioneer",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "pioneer-white-humans",
+      "format": "Pioneer",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "pioneer-azorius-spirits",
+      "format": "Pioneer",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 53,
+      "commanders": 0,
+      "prompt": "ask"
+    },
+    {
+      "id": "commander-giada-angels",
+      "format": "Commander",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 92,
+      "commanders": 1,
+      "prompt": "ask"
+    },
+    {
+      "id": "commander-talrand-spells",
+      "format": "Commander",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 92,
+      "commanders": 1,
+      "prompt": "ask"
+    },
+    {
+      "id": "commander-ayara-devotion",
+      "format": "Commander",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 92,
+      "commanders": 1,
+      "prompt": "ask"
+    },
+    {
+      "id": "commander-krenko-goblins",
+      "format": "Commander",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 92,
+      "commanders": 1,
+      "prompt": "ask"
+    },
+    {
+      "id": "commander-goreclaw-stompy",
+      "format": "Commander",
+      "passed": true,
+      "opening_hand": 7,
+      "library": 92,
+      "commanders": 1,
+      "prompt": "ask"
+    }
+  ],
+  "passed": true,
+  "tested": "real XMage card instantiation, 1v1 bot startup, opening zones and hidden information; no full-game or AI-strategy claim"
+}

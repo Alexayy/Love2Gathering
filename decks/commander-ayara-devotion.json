@@ -1,0 +1,267 @@
+{
+  "id": "commander-ayara-devotion",
+  "name": "Ayara Devotion",
+  "format": "Commander",
+  "description": "Mono-black devotion and sacrifice. Enter, death and life-drain triggers create an engine-driven value loop.",
+  "commander": [
+    {
+      "name": "Ayara, First of Locthwain",
+      "count": 1
+    }
+  ],
+  "main": [
+    {
+      "name": "Sol Ring",
+      "count": 1
+    },
+    {
+      "name": "Arcane Signet",
+      "count": 1
+    },
+    {
+      "name": "Mind Stone",
+      "count": 1
+    },
+    {
+      "name": "Wayfarer's Bauble",
+      "count": 1
+    },
+    {
+      "name": "Commander's Sphere",
+      "count": 1
+    },
+    {
+      "name": "Swiftfoot Boots",
+      "count": 1
+    },
+    {
+      "name": "Lightning Greaves",
+      "count": 1
+    },
+    {
+      "name": "Skullclamp",
+      "count": 1
+    },
+    {
+      "name": "Solemn Simulacrum",
+      "count": 1
+    },
+    {
+      "name": "Burnished Hart",
+      "count": 1
+    },
+    {
+      "name": "Blood Artist",
+      "count": 1
+    },
+    {
+      "name": "Zulaport Cutthroat",
+      "count": 1
+    },
+    {
+      "name": "Bastion of Remembrance",
+      "count": 1
+    },
+    {
+      "name": "Gray Merchant of Asphodel",
+      "count": 1
+    },
+    {
+      "name": "Kokusho, the Evening Star",
+      "count": 1
+    },
+    {
+      "name": "Syr Konrad, the Grim",
+      "count": 1
+    },
+    {
+      "name": "Pawn of Ulamog",
+      "count": 1
+    },
+    {
+      "name": "Pitiless Plunderer",
+      "count": 1
+    },
+    {
+      "name": "Reassembling Skeleton",
+      "count": 1
+    },
+    {
+      "name": "Persistent Specimen",
+      "count": 1
+    },
+    {
+      "name": "Bloodsoaked Champion",
+      "count": 1
+    },
+    {
+      "name": "Gravecrawler",
+      "count": 1
+    },
+    {
+      "name": "Carrion Feeder",
+      "count": 1
+    },
+    {
+      "name": "Viscera Seer",
+      "count": 1
+    },
+    {
+      "name": "Woe Strider",
+      "count": 1
+    },
+    {
+      "name": "Midnight Reaper",
+      "count": 1
+    },
+    {
+      "name": "Grim Haruspex",
+      "count": 1
+    },
+    {
+      "name": "Morbid Opportunist",
+      "count": 1
+    },
+    {
+      "name": "Midnight Banshee",
+      "count": 1
+    },
+    {
+      "name": "Plaguecrafter",
+      "count": 1
+    },
+    {
+      "name": "Fleshbag Marauder",
+      "count": 1
+    },
+    {
+      "name": "Merciless Executioner",
+      "count": 1
+    },
+    {
+      "name": "Ravenous Chupacabra",
+      "count": 1
+    },
+    {
+      "name": "Dusk Legion Zealot",
+      "count": 1
+    },
+    {
+      "name": "Phyrexian Rager",
+      "count": 1
+    },
+    {
+      "name": "Sengir Autocrat",
+      "count": 1
+    },
+    {
+      "name": "Endrek Sahr, Master Breeder",
+      "count": 1
+    },
+    {
+      "name": "Abhorrent Overlord",
+      "count": 1
+    },
+    {
+      "name": "Ophiomancer",
+      "count": 1
+    },
+    {
+      "name": "Chittering Witch",
+      "count": 1
+    },
+    {
+      "name": "Ogre Slumlord",
+      "count": 1
+    },
+    {
+      "name": "Crypt Ghast",
+      "count": 1
+    },
+    {
+      "name": "Nirkana Revenant",
+      "count": 1
+    },
+    {
+      "name": "Charcoal Diamond",
+      "count": 1
+    },
+    {
+      "name": "Jet Medallion",
+      "count": 1
+    },
+    {
+      "name": "Ashnod's Altar",
+      "count": 1
+    },
+    {
+      "name": "Altar of Dementia",
+      "count": 1
+    },
+    {
+      "name": "Village Rites",
+      "count": 1
+    },
+    {
+      "name": "Deadly Dispute",
+      "count": 1
+    },
+    {
+      "name": "Sign in Blood",
+      "count": 1
+    },
+    {
+      "name": "Night's Whisper",
+      "count": 1
+    },
+    {
+      "name": "Read the Bones",
+      "count": 1
+    },
+    {
+      "name": "Phyrexian Arena",
+      "count": 1
+    },
+    {
+      "name": "Victimize",
+      "count": 1
+    },
+    {
+      "name": "Animate Dead",
+      "count": 1
+    },
+    {
+      "name": "Reanimate",
+      "count": 1
+    },
+    {
+      "name": "Living Death",
+      "count": 1
+    },
+    {
+      "name": "Feed the Swarm",
+      "count": 1
+    },
+    {
+      "name": "Go for the Throat",
+      "count": 1
+    },
+    {
+      "name": "Infernal Grasp",
+      "count": 1
+    },
+    {
+      "name": "Crux of Fate",
+      "count": 1
+    },
+    {
+      "name": "Mutilate",
+      "count": 1
+    },
+    {
+      "name": "Swamp",
+      "count": 37
+    }
+  ],
+  "sideboard": []
+}

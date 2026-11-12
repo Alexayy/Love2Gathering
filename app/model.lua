@@ -1,0 +1,322 @@
+local API=require('app.api')
+local json=require('lib.json')
+local Model={};Model.__index=Model
+local defaults={manualTriggers=false,autoMana=true,showCardArt=true,resolution='1440x900',windowMode='Windowed',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true}
+local function copy(t) return json.decode(json.encode(t)) end
+local function errorText(body,err,code)
+    if err then return err end
+    if code and code>=400 then return type(body)=='table' and tostring(body.error or body.message or ('HTTP '..code)) or ('HTTP '..code) end
+end
+function Model.new()
+    local self=setmetatable({api=API.new(),page='decks',decks={},format='Modern',selectedDeck=nil,search='',searchFormat='All',searchColor='All',searchType='',cards={},total=0,offset=0,searchTimer=0.1,
+        settings=copy(defaults),catalogHealth={},engineHealth={},healthTimer=0,pollTimer=0,searchSort='Name',searchSet='All',sets={},searchLimit=12,deckSort='Name',validation=nil,
+        art={},byName={},lookupPending={},artPending=0,toasts={},botDeckId=nil,playerDeckId=nil,playerName='Planeswalker',game=nil,gameBusy=false,selectedSection='main',promptOrder={},orderPrompt=nil},Model)
+    return self
+end
+function Model:toast(message,bad)
+    self.toasts[#self.toasts+1]={message=tostring(message),bad=bad,ttl=7}
+    if #self.toasts>4 then table.remove(self.toasts,1) end
+end
+function Model:request(service,method,path,body,callback,quiet)
+    return self.api:request(service,method,path,body,function(data,err,code)
+        local problem=errorText(data,err,code)
+        if problem then if not quiet then self:toast(problem,true) end; if callback then callback(nil,problem,data) end
+        elseif callback then callback(data) end
+    end)
+end
+function Model:refreshDecks()
+    self:request('catalog','GET','/decks',nil,function(data)
+        if not data then return end
+        self.decks=data.decks or data
+        for _,deck in ipairs(self.decks) do for _,zone in ipairs({'main','sideboard','commander'}) do deck[zone]=json.array(deck[zone] or {}) end end
+        local matching={};for _,d in ipairs(self.decks) do if d.format:lower()==self.format:lower() then matching[#matching+1]=d.id end end
+        if not self:findDeck(self.playerDeckId) then self.playerDeckId=matching[1] end
+        if not self:findDeck(self.botDeckId) then self.botDeckId=matching[2] or matching[1] end
+    end,true)
+end
+function Model:update(dt)
+    self.api:update()
+    self:updateReplays(dt);self:updateUILayout(dt)
+    if self.validationTimer then self.validationTimer=self.validationTimer-dt;if self.validationTimer<=0 then self.validationTimer=nil;self:validateDeck() end end
+    for i=#self.toasts,1,-1 do self.toasts[i].ttl=self.toasts[i].ttl-dt;if self.toasts[i].ttl<=0 then table.remove(self.toasts,i) end end
+    self.healthTimer=self.healthTimer-dt
+    if self.healthTimer<=0 then
+        self.healthTimer=3
+        self:request('catalog','GET','/health',nil,function(data,err)
+            local wasReady=self.catalogHealth.ready
+            self.catalogHealth=data or {error=err}
+            if data and not self.loaded then
+                self.loaded=true;self:refreshDecks()
+                self:request('catalog','GET','/settings',nil,function(settings) if settings then for k,v in pairs(settings) do self.settings[k]=v end;self.settingsLoaded=true end end,true)
+                self:request('catalog','GET','/ui-layout',nil,function(data)
+                    if data then
+                        self.uiLayout=data;self.uiLayoutVersion=(self.uiLayoutVersion or 0)+1
+                        local prefs=data.matchPrefs or {};self.logOpen=prefs.logOpen;self.stackOpen=prefs.stackOpen
+                    end
+                end,true)
+            end
+            if data and data.ready and not wasReady then self.searchTimer=0;self:refreshDecks() end
+        end,true)
+        self:request('engine','GET','/health',nil,function(data,err) self.engineHealth=data or {error=err} end,true)
+    end
+    if self.searchTimer then
+        self.searchTimer=self.searchTimer-dt
+        if self.searchTimer<=0 then self.searchTimer=nil;if self.catalogHealth.ready then self:searchCards() end end
+    end
+    if self.game and not self.replay then
+        self.pollTimer=self.pollTimer-dt
+        if self.pollTimer<=0 and not self.polling then
+            self.pollTimer=.22;self.polling=true
+            self:request('engine','GET','/session/state',nil,function(data,err)
+                self.polling=false;if data then self:setGame(data) elseif err and not self.gameConnectionError then self.gameConnectionError=true;self:toast('Engine connection: '..err,true) end
+            end,true)
+        end
+    end
+end
+function Model:searchChanged() self.offset=0;self.searchTimer=.23 end
+function Model:searchCards()
+    local version=(self.searchVersion or 0)+1;self.searchVersion=version;self.searchBusy=true
+    local path='/cards?q='..API.escape(self.search)..'&limit='..self.searchLimit..'&offset='..self.offset..'&sort='..API.escape(self.searchSort:lower())
+    if self.searchFormat~='All' then path=path..'&format='..API.escape(self.searchFormat:lower()) end
+    if self.searchColor~='All' then path=path..'&color='..API.escape(self.searchColor) end
+    if self.searchType~='' then path=path..'&type='..API.escape(self.searchType) end
+    if self.searchSet~='All' then path=path..'&set='..API.escape(self.searchSet) end
+    self:request('catalog','GET',path,nil,function(data)
+        if version~=self.searchVersion then return end
+        self.searchBusy=false
+        if data then self.cards=data.cards or {};self.total=data.total or #self.cards;for _,card in ipairs(self.cards) do self.byName[card.name]=card end end
+    end)
+end
+function Model:refreshSets()
+    local path='/sets';if self.searchFormat~='All' then path=path..'?format='..API.escape(self.searchFormat:lower()) end
+    self:request('catalog','GET',path,nil,function(data) if data then self.sets=data.sets or {} end end,true)
+end
+function Model:setSearchLimit(limit)
+    limit=math.max(1,math.floor(limit));if limit~=self.searchLimit then self.searchLimit=limit;self:searchChanged() end
+end
+function Model:cardData(card)
+    if not card then return nil end
+    if card.oracle_text or card.image_uris then return card end
+    local name=card.name or card.displayName
+    if not name then return card end
+    if self.byName[name] then return self.byName[name] end
+    if (not self.lookupPending[name] or self.lookupPending[name]<love.timer.getTime()) and self.catalogHealth.ready then
+        self.lookupPending[name]=love.timer.getTime()+30
+        self:request('catalog','GET','/cards/by-name?name='..API.escape(name),nil,function(data)
+            if data then self.byName[name]=data.card or data;self.lookupPending[name]=nil end
+        end,true)
+    end
+    return card
+end
+function Model:getArt(card,force,kind)
+    if not force and not self.settings.showCardArt then return nil end
+    local data=self:cardData(card);if not data or not data.image_uris then return nil end
+    local id=data.id;if not id then return nil end
+    local face=data.requested_face or 0
+    kind=kind or 'normal'
+    local cacheKey=(data.printing_id or id)..'-'..face..'-'..kind
+    local cached=self.art[cacheKey]
+    if cached then
+        cached.used=love.timer.getTime()
+        if cached.image or cached.pending or (cached.retryAt and cached.retryAt>love.timer.getTime()) then return cached.image end
+    end
+    if self.artPending<(force and 6 or 2) then
+        self.art[cacheKey]={pending=true,used=love.timer.getTime()};self.artPending=self.artPending+1
+        local path='/art/'..API.escape(id)..'?face='..face..'&kind='..API.escape(kind)
+        if data.printing_id then path=path..'&printing='..API.escape(data.printing_id) end
+        self.api:request('art','GET',path,nil,function(body,err,code)
+            self.artPending=self.artPending-1
+            if not self.art[cacheKey] then return end
+            self.art[cacheKey].pending=false;self.art[cacheKey].retryAt=love.timer.getTime()+30
+            if not err and code==200 and body then
+                local ok,img=pcall(function() return love.graphics.newImage(love.image.newImageData(love.filesystem.newFileData(body,'card.jpg'))) end)
+                if ok then
+                    self.art[cacheKey].image=img
+                    local count,oldest,oldestTime=0,nil,math.huge
+                    for key,entry in pairs(self.art) do
+                        if entry.image then
+                            count=count+1
+                            if key~=cacheKey and (entry.used or 0)<oldestTime then oldest,oldestTime=key,entry.used or 0 end
+                        end
+                    end
+                    if count>96 and oldest then self.art[oldest]=nil end
+                end
+            end
+        end,true)
+    end
+end
+function Model:findDeck(id) for _,d in ipairs(self.decks) do if d.id==id then return d end end end
+function Model:openDeck(deck)
+    self.editGeneration=(self.editGeneration or 0)+1;self.deckRevision=0;self.mutationQueue={};self.mutationBusy=false;self.saveAfterMutations=false;self.lastBuilderError=nil
+    self.editDeck=copy(deck)
+    for _,zone in ipairs({'main','sideboard','commander'}) do self.editDeck[zone]=json.array(self.editDeck[zone] or {}) end
+    self.page='builder';self.dirty=false;self.selectedSection='main';self.searchFormat=deck.format;self.search='';self.searchSet='All';self.searchColor='All';self.searchType='';self.validation=nil;self.previewCard=nil;self:searchChanged();self:refreshSets();self:validateDeck()
+end
+function Model:newDeck()
+    self:openDeck({id='custom-'..os.time()..'-'..love.math.random(1000,9999),name='New '..self.format..' deck',format=self.format,description='',main=json.array(),sideboard=json.array(),commander=json.array()})
+    self.dirty=true;self.validation=nil
+end
+function Model:changeDeckFormat(format)
+    if not self.editDeck then return end
+    self.editDeck.format=format;self.searchFormat=format;self.searchSet='All';self.selectedSection='main';self.dirty=true
+    self.deckRevision=(self.deckRevision or 0)+1
+    self:searchChanged();self:refreshSets();self:validateDeck()
+end
+function Model:setDeckCover(card)
+    if not self.editDeck or not card or not card.name then return end
+    self.editDeck.coverCard=card.name;self.dirty=true;self:toast('Deck cover selected')
+end
+function Model:deckCoverCard(deck)
+    local name=deck and (deck.coverCard or (deck.commander and deck.commander[1] and deck.commander[1].name) or (deck.main and deck.main[1] and deck.main[1].name))
+    return name and {name=name} or nil
+end
+function Model:validateDeck(callback)
+    if not self.editDeck then return end
+    local version=(self.validationVersion or 0)+1;self.validationVersion=version
+    self:request('catalog','POST','/decks/validate',self.editDeck,function(data)
+        if version~=self.validationVersion then return end
+        if data then self.validation=data end
+        if callback then callback(data) end
+    end,true)
+end
+local function changeCard(deck,name,section,delta)
+    local entries=deck[section];local found
+    for i,e in ipairs(entries) do if e.name==name then e.count=e.count+delta;if e.count<=0 then table.remove(entries,i) end;found=true;break end end
+    if not found and delta>0 then entries[#entries+1]={name=name,count=delta} end
+    table.sort(entries,function(a,b) return a.name<b.name end)
+end
+function Model:commitCard(name,section,delta)
+    changeCard(self.editDeck,name,section,delta);self.deckRevision=(self.deckRevision or 0)+1
+    self.dirty=true;self.validation=nil;self.validationVersion=(self.validationVersion or 0)+1;self.validationTimer=.35
+end
+function Model:processCardQueue()
+    if self.mutationBusy or not self.editDeck or not self.mutationQueue or #self.mutationQueue==0 then return end
+    local operation=self.mutationQueue[1];local candidate=copy(self.editDeck)
+    changeCard(candidate,operation.name,operation.section,operation.delta)
+    local revision,generation=self.deckRevision or 0,self.editGeneration or 0
+    self.mutationBusy=true
+    self:request('catalog','POST','/decks/validate',candidate,function(result,err)
+        if generation~=(self.editGeneration or 0) then return end
+        self.mutationBusy=false
+        if revision~=(self.deckRevision or 0) then self:processCardQueue();return end
+        local blocked
+        if result then
+            for _,issue in ipairs(result.errors or {}) do
+                local relevant=false
+                for _,name in ipairs(issue.cards or {}) do if name==operation.name then relevant=true end end
+                if issue.code=='commander_size' or (issue.code=='sideboard_size' and operation.section=='sideboard')
+                    or ((issue.code=='unexpected_commander' or issue.code=='commander_count') and operation.section=='commander') then relevant=true end
+                if relevant then blocked=issue.message;break end
+            end
+            if not blocked then self:commitCard(operation.name,operation.section,operation.delta);self.validation=result;self.validationTimer=nil;self.lastBuilderError=nil
+            else self.lastBuilderError=blocked;self:toast(blocked,true);self:validateDeck() end
+        else self:toast(err or 'Could not validate this card addition',true) end
+        table.remove(self.mutationQueue,1);self:processCardQueue()
+        if #self.mutationQueue==0 and self.saveAfterMutations then self.saveAfterMutations=false;self:saveDeck() end
+    end,true)
+end
+function Model:addCard(card,section,delta)
+    if not self.editDeck or not card or not card.name then return end
+    section=section or self.selectedSection;delta=delta or 1
+    if not self.editDeck[section] then return end
+    if delta<=0 then self:commitCard(card.name,section,delta);return end
+    self.mutationQueue=self.mutationQueue or {}
+    self.mutationQueue[#self.mutationQueue+1]={name=card.name,section=section,delta=delta}
+    self:processCardQueue()
+end
+function Model:saveDeck()
+    if self.mutationBusy or (self.mutationQueue and #self.mutationQueue>0) then self.saveAfterMutations=true;self:toast('Waiting for card validation…');return end
+    local deck=copy(self.editDeck);deck.origin=nil
+    self:request('catalog','POST','/decks',deck,function(data,err,failed)
+        if data then self.dirty=false;self.editDeck.draft=data.draft;self.validation=data.validation;self:refreshDecks();self:toast((data.draft and 'Draft saved: ' or 'Deck saved: ')..deck.name)
+        elseif failed and failed.validation then self.validation=failed.validation end
+    end)
+end
+function Model:duplicateDeck(deck)
+    local d=copy(deck);d.id='custom-'..os.time()..'-'..love.math.random(1000,9999);d.name=d.name..' copy';d.origin=nil
+    self:request('catalog','POST','/decks',d,function(data) if data then self:refreshDecks();self:openDeck(d);self:toast('Deck duplicated') end end)
+end
+function Model:deleteDeck(deck)
+    self:request('catalog','DELETE','/decks/'..API.escape(deck.id),nil,function(data) if data then self:refreshDecks();self.selectedDeck=nil;self:toast('Deck removed') end end)
+end
+function Model:saveSettings()
+    self:request('catalog','PUT','/settings',self.settings,function(data) if data then self:toast('Settings saved') end end)
+end
+function Model:startGame()
+    if self.replay then self:closeReplay() end
+    local deck,bot=self:findDeck(self.playerDeckId),self:findDeck(self.botDeckId)
+    if not deck or not bot then self:toast('Choose both decks first',true);return end
+    if deck.format~=bot.format then self:toast('Both decks must use the same format',true);return end
+    self.gameBusy=true;self.answeredPrompt=nil;self.orderPrompt=nil;self.promptOrder={};self.actionBusy=false
+    self:request('engine','POST','/session/start',{format=deck.format,playerName=self.playerName,deck=deck,botDeck=bot,settings=self.settings,recordingPort=self.api.catalogPort or tonumber(os.getenv('LOVE2GATHERING_CATALOG_PORT')) or 17370},function(data)
+        self.gameBusy=false
+        if data then self:setGame(data);self.page='table';self:toast('XMage match started') end
+    end)
+end
+function Model:lobbyDeck(deck)
+    self.playerDeckId=deck.id;self.format=deck.format;self.page='lobby'
+    local bot=self:findDeck(self.botDeckId)
+    if not bot or bot.format~=deck.format then
+        for _,d in ipairs(self.decks) do if d.format==deck.format and d.id~=deck.id then self.botDeckId=d.id;return end end
+        self.botDeckId=deck.id
+    end
+end
+function Model:setGame(data)
+    if self.game and data.gameId==self.game.gameId and data.revision and self.game.revision and data.revision<self.game.revision then return end
+    if self.game and data.gameId and self.game.gameId and data.gameId~=self.game.gameId then
+        self.answeredPrompt=nil;self.orderPrompt=nil;self.promptOrder={};self.actionBusy=false
+    end
+    self.game=data;self.gameConnectionError=nil
+    local prompt=data.prompt
+    if type(prompt)=='table' and prompt~=json.null and self.orderPrompt~=prompt.id then
+        self.orderPrompt=prompt.id;self.promptOrder={}
+        for _,c in ipairs(prompt.choices or {}) do self.promptOrder[#self.promptOrder+1]=c end
+    end
+end
+function Model:concede()
+    if self.replay then return end
+    self:request('engine','POST','/session/action',{type='concede',value=true},function(data) if data then self:setGame(data) end;self.pollTimer=0 end)
+end
+function Model:prompt()
+    if self.replay then return nil end
+    local p=self.game and self.game.prompt
+    return type(p)=='table' and p~=json.null and p.id and p.id~=self.answeredPrompt and p or nil
+end
+function Model:answer(kind,value)
+    local p=self:prompt();if not p or self.actionBusy then return end
+    self.actionBusy=true;self.answeredPrompt=p.id
+    self:request('engine','POST','/session/action',{promptId=p.id,type=kind,value=value},function(data)
+        self.actionBusy=false;if data then self:setGame(data) else self.answeredPrompt=nil end;self.pollTimer=0
+    end)
+end
+function Model:answerChoice(choice)
+    local value=choice.value;if value==nil then value=choice.id end
+    self:answer(choice.responseType or 'string',value)
+end
+function Model:canSelect(id)
+    local p=self:prompt();if not p then return false end
+    if type(p.actionable)=='table' then
+        for _,candidate in ipairs(p.actionable) do if tostring(candidate)==tostring(id) then return true end end
+        return false
+    end
+    for _,target in ipairs(p.targets or {}) do if tostring(type(target)=='table' and target.id or target)==tostring(id) then return true end end
+    for _,choice in ipairs(p.choices or {}) do if tostring(choice.value or choice.id)==tostring(id) and choice.responseType=='uuid' then return true end end
+    return false
+end
+function Model:selectCard(card)
+    if self:canSelect(card.id) then self:answer('uuid',card.id);return true end
+    return false
+end
+function Model:submitOrder()
+    local values=json.array();for _,c in ipairs(self.promptOrder) do values[#values+1]=c.id end
+    self:answer('order',values)
+end
+function Model.count(deck,section)
+    local count=0;for _,e in ipairs(deck[section] or {}) do count=count+(e.count or 0) end;return count
+end
+function Model:quit()
+    if self.uiLayoutTimer then self.api:request('catalog','PUT','/ui-layout',self.uiLayout,function() end) end
+    self.api:quit()
+end
+require('app.replays').install(Model)
+return Model

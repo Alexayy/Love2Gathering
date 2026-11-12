@@ -1,0 +1,71 @@
+{
+  "id": "standard-white-lifegain",
+  "name": "White Lifegain",
+  "format": "Standard",
+  "description": "Lifegain grows Pridemate and Essence Channeler; an accessible deck for checking simultaneous triggers.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Plains",
+      "count": 24
+    },
+    {
+      "name": "Hinterland Sanctifier",
+      "count": 4
+    },
+    {
+      "name": "Healer's Hawk",
+      "count": 4
+    },
+    {
+      "name": "Leonin Vanguard",
+      "count": 4
+    },
+    {
+      "name": "Ajani's Pridemate",
+      "count": 4
+    },
+    {
+      "name": "Essence Channeler",
+      "count": 4
+    },
+    {
+      "name": "Dazzling Angel",
+      "count": 4
+    },
+    {
+      "name": "Helpful Hunter",
+      "count": 4
+    },
+    {
+      "name": "Banishing Light",
+      "count": 4
+    },
+    {
+      "name": "Felidar Retreat",
+      "count": 4
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Exorcise",
+      "count": 3
+    },
+    {
+      "name": "Day of Judgment",
+      "count": 3
+    },
+    {
+      "name": "Authority of the Consuls",
+      "count": 3
+    },
+    {
+      "name": "Requisition Raid",
+      "count": 3
+    },
+    {
+      "name": "Rest in Peace",
+      "count": 3
+    }
+  ]
+}

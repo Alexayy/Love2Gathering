@@ -1,0 +1,267 @@
+{
+  "id": "commander-goreclaw-stompy",
+  "name": "Goreclaw Stompy",
+  "format": "Commander",
+  "description": "Mono-green ramp and large creatures. Cost reductions, trample, fight and draw triggers reward attacking.",
+  "commander": [
+    {
+      "name": "Goreclaw, Terror of Qal Sisma",
+      "count": 1
+    }
+  ],
+  "main": [
+    {
+      "name": "Sol Ring",
+      "count": 1
+    },
+    {
+      "name": "Arcane Signet",
+      "count": 1
+    },
+    {
+      "name": "Mind Stone",
+      "count": 1
+    },
+    {
+      "name": "Wayfarer's Bauble",
+      "count": 1
+    },
+    {
+      "name": "Commander's Sphere",
+      "count": 1
+    },
+    {
+      "name": "Swiftfoot Boots",
+      "count": 1
+    },
+    {
+      "name": "Lightning Greaves",
+      "count": 1
+    },
+    {
+      "name": "Skullclamp",
+      "count": 1
+    },
+    {
+      "name": "Solemn Simulacrum",
+      "count": 1
+    },
+    {
+      "name": "Burnished Hart",
+      "count": 1
+    },
+    {
+      "name": "Llanowar Elves",
+      "count": 1
+    },
+    {
+      "name": "Elvish Mystic",
+      "count": 1
+    },
+    {
+      "name": "Fyndhorn Elves",
+      "count": 1
+    },
+    {
+      "name": "Arbor Elf",
+      "count": 1
+    },
+    {
+      "name": "Sakura-Tribe Elder",
+      "count": 1
+    },
+    {
+      "name": "Wood Elves",
+      "count": 1
+    },
+    {
+      "name": "Farhaven Elf",
+      "count": 1
+    },
+    {
+      "name": "Reclamation Sage",
+      "count": 1
+    },
+    {
+      "name": "Eternal Witness",
+      "count": 1
+    },
+    {
+      "name": "Beast Whisperer",
+      "count": 1
+    },
+    {
+      "name": "Garruk's Packleader",
+      "count": 1
+    },
+    {
+      "name": "Soul of the Harvest",
+      "count": 1
+    },
+    {
+      "name": "Primordial Sage",
+      "count": 1
+    },
+    {
+      "name": "Elemental Bond",
+      "count": 1
+    },
+    {
+      "name": "Garruk's Uprising",
+      "count": 1
+    },
+    {
+      "name": "Guardian Project",
+      "count": 1
+    },
+    {
+      "name": "Return of the Wildspeaker",
+      "count": 1
+    },
+    {
+      "name": "Rishkar's Expertise",
+      "count": 1
+    },
+    {
+      "name": "Harmonize",
+      "count": 1
+    },
+    {
+      "name": "Hunter's Insight",
+      "count": 1
+    },
+    {
+      "name": "Cultivate",
+      "count": 1
+    },
+    {
+      "name": "Kodama's Reach",
+      "count": 1
+    },
+    {
+      "name": "Rampant Growth",
+      "count": 1
+    },
+    {
+      "name": "Nature's Lore",
+      "count": 1
+    },
+    {
+      "name": "Three Visits",
+      "count": 1
+    },
+    {
+      "name": "Skyshroud Claim",
+      "count": 1
+    },
+    {
+      "name": "Emerald Medallion",
+      "count": 1
+    },
+    {
+      "name": "Moss Diamond",
+      "count": 1
+    },
+    {
+      "name": "Garruk Wildspeaker",
+      "count": 1
+    },
+    {
+      "name": "Nissa, Who Shakes the World",
+      "count": 1
+    },
+    {
+      "name": "Karametra's Acolyte",
+      "count": 1
+    },
+    {
+      "name": "Selvala, Heart of the Wilds",
+      "count": 1
+    },
+    {
+      "name": "Whisperer of the Wilds",
+      "count": 1
+    },
+    {
+      "name": "Gigantosaurus",
+      "count": 1
+    },
+    {
+      "name": "Ghalta, Primal Hunger",
+      "count": 1
+    },
+    {
+      "name": "Ghalta, Stampede Tyrant",
+      "count": 1
+    },
+    {
+      "name": "Thragtusk",
+      "count": 1
+    },
+    {
+      "name": "Acidic Slime",
+      "count": 1
+    },
+    {
+      "name": "Terastodon",
+      "count": 1
+    },
+    {
+      "name": "Woodfall Primus",
+      "count": 1
+    },
+    {
+      "name": "End-Raze Forerunners",
+      "count": 1
+    },
+    {
+      "name": "Craterhoof Behemoth",
+      "count": 1
+    },
+    {
+      "name": "Pathbreaker Ibex",
+      "count": 1
+    },
+    {
+      "name": "Thunderfoot Baloth",
+      "count": 1
+    },
+    {
+      "name": "Avenger of Zendikar",
+      "count": 1
+    },
+    {
+      "name": "Rampaging Baloths",
+      "count": 1
+    },
+    {
+      "name": "Hornet Queen",
+      "count": 1
+    },
+    {
+      "name": "Ulvenwald Hydra",
+      "count": 1
+    },
+    {
+      "name": "Beast Within",
+      "count": 1
+    },
+    {
+      "name": "Krosan Grip",
+      "count": 1
+    },
+    {
+      "name": "Heroic Intervention",
+      "count": 1
+    },
+    {
+      "name": "Overwhelming Stampede",
+      "count": 1
+    },
+    {
+      "name": "Forest",
+      "count": 37
+    }
+  ],
+  "sideboard": []
+}

@@ -1,0 +1,578 @@
+{
+  "passed": true,
+  "engine": {
+    "ok": true,
+    "engine": "XMage",
+    "version": "1.4.63",
+    "implementedCards": 32950
+  },
+  "evidence": {
+    "humanPlayedLand": true,
+    "botPlayedLand": true,
+    "humanCastSpell": true,
+    "botCastSpell": true,
+    "humanSpellResolved": true,
+    "botSpellResolved": true,
+    "lifeChanged": true,
+    "completedGame": true
+  },
+  "failure": null,
+  "turns": 8,
+  "actionCount": 65,
+  "finalPlayers": [
+    {
+      "name": "Smoke Human",
+      "life": 0,
+      "won": false,
+      "lost": true,
+      "handCount": 0,
+      "libraryCount": 0
+    },
+    {
+      "name": "XMage Smoke Bot",
+      "life": 5,
+      "won": true,
+      "lost": false,
+      "handCount": 1,
+      "libraryCount": 49
+    }
+  ],
+  "log": [
+    "Game has started",
+    "Smoke Human 's library is shuffled",
+    "XMage Smoke Bot 's library is shuffled",
+    "Smoke Human  chooses that they take the first turn",
+    "Smoke Human  draws seven cards",
+    "XMage Smoke Bot  draws seven cards",
+    "Smoke Human  keeps hand",
+    "XMage Smoke Bot  keeps hand",
+    "TURN 1 for  Smoke Human  (20 - 20)",
+    "Smoke Human  skips Draw step",
+    "Smoke Human  puts  Mountain  [2b0] from hand onto the Battlefield",
+    "Smoke Human  plays  Mountain  [2b0]",
+    "Smoke Human  skips attack",
+    "TURN 2 for  XMage Smoke Bot  (20 - 20)",
+    "XMage Smoke Bot  draws a card",
+    "XMage Smoke Bot  puts  Mountain  [82c] from hand onto the Battlefield",
+    "XMage Smoke Bot  plays  Mountain  [82c]",
+    "XMage Smoke Bot  casts  Goblin Guide  [ffb] from hand",
+    "XMage Smoke Bot  puts  Goblin Guide  [ffb] from stack onto the Battlefield",
+    "XMage Smoke Bot  attacks  Smoke Human  with 1 creature",
+    "XMage Smoke Bot  - Ability triggers:  Goblin Guide  [ffb] - Whenever  Goblin Guide  [ffb] attacks, defending player reveals the top card of their library. If it's a land card, that player puts it into their hand.",
+    "Smoke Human  reveals  Mountain",
+    "Smoke Human  puts a card from library into their hand",
+    "Attacker:  Goblin Guide  [ffb] (2/2) unblocked",
+    "Smoke Human  loses 2 life at combat from  Goblin Guide  [ffb]",
+    "TURN 3 for  Smoke Human  (18 - 20)",
+    "Smoke Human  draws a card",
+    "Smoke Human  puts  Mountain  [b85] from hand onto the Battlefield",
+    "Smoke Human  plays  Mountain  [b85]",
+    "Smoke Human  casts  Lightning Strike  [9a6] targeting  XMage Smoke Bot  from hand",
+    "XMage Smoke Bot  loses 3 life from  Lightning Strike  [9a6]",
+    "Smoke Human  puts  Lightning Strike  [9a6] from stack into their graveyard",
+    "TURN 4 for  XMage Smoke Bot  (18 - 17)",
+    "XMage Smoke Bot  casts  Ghitu Lavarunner  [674] from hand",
+    "XMage Smoke Bot  puts  Ghitu Lavarunner  [674] from stack onto the Battlefield",
+    "XMage Smoke Bot  puts  Mountain  [0ad] from hand onto the Battlefield",
+    "XMage Smoke Bot  plays  Mountain  [0ad]",
+    "XMage Smoke Bot  casts  Lava Spike  [88a] targeting  Smoke Human  from hand",
+    "Smoke Human  loses 3 life from  Lava Spike  [88a]",
+    "XMage Smoke Bot  puts  Lava Spike  [88a] from stack into their graveyard",
+    "TURN 5 for  Smoke Human  (13 - 17)",
+    "Smoke Human  puts  Mountain  [916] from hand onto the Battlefield",
+    "Smoke Human  plays  Mountain  [916]",
+    "Smoke Human  casts  Lightning Bolt  [ea2] targeting  XMage Smoke Bot  from hand",
+    "XMage Smoke Bot  loses 3 life from  Lightning Bolt  [ea2]",
+    "Smoke Human  puts  Lightning Bolt  [ea2] from stack into their graveyard",
+    "Smoke Human  casts  Searing Spear  [bbe] targeting  XMage Smoke Bot  from hand",
+    "XMage Smoke Bot  loses 3 life from  Searing Spear  [bbe]",
+    "Smoke Human  puts  Searing Spear  [bbe] from stack into their graveyard",
+    "TURN 6 for  XMage Smoke Bot  (13 - 11)",
+    "XMage Smoke Bot  casts  Searing Spear  [fe2] targeting  Smoke Human  from hand",
+    "Smoke Human  loses 3 life from  Searing Spear  [fe2]",
+    "XMage Smoke Bot  puts  Searing Spear  [fe2] from stack into their graveyard",
+    "XMage Smoke Bot  puts  Mountain  [f20] from hand onto the Battlefield",
+    "XMage Smoke Bot  plays  Mountain  [f20]",
+    "XMage Smoke Bot  attacks  Smoke Human  with 2 creatures",
+    "Attacker:  Ghitu Lavarunner  [674] (2/2) unblocked",
+    "Smoke Human  loses 2 life at combat from  Ghitu Lavarunner  [674]",
+    "TURN 7 for  Smoke Human  (6 - 11)",
+    "Smoke Human  puts  Mountain  [5bf] from hand onto the Battlefield",
+    "Smoke Human  plays  Mountain  [5bf]",
+    "Smoke Human  casts  Lava Spike  [5e3] targeting  XMage Smoke Bot  from hand",
+    "XMage Smoke Bot  loses 3 life from  Lava Spike  [5e3]",
+    "Smoke Human  puts  Lava Spike  [5e3] from stack into their graveyard",
+    "Smoke Human  casts  Lightning Strike  [a10] targeting  XMage Smoke Bot  from hand",
+    "XMage Smoke Bot  loses 3 life from  Lightning Strike  [a10]",
+    "Smoke Human  puts  Lightning Strike  [a10] from stack into their graveyard",
+    "TURN 8 for  XMage Smoke Bot  (6 - 5)",
+    "XMage Smoke Bot  puts  Mountain  [48b] from hand onto the Battlefield",
+    "XMage Smoke Bot  plays  Mountain  [48b]",
+    "XMage Smoke Bot  casts  Lightning Bolt  [9a4] targeting  Smoke Human  from hand",
+    "Smoke Human  loses 3 life from  Lightning Bolt  [9a4]",
+    "XMage Smoke Bot  puts  Lightning Bolt  [9a4] from stack into their graveyard",
+    "XMage Smoke Bot  casts  Lightning Strike  [aa8] targeting  Smoke Human  from hand",
+    "Smoke Human  loses 3 life from  Lightning Strike  [aa8]",
+    "XMage Smoke Bot  puts  Lightning Strike  [aa8] from stack into their graveyard",
+    "Smoke Human  has lost the game",
+    "XMage Smoke Bot  has won the game",
+    "Smoke Human  lost the game due to having 0 or less life"
+  ],
+  "actions": [
+    {
+      "turn": 1,
+      "step": "null",
+      "message": "Select a starting player",
+      "choice": "Smoke Human",
+      "type": "uuid"
+    },
+    {
+      "turn": 1,
+      "step": "null",
+      "message": "Mulligan  down to 6 cards ?",
+      "choice": "Keep",
+      "type": "boolean"
+    },
+    {
+      "turn": 1,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 1,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 1,
+      "step": "Declare Attackers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 1,
+      "step": "Postcombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 2,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 2,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 2,
+      "step": "Declare Attackers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 2,
+      "step": "Declare Attackers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 2,
+      "step": "Declare Blockers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 2,
+      "step": "Combat Damage",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 2,
+      "step": "Postcombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Lightning Strike",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Select any target",
+      "choice": "XMage Smoke Bot",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Pay {1}{R}  Lightning Strike  [9a6]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Pay {1}  Lightning Strike  [9a6]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 3,
+      "step": "Declare Attackers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 3,
+      "step": "Postcombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 4,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 4,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 4,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 4,
+      "step": "Declare Attackers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 4,
+      "step": "Declare Attackers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 4,
+      "step": "Declare Blockers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 4,
+      "step": "Combat Damage",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 4,
+      "step": "Postcombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Lightning Bolt",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Select any target",
+      "choice": "XMage Smoke Bot",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Pay {R}  Lightning Bolt  [ea2]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Searing Spear",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Select any target",
+      "choice": "XMage Smoke Bot",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Pay {1}{R}  Searing Spear  [bbe]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Pay {1}  Searing Spear  [bbe]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 5,
+      "step": "Declare Attackers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 5,
+      "step": "Postcombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 6,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 6,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 6,
+      "step": "Declare Attackers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 6,
+      "step": "Declare Attackers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 6,
+      "step": "Declare Blockers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 6,
+      "step": "Combat Damage",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 6,
+      "step": "Postcombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Lava Spike",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Select a player or planeswalker",
+      "choice": "XMage Smoke Bot",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Pay {R}  Lava Spike  [5e3]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Lightning Strike",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Select any target",
+      "choice": "XMage Smoke Bot",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Pay {1}{R}  Lightning Strike  [a10]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Pay {1}  Lightning Strike  [a10]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 7,
+      "step": "Declare Attackers",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 7,
+      "step": "Postcombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 8,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 8,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    }
+  ]
+}

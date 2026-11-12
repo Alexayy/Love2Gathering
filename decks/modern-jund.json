@@ -1,0 +1,115 @@
+{
+  "id": "modern-jund",
+  "name": "Jund Midrange",
+  "format": "Modern",
+  "description": "Discard, efficient removal and graveyard-sensitive creatures provide interactive games.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Verdant Catacombs",
+      "count": 4
+    },
+    {
+      "name": "Bloodstained Mire",
+      "count": 4
+    },
+    {
+      "name": "Overgrown Tomb",
+      "count": 2
+    },
+    {
+      "name": "Blood Crypt",
+      "count": 2
+    },
+    {
+      "name": "Stomping Ground",
+      "count": 1
+    },
+    {
+      "name": "Raging Ravine",
+      "count": 2
+    },
+    {
+      "name": "Blackcleave Cliffs",
+      "count": 2
+    },
+    {
+      "name": "Blooming Marsh",
+      "count": 2
+    },
+    {
+      "name": "Swamp",
+      "count": 2
+    },
+    {
+      "name": "Forest",
+      "count": 1
+    },
+    {
+      "name": "Mountain",
+      "count": 1
+    },
+    {
+      "name": "Tarmogoyf",
+      "count": 4
+    },
+    {
+      "name": "Scavenging Ooze",
+      "count": 4
+    },
+    {
+      "name": "Bloodbraid Elf",
+      "count": 4
+    },
+    {
+      "name": "Lightning Bolt",
+      "count": 4
+    },
+    {
+      "name": "Thoughtseize",
+      "count": 4
+    },
+    {
+      "name": "Fatal Push",
+      "count": 4
+    },
+    {
+      "name": "Inquisition of Kozilek",
+      "count": 3
+    },
+    {
+      "name": "Liliana of the Veil",
+      "count": 3
+    },
+    {
+      "name": "Abrupt Decay",
+      "count": 3
+    },
+    {
+      "name": "Seasoned Pyromancer",
+      "count": 4
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Nihil Spellbomb",
+      "count": 3
+    },
+    {
+      "name": "Alpine Moon",
+      "count": 3
+    },
+    {
+      "name": "Collective Brutality",
+      "count": 3
+    },
+    {
+      "name": "Kolaghan's Command",
+      "count": 3
+    },
+    {
+      "name": "Anger of the Gods",
+      "count": 3
+    }
+  ]
+}

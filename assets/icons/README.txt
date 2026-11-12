@@ -1,0 +1,1 @@
+THB (Theros Beyond Death), Keyrune font U+E961, rendered from Keyrune 3.19 TTF. Upright, centered, transparent RGBA. Font license: ../keyrune/LICENSE-keyrune.md (SIL OFL 1.1 font). Glyph artwork identifies a Wizards of the Coast set; no endorsement implied.

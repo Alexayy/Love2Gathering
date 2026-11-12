@@ -1,0 +1,79 @@
+{
+  "id": "pioneer-white-humans",
+  "name": "White Humans",
+  "format": "Pioneer",
+  "description": "A tribal curve with Thalia taxes, lieutenant counters and Brave the Elements combat finishes.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Recruitment Officer",
+      "count": 4
+    },
+    {
+      "name": "Dauntless Bodyguard",
+      "count": 4
+    },
+    {
+      "name": "Hopeful Initiate",
+      "count": 4
+    },
+    {
+      "name": "Thalia, Guardian of Thraben",
+      "count": 4
+    },
+    {
+      "name": "Thalia's Lieutenant",
+      "count": 4
+    },
+    {
+      "name": "Coppercoat Vanguard",
+      "count": 4
+    },
+    {
+      "name": "Adeline, Resplendent Cathar",
+      "count": 4
+    },
+    {
+      "name": "Brutal Cathar // Moonrage Brute",
+      "count": 4
+    },
+    {
+      "name": "Brave the Elements",
+      "count": 4
+    },
+    {
+      "name": "Plains",
+      "count": 16
+    },
+    {
+      "name": "Mutavault",
+      "count": 4
+    },
+    {
+      "name": "Cavern of Souls",
+      "count": 4
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Portable Hole",
+      "count": 3
+    },
+    {
+      "name": "Rest in Peace",
+      "count": 3
+    },
+    {
+      "name": "Wedding Announcement // Wedding Festivity",
+      "count": 3
+    },
+    {
+      "name": "Destroy Evil",
+      "count": 3
+    },
+    {
+      "name": "Reidane, God of the Worthy // Valkmira, Protector's Shield",
+      "count": 3
+    }
+  ]
+}

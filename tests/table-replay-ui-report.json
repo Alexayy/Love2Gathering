@@ -1,0 +1,244 @@
+{
+  "cases": [
+    {
+      "fieldCenter": 720,
+      "handTop": 649.5,
+      "landBottom": 619.5,
+      "landCardHeight": 80.375,
+      "landRowCenter": 720,
+      "lands": 1,
+      "logical": [
+        1440,
+        900
+      ],
+      "name": "1440x900-ui1-lands1",
+      "physical": [
+        1440,
+        900
+      ],
+      "render": 1,
+      "scale": 1
+    },
+    {
+      "fieldCenter": 720,
+      "handTop": 649.5,
+      "landBottom": 619.5,
+      "landCardHeight": 80.375,
+      "landRowCenter": 720,
+      "lands": 3,
+      "logical": [
+        1440,
+        900
+      ],
+      "name": "1440x900-ui1-lands3",
+      "physical": [
+        1440,
+        900
+      ],
+      "render": 1,
+      "scale": 1
+    },
+    {
+      "fieldCenter": 720,
+      "handTop": 649.5,
+      "landBottom": 619.5,
+      "landCardHeight": 80.375,
+      "landRowCenter": 701.62857142857,
+      "lands": 7,
+      "logical": [
+        1440,
+        900
+      ],
+      "name": "1440x900-ui1-lands7",
+      "physical": [
+        1440,
+        900
+      ],
+      "render": 1,
+      "scale": 1
+    },
+    {
+      "fieldCenter": 720,
+      "handTop": 649.5,
+      "landBottom": 619.5,
+      "landCardHeight": 80.375,
+      "landRowCenter": 609.77142857143,
+      "lands": 12,
+      "logical": [
+        1440,
+        900
+      ],
+      "name": "1440x900-ui1-lands12",
+      "physical": [
+        1440,
+        900
+      ],
+      "render": 1,
+      "scale": 1
+    },
+    {
+      "fieldCenter": 560,
+      "handTop": 513.6,
+      "landBottom": 483.6,
+      "landCardHeight": 46.4,
+      "landRowCenter": 560,
+      "lands": 1,
+      "logical": [
+        1120,
+        720
+      ],
+      "name": "1120x720-ui1-lands1",
+      "physical": [
+        1120,
+        720
+      ],
+      "render": 1,
+      "scale": 1
+    },
+    {
+      "fieldCenter": 560,
+      "handTop": 513.6,
+      "landBottom": 483.6,
+      "landCardHeight": 46.4,
+      "landRowCenter": 560,
+      "lands": 3,
+      "logical": [
+        1120,
+        720
+      ],
+      "name": "1120x720-ui1-lands3",
+      "physical": [
+        1120,
+        720
+      ],
+      "render": 1,
+      "scale": 1
+    },
+    {
+      "fieldCenter": 560,
+      "handTop": 513.6,
+      "landBottom": 483.6,
+      "landCardHeight": 46.4,
+      "landRowCenter": 549.39428571429,
+      "lands": 7,
+      "logical": [
+        1120,
+        720
+      ],
+      "name": "1120x720-ui1-lands7",
+      "physical": [
+        1120,
+        720
+      ],
+      "render": 1,
+      "scale": 1
+    },
+    {
+      "fieldCenter": 560,
+      "handTop": 513.6,
+      "landBottom": 483.6,
+      "landCardHeight": 46.4,
+      "landRowCenter": 496.36571428571,
+      "lands": 12,
+      "logical": [
+        1120,
+        720
+      ],
+      "name": "1120x720-ui1-lands12",
+      "physical": [
+        1120,
+        720
+      ],
+      "render": 1,
+      "scale": 1
+    },
+    {
+      "fieldCenter": 576,
+      "handTop": 513.6,
+      "landBottom": 483.6,
+      "landCardHeight": 46.4,
+      "landRowCenter": 576,
+      "lands": 1,
+      "logical": [
+        1152,
+        720
+      ],
+      "name": "1440x900-ui1.25-lands1",
+      "physical": [
+        1440,
+        900
+      ],
+      "render": 0.75,
+      "scale": 1.25
+    },
+    {
+      "fieldCenter": 576,
+      "handTop": 513.6,
+      "landBottom": 483.6,
+      "landCardHeight": 46.4,
+      "landRowCenter": 576,
+      "lands": 3,
+      "logical": [
+        1152,
+        720
+      ],
+      "name": "1440x900-ui1.25-lands3",
+      "physical": [
+        1440,
+        900
+      ],
+      "render": 0.75,
+      "scale": 1.25
+    },
+    {
+      "fieldCenter": 576,
+      "handTop": 513.6,
+      "landBottom": 483.6,
+      "landCardHeight": 46.4,
+      "landRowCenter": 565.39428571429,
+      "lands": 7,
+      "logical": [
+        1152,
+        720
+      ],
+      "name": "1440x900-ui1.25-lands7",
+      "physical": [
+        1440,
+        900
+      ],
+      "render": 0.75,
+      "scale": 1.25
+    },
+    {
+      "fieldCenter": 576,
+      "handTop": 513.6,
+      "landBottom": 483.6,
+      "landCardHeight": 46.4,
+      "landRowCenter": 512.36571428571,
+      "lands": 12,
+      "logical": [
+        1152,
+        720
+      ],
+      "name": "1440x900-ui1.25-lands12",
+      "physical": [
+        1440,
+        900
+      ],
+      "render": 0.75,
+      "scale": 1.25
+    }
+  ],
+  "checks": 106,
+  "engineRequests": 0,
+  "frames": 413,
+  "quitProbe": {
+    "h": 0.14381341085,
+    "w": 0.3,
+    "x": 0.1,
+    "y": 0.2
+  },
+  "replayId": "game-90bfee5e-813c-435a-9746-7c5b3ff779cb",
+  "stackFrame": 54,
+  "quitFlushPassed": true
+}

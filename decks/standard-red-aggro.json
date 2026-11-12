@@ -1,0 +1,71 @@
+{
+  "id": "standard-red-aggro",
+  "name": "Red Aggro",
+  "format": "Standard",
+  "description": "Low-cost attackers, burn and prowess provide a fast bot opponent without banned red staples.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Mountain",
+      "count": 24
+    },
+    {
+      "name": "Emberheart Challenger",
+      "count": 4
+    },
+    {
+      "name": "Ghitu Lavarunner",
+      "count": 4
+    },
+    {
+      "name": "Fanatical Firebrand",
+      "count": 4
+    },
+    {
+      "name": "Manifold Mouse",
+      "count": 4
+    },
+    {
+      "name": "Slickshot Show-Off",
+      "count": 4
+    },
+    {
+      "name": "Burst Lightning",
+      "count": 4
+    },
+    {
+      "name": "Lightning Strike",
+      "count": 4
+    },
+    {
+      "name": "Boltwave",
+      "count": 4
+    },
+    {
+      "name": "Witchstalker Frenzy",
+      "count": 4
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Abrade",
+      "count": 3
+    },
+    {
+      "name": "Torch the Tower",
+      "count": 3
+    },
+    {
+      "name": "Obliterating Bolt",
+      "count": 3
+    },
+    {
+      "name": "Scorching Shot",
+      "count": 3
+    },
+    {
+      "name": "Pyroclasm",
+      "count": 3
+    }
+  ]
+}

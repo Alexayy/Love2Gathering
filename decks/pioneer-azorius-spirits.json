@@ -1,0 +1,95 @@
+{
+  "id": "pioneer-azorius-spirits",
+  "name": "Azorius Spirits",
+  "format": "Pioneer",
+  "description": "Flash and flying threats combine with lord bonuses and protective spirits.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Mausoleum Wanderer",
+      "count": 4
+    },
+    {
+      "name": "Spectral Sailor",
+      "count": 4
+    },
+    {
+      "name": "Rattlechains",
+      "count": 4
+    },
+    {
+      "name": "Supreme Phantom",
+      "count": 4
+    },
+    {
+      "name": "Empyrean Eagle",
+      "count": 4
+    },
+    {
+      "name": "Shacklegeist",
+      "count": 4
+    },
+    {
+      "name": "Spell Queller",
+      "count": 4
+    },
+    {
+      "name": "Selfless Spirit",
+      "count": 4
+    },
+    {
+      "name": "Geistlight Snare",
+      "count": 4
+    },
+    {
+      "name": "Curious Obsession",
+      "count": 4
+    },
+    {
+      "name": "Hallowed Fountain",
+      "count": 4
+    },
+    {
+      "name": "Seachrome Coast",
+      "count": 4
+    },
+    {
+      "name": "Hengegate Pathway // Mistgate Pathway",
+      "count": 4
+    },
+    {
+      "name": "Adarkar Wastes",
+      "count": 4
+    },
+    {
+      "name": "Island",
+      "count": 3
+    },
+    {
+      "name": "Plains",
+      "count": 1
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Portable Hole",
+      "count": 3
+    },
+    {
+      "name": "Rest in Peace",
+      "count": 3
+    },
+    {
+      "name": "Mystical Dispute",
+      "count": 3
+    },
+    {
+      "name": "Disdainful Stroke",
+      "count": 3
+    },
+    {
+      "name": "Skyclave Apparition",
+      "count": 3
+    }
+  ]
+}

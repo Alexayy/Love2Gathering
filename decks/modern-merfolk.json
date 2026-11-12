@@ -1,0 +1,91 @@
+{
+  "id": "modern-merfolk",
+  "name": "Merfolk",
+  "format": "Modern",
+  "description": "Islandwalk and tribal lords build an evasive board; Aether Vial exercises activated abilities.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Island",
+      "count": 4
+    },
+    {
+      "name": "Cavern of Souls",
+      "count": 4
+    },
+    {
+      "name": "Mutavault",
+      "count": 4
+    },
+    {
+      "name": "Seachrome Coast",
+      "count": 4
+    },
+    {
+      "name": "Waterlogged Grove",
+      "count": 4
+    },
+    {
+      "name": "Aether Vial",
+      "count": 4
+    },
+    {
+      "name": "Tide Shaper",
+      "count": 4
+    },
+    {
+      "name": "Silvergill Adept",
+      "count": 4
+    },
+    {
+      "name": "Lord of Atlantis",
+      "count": 4
+    },
+    {
+      "name": "Master of the Pearl Trident",
+      "count": 4
+    },
+    {
+      "name": "Merfolk Trickster",
+      "count": 4
+    },
+    {
+      "name": "Vodalian Hexcatcher",
+      "count": 4
+    },
+    {
+      "name": "Svyelun of Sea and Sky",
+      "count": 4
+    },
+    {
+      "name": "Spreading Seas",
+      "count": 4
+    },
+    {
+      "name": "Force of Negation",
+      "count": 4
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Dismember",
+      "count": 3
+    },
+    {
+      "name": "Relic of Progenitus",
+      "count": 3
+    },
+    {
+      "name": "Hurkyl's Recall",
+      "count": 3
+    },
+    {
+      "name": "Counterspell",
+      "count": 3
+    },
+    {
+      "name": "Kira, Great Glass-Spinner",
+      "count": 3
+    }
+  ]
+}

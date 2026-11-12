@@ -1,0 +1,122 @@
+[
+  {
+    "id": "modern-boros-burn",
+    "name": "Boros Burn",
+    "format": "Modern",
+    "description": "Fast red damage with white interaction; tests prowess, combat and targeted spells."
+  },
+  {
+    "id": "modern-green-tron",
+    "name": "Green Tron",
+    "format": "Modern",
+    "description": "Assemble Urza lands and cast large threats. Expedition Map and Sylvan Scrying test library search."
+  },
+  {
+    "id": "modern-merfolk",
+    "name": "Merfolk",
+    "format": "Modern",
+    "description": "Islandwalk and tribal lords build an evasive board; Aether Vial exercises activated abilities."
+  },
+  {
+    "id": "modern-azorius-control",
+    "name": "Azorius Control",
+    "format": "Modern",
+    "description": "Instant-speed answers, sweepers and planeswalkers exercise priority, stack and loyalty actions."
+  },
+  {
+    "id": "modern-jund",
+    "name": "Jund Midrange",
+    "format": "Modern",
+    "description": "Discard, efficient removal and graveyard-sensitive creatures provide interactive games."
+  },
+  {
+    "id": "standard-white-lifegain",
+    "name": "White Lifegain",
+    "format": "Standard",
+    "description": "Lifegain grows Pridemate and Essence Channeler; an accessible deck for checking simultaneous triggers."
+  },
+  {
+    "id": "standard-blue-tempo",
+    "name": "Blue Tempo",
+    "format": "Standard",
+    "description": "Evasive threats backed by counters and bounce; teaches stack interaction and combat timing."
+  },
+  {
+    "id": "standard-black-midrange",
+    "name": "Black Midrange",
+    "format": "Standard",
+    "description": "Removal, card draw and resilient creatures; death triggers and sacrifice choices matter."
+  },
+  {
+    "id": "standard-red-aggro",
+    "name": "Red Aggro",
+    "format": "Standard",
+    "description": "Low-cost attackers, burn and prowess provide a fast bot opponent without banned red staples."
+  },
+  {
+    "id": "standard-green-stompy",
+    "name": "Green Stompy",
+    "format": "Standard",
+    "description": "Mana creatures accelerate large tramplers; combat and permanent abilities drive the game."
+  },
+  {
+    "id": "pioneer-izzet-phoenix",
+    "name": "Izzet Phoenix",
+    "format": "Pioneer",
+    "description": "Mandatory Phoenix deck: cantrips and graveyard setup return Arclight Phoenix automatically at combat."
+  },
+  {
+    "id": "pioneer-lotus-field",
+    "name": "Lotus Field Combo",
+    "format": "Pioneer",
+    "description": "Mandatory Lotus Field deck: copy Lotus Field with Thespian's Stage, untap for mana, tutor and win with Approach."
+  },
+  {
+    "id": "pioneer-rakdos-midrange",
+    "name": "Rakdos Midrange",
+    "format": "Pioneer",
+    "description": "Discard and removal support value creatures, Fable chapters and Blood tokens."
+  },
+  {
+    "id": "pioneer-white-humans",
+    "name": "White Humans",
+    "format": "Pioneer",
+    "description": "A tribal curve with Thalia taxes, lieutenant counters and Brave the Elements combat finishes."
+  },
+  {
+    "id": "pioneer-azorius-spirits",
+    "name": "Azorius Spirits",
+    "format": "Pioneer",
+    "description": "Flash and flying threats combine with lord bonuses and protective spirits."
+  },
+  {
+    "id": "commander-giada-angels",
+    "name": "Giada Angels",
+    "format": "Commander",
+    "description": "Mono-white Angels. Giada adds counters as Angels enter; life and combat triggers test the full rules engine."
+  },
+  {
+    "id": "commander-talrand-spells",
+    "name": "Talrand Spells",
+    "format": "Commander",
+    "description": "Mono-blue spells create Drake tokens, then protect an evasive army. Draw, scry, counterspells and trigger ordering."
+  },
+  {
+    "id": "commander-ayara-devotion",
+    "name": "Ayara Devotion",
+    "format": "Commander",
+    "description": "Mono-black devotion and sacrifice. Enter, death and life-drain triggers create an engine-driven value loop."
+  },
+  {
+    "id": "commander-krenko-goblins",
+    "name": "Krenko Goblins",
+    "format": "Commander",
+    "description": "Mono-red Goblins create tokens, attack and sacrifice for damage. Many simultaneous enter/death triggers."
+  },
+  {
+    "id": "commander-goreclaw-stompy",
+    "name": "Goreclaw Stompy",
+    "format": "Commander",
+    "description": "Mono-green ramp and large creatures. Cost reductions, trample, fight and draw triggers reward attacking."
+  }
+]

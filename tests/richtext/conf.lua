@@ -1,0 +1,1 @@
+function love.conf(t)t.identity='love2gathering-richtext-tests';t.window.width=1440;t.window.height=900;t.window.vsync=0;t.modules.audio=false;t.modules.physics=false;t.modules.joystick=false;t.console=true end

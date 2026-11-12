@@ -1,0 +1,103 @@
+{
+  "id": "pioneer-izzet-phoenix",
+  "name": "Izzet Phoenix",
+  "format": "Pioneer",
+  "description": "Mandatory Phoenix deck: cantrips and graveyard setup return Arclight Phoenix automatically at combat.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Arclight Phoenix",
+      "count": 4
+    },
+    {
+      "name": "Picklock Prankster // Free the Fae",
+      "count": 4
+    },
+    {
+      "name": "Consider",
+      "count": 4
+    },
+    {
+      "name": "Opt",
+      "count": 4
+    },
+    {
+      "name": "Sleight of Hand",
+      "count": 4
+    },
+    {
+      "name": "Treasure Cruise",
+      "count": 4
+    },
+    {
+      "name": "Pieces of the Puzzle",
+      "count": 4
+    },
+    {
+      "name": "Lightning Axe",
+      "count": 4
+    },
+    {
+      "name": "Fiery Impulse",
+      "count": 4
+    },
+    {
+      "name": "Spell Pierce",
+      "count": 2
+    },
+    {
+      "name": "Temporal Trespass",
+      "count": 2
+    },
+    {
+      "name": "Steam Vents",
+      "count": 4
+    },
+    {
+      "name": "Spirebluff Canal",
+      "count": 4
+    },
+    {
+      "name": "Riverglide Pathway // Lavaglide Pathway",
+      "count": 4
+    },
+    {
+      "name": "Shivan Reef",
+      "count": 4
+    },
+    {
+      "name": "Island",
+      "count": 3
+    },
+    {
+      "name": "Mountain",
+      "count": 1
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Mystical Dispute",
+      "count": 3
+    },
+    {
+      "name": "Abrade",
+      "count": 3
+    },
+    {
+      "name": "Aether Gust",
+      "count": 3
+    },
+    {
+      "name": "Brotherhood's End",
+      "count": 2
+    },
+    {
+      "name": "Crackling Drake",
+      "count": 2
+    },
+    {
+      "name": "Disdainful Stroke",
+      "count": 2
+    }
+  ]
+}

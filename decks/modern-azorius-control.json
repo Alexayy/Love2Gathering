@@ -1,0 +1,103 @@
+{
+  "id": "modern-azorius-control",
+  "name": "Azorius Control",
+  "format": "Modern",
+  "description": "Instant-speed answers, sweepers and planeswalkers exercise priority, stack and loyalty actions.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Flooded Strand",
+      "count": 4
+    },
+    {
+      "name": "Hallowed Fountain",
+      "count": 4
+    },
+    {
+      "name": "Glacial Fortress",
+      "count": 4
+    },
+    {
+      "name": "Island",
+      "count": 4
+    },
+    {
+      "name": "Plains",
+      "count": 3
+    },
+    {
+      "name": "Celestial Colonnade",
+      "count": 3
+    },
+    {
+      "name": "Field of Ruin",
+      "count": 2
+    },
+    {
+      "name": "Snapcaster Mage",
+      "count": 4
+    },
+    {
+      "name": "Counterspell",
+      "count": 4
+    },
+    {
+      "name": "Prismatic Ending",
+      "count": 4
+    },
+    {
+      "name": "Solitude",
+      "count": 4
+    },
+    {
+      "name": "Teferi, Time Raveler",
+      "count": 4
+    },
+    {
+      "name": "Opt",
+      "count": 4
+    },
+    {
+      "name": "Supreme Verdict",
+      "count": 3
+    },
+    {
+      "name": "Memory Deluge",
+      "count": 3
+    },
+    {
+      "name": "Teferi, Hero of Dominaria",
+      "count": 2
+    },
+    {
+      "name": "Jace, the Mind Sculptor",
+      "count": 2
+    },
+    {
+      "name": "March of Otherworldly Light",
+      "count": 2
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Rest in Peace",
+      "count": 3
+    },
+    {
+      "name": "Dovin's Veto",
+      "count": 3
+    },
+    {
+      "name": "Celestial Purge",
+      "count": 3
+    },
+    {
+      "name": "Wear // Tear",
+      "count": 3
+    },
+    {
+      "name": "Timely Reinforcements",
+      "count": 3
+    }
+  ]
+}

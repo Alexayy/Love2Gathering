@@ -1,0 +1,91 @@
+{
+  "id": "modern-boros-burn",
+  "name": "Boros Burn",
+  "format": "Modern",
+  "description": "Fast red damage with white interaction; tests prowess, combat and targeted spells.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Goblin Guide",
+      "count": 4
+    },
+    {
+      "name": "Monastery Swiftspear",
+      "count": 4
+    },
+    {
+      "name": "Eidolon of the Great Revel",
+      "count": 4
+    },
+    {
+      "name": "Lightning Bolt",
+      "count": 4
+    },
+    {
+      "name": "Lava Spike",
+      "count": 4
+    },
+    {
+      "name": "Rift Bolt",
+      "count": 4
+    },
+    {
+      "name": "Boros Charm",
+      "count": 4
+    },
+    {
+      "name": "Lightning Helix",
+      "count": 4
+    },
+    {
+      "name": "Searing Blaze",
+      "count": 4
+    },
+    {
+      "name": "Skullcrack",
+      "count": 4
+    },
+    {
+      "name": "Inspiring Vantage",
+      "count": 4
+    },
+    {
+      "name": "Sacred Foundry",
+      "count": 4
+    },
+    {
+      "name": "Arid Mesa",
+      "count": 4
+    },
+    {
+      "name": "Sunbaked Canyon",
+      "count": 4
+    },
+    {
+      "name": "Mountain",
+      "count": 4
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Path to Exile",
+      "count": 3
+    },
+    {
+      "name": "Smash to Smithereens",
+      "count": 3
+    },
+    {
+      "name": "Rest in Peace",
+      "count": 3
+    },
+    {
+      "name": "Deflecting Palm",
+      "count": 3
+    },
+    {
+      "name": "Roiling Vortex",
+      "count": 3
+    }
+  ]
+}

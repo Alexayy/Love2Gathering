@@ -1,0 +1,71 @@
+{
+  "id": "standard-black-midrange",
+  "name": "Black Midrange",
+  "format": "Standard",
+  "description": "Removal, card draw and resilient creatures; death triggers and sacrifice choices matter.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Swamp",
+      "count": 24
+    },
+    {
+      "name": "Deep-Cavern Bat",
+      "count": 4
+    },
+    {
+      "name": "Preacher of the Schism",
+      "count": 4
+    },
+    {
+      "name": "Enduring Tenacity",
+      "count": 4
+    },
+    {
+      "name": "Bloodletter of Aclazotz",
+      "count": 4
+    },
+    {
+      "name": "Forsaken Miner",
+      "count": 4
+    },
+    {
+      "name": "Bitter Triumph",
+      "count": 4
+    },
+    {
+      "name": "Shoot the Sheriff",
+      "count": 4
+    },
+    {
+      "name": "Phyrexian Arena",
+      "count": 4
+    },
+    {
+      "name": "Duress",
+      "count": 4
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Malicious Eclipse",
+      "count": 3
+    },
+    {
+      "name": "Deadly Cover-Up",
+      "count": 3
+    },
+    {
+      "name": "Ghost Vacuum",
+      "count": 3
+    },
+    {
+      "name": "Feed the Swarm",
+      "count": 3
+    },
+    {
+      "name": "Liliana, Dreadhorde General",
+      "count": 3
+    }
+  ]
+}

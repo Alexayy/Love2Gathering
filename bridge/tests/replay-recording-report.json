@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "realGame": {
+    "id": "game-90bfee5e-813c-435a-9746-7c5b3ff779cb",
+    "turns": 8,
+    "actions": 63,
+    "persistedFrames": 413,
+    "observedFrames": 138,
+    "events": 696,
+    "logs": 220
+  },
+  "structuredActors": [
+    "bot",
+    "human",
+    "system"
+  ],
+  "categories": [
+    "attack",
+    "cast",
+    "damage",
+    "draw",
+    "land",
+    "mana",
+    "resolve",
+    "system",
+    "trigger",
+    "turn",
+    "zone"
+  ],
+  "stackKinds": [
+    "ability",
+    "spell"
+  ],
+  "botHandHiddenEveryFrame": true,
+  "reopenedSQLite": true,
+  "explicitSaveKeepsGameRunning": true,
+  "outageSurfacedAndRetainedAllEvents": true,
+  "crashedRecorderRecovered": true
+}

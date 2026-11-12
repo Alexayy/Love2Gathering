@@ -1,0 +1,3 @@
+[submodule "engine/mage"]
+	path = engine/mage
+	url = https://github.com/magefree/mage.git

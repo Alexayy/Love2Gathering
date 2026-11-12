@@ -1,0 +1,267 @@
+{
+  "id": "commander-krenko-goblins",
+  "name": "Krenko Goblins",
+  "format": "Commander",
+  "description": "Mono-red Goblins create tokens, attack and sacrifice for damage. Many simultaneous enter/death triggers.",
+  "commander": [
+    {
+      "name": "Krenko, Mob Boss",
+      "count": 1
+    }
+  ],
+  "main": [
+    {
+      "name": "Sol Ring",
+      "count": 1
+    },
+    {
+      "name": "Arcane Signet",
+      "count": 1
+    },
+    {
+      "name": "Mind Stone",
+      "count": 1
+    },
+    {
+      "name": "Wayfarer's Bauble",
+      "count": 1
+    },
+    {
+      "name": "Commander's Sphere",
+      "count": 1
+    },
+    {
+      "name": "Swiftfoot Boots",
+      "count": 1
+    },
+    {
+      "name": "Lightning Greaves",
+      "count": 1
+    },
+    {
+      "name": "Skullclamp",
+      "count": 1
+    },
+    {
+      "name": "Solemn Simulacrum",
+      "count": 1
+    },
+    {
+      "name": "Burnished Hart",
+      "count": 1
+    },
+    {
+      "name": "Skirk Prospector",
+      "count": 1
+    },
+    {
+      "name": "Goblin Sledder",
+      "count": 1
+    },
+    {
+      "name": "Mogg Raider",
+      "count": 1
+    },
+    {
+      "name": "Goblin Chirurgeon",
+      "count": 1
+    },
+    {
+      "name": "Goblin Arsonist",
+      "count": 1
+    },
+    {
+      "name": "Foundry Street Denizen",
+      "count": 1
+    },
+    {
+      "name": "Goblin Instigator",
+      "count": 1
+    },
+    {
+      "name": "Mogg War Marshal",
+      "count": 1
+    },
+    {
+      "name": "Goblin Matron",
+      "count": 1
+    },
+    {
+      "name": "Goblin Ringleader",
+      "count": 1
+    },
+    {
+      "name": "Goblin Warchief",
+      "count": 1
+    },
+    {
+      "name": "Goblin Chieftain",
+      "count": 1
+    },
+    {
+      "name": "Goblin King",
+      "count": 1
+    },
+    {
+      "name": "Hobgoblin Bandit Lord",
+      "count": 1
+    },
+    {
+      "name": "Goblin Piledriver",
+      "count": 1
+    },
+    {
+      "name": "Goblin Wardriver",
+      "count": 1
+    },
+    {
+      "name": "Goblin Trashmaster",
+      "count": 1
+    },
+    {
+      "name": "Goblin Cratermaker",
+      "count": 1
+    },
+    {
+      "name": "Goblin Chainwhirler",
+      "count": 1
+    },
+    {
+      "name": "Goblin Sharpshooter",
+      "count": 1
+    },
+    {
+      "name": "Krenko, Tin Street Kingpin",
+      "count": 1
+    },
+    {
+      "name": "Krenko, Baron of Tin Street",
+      "count": 1
+    },
+    {
+      "name": "Siege-Gang Commander",
+      "count": 1
+    },
+    {
+      "name": "Goblin Rabblemaster",
+      "count": 1
+    },
+    {
+      "name": "Pashalik Mons",
+      "count": 1
+    },
+    {
+      "name": "Goblin Bombardment",
+      "count": 1
+    },
+    {
+      "name": "Impact Tremors",
+      "count": 1
+    },
+    {
+      "name": "Raid Bombardment",
+      "count": 1
+    },
+    {
+      "name": "Shared Animosity",
+      "count": 1
+    },
+    {
+      "name": "Boggart Shenanigans",
+      "count": 1
+    },
+    {
+      "name": "Goblin Warrens",
+      "count": 1
+    },
+    {
+      "name": "Goblin War Strike",
+      "count": 1
+    },
+    {
+      "name": "Hordeling Outburst",
+      "count": 1
+    },
+    {
+      "name": "Krenko's Command",
+      "count": 1
+    },
+    {
+      "name": "Dragon Fodder",
+      "count": 1
+    },
+    {
+      "name": "Empty the Warrens",
+      "count": 1
+    },
+    {
+      "name": "Battle Hymn",
+      "count": 1
+    },
+    {
+      "name": "Brightstone Ritual",
+      "count": 1
+    },
+    {
+      "name": "Skirk Fire Marshal",
+      "count": 1
+    },
+    {
+      "name": "Conspicuous Snoop",
+      "count": 1
+    },
+    {
+      "name": "Rundvelt Hordemaster",
+      "count": 1
+    },
+    {
+      "name": "Squee, Dubious Monarch",
+      "count": 1
+    },
+    {
+      "name": "Legion Loyalist",
+      "count": 1
+    },
+    {
+      "name": "Ruby Medallion",
+      "count": 1
+    },
+    {
+      "name": "Fire Diamond",
+      "count": 1
+    },
+    {
+      "name": "Herald's Horn",
+      "count": 1
+    },
+    {
+      "name": "Vanquisher's Banner",
+      "count": 1
+    },
+    {
+      "name": "Idol of Oblivion",
+      "count": 1
+    },
+    {
+      "name": "Faithless Looting",
+      "count": 1
+    },
+    {
+      "name": "Thrill of Possibility",
+      "count": 1
+    },
+    {
+      "name": "Chaos Warp",
+      "count": 1
+    },
+    {
+      "name": "Abrade",
+      "count": 1
+    },
+    {
+      "name": "Mountain",
+      "count": 37
+    }
+  ],
+  "sideboard": []
+}

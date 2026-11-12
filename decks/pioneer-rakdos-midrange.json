@@ -1,0 +1,107 @@
+{
+  "id": "pioneer-rakdos-midrange",
+  "name": "Rakdos Midrange",
+  "format": "Pioneer",
+  "description": "Discard and removal support value creatures, Fable chapters and Blood tokens.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Bloodtithe Harvester",
+      "count": 4
+    },
+    {
+      "name": "Bonecrusher Giant // Stomp",
+      "count": 4
+    },
+    {
+      "name": "Graveyard Trespasser // Graveyard Glutton",
+      "count": 4
+    },
+    {
+      "name": "Fable of the Mirror-Breaker // Reflection of Kiki-Jiki",
+      "count": 4
+    },
+    {
+      "name": "Sheoldred, the Apocalypse",
+      "count": 2
+    },
+    {
+      "name": "Thoughtseize",
+      "count": 4
+    },
+    {
+      "name": "Fatal Push",
+      "count": 4
+    },
+    {
+      "name": "Go for the Throat",
+      "count": 2
+    },
+    {
+      "name": "Kroxa, Titan of Death's Hunger",
+      "count": 2
+    },
+    {
+      "name": "Reckoner Bankbuster",
+      "count": 2
+    },
+    {
+      "name": "Blood Crypt",
+      "count": 4
+    },
+    {
+      "name": "Blackcleave Cliffs",
+      "count": 4
+    },
+    {
+      "name": "Blightstep Pathway // Searstep Pathway",
+      "count": 4
+    },
+    {
+      "name": "Haunted Ridge",
+      "count": 4
+    },
+    {
+      "name": "Hive of the Eye Tyrant",
+      "count": 2
+    },
+    {
+      "name": "Den of the Bugbear",
+      "count": 2
+    },
+    {
+      "name": "Swamp",
+      "count": 2
+    },
+    {
+      "name": "Mountain",
+      "count": 2
+    },
+    {
+      "name": "Duress",
+      "count": 4
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Unlicensed Hearse",
+      "count": 3
+    },
+    {
+      "name": "Extinction Event",
+      "count": 3
+    },
+    {
+      "name": "Abrade",
+      "count": 3
+    },
+    {
+      "name": "Damping Sphere",
+      "count": 3
+    },
+    {
+      "name": "Rending Volley",
+      "count": 3
+    }
+  ]
+}

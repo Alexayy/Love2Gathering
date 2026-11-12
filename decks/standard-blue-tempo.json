@@ -1,0 +1,71 @@
+{
+  "id": "standard-blue-tempo",
+  "name": "Blue Tempo",
+  "format": "Standard",
+  "description": "Evasive threats backed by counters and bounce; teaches stack interaction and combat timing.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Island",
+      "count": 24
+    },
+    {
+      "name": "Spectral Sailor",
+      "count": 4
+    },
+    {
+      "name": "Faerie Dreamthief",
+      "count": 4
+    },
+    {
+      "name": "Mockingbird",
+      "count": 4
+    },
+    {
+      "name": "Tempest Djinn",
+      "count": 4
+    },
+    {
+      "name": "Tolarian Terror",
+      "count": 4
+    },
+    {
+      "name": "Opt",
+      "count": 4
+    },
+    {
+      "name": "Into the Roil",
+      "count": 4
+    },
+    {
+      "name": "Essence Scatter",
+      "count": 4
+    },
+    {
+      "name": "Negate",
+      "count": 4
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Disdainful Stroke",
+      "count": 3
+    },
+    {
+      "name": "Unable to Scream",
+      "count": 3
+    },
+    {
+      "name": "Refute",
+      "count": 3
+    },
+    {
+      "name": "Mazemind Tome",
+      "count": 3
+    },
+    {
+      "name": "Ghost Vacuum",
+      "count": 3
+    }
+  ]
+}

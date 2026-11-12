@@ -1,0 +1,205 @@
+{
+  "snapshot": "all-cards-20260922091740.jsonl",
+  "verified_date": "2026-11-12",
+  "total_decks": 20,
+  "format_counts": {
+    "Modern": 5,
+    "Standard": 5,
+    "Pioneer": 5,
+    "Commander": 5
+  },
+  "passed": true,
+  "checks": [
+    "deck size",
+    "sideboard size",
+    "commander count",
+    "copy limits",
+    "Scryfall snapshot legality",
+    "XMage implementation class",
+    "commander color identity",
+    "legendary creature commander"
+  ],
+  "decks": [
+    {
+      "id": "modern-boros-burn",
+      "format": "Modern",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 20,
+      "errors": []
+    },
+    {
+      "id": "modern-green-tron",
+      "format": "Modern",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 24,
+      "errors": []
+    },
+    {
+      "id": "modern-merfolk",
+      "format": "Modern",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 20,
+      "errors": []
+    },
+    {
+      "id": "modern-azorius-control",
+      "format": "Modern",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 23,
+      "errors": []
+    },
+    {
+      "id": "modern-jund",
+      "format": "Modern",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 26,
+      "errors": []
+    },
+    {
+      "id": "standard-white-lifegain",
+      "format": "Standard",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 15,
+      "errors": []
+    },
+    {
+      "id": "standard-blue-tempo",
+      "format": "Standard",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 15,
+      "errors": []
+    },
+    {
+      "id": "standard-black-midrange",
+      "format": "Standard",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 15,
+      "errors": []
+    },
+    {
+      "id": "standard-red-aggro",
+      "format": "Standard",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 15,
+      "errors": []
+    },
+    {
+      "id": "standard-green-stompy",
+      "format": "Standard",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 15,
+      "errors": []
+    },
+    {
+      "id": "pioneer-izzet-phoenix",
+      "format": "Pioneer",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 23,
+      "errors": []
+    },
+    {
+      "id": "pioneer-lotus-field",
+      "format": "Pioneer",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 30,
+      "errors": []
+    },
+    {
+      "id": "pioneer-rakdos-midrange",
+      "format": "Pioneer",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 24,
+      "errors": []
+    },
+    {
+      "id": "pioneer-white-humans",
+      "format": "Pioneer",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 17,
+      "errors": []
+    },
+    {
+      "id": "pioneer-azorius-spirits",
+      "format": "Pioneer",
+      "main": 60,
+      "sideboard": 15,
+      "commander": 0,
+      "cards": 21,
+      "errors": []
+    },
+    {
+      "id": "commander-giada-angels",
+      "format": "Commander",
+      "main": 99,
+      "sideboard": 0,
+      "commander": 1,
+      "cards": 64,
+      "errors": []
+    },
+    {
+      "id": "commander-talrand-spells",
+      "format": "Commander",
+      "main": 99,
+      "sideboard": 0,
+      "commander": 1,
+      "cards": 64,
+      "errors": []
+    },
+    {
+      "id": "commander-ayara-devotion",
+      "format": "Commander",
+      "main": 99,
+      "sideboard": 0,
+      "commander": 1,
+      "cards": 64,
+      "errors": []
+    },
+    {
+      "id": "commander-krenko-goblins",
+      "format": "Commander",
+      "main": 99,
+      "sideboard": 0,
+      "commander": 1,
+      "cards": 64,
+      "errors": []
+    },
+    {
+      "id": "commander-goreclaw-stompy",
+      "format": "Commander",
+      "main": 99,
+      "sideboard": 0,
+      "commander": 1,
+      "cards": 64,
+      "errors": []
+    }
+  ],
+  "errors": []
+}

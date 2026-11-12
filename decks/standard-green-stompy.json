@@ -1,0 +1,71 @@
+{
+  "id": "standard-green-stompy",
+  "name": "Green Stompy",
+  "format": "Standard",
+  "description": "Mana creatures accelerate large tramplers; combat and permanent abilities drive the game.",
+  "commander": [],
+  "main": [
+    {
+      "name": "Forest",
+      "count": 24
+    },
+    {
+      "name": "Llanowar Elves",
+      "count": 4
+    },
+    {
+      "name": "Scavenging Ooze",
+      "count": 4
+    },
+    {
+      "name": "Dwynen's Elite",
+      "count": 4
+    },
+    {
+      "name": "Elvish Archdruid",
+      "count": 4
+    },
+    {
+      "name": "Dwynen, Gilt-Leaf Daen",
+      "count": 4
+    },
+    {
+      "name": "Gigantosaurus",
+      "count": 4
+    },
+    {
+      "name": "Ghalta, Primal Hunger",
+      "count": 4
+    },
+    {
+      "name": "Bushwhack",
+      "count": 4
+    },
+    {
+      "name": "Overrun",
+      "count": 4
+    }
+  ],
+  "sideboard": [
+    {
+      "name": "Reclamation Sage",
+      "count": 3
+    },
+    {
+      "name": "Broken Wings",
+      "count": 3
+    },
+    {
+      "name": "Bite Down",
+      "count": 3
+    },
+    {
+      "name": "Snakeskin Veil",
+      "count": 3
+    },
+    {
+      "name": "Soul-Guide Lantern",
+      "count": 3
+    }
+  ]
+}
