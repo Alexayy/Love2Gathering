@@ -12,7 +12,7 @@ The machine-readable [inventory](kenney/inventory.json) records every dimension 
 | `kenney_board-game-info` | 868 | 577 | 0 | 128 x 128, 256 x 256, 918 x 515. Precomposed age/player/time pictograms and labels in default/fantasy/space styles. Preserved; native seat limits and live timings cannot be replaced by baked labels. |
 | `kenney_boardgame-pack` | 583 | 539 | 12 | 64 x 38–1216 x 192; 12 distinct sizes. Colored physical pieces, chips, standard playing cards and bonus dice audio. Preserved; ordinary poker card faces do not represent Magic cards. |
 | `kenney_casino-audio` | 58 | 0 | 55 | Audio only. Short card slide/shuffle/pack and chip/dice Foley plus a 35 s preview mix. Selected card-slide and shuffle only, not preview music or gambling chips. |
-| `kenney_cursor-pack` | 1096 | 729 | 0 | 32 x 32, 64 x 64, 918 x 515. Basic/outline pointers and hands at 32/64 px. Selected basic arrow and pointing hand; accurate hotspots, native I-beam and resize cursors remain. |
+| `kenney_cursor-pack` | 1096 | 729 | 0 | 32 x 32, 64 x 64, 918 x 515. Basic/outline pointers and hands at 32/64 px. Selected arrow, pointing/open/closed hands and four resize states at 64px, with reviewed hotspots; native I-beam remains. |
 | `kenney_cursor-pixel-pack` | 227 | 223 | 0 | 16 x 16, 320 x 176, 339 x 186, 918 x 515. 16 px pixel cursor tiles and sheets; some tiles deliberately empty. Preserved; current interface is not pixel-art and has high-DPI controls. |
 | `kenney_development-essentials` | 22 | 19 | 0 | 1 x 1, 4 x 4, 16 x 16, 256 x 256, 918 x 515. 1 px/4 px fills, 256 px noise/gradient/UV diagnostics. Preserved; useful development references, no unnecessary debug texture in product. |
 | `kenney_emotes-pack` | 534 | 513 | 0 | 16 x 16–918 x 515; 7 distinct sizes. Pixel and vector speech/reaction bubbles. Preserved; native prompt instructions remain readable text, with no invented player emotes. |
@@ -38,15 +38,15 @@ All 297 audio files probe as Vorbis in OGG containers. Boardgame bonus: 12 stere
 
 ## Display font provenance
 
-`fonts/Beleren2016-Bold.ttf` was already supplied by the user (137,124 bytes). Its SFNT metadata identifies Beleren2016, version 1.200, Delve Fonts / Delve Withrington, and Copyright(c)2014–2016 Wizards of the Coast, a Hasbro Subsidiary, all rights reserved. No separate distribution license or font name-table license entry accompanied it. It is retained in place, not relabeled CC0/OFL. It is the default display face for headings, deck names and card details; readable body text retains the existing application-font setting. Users can select Application font for titles too. Missing/unsupported title glyphs fall back to bundled DejaVu.
+`fonts/Beleren2016-Bold.ttf` was already supplied by the user (137,124 bytes). Its SFNT metadata identifies Beleren2016, version 1.200, Delve Fonts / Delve Withrington, and Copyright(c)2014–2016 Wizards of the Coast, a Hasbro Subsidiary, all rights reserved. No separate distribution license or font name-table license entry accompanied it. It is retained in place, not relabeled CC0/OFL. It is now used for every application heading, body label, control and table caption. Legacy font preferences do not replace it. Missing files/unsupported glyphs fall back to bundled DejaVu.
 
 ## Runtime use and resource bounds
 
 - Runtime icons use source alpha bounds in a draw quad; source pixels are unchanged. Masks preserve aspect ratio and are tinted mint/purple/neutral by the caller.
 - Dice 1–6 show actual pips. Other exact values, including 7/13/127, are printed on the blank die; no modulo or rule inference. Text is an available alternative.
 - Space images use centered aspect-cover cropping and a real brightness multiplier. The five source panoramas decode to roughly 32 MiB each; at most two are retained on the GPU. Off preserves the prior flat background.
-- Kenney cursors use their visible arrow/finger hotspots. Native text and resize feedback remains; unsupported custom cursors fall back safely.
-- Existing fantasy/space nine-slice controls keep their geometry, clipping and dark mint/purple identity. Body labels on buttons remain in the readable application font.
+- Kenney cursors use their visible arrow/finger hotspots. Native I-beam feedback remains; pan/drag/resize states use reviewed Kenney sources and unsupported custom cursors fall back safely.
+- Existing fantasy/space nine-slice controls keep their geometry, clipping and dark mint/purple identity. Body labels on buttons use the supplied Beleren face with measured visible-ink centering.
 - Magic ability icons come from verified Mana 1.17.1 CSS mappings, not guessed Unicode or unrelated board-game symbols. Six existing plus ten newly verified keyword glyphs are covered by actual font/render checks.
 
 ## Verification

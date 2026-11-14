@@ -1,7 +1,7 @@
 local API=require('app.api')
 local json=require('lib.json')
 local Model={};Model.__index=Model
-local defaults={manualTriggers=false,autoMana=true,showCardArt=true,localArtworkOnly=true,resolution='1440x900',windowMode='Windowed',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,titleFontFamily='Beleren',skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='System',keywordReminders=true}
+local defaults={manualTriggers=false,autoMana=true,showCardArt=true,localArtworkOnly=true,resolution='Desktop',windowMode='Borderless',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,titleFontFamily='Beleren',skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='Kenney',keywordReminders=true,fontFamily='Beleren',panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=true,builderLayout='Classic',presentationVersion=2}
 local function copy(t) return json.decode(json.encode(t)) end
 local function errorText(body,err,code)
     if err then return err end
@@ -35,7 +35,7 @@ function Model:refreshDecks()
 end
 function Model:update(dt)
     self.api:update()
-    self:updateReplays(dt);self:updateUILayout(dt);self:updateGallery(dt);self:updateRooms(dt);self:updateLibrary(dt);self:updateCollection(dt);self:updateProfile(dt)
+    self:updateReplays(dt);self:updateUILayout(dt);self:updateGallery(dt);self:updateRooms(dt);self:updateLibrary(dt);self:updateCollection(dt);self:updateProfile(dt);self:updateStorage(dt)
     if self.validationTimer then self.validationTimer=self.validationTimer-dt;if self.validationTimer<=0 then self.validationTimer=nil;self:validateDeck() end end
     for i=#self.toasts,1,-1 do self.toasts[i].ttl=self.toasts[i].ttl-dt;if self.toasts[i].ttl<=0 then table.remove(self.toasts,i) end end
     self.healthTimer=self.healthTimer-dt
@@ -102,7 +102,7 @@ function Model:cardData(card)
         local data=copy(self.byName[name])
         -- Catalog IDs select images; native IDs select game objects. Keep both.
         data.objectId=card.id
-        for _,key in ipairs({'power','toughness','damage','counters','printing','permanent','ownerId','controllerId','token','isToken','colors','subtypes','tokenSourceId','tokenSourceName','attachedToId','attachedToPlayerId','attachmentIds','linkedExile','attacking','blocking'})do
+        for _,key in ipairs({'power','toughness','damage','counters','printing','currentRules','keywords','abilityIcons','permanent','ownerId','controllerId','token','isToken','colors','subtypes','tokenSourceId','tokenSourceName','attachedToId','attachedToPlayerId','attachmentIds','linkedExile','attacking','blocking'})do
             if card[key]~=nil then data[key]=card[key]end
         end
         return data
@@ -116,42 +116,7 @@ function Model:cardData(card)
     return card
 end
 function Model:getArt(card,force,kind)
-    if not force and not self.settings.showCardArt then return nil end
-    local data=self:cardData(card);if not data or not data.image_uris then return nil end
-    local id=data.id;if not id then return nil end
-    local face=data.requested_face or 0
-    kind=kind or 'normal'
-    local cacheKey=(data.printing_id or id)..'-'..face..'-'..kind
-    local cached=self.art[cacheKey]
-    if cached then
-        cached.used=love.timer.getTime()
-        if cached.image or cached.pending or (cached.retryAt and cached.retryAt>love.timer.getTime()) then return cached.image end
-    end
-    if self.artPending<(force and 6 or 2) then
-        self.art[cacheKey]={pending=true,used=love.timer.getTime()};self.artPending=self.artPending+1
-        local path='/art/'..API.escape(id)..'?face='..face..'&kind='..API.escape(kind)
-        path=path..'&network='..(self.settings.localArtworkOnly~=false and'0'or'1')
-        if data.printing_id then path=path..'&printing='..API.escape(data.printing_id) end
-        self.api:request('art','GET',path,nil,function(body,err,code)
-            self.artPending=self.artPending-1
-            if not self.art[cacheKey] then return end
-            self.art[cacheKey].pending=false;self.art[cacheKey].retryAt=love.timer.getTime()+30
-            if not err and code==200 and body then
-                local ok,img=pcall(function() return love.graphics.newImage(love.image.newImageData(love.filesystem.newFileData(body,'card.jpg'))) end)
-                if ok then
-                    self.art[cacheKey].image=img
-                    local count,oldest,oldestTime=0,nil,math.huge
-                    for key,entry in pairs(self.art) do
-                        if entry.image then
-                            count=count+1
-                            if key~=cacheKey and (entry.used or 0)<oldestTime then oldest,oldestTime=key,entry.used or 0 end
-                        end
-                    end
-                    if count>96 and oldest then self.art[oldest]=nil end
-                end
-            end
-        end,true)
-    end
+    return require('app.artwork').get(self,card,force,kind)
 end
 function Model:findDeck(id) for _,d in ipairs(self.decks) do if d.id==id then return d end end end
 function Model:lobbyPlayerCount()
@@ -277,13 +242,40 @@ function Model:saveDeck()
 end
 function Model:duplicateDeck(deck)
     local d=copy(deck);d.id='custom-'..os.time()..'-'..love.math.random(1000,9999);d.name=d.name..' copy';d.origin=nil
-    self:request('catalog','POST','/decks',d,function(data) if data then self:refreshDecks();self:openDeck(d);self:toast('Deck duplicated') end end)
+    local page,selection,generation,revision=self.page,self.selectedDeck,self.editGeneration or 0,self.deckRevision or 0
+    local submitted=self.editDeck and copy(self.editDeck)
+    self:request('catalog','POST','/decks',d,function(data)
+        if not data then return end
+        local unchanged=self.page==page and self.selectedDeck==selection and(self.editGeneration or 0)==generation and(self.deckRevision or 0)==revision
+        if submitted then unchanged=unchanged and self.editDeck~=nil and self.editDeck.name==submitted.name and self.editDeck.coverCard==submitted.coverCard and self.editDeck.description==submitted.description and self.editDeck.format==submitted.format end
+        self:refreshDecks()
+        if unchanged then
+            local saved=data.deck or data;if not saved.id then saved=d end;saved.origin='user'
+            for _,zone in ipairs({'main','sideboard','commander'})do saved[zone]=json.array(saved[zone]or{})end
+            self.selectedDeck=saved.id;self:openDeck(saved)
+        end
+        self:toast('Deck duplicated')
+    end)
 end
 function Model:deleteDeck(deck)
     self:request('catalog','DELETE','/decks/'..API.escape(deck.id),nil,function(data) if data then self:refreshDecks();self.selectedDeck=nil;self:toast('Deck removed') end end)
 end
 function Model:saveSettings()
     self:request('catalog','PUT','/settings',self.settings,function(data) if data then self:toast('Settings saved') end end)
+end
+function Model:setBuilderLayout(value)
+    if value~='Classic'and value~='Simplified'then return end
+    self.settings.builderLayout=value;self.simpleDeckScroll=0;self.searchTimer=0
+    self:request('catalog','PUT','/settings',{builderLayout=value},function()end,true)
+end
+function Model:openSettings()
+    if self.page=='table'then self.settingsOpen=true;return end
+    if self.page~='settings'then self.settingsReturnPage=self.page end
+    self.settingsOpen=false;self.page='settings'
+end
+function Model:closeSettings()
+    self.settingsOpen=false
+    if self.page=='settings'then self.page=self.settingsReturnPage or'decks';self.settingsReturnPage=nil end
 end
 function Model:startGame()
     if self.roomConnectionId then self:toast('Leave your multiplayer room before starting a practice match',true);return end
@@ -408,4 +400,6 @@ require('app.rooms').install(Model)
 require('app.library').install(Model)
 require('app.collection').install(Model)
 require('app.profile').install(Model)
+require('app.artwork').install(Model)
+require('app.storage').install(Model)
 return Model

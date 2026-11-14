@@ -63,7 +63,7 @@ class SQLiteStorageTest(unittest.TestCase):
 
     def test_system_font_family_persists_and_rejects_malformed_preferences(self):
         s=self.store()
-        self.assertEqual(s.settings()['fontFamily'],'Built-in DejaVu Sans')
+        self.assertEqual(s.settings()['fontFamily'],'Beleren')
         s.save_settings({'fontFamily':'Liberation Sans'})
         self.assertEqual(self.store().settings()['fontFamily'],'Liberation Sans')
         for value in ('', 'a'*161, 'Font\nName', 'Font\x00Name', False, ['Font']):

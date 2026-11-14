@@ -1,6 +1,7 @@
 -- Public card-art identity. Life always comes from the native player projection.
 local API=require('app.api')
 local json=require('lib.json')
+local Artwork=require('app.artwork')
 local Profile={}
 local function copy(value)return json.decode(json.encode(value))end
 local function init(m)
@@ -59,6 +60,7 @@ function Profile.install(Model)
     end
     function Model:profileSearchChanged()
         init(self);self.profileOffset=0;self.profileSearchVersion=(self.profileSearchVersion or 0)+1;self.profileSearchTimer=.23
+        self.profileItems={};self.profileTotal=0;self.profileBusy=true;self.profileSearchError=nil
     end
     function Model:refreshProfileArt()
         init(self);self.profileSearchTimer=nil;self.profileSearchVersion=(self.profileSearchVersion or 0)+1
@@ -81,22 +83,22 @@ function Profile.install(Model)
     end
     function Model:profileArt(reference)
         if not reference or not reference.printingId then return nil end
-        self.profileImages=self.profileImages or {};self.profileArtPending=self.profileArtPending or 0
-        local key=reference.printingId..':'..tostring(reference.face or 0);local time=love.timer.getTime();local entry=self.profileImages[key]
-        if entry then entry.used=time;if entry.image or entry.pending or(entry.retryAt or 0)>time then return entry.image end end
-        if self.profileArtPending>=4 then return nil end
-        entry={used=time,pending=true};self.profileImages[key]=entry;self.profileArtPending=self.profileArtPending+1
+        local key=reference.printingId..':'..tostring(reference.face or 0)
         local path='/gallery/art/'..API.escape(reference.printingId)..'?face='..tostring(reference.face or 0)..'&kind=art_crop&network='..(self.settings.localArtworkOnly~=false and'0'or'1')
-        self.api:request('art','GET',path,nil,function(body,err,code)
-            self.profileArtPending=math.max(0,self.profileArtPending-1);if self.profileImages[key]~=entry then return end
-            entry.pending=false;entry.retryAt=love.timer.getTime()+30
-            if not err and code==200 and body then
-                local ok,image=pcall(function()return love.graphics.newImage(love.image.newImageData(love.filesystem.newFileData(body,'profile.jpg')))end)
-                if ok then entry.image=image end
-            end
-            local count=0;for _ in pairs(self.profileImages)do count=count+1 end
-            while count>32 do local oldest,used;for id,cached in pairs(self.profileImages)do if id~=key and not cached.pending and(not used or cached.used<used)then oldest,used=id,cached.used end end;if not oldest then break end;self.profileImages[oldest]=nil;count=count-1 end
-        end,true);return nil
+        return Artwork.image(self,'profileImages','profileArtPending',key,path,4,32)
+    end
+    function Model:profileArtState(reference)
+        local key=reference and(reference.printingId..':'..tostring(reference.face or 0));local entry=key and self.profileImages and self.profileImages[key]
+        return entry and entry.state or'loading'
+    end
+    function Model:downloadProfileArt(reference)
+        if not reference or self.profileDownloading then return end
+        self.profileDownloading=true;self.profileDownloadError=nil;local opening=self.profileOpening
+        self:request('catalog','POST','/art/download',{printingId=reference.printingId,face=reference.face or 0,kind='art_crop'},function(data,err)
+            self.profileDownloading=false
+            if data then self.profileImages=self.profileImages or{};self.profileImages[reference.printingId..':'..tostring(reference.face or 0)]=nil;self:profileArt(reference)
+            elseif opening==self.profileOpening then self.profileDownloadError=err end
+        end,true)
     end
 end
 return Profile

@@ -106,11 +106,12 @@ function Table.draw(r,w,h)
         r:text(item.label,x+5,L.phaseY+4,12,active and C.accent or C.text,chipW-54,'center')
         for j,side in ipairs({'own','opponent'}) do
             local enabled=m:phaseStop(item,side);local sx=x+chipW-47+(j-1)*23
+            local phaseLabel=item.key=='COMBAT'and'Beginning of combat'or item.label
             r.assets:iconSymbol(side=='own' and 'player' or (humanOpponents and 'players' or 'bot'),sx,L.phaseY+5,17,enabled and C.gold or C.muted)
             r:hit({x=sx-2,y=L.phaseY,w=23,h=26,kind='phase-stop',side=side,phase=item.key,action=function() m:togglePhaseStop(item,side) end,
-                tooltip=(enabled and 'Remove ' or 'Set ')..item.label..' stop · '..(side=='own' and 'your turn' or 'opponents’ turns')})
+                tooltip=(enabled and 'Remove ' or 'Set ')..phaseLabel..' stop · '..(side=='own' and 'your turn' or 'opponents’ turns')})
         end
-        r:hit({x=x,y=L.phaseY,w=chipW-50,h=26,kind='phase-stop',phase=item.key,side='own',action=function() m:togglePhaseStop(item,'own') end,tooltip='Stop at '..item.label..' on your turn. Use the opponent icon for opponents.'})
+        r:hit({x=x,y=L.phaseY,w=chipW-50,h=26,kind='phase-stop',phase=item.key,side='own',action=function() m:togglePhaseStop(item,'own') end,tooltip='Stop at '..(item.key=='COMBAT'and'beginning of combat'or item.label)..' on your turn. Use the opponent icon for opponents.'})
     end
     if multiplayer then require('app.multiplayer_table').draw(r,L,w,h,Table)
     elseif human and enemy then
@@ -119,7 +120,7 @@ function Table.draw(r,w,h)
         r:strong(r:fit(enemy.name or'XMage Bot',122,16,1),hx+54,140,16,r:playerColor(enemy),122)
         r:strong(enemy.life,hx+54,165,36,r:playerColor(enemy))
         r.playerRects[enemy.id]={x=hx,y=140,w=180,h=75}
-        r:priorityBadge(enemy,hx,140,180,64)
+        r:priorityBadge(enemy,hx,213,180,22)
         require('app.board_fx').playerAuras(r,enemy,hx+145,190)
         r:hit({x=hx,y=140,w=180,h=75,kind='player',card={id=enemy.id,name=enemy.name},tooltip=enemy.name..' · '..tostring(enemy.life)..' life · '..tostring(enemy.handCount or 0)..' cards in hand'})
         local backs=math.min(enemy.handCount or 0,16);local ew=math.min(87,(B.w-320)/math.max(1,math.min(backs,7)));local eh=ew*1.4
@@ -138,7 +139,7 @@ function Table.draw(r,w,h)
         r:strong(r:fit(human.name or'You',122,16,1),hx+54,playerY,16,C.accent,122)
         r:strong(human.life,hx+54,playerY+22,36,C.accent)
         r.playerRects[human.id]={x=hx,y=playerY,w=180,h=76}
-        r:priorityBadge(human,hx,playerY,180,64)
+        r:priorityBadge(human,hx,playerY+58,180,22)
         require('app.board_fx').playerAuras(r,human,hx+145,playerY-95)
         r:hit({x=hx,y=playerY,w=180,h=76,kind='player',card={id=human.id,name=human.name},tooltip=human.name..' · '..tostring(human.life)..' life · '..tostring(human.handCount or 0)..' cards in hand'})
         -- Graveyard/exile share a large clickable zone at shorter window heights.

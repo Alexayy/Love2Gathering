@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+export LOVE2GATHERING_DATA_DIR="$(python3 "$ROOT/service/paths.py")"
 if [[ ! -f "$ROOT/bridge/target/xmage-bridge-1.0.0.jar" ]]; then
   printf 'XMage bridge needs building. Run scripts/build-engine.sh first.\n' >&2
   exit 1

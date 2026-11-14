@@ -359,6 +359,18 @@
         64,
         64
       ]
+    },
+    "block": {
+      "path": "assets/kenney/runtime/icons/shield.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/shield.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        5,
+        3,
+        59,
+        61
+      ]
     }
   },
   "skyboxes": {
@@ -386,18 +398,66 @@
   "cursors": {
     "arrow": {
       "path": "assets/kenney/runtime/cursors/pointer_a.png",
-      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Default/pointer_a.png",
+      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/pointer_a.png",
       "hotspot": [
-        10,
-        8
+        20,
+        16
       ]
     },
     "hand": {
       "path": "assets/kenney/runtime/cursors/hand_point.png",
-      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Default/hand_point.png",
+      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/hand_point.png",
       "hotspot": [
-        14,
-        4
+        28,
+        8
+      ]
+    },
+    "pan": {
+      "path": "assets/kenney/runtime/cursors/hand_open.png",
+      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/hand_open.png",
+      "hotspot": [
+        32,
+        32
+      ]
+    },
+    "drag": {
+      "path": "assets/kenney/runtime/cursors/hand_closed.png",
+      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/hand_closed.png",
+      "hotspot": [
+        32,
+        32
+      ]
+    },
+    "sizewe": {
+      "path": "assets/kenney/runtime/cursors/resize_a_horizontal.png",
+      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/resize_a_horizontal.png",
+      "hotspot": [
+        32,
+        32
+      ]
+    },
+    "sizens": {
+      "path": "assets/kenney/runtime/cursors/resize_a_vertical.png",
+      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/resize_a_vertical.png",
+      "hotspot": [
+        32,
+        32
+      ]
+    },
+    "sizenesw": {
+      "path": "assets/kenney/runtime/cursors/resize_a_diagonal.png",
+      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/resize_a_diagonal.png",
+      "hotspot": [
+        32,
+        32
+      ]
+    },
+    "sizenwse": {
+      "path": "assets/kenney/runtime/cursors/resize_a_diagonal_mirror.png",
+      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/resize_a_diagonal_mirror.png",
+      "hotspot": [
+        32,
+        32
       ]
     }
   },

@@ -1,0 +1,33 @@
+{
+  "scope": "Final service/unit and actual GUI/selected-image evidence. Existing user cache was audited read-only; all acceptance writes/downloads used temporary data. No full collection completion or exhaustive JPEG decoding claimed.",
+  "serviceTests": 101,
+  "artworkModelChecks": 11,
+  "profileModelChecks": 15,
+  "galleryModelChecks": 10,
+  "libraryModelChecks": 28,
+  "profileGalleryUI": {
+    "checks": 54,
+    "report": "tests/profile-ui-report.json"
+  },
+  "selectedDownloads": "tests/artwork-selected-download-report.json",
+  "readOnlyUserCacheAudit": "tests/artwork-cache-audit-report.json",
+  "sourceHashes": {
+    "service/artwork.py": "eba57ac8471a6cdcaa99ad925b7f9171adbe41aa06728c08446fad6b7ffe7c76",
+    "service/gallery_catalog.py": "bfdb3f3dde0d6b15ee4d27cd5302f043d1a7ca63f1c7c987afd33c2c57449615",
+    "service/search_text.py": "9206f42b4c161d83e9afe0d7e3836d00059d2d06dd621fa60608150969ffdb3d",
+    "service/server.py": "cd3658c33884139a5bf7f95b48a8c66afc9b0813610fcd9d4c8d795f47734d5b",
+    "service/storage.py": "fa7ac7a3313e37735cf213c7aca27b6da9c832344ab68d3452c7214db56bcc95",
+    "service/storage_schema.py": "00f4909c8660b7fce0b4430e865545d957769a181817e5994d7339371490ef6a",
+    "app/artwork.lua": "87ece8d6c851a2b2d1981b59a18ecb98f296c36843a708bee09ebdd573c94dff",
+    "app/profile.lua": "07270a6f3450d76d75ad288bc19d453b453cb388500c02e136d570eee66dc552",
+    "app/profile_ui.lua": "0b00a43979f3702da503f2c3c765b7e5b0ad53b15affb231c8cb7e8c62e2bb01",
+    "app/gallery.lua": "adadc8eeae72778405019adbaeb4f7077709f88ddd6060c5deef4ff6c4ec1063"
+  },
+  "captures": [
+    "/tmp/love2gathering-profile-missing-1440.png",
+    "/tmp/love2gathering-profile-missing-2560.png",
+    "/tmp/love2gathering-profile-2560.png",
+    "/tmp/love2gathering-gallery-mixed-1440.png",
+    "/tmp/love2gathering-gallery-missing-2560.png"
+  ]
+}

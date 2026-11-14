@@ -36,39 +36,54 @@ local Style = require(SLAB_PATH .. '.Style')
 local Text = require(SLAB_PATH .. '.Internal.UI.Text')
 local Window = require(SLAB_PATH .. '.Internal.UI.Window')
 local Utility = require(SLAB_PATH .. '.Internal.Core.Utility')
+local Scale = require(SLAB_PATH .. '.Internal.Core.Scale')
 
 local Tooltip = {}
 local LastDisplayTime = 0.0
 local AccumDisplayTime = 0.0
 local TooltipTime = 0.75
-local TooltipExpireTime = 0.025
+local TooltipExpireTime = 0.2
 local Alpha = 0.0
 local OffsetY = 0.0
 local ResetSize = false
+local LastTip, LastBounds
 
 function Tooltip.Begin(Tip)
-	if Tip == nil or Tip == "" then
+	if Tip == nil or Tip == "" or Style.TooltipsEnabled == false then
 		return
 	end
+	Tip = tostring(Tip)
 
 	local Elapsed = love.timer.getTime() - LastDisplayTime
-	if Elapsed > TooltipExpireTime then
+	if Tip ~= LastTip or Elapsed > TooltipExpireTime then
 		AccumDisplayTime = 0.0
 		Alpha = 0.0
 		ResetSize = true
 	end
+	LastTip = Tip
 
 	local DeltaTime = love.timer.getDelta()
 	AccumDisplayTime = AccumDisplayTime + DeltaTime
 	LastDisplayTime = love.timer.getTime()
 
-	if AccumDisplayTime > TooltipTime then
+	if AccumDisplayTime > (Style.TooltipDelay or TooltipTime) then
 		local X, Y = Mouse.Position()
 		Alpha = min(Alpha + DeltaTime * 4.0, 1.0)
-		local BgColor = Utility.MakeColor(Style.WindowBackgroundColor)
+		local BgColor = {0.025, 0.04, 0.06, Alpha * 0.98}
 		local TextColor = Utility.MakeColor(Style.TextColor)
-		BgColor[4] = Alpha
 		TextColor[4] = Alpha
+		-- Measure before Begin: a zero-sized auto window draws a tiny rounded
+		-- dot during its first frame and can inherit a zero content scissor.
+		local ScreenW, ScreenH = Scale.GetScreenWidth(), Scale.GetScreenHeight()
+		local WrapW = math.max(80, math.min(460, ScreenW - 56))
+		local TextW, Lines = Style.Font:getWrap(Tip, WrapW)
+		local Width = math.min(WrapW, math.max(24, TextW))
+		local Height = #Lines * Style.Font:getHeight()
+		local BoxW, BoxH = Width + 24, Height + 20
+		X = math.max(8, math.min(X + 18, ScreenW - BoxW - 8))
+		Y = Y + 25
+		if Y + BoxH > ScreenH - 8 then Y = math.max(8, Y - BoxH - 42) end
+		LastBounds = {x = X, y = Y, w = BoxW, h = BoxH, text = Tip}
 
 		local CursorX, CursorY = Cursor.GetPosition()
 
@@ -76,10 +91,12 @@ function Tooltip.Begin(Tip)
 		Window.Begin('tooltip',
 		{
 			X = X,
-			Y = Y - OffsetY,
-			W = 0,
-			H = 0,
-			AutoSizeWindow = true,
+			Y = Y,
+			W = BoxW - 10,
+			H = BoxH - 10,
+			Border = 10,
+			BgColor = BgColor,
+			AutoSizeWindow = false,
 			AutoSizeContent = false,
 			AllowResize = false,
 			AllowFocus = false,
@@ -88,7 +105,9 @@ function Tooltip.Begin(Tip)
 			CanObstruct = false,
 			NoSavedSettings = true
 		})
-		Text.BeginFormatted(Tip, {Color = TextColor})
+		local TextX, TextY = Cursor.GetPosition()
+		Cursor.SetPosition(TextX + 7, TextY + 5)
+		Text.BeginFormatted(Tip, {Color = TextColor, W = Width})
 		OffsetY = Window.GetHeight()
 		Window.End()
 		LayoutManager.End()
@@ -96,6 +115,8 @@ function Tooltip.Begin(Tip)
 		ResetSize = false
 	end
 end
+
+function Tooltip.GetBounds() return LastBounds end
 
 function Tooltip.GetDebugInfo()
 	local Info = {}

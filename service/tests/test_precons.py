@@ -142,7 +142,7 @@ class PreconsTest(unittest.TestCase):
         again=Storage(self.store.root,self.bundled);self.assertEqual(again.get_deck(owned['id'])['name'],'Persisted user');self.assertEqual(again.precon_stats()['totalSourceRecords'],6)
 
     def test_applied_presentation_settings_are_typed_and_persisted(self):
-        expected={'titleFontFamily':'Beleren','skybox':'Galaxy','skyboxBrightness':.32,'playmatOpacity':.88,'counterStyle':'Dice','cursorStyle':'System','keywordReminders':True}
+        expected={'titleFontFamily':'Beleren','skybox':'Galaxy','skyboxBrightness':.32,'playmatOpacity':.88,'counterStyle':'Dice','cursorStyle':'Kenney','keywordReminders':True}
         for key,value in expected.items():self.assertEqual(self.store.settings()[key],value)
         chosen={'titleFontFamily':'Application font','skybox':'Nebula','skyboxBrightness':.8,'playmatOpacity':0,'counterStyle':'Text','cursorStyle':'Kenney','keywordReminders':False}
         self.store.save_settings(chosen);again=Storage(self.store.root,self.bundled)

@@ -76,7 +76,8 @@ function UI.history(v,w,h)
             opponents[#opponents+1]=player.name..(deck and deck~=''and' · '..deck or'')
         end
         S.Textf(table.concat(opponents,'   /   '),{W=w-130,Color=v.r.colors.muted})
-        if button(v,'Open recording','replay',160,30,{Disabled=not m.openReplay})then m:openReplay(match.id)end
+        local purged=match.replayAvailable==false
+        if button(v,purged and'Recording purged'or'Open recording','replay',160,30,{Disabled=purged or not m.openReplay,Tooltip=purged and'The playback was purged; this match summary is preserved.'or'Open recording'})then m:openReplay(match.id)end
         S.NewLine();S.PopID()
     end
     if#(m.historyItems or{})==0 then S.Text(m.historyBusy and'Loading history…'or'No recorded matches yet',{Color=v.r.colors.muted})end

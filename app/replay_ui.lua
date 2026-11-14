@@ -2,8 +2,11 @@ local UI={}
 function UI.build(v,w,h)
     local S,m=v.S,v.m
     v:window('replay-library',24,153,w-48,h-177)
-    if S.Button('Refresh recordings',{Image={Image=v.r.assets:buttonImage('replay','Refresh recordings',210,38)},W=210,H=38}) then m:refreshReplays() end
-    S.SameLine();S.Text(m.replayLoading and ('Loading '..(m.replayLoadProgress or 0)..' frames…') or tostring(m.replaysTotal or#(m.replays or{}))..' recordings',{Color=v.r.colors.muted});S.NewLine()
+    local refreshW=math.max(244,math.ceil(v.r.fonts[16]:getWidth('Refresh recordings')+70))
+    if S.Button('Refresh recordings',{Image={Image=v.r.assets:buttonImage('replay','Refresh recordings',refreshW,44,{font=v.r.fonts[16]})},W=refreshW,H=44,Tooltip='Refresh saved matches'}) then m:refreshReplays() end
+    local count=m.replayLoading and('Loading '..(m.replayLoadProgress or 0)..' frames…')or tostring(m.replaysTotal or#(m.replays or{}))..' recordings'
+    S.SameLine({Pad=16,CenterY=true});local _,countY=S.GetCursorPos({Absolute=true})
+    S.SetCursorPos(nil,countY+require('app.fonts').textOffset(v.r.fonts[16],count),{Absolute=true});S.Text(count,{Color=v.r.colors.muted});S.NewLine()
     if m.replaysBusy then S.Text('Loading recordings…',{Color=v.r.colors.muted}) end
     for _,recording in ipairs(m.replays or {}) do
         S.PushID(recording.id)

@@ -6,15 +6,21 @@ The first section describes working controls in this build. The ideas below are 
 
 | Control | Default | Applied behavior |
 | --- | --- | --- |
-| Heading and card title font | Beleren | Uses the supplied display font for headings, deck names and card titles; Application font uses the independently selected body family for titles too. Missing glyphs/fonts fall back to DejaVu. |
+| Application typeface | Beleren | Uses the supplied face throughout headings, body text, lobby and gameplay. Missing glyphs/fonts fall back to DejaVu. Legacy font selections remain readable but do not replace Beleren. |
 | Space background | Galaxy | Selects Galaxy, Nebula, Band, Dark, Day or Off. Supplied panoramas fill the window with aspect-preserving cropping; at most two stay decoded. |
 | Background brightness | 32% | Multiplies the selected background's actual brightness. |
 | Playmat opacity | 88% | Changes the visibility of each player's selected artwork behind the field. |
 | Counter display | Dice | Dice/Text preserves the exact native count and counter name. Pips represent 1–6; other values stay exact numerals on the blank die. |
-| Pointer style | System | Kenney uses the supplied arrow/hand and correct hotspots, with native text/resize cursors and safe fallback. |
+| Pointer style | Kenney | Supplied arrow/hand, pan/drag and resize states use reviewed hotspots, with native text editing and safe fallback. |
 | Explain keywords | On | Adds short explanations for recognized abilities in card details, without changing engine decisions or rules. |
+| Color theme | Midnight | Midnight, Amethyst, Ocean, Ember and Obsidian affect both custom rendering and Slab controls. |
+| Player/opponent accents | Theme colors | A color picker or validated #RRGGBB value changes actual frame/name/control colors. Reset restores the theme's value. |
+| Panel opacity | 65% | Changes panel transparency independently of playmat/background controls; controls and tooltips retain readable surfaces. |
+| Follow the active player | On | Multiplayer camera follows a new native turn; manual focus/pan stays in effect for the rest of that turn. |
+| Deck builder layout | Classic | Classic preserves the existing side-by-side editor. Simplified uses an upper browser and lower overlapping deck/land columns, with modal extra filters. |
+| Window mode/resolution | Desktop Borderless | Uses the display's full desktop dimensions without a frame by default; explicit saved display choices remain supported. |
 
-These controls work alongside existing display/resolution/render/UI scale, motion/particles, contrast/color palette, tooltips, local artwork and audio controls. Application font discovery uses Fontconfig on Linux. Mana and set symbols retain their own supplied fonts. **Apply and save** applies presentation preferences and persists them; game options explicitly apply to the next match.
+These controls work alongside existing render/UI scale, motion/particles, contrast/color palette, tooltips, local artwork and audio controls. Mana and set symbols retain their own supplied fonts. Settings open as a dedicated page outside gameplay and a popup above the table. **Apply and save** applies presentation preferences and persists them; game options explicitly apply to the next match.
 
 Profile is a separate saved choice: name, exact card-art avatar and optional playmat, with search through actual printing/face artwork. Life has no override; it always follows XMage. Audio already has music/SFX enable switches plus master/music/SFX volume. Selected Kenney interface, card-slide/shuffle and impact clips use those controls. Detailed asset provenance is in [the supplied-pack audit](../assets/KENNEY_CATALOG.md), and profile behavior is in [PROFILES.md](PROFILES.md).
 

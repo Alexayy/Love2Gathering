@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "scope": "Actual launcher with owned catalog/XMage/room gateway and one native practice start/stop, explicit isolated temporary data. No gameplay correctness or user-data cleanup claim.",
+  "catalogApiVersion": 8,
+  "sharedDataDirectory": true,
+  "nativeOutboxInSelectedDirectory": true,
+  "nativeRecordingDelivered": true,
+  "terminalOutboxStatus": "aborted",
+  "pendingNativeEvents": 0,
+  "temporaryDataOnly": true,
+  "engineSubmoduleChanged": false
+}

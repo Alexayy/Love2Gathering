@@ -8,12 +8,14 @@ from __future__ import annotations
 
 import argparse
 from contextlib import contextmanager
+import fcntl
 import gzip
 from http.client import HTTPException
 import json
 import os
 from pathlib import Path
 import re
+import shutil
 import ssl
 import sys
 import tempfile
@@ -25,11 +27,32 @@ from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_ope
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT / 'service'))
 from storage import Storage
+from paths import default_data_dir
 
 MAX_IMAGE = 3 * 1024 * 1024
 MAX_RECORD = 2 * 1024 * 1024
 USER_AGENT = 'Love2Gathering/1.0 (offline artwork downloader; https://github.com/Alexayy/Love2Gathering)'
 PRINTING_ID = re.compile(r'^[A-Za-z0-9][A-Za-z0-9_-]{0,99}$')
+
+
+class DownloadPaused(OSError):
+    pass
+
+
+@contextmanager
+def cli_image_lock(root):
+    root=Path(root);root.mkdir(parents=True,exist_ok=True)
+    fd=os.open(root/'.image-download.lock',os.O_RDWR|os.O_CREAT|getattr(os,'O_NOFOLLOW',0),0o600)
+    try:
+        try:fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except BlockingIOError as exc:raise ValueError('Another image download, scan or storage operation is active')from exc
+        yield
+    finally:os.close(fd)
+
+
+@contextmanager
+def null_lock():
+    yield
 
 
 def check_url(url, image=False):
@@ -257,7 +280,7 @@ def write_mirror(path, data):
         output.write(data)
 
 
-def download(metadata, output, store, fetcher, limit=0, dry_run=False, full_size='normal'):
+def download(metadata, output, store, fetcher, limit=0, dry_run=False, full_size='normal',reserve_bytes=0):
     stats = {'examined': 0, 'downloaded': 0, 'cached': 0, 'imported': 0, 'mirrored': 0, 'failed': 0,
              'bytesDownloaded': 0, 'dryRun': dry_run, 'errors': []}
     for record in read_metadata(metadata):
@@ -267,30 +290,38 @@ def download(metadata, output, store, fetcher, limit=0, dry_run=False, full_size
             stats['examined'] += 1
             if dry_run:
                 continue
-            path = Path(output) / job['directory'] / job['key']
+            path = Path(output) / job['directory'] / job['key']if output is not None else None
             try:
                 data = store.get_art(job['key'])
                 if data is not None:
                     stats['cached'] += 1
-                elif path.is_file() and path.stat().st_size <= MAX_IMAGE:
+                elif path is not None and path.is_file() and path.stat().st_size <= MAX_IMAGE:
                     try:
                         data = path.read_bytes()
                         validate_image(data)
                     except ValueError:
                         data = None
                     if data is not None:
+                        if reserve_bytes and shutil.disk_usage(store.root).free<reserve_bytes+MAX_IMAGE*3:
+                            raise DownloadPaused('Paused to retain the configured free-space reserve; restart to import mirrors')
                         store.save_art(job['key'], data, job['metadata'])
                         stats['imported'] += 1
                 if data is None:
+                    if reserve_bytes and shutil.disk_usage(store.root).free<reserve_bytes+MAX_IMAGE*3:
+                        raise DownloadPaused('Paused to retain the configured free-space reserve; restart to resume committed images')
                     data = fetcher.image(job['url'])
                     # Commit the authoritative copy first. A restart repairs a
                     # missing mirror without repeating the network request.
                     store.save_art(job['key'], data, job['metadata'])
                     stats['downloaded'] += 1
                     stats['bytesDownloaded'] += len(data)
-                if not path.exists() or path.stat().st_size != len(data) or path.read_bytes() != data:
+                if path is not None and(not path.exists() or path.stat().st_size != len(data) or path.read_bytes() != data):
+                    if reserve_bytes and shutil.disk_usage(store.root).free<reserve_bytes+MAX_IMAGE*3:
+                        raise DownloadPaused('Paused to retain the configured free-space reserve; restart to repair mirrors')
                     write_mirror(path, data)
                     stats['mirrored'] += 1
+            except DownloadPaused as exc:
+                stats.update(paused=True,reason=str(exc));return stats
             except (ValueError, OSError, URLError, HTTPException) as exc:
                 stats['failed'] += 1
                 if len(stats['errors']) < 100:
@@ -299,12 +330,14 @@ def download(metadata, output, store, fetcher, limit=0, dry_run=False, full_size
 
 
 def parser():
-    user_data = Path(os.environ.get('LOVE2GATHERING_DATA_DIR') or Path(os.environ.get('XDG_DATA_HOME') or Path.home() / '.local/share') / 'love2gathering')
+    user_data = default_data_dir()
     p = argparse.ArgumentParser(description=__doc__)
     default_source = os.environ.get('LOVE2GATHERING_CATALOG_SOURCE') or next((PROJECT / 'assets').glob('all-cards*.jsonl'), PROJECT / 'assets/all-cards.jsonl')
     p.add_argument('--metadata', type=Path, default=Path(default_source), help='Local JSONL or JSONL.GZ printing metadata; never modified')
     p.add_argument('--bootstrap-metadata', choices=['default_cards', 'all_cards'], help='Explicitly download bulk metadata to a NEW --metadata path (can be several GB)')
     p.add_argument('--output', type=Path, default=user_data / 'image-library', help='Separate full-cards/ and art-crops/ JPEG mirrors')
+    p.add_argument('--sql-only',action='store_true',help='Cache only in app.sqlite, without creating duplicate export JPEGs')
+    p.add_argument('--reserve-gib',type=float,default=3,help='Pause image work before free space falls below this reserve (default 3 GiB)')
     p.add_argument('--data-dir', type=Path, default=user_data, help='Application data directory containing authoritative app.sqlite')
     p.add_argument('--full-size', choices=['normal', 'large'], default='normal', help='Full-card JPEG size (normal=488×680; large=672×936)')
     p.add_argument('--limit', type=int, default=0, help='Maximum image entries examined from the start; 0 means all')
@@ -316,8 +349,8 @@ def parser():
 
 def main(argv=None):
     p = parser();args = p.parse_args(argv)
-    if args.limit < 0 or not .11 <= args.interval <= 60 or not 0 <= args.retries <= 5:
-        p.error('limit must be nonnegative, interval 0.11..60 seconds and retries 0..5')
+    if args.limit < 0 or not .11 <= args.interval <= 60 or not 0 <= args.retries <= 5 or not 0<=args.reserve_gib<=1024:
+        p.error('limit must be nonnegative, interval 0.11..60 seconds, retries 0..5 and reserve 0..1024 GiB')
     if args.dry_run and args.bootstrap_metadata:
         p.error('--dry-run cannot download metadata; supply an existing local source')
     if args.bootstrap_metadata and args.metadata.name.endswith('.gz'):
@@ -329,9 +362,10 @@ def main(argv=None):
         if not args.metadata.is_file():
             p.error('Metadata source is missing. Supply --metadata PATH or explicitly use --bootstrap-metadata TYPE with a new path.')
         store = None if args.dry_run else Storage(args.data_dir, PROJECT / 'decks')
-        stats = download(args.metadata, args.output, store, fetcher, args.limit, args.dry_run, args.full_size)
+        with cli_image_lock(args.data_dir)if store is not None else null_lock():
+            stats = download(args.metadata, None if args.sql_only else args.output, store, fetcher, args.limit, args.dry_run, args.full_size,int(args.reserve_gib*1024**3))
         print(json.dumps(stats, ensure_ascii=False, indent=2))
-        return 1 if stats['failed'] else 0
+        return 2 if stats.get('paused')else 1 if stats['failed'] else 0
     except KeyboardInterrupt:
         print('Interrupted; committed SQLite images and completed mirrors are retained for restart.', file=sys.stderr)
         return 130

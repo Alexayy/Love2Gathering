@@ -2,6 +2,7 @@
 import json
 import re
 from artists import artist_links
+from search_text import words, register_search
 
 IMAGE_KINDS = ("normal", "large", "art_crop")
 
@@ -71,8 +72,10 @@ class GalleryCatalog:
         if any(len(value) > 300 for value in (query, artist, set_code)):
             raise ValueError("Gallery filters must contain at most 300 characters")
         clauses, params = [], []
-        for token in query.casefold().split():
-            clauses.append("instr(search,?)>0");params.append(token)
+        for token in words(query):
+            clauses.append("(instr(search,?)>0 OR instr(search,'&')>0)"if token=='and'else"instr(search,?)>0");params.append(token)
+        if words(query):clauses.append('l2g_words(search,?)=1');params.append(query)
+        elif query.strip():clauses.append('instr(search,?)>0');params.append(query.casefold())
         if artist:
             clauses.append("instr(lower(artist),?)>0");params.append(artist.casefold())
         if set_code:
@@ -83,13 +86,18 @@ class GalleryCatalog:
             clauses.append("lang=?");params.append(language)
         where = " WHERE " + " AND ".join(clauses) if clauses else ""
         with self.connect() as connection:
+            register_search(connection)
+            if words(query)and connection.execute('SELECT 1 FROM gallery'+where+(' AND 'if where else' WHERE ')+'l2g_words(name,?)=1 LIMIT 1',(*params,query)).fetchone():
+                where+=(' AND 'if where else' WHERE ')+'l2g_words(name,?)=1';params.append(query)
             total = connection.execute("SELECT count(*) FROM gallery" + where, params).fetchone()[0]
-            items = [json.loads(row[0]) for row in connection.execute("SELECT payload FROM gallery" + where + " ORDER BY name COLLATE NOCASE,set_code,printing_id,face LIMIT ? OFFSET ?", (*params, limit, offset))]
+            ordering='name COLLATE NOCASE,set_code,printing_id,face';ranking=()
+            if words(query):ordering='l2g_prefix(name,?) DESC,l2g_words(name,?) DESC,'+ordering;ranking=(query,query)
+            items = [json.loads(row[0]) for row in connection.execute("SELECT payload FROM gallery" + where + ' ORDER BY '+ordering+' LIMIT ? OFFSET ?', (*params,*ranking, limit, offset))]
         for item in items: item["artist_links"] = artist_links(item["artist"])
         return {"items": items, "total": total, "limit": limit, "offset": offset}
 
     def gallery_item(self, printing_id, face=0):
-        if not re.fullmatch(r"[A-Za-z0-9_-]{1,100}", printing_id) or not 0 <= face <= 9:
+        if not isinstance(printing_id,str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,100}", printing_id) or isinstance(face,bool) or not isinstance(face,int) or not 0 <= face <= 9:
             raise ValueError("Invalid gallery printing or face")
         with self.connect() as connection:
             row = connection.execute("SELECT payload FROM gallery WHERE printing_id=? AND face=?", (printing_id, face)).fetchone()

@@ -49,7 +49,7 @@ local function screenshot(name,textControl)
 end
 local function mode(width,height,scale)
     m.settings.resolution=width..'x'..height;m.settings.uiScale=scale or 1
-    m.settings.vsync=false;m.settings.sfxEnabled=false;m.settings.showCardArt=false;m.settings.animations=false
+    m.settings.windowMode='Windowed';m.settings.vsync=false;m.settings.sfxEnabled=false;m.settings.showCardArt=false;m.settings.animations=false
     prefs:apply(true);m.page='lobby';m.game=nil;wait(6)
 end
 local function chooseFifth(deckName,deckId)

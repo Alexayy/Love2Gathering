@@ -41,11 +41,11 @@ end
 local function title(r,m,key,label,count,y,L,depth)
     local C=r.colors;local x=L.x+(depth or 0)*14;local width=L.w-(depth or 0)*14
     local closed=Collection.sections(m)[key]==true
-    r.assets:control(x,y,width,34,closed and'dark'or'accent')
-    r.assets:iconSymbol(closed and'expand'or'collapse',x+9,y+9,16,C.accent)
-    r:strong(label,x+34,y+7,16,C.text,width-100)
-    r:text(tostring(count or 0),x+width-62,y+8,13,C.muted,48,'right')
-    r:hit({x=x,y=y,w=width,h=34,clip={x=L.x,y=L.y,w=L.w,h=L.h},action=function()m:toggleCollectionSection(key)end,kind='collection-section',section=key})
+    r.assets:control(x,y,width,44,closed and'dark'or'accent')
+    r.assets:iconSymbol(closed and'expand'or'collapse',x+10,y+11,22,C.accent)
+    r:strong(label,x+43,y+12,18,C.text,width-110)
+    r:strong(tostring(count or 0),x+width-66,y+13,16,C.muted,48,'right')
+    r:hit({x=x,y=y,w=width,h=44,clip={x=L.x,y=L.y,w=L.w,h=L.h},action=function()m:toggleCollectionSection(key)end,kind='collection-section',section=key})
     return closed
 end
 function UI.draw(r,w,h)
@@ -73,11 +73,11 @@ function UI.draw(r,w,h)
         y=y+math.ceil(#decks/L.columns)*(L.tile+16)
     end
     for _,group in ipairs(groups)do
-        local closed=title(r,m,group.key,group.name,#group.decks,y,L);y=y+44
+        local closed=title(r,m,group.key,group.name,#group.decks,y,L);y=y+56
         if not closed then if #group.decks>0 then grid(group.decks)else r:text('No decks',L.x+14,y+3,13,C.muted);y=y+33 end end
         y=y+12
     end
-    local closed=title(r,m,'preconstructed',m.preconCategory=='packet'and'Preconstructed · Packets'or'Preconstructed',m.preconsTotal,y,L);y=y+44
+    local closed=title(r,m,'preconstructed',m.preconCategory=='packet'and'Preconstructed · Packets'or'Preconstructed',m.preconsTotal,y,L);y=y+56
     if not closed then
         local order,sets={},{}
         for _,d in ipairs(m.precons or{})do
@@ -86,7 +86,7 @@ function UI.draw(r,w,h)
             sets[expansion][#sets[expansion]+1]=d
         end
         for _,expansion in ipairs(order)do
-            local folded=title(r,m,'set:'..expansion,expansion,#sets[expansion],y,L,1);y=y+42
+            local folded=title(r,m,'set:'..expansion,expansion,#sets[expansion],y,L,1);y=y+54
             if not folded then grid(sets[expansion])end
         end
         if #order==0 then r:text(m.preconsBusy and'Loading preconstructed decks…'or m.preconError or'No matching preconstructed decks',L.x+14,y+5,14,C.muted,L.w-28);y=y+60 end

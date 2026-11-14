@@ -19,8 +19,8 @@ local function inside(hit,x,y)
 end
 function Renderer.new(model)
     local self=setmetatable({model=model,hits={},hover=nil,drag=nil,fonts={},assets=Assets.new(),poses={},cardRects={},ghosts={},dt=1/60},Renderer)
-    for _,size in ipairs({10,11,12,13,14,16,18,20,22,24,28,32,36,44,52}) do self.fonts[size]=love.graphics.newFont('assets/fonts/DejaVuSans.ttf',size) end
-    self.bold=love.graphics.newFont('assets/fonts/DejaVuSans-Bold.ttf',22)
+    local Fonts=require('app.fonts');self.fonts,self.bold=Fonts.createSet(Fonts.default,{10,11,12,13,14,16,18,20,22,24,28,32,36,44,52})
+    if self.assets.setSettings then self.assets:setSettings(model.settings)end
     return self
 end
 function Renderer:text(text,x,y,size,tint,width,align)
@@ -78,9 +78,11 @@ end
 function Renderer:update(dt)
     self.dt=math.min(dt,.075);self.assets:update(dt)
     local s=self.model.settings
+    if self.assets.setSettings then self.assets:setSettings(s)end
+    if Assets.palette then for key,value in pairs(Assets.palette(s))do C[key]=value end end
     local accessible={Deuteranopia={.98,.80,.33},Protanopia={.49,.78,1},Tritanopia={1,.57,.78}}
-    C.accent=accessible[s.colorblindMode] or {.28,.89,.72}
-    C.muted=s.highContrast and {.72,.80,.89} or {.46,.56,.66}
+    C.accent=accessible[s.colorblindMode] or C.accent
+    if s.highContrast then C.muted={.72,.80,.89}end
     if self.drag then
         local x,y=Layout.mouse();self.dragPos=self.dragPos or {x=x,y=y}
         local ease=s.reducedMotion and 1 or 1-math.exp(-dt*25)
@@ -116,13 +118,15 @@ function Renderer:hit(hit)
     self.hits[#self.hits+1]=hit;return hit
 end
 function Renderer:panel(x,y,w,h,style) self.assets:panel(x,y,w,h,style) end
-function Renderer:button(label,x,y,w,h,action,active)
+function Renderer:button(label,x,y,w,h,action,active,options)
+    options=options or{}
     local mx,my=Layout.mouse();local hot=mx>=x and mx<=x+w and my>=y and my<=y+h
     self.assets:control(x,y,w,h,active and 'accent' or 'dark')
     if hot then rect(x+2,y+2,w-4,h-4,{.14,.27,.31,.35},7) end
     if active then rect(x,y+h-3,w,3,C.accent,1) end
-    self:text(label,x,y+(h-20)/2,14,active and C.accent or C.text,w,'center')
-    self:hit({x=x,y=y,w=w,h=h,action=action})
+    local size=options.size or 14
+    self:text(label,x,y+(h-self.fonts[size]:getHeight())/2+require('app.fonts').textOffset(self.fonts[size],label),size,active and C.accent or C.text,w,'center')
+    self:hit({x=x,y=y,w=w,h=h,action=action,tooltip=options.tooltip or label})
 end
 function Renderer:drawCard(card,x,y,w,h,options)
     options=options or {};options.back=options.back or card.hidden
@@ -156,9 +160,11 @@ function Renderer:drawCard(card,x,y,w,h,options)
         if img then color({1,1,1});love.graphics.draw(img,bx,by,0,w/img:getWidth(),h/img:getHeight())
         elseif options.imageOnly then
             rect(bx,by,w,h,{.075,.095,.13},6)
-            color(C.muted,.35);love.graphics.circle('line',0,-h*.05,math.min(w*.18,26))
-            self:text('Loading artwork…',bx+7,by+h*.57,12,C.muted,w-14,'center')
-            self:text(self:fit(data.name or '',w-14,12,2),bx+7,by+h-44,12,C.text,w-14,'center')
+            local size=h<180 and 10 or 12;local icon=math.min(w*.32,36)
+            self.assets:iconSymbol('image',-icon/2,by+h*.14,icon,C.muted)
+            local status=self.model.artworkLabel and self.model:artworkLabel(data)or'Artwork unavailable'
+            self:text(self:fit(status,w-14,size,2),bx+7,by+h*.46,size,C.muted,w-14,'center')
+            self:text(self:fit(data.name or'',w-14,size,2),bx+7,by+h-size*2-12,size,C.text,w-14,'center')
         else
             rect(bx,by,w,h,{.10,.125,.17},6)
             local colors=data.colors or data.color_identity or {};local tint=C.purple
@@ -187,6 +193,20 @@ function Renderer:drawCard(card,x,y,w,h,options)
             color(C.red);love.graphics.setLineWidth(3);love.graphics.rectangle('line',bx-3,by-3,w+6,h+6,6,6)
             self.assets:iconSymbol('attack',bx+w-22,by+5,20,C.red)
         end
+        local traits=require('app.card_traits').entries(card)
+        if#traits>0 and not options.imageOnly then
+            local icon=math.max(12,math.min(21,w*.16));local capacity=math.max(1,math.floor((w-10)/(icon+3)));local count=math.min(capacity,#traits)
+            local ty=by+h*.26
+            rect(bx+3,ty-2,count*(icon+3)+4,icon+4,{.018,.03,.05,.94},3)
+            for i=1,count do local entry=traits[i];local tx=bx+5+(i-1)*(icon+3)
+                if entry.icon then self.assets:iconSymbol(entry.icon,tx,ty,icon,entry.gained and C.gold or C.text)end
+            end
+            if(traits[1].gained or not traits[1].icon)and w>=96 then
+                local size=w>=180 and 14 or 11
+                rect(bx+3,ty+icon+4,w-6,size+7,{.10,.065,.02,.97},3)
+                self:strong(self:fit(traits[1].label,w-12,size,1),bx+6,ty+icon+7,size,C.gold,w-12)
+            end
+        end
         if type(card.counters)=='table' then
             local labels={};for k,v in pairs(card.counters) do
                 local name,count=k,v;if type(v)=='table'then name=v.name or v.type or k;count=v.count or v.amount or 0 end
@@ -206,7 +226,7 @@ function Renderer:drawCard(card,x,y,w,h,options)
         end
     end
     love.graphics.pop()
-    if not options.noHit then self:hit({x=x,y=y,w=w,h=h,angle=angle,card=card,kind=options.kind or 'card',section=options.section,index=options.index}) end
+    if not options.noHit then self:hit({x=x,y=y,w=w,h=h,angle=angle,card=card,kind=options.kind or 'card',section=options.section,index=options.index,clip=options.clip}) end
 end
 function Renderer:drawNav(w)
     rect(0,0,w,82,{.042,.054,.080},0);color(C.line);love.graphics.line(0,82,w,82)
@@ -216,25 +236,36 @@ function Renderer:drawNav(w)
     self:strong(w<1250 and'Love: 2G'or'Love: 2 Gathering',81,27,20,C.text)
     local pages={{'Decks','decks'},{'Builder','builder'},{'Lobby','lobby'},{'Rooms','rooms'},{'Replays','replays'},{'Gallery','gallery'}}
     if self.model.game then pages[#pages+1]={'Match','table'} end
-    local navX=w<1250 and 244 or 292;local navW=w<1250 and 76 or 84;local gap=w<1250 and 5 or 8
-    for i,item in ipairs(pages) do self:button(item[1],navX+(i-1)*(navW+gap),20,navW,42,function()
+    local navX=w<1250 and 198 or 292;local gap=w<1250 and 5 or 8
+    local px=w-346;local navW=math.min(200,math.floor((px-18-navX-(#pages-1)*gap)/#pages))
+    for i,item in ipairs(pages) do self:button(item[1],navX+(i-1)*(navW+gap),16,navW,50,function()
         if item[2]=='builder' and not self.model.editDeck then self.model:newDeck()
         elseif item[2]=='replays' then self.model:showReplays()
         elseif item[2]=='gallery' then self.model:showGallery() else self.model.page=item[2] end
         if item[2]=='rooms' then self.model:showRooms() end
-    end,self.model.page==item[2]) end
-    self:button('Settings',w-136,20,112,42,function() self.model.settingsOpen=not self.model.settingsOpen end,self.model.settingsOpen)
-    local m=self.model;local profile=m.profile or{name=m.playerName};local px=w-306
-    self.assets:control(px,20,164,42,m.page=='profile'and'accent'or'dark')
-    self:drawAvatar(nil,px+5,25,32);self:strong(self:fit(profile.name or'Profile',112,14,1),px+43,25,14,C.text,112)
+    end,self.model.page==item[2],{size=w<1250 and 16 or 18}) end
+    self:button('Settings',w-150,16,126,50,function() self.model:openSettings()end,self.model.page=='settings',{size=18})
+    local m=self.model;local profile=m.profile or{name=m.playerName}
+    self.assets:control(px,16,184,50,m.page=='profile'and'accent'or'dark')
+    self:drawAvatar(nil,px+6,22,38);self:strong(self:fit(profile.name or'Profile',126,16,1),px+51,22,16,C.text,126)
     local life;for _,p in ipairs(m.game and m.game.players or{})do if p.human or p.isLocal then life=p.life end end
-    self:text(life and tostring(life)..' life'or'Profile',px+43,44,11,C.muted,112)
+    self:text(life and tostring(life)..' life'or'Profile',px+51,44,12,C.muted,126)
     local ready=m.engineHealth.ok or m.engineHealth.status=='ok'or m.engineHealth.ready
-    color(ready and C.accent or C.gold);love.graphics.circle('fill',px+155,23,3)
-    self:hit({x=px,y=20,w=164,h=42,action=function()m:showProfile()end,tooltip=(profile.name or'Profile')..' · '..(ready and'XMage connected'or'XMage starting')})
+    color(ready and C.accent or C.gold);love.graphics.circle('fill',px+176,20,3)
+    self:hit({x=px,y=16,w=184,h=50,action=function()m:showProfile()end,tooltip=(profile.name or'Profile')..' · '..(ready and'XMage connected'or'XMage starting')})
 end
 function Renderer:drawDecks(w,h)require('app.collection_ui').draw(self,w,h)end
-function Renderer:drawBuilder(w,h) require('app.builder').draw(self,w,h) end
+function Renderer:inputBlocked()
+    local m,v=self.model,self.view
+    return m.settingsOpen or m.zoneView or m.deleteConfirm or m.inspectCard or m.galleryInspect or m.confirmConcede or m.archiveCopy or m.storagePurgePreview
+        or v and(v.deckSelection or v.themeColorEdit or v.combatStopsOpen or m.page=='builder'and(v.builderPopup or v.builderFiltersOpen))
+        or not v and self.blockBuilderDrop
+end
+function Renderer:drawBuilder(w,h)
+    require('app.builder').draw(self,w,h)
+    local mode=self.model.settings.builderLayout or'Classic'
+    for i,value in ipairs({'Classic','Simplified'})do self:button(value,w-258+(i-1)*118,102,110,34,function()self.model:setBuilderLayout(value)end,mode==value,{tooltip=value..' deck builder layout'})end
+end
 local function isLand(card)
     local t=card.type_line or card.type or card.cardType or ''
     if type(t)=='table' then t=table.concat(t,' ') end
@@ -291,11 +322,11 @@ function Renderer:drawPreview(w,h)
         self:panel(x,y,width,height,'dark');self:text(hit.tooltip,x+12,y+8,13,C.text,width-24);return
     end
     if self.drag or self.panGesture or not hit or not hit.card or hit.kind=='pile' or hit.kind=='player' or hit.kind=='hand' then return end
-    if self.model.page=='builder' then return end
+    if self.model.page=='builder'and self.model.settings.builderLayout~='Simplified'then return end
     local card=self.model:cardData(hit.card);if not card then return end
     local mx,my=Layout.mouse();local pw=244;local ph=342
     local x=mx> w/2 and math.max(15,mx-pw-20) or math.min(w-pw-20,mx+25);local y=math.max(85,math.min(h-ph-70,my-ph/2))
-    self:drawCard(hit.card,x,y,pw,ph,{noHit=true})
+    self:drawCard(hit.card,x,y,pw,ph,{noHit=true,angle=0})
     local owner=(self.boardPlayers or{})[hit.card.ownerId];local controller=(self.boardPlayers or{})[hit.card.controllerId]
     if owner or controller then
         self:panel(x,y+ph+3,pw,50,'dark')
@@ -314,7 +345,7 @@ function Renderer:drawPreview(w,h)
         self:strong('Attached / linked',side+8,y+8,13,C.gold,140)
         for i=1,rows do
             local entry=entries[i]
-            self:drawCard(entry.card,side+8,y+34+(i-1)*65,44,62,{noHit=true,back=entry.card.hidden or entry.card.faceDown})
+            self:drawCard(entry.card,side+8,y+34+(i-1)*65,44,62,{noHit=true,angle=0,back=entry.card.hidden or entry.card.faceDown})
             self:text(self:fit(entry.label,90,12,3),side+56,y+36+(i-1)*65,12,C.text,90)
         end
         if overflow then self:text('+'..(#entries-rows)..' more · right-click',side+8,y+38+rows*65,12,C.muted,140)end
@@ -338,15 +369,9 @@ function Renderer:draw()
     elseif self.model.page=='replays' then
         self:strong('Replays',28,101,28,C.text)
     elseif self.model.page=='lobby' then
-        self:strong('Lobby',32,102,28,C.text)
-        local cx=w*.73;local cy=h*.48;color(C.accent,.15)
-        love.graphics.circle('line',cx,cy,157);love.graphics.circle('line',cx,cy,135);love.graphics.polygon('line',cx,cy-110,cx+95,cy+55,cx-95,cy+55)
-        local deck=self.model:findDeck(self.model.playerDeckId)
-        local count=deck and deck.format:lower()=='commander' and (self.model.commanderPlayers or 4) or 2
-        self.assets:iconSymbol(count>2 and 'commander' or 'players',cx-22,cy-91,44,C.gold)
-        self:text('1  vs  '..(count-1),cx-120,cy-27,36,C.text,240,'center');self:text('HUMAN  ×  XMAGE AI',cx-130,cy+32,12,C.accent,260,'center')
+        self:strong('Lobby',28,103,28,C.text)
     end
-    Board.links(self);self:drawPreview(w,h)
+    Board.links(self);self:drawPreview(w,h);require('app.storage').drawProgress(self,w,h)
 end
 function Renderer:mousemoved(x,y)
     local pan=self.panGesture
@@ -364,7 +389,7 @@ function Renderer:mousemoved(x,y)
 end
 function Renderer:mousepressed(x,y,button,clicks)
     self:mousemoved(x,y)
-    local hit=self.hover;if self.model.settingsOpen then return end
+    local hit=self.hover;if self:inputBlocked()then return end
     if button==2 and self.model.page=='table' and (not hit or hit.kind~='hand') and require('app.multiplayer_table').within(self.multiplayerView,x,y) then
         self.panGesture={startX=x,startY=y,x=x,y=y,hit=hit};return
     end
@@ -375,9 +400,12 @@ function Renderer:mousepressed(x,y,button,clicks)
         self:sound('click');hit.action()
         if clicks==2 and hit.deck then self.model:openDeck(hit.deck) end
     elseif self.model.replay and hit.card and hit.kind~='player' then self.model.inspectCard=hit.card
+    elseif hit.kind=='builder-card'then
+        self.model.previewCard=hit.card
+        if clicks==2 then self.model:addCard(hit.card,hit.section or self.model.selectedSection,-1)end
     elseif hit.kind=='search' or hit.kind=='hand' or hit.kind=='permanent' or hit.kind=='command' or hit.kind=='order' then
         if hit.kind=='search' and clicks==2 then self.model:addCard(hit.card);return end
-        self.drag=hit;self.dragStart={x,y};self.dragPos={x=x,y=y}
+        self.drag=hit;self.dragStart={x,y};self.dragPos={x=x,y=y};self.dragPage=self.model.page;self.dragEditorGeneration=self.model.editGeneration
     elseif hit.kind=='player' then
         if self.model:canSelect(hit.card.id) then self.model:selectCard(hit.card)
         elseif hit.focusIndex and self.tableCamera then self.tableCamera:focus(hit.focusIndex) end
@@ -398,15 +426,16 @@ function Renderer:mousereleased(x,y,button)
     local accepted=false
     if d.kind=='search' then
         local drop=self.builderDrop or require('app.builder').layout(w,h).list
-        if distance>8 and drop and x>=drop.x and x<=drop.x+drop.w and y>=drop.y and y<=drop.y+drop.h then
+        local current=self.model.page=='builder'and(not self.dragEditorGeneration or self.dragEditorGeneration==self.model.editGeneration)
+        if current and not self:inputBlocked()and distance>8 and drop and x>=drop.x and x<=drop.x+drop.w and y>=drop.y and y<=drop.y+drop.h then
             self.model:addCard(d.card);accepted=true
             self:burst('click',drop.x+drop.w/2,math.min(y,drop.y+80),9)
         else self.model.previewCard=d.card end
-    elseif d.kind=='order' then
+    elseif d.kind=='order'and not self:inputBlocked()and(not self.dragPage or self.dragPage==self.model.page)then
         local target
         for _,hit in ipairs(self.hits) do if hit.kind=='order' and inside(hit,x,y) then target=hit.index end end
         if target and target~=d.index then local choice=table.remove(self.model.promptOrder,d.index);table.insert(self.model.promptOrder,target,choice) end
-    elseif d.card then
+    elseif d.card and not self:inputBlocked()and(not self.dragPage or self.dragPage==self.model.page)then
         local L=Layout.table(w,h)
         local tableDrop=not self.uiHovered and(self.multiplayerView and require('app.multiplayer_table').within(self.multiplayerView,x,y) or (not self.multiplayerView and x<L.board.x+L.board.w and y>200 and y<h-135))
         if distance<8 or tableDrop then
@@ -436,8 +465,9 @@ function Renderer:drawForeground()
 end
 function Renderer:wheelmoved(dx,dy)
     if self.uiHovered or self.model.settingsOpen or self.model.zoneView or self.model.inspectCard then return end
-    local x,y=Layout.mouse();local w=select(1,Layout.dimensions());local p=self.model:prompt()
+    local x,y=Layout.mouse();local w,h=Layout.dimensions();local p=self.model:prompt()
     if self.model.page=='decks' and x<w-350 and y>230 then self.deckScroll=math.max(0,math.min(self.deckScrollMax or 0,(self.deckScroll or 0)-dy*50))
+    elseif self.model.page=='builder'and self.model.settings.builderLayout=='Simplified'then require('app.builder_simplified').wheel(self.model,self.simpleBuilderLayout or require('app.builder').layout(w,h,'Simplified'),x,y,dy)
     elseif self.model.page=='table' and p and p.type=='order' and x<w-348 then self.orderScroll=math.max(0,math.min(self.orderScrollMax or 0,(self.orderScroll or 0)-(dy+dx)*90))
     elseif self.model.page=='table' and self.tableCamera and require('app.multiplayer_table').within(self.multiplayerView,x,y) and not (self.hover and self.hover.kind=='hand') then
         self.tableCamera:zoomAt(math.exp(dy*.12),x,y)

@@ -1,0 +1,15 @@
+package.path='./?.lua;./?/init.lua;'..package.path
+local Traits=require('app.card_traits')
+local card={keywords={'flying','trample','first_strike'},printing={keywords={'flying'}},oracle_text='No heuristics from trample written here.'}
+local entries=Traits.entries(card)
+assert(#entries==3 and entries[1].gained and entries[2].gained and not entries[3].gained)
+assert(entries[1].name=='first_strike'and entries[1].label=='First strike'and entries[1].icon=='first-strike')
+assert(entries[2].name=='trample'and entries[3].name=='flying')
+assert(#Traits.entries({oracle_text='Flying, trample',rules='Haste'})==0,'Presentation cannot infer native rules from printed text')
+local gained=Traits.entries({keywords={'trample'},printing={keywords={}}})
+assert(gained[1].gained,'An explicit empty printed keyword list still establishes a gained native ability')
+assert(not Traits.entries({keywords={'trample'}})[1].gained,'Unknown original keywords cannot prove a gain')
+assert(Traits.entries({keywords={'shroud'}})[1].icon==nil,'No guessed glyph stands in for an unsupported native keyword icon')
+assert(#Traits.entries({keywords={'Flying','Unsupported'}})==0,'Catalog labels are separate from canonical native keyword metadata')
+card.keywords={};assert(#Traits.entries(card)==0,'Expired native abilities must disappear')
+print('Card traits PASS: native current keywords, gained/expired abilities, exact metadata and no Oracle heuristics')

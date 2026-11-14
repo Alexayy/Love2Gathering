@@ -38,6 +38,19 @@ function Camera:focus(index,immediate)
     self.target={x=c.x+c.w/2,y=c.y+math.min(c.h/2,self.view.h/(2*zoom)),zoom=zoom}
     if immediate then self.x=self.target.x;self.y=self.target.y;self.zoom=self.target.zoom;self:bound() end
 end
+function Camera:followTurn(playerId,turn,seats,enabled,immediate)
+    if not playerId then return false end
+    local key=tostring(turn or '')..':'..tostring(playerId)
+    local changed=self.observedTurn~=key
+    local enabledNow=enabled~=false
+    local justEnabled=enabledNow and self.followEnabled==false
+    self.observedTurn=key;self.followEnabled=enabledNow
+    if not enabledNow or not(changed or justEnabled)then return false end
+    for index,player in ipairs(seats or{})do
+        if player.id==playerId then self:focus(index,immediate);return true end
+    end
+    return false
+end
 function Camera:zoomAt(factor,x,y)
     local t=self:transform();local wx,wy=(x-t.x)/self.zoom,(y-t.y)/self.zoom
     local zoom=clamp(self.zoom*factor,.45,1.65)

@@ -166,12 +166,12 @@ local function connected(v,width,height)
 end
 function UI.build(v,w,h)
     local S,m=v.S,v.m;Rooms.fitSetup(m);local l=UI.layout(w,h)
-    v:window('room-invite',l.invite.x,l.invite.y,l.invite.w,l.invite.h)
+    v:window('room-invite',l.invite.x,l.invite.y,l.invite.w,l.invite.h,nil,{AutoSizeContent=false})
     if m.room then
         local width=l.invite.w-180
         S.Input('invite-code',{Text=m.room.inviteCode or '',ReadOnly=true,W=width,H=28,Align='left',Tooltip='Share this single invitation code'})
         S.SameLine();if Shared.button(v,'Copy code','copy',132,29)then m:copyRoomCode()end
-    else Shared.heading(v,'Bring your table together · invitation code only','network',l.invite.w,v.r.colors.accent)end
+    else Shared.heading(v,'Rooms · invite code only','network',l.invite.w-30,v.r.colors.accent)end
     S.EndWindow()
     v:window('room-setup',l.setup.x,l.setup.y,l.setup.w,l.setup.h)
     if m.room then connected(v,l.setup.w-28,l.setup.h-26)else setup(v,l.setup.w-28,l.setup.h-26)end

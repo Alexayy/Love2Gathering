@@ -28,6 +28,12 @@ function Board.index(game)
     end
     return cards,players,attached,curses
 end
+function Board.blockStatus(group)
+    if not group or not group.blocked then return nil end
+    if group.declarationConfirmed==true then return 'BLOCKED',true end
+    if group.declarationConfirmed==false then return 'PROVISIONAL',false end
+    return 'BLOCK ASSIGNED',false -- Older recordings have no acknowledgement.
+end
 function Board.prepare(r)
     r.boardCards,r.boardPlayers,r.boardAttached,r.boardCurses=Board.index(r.model.game)
     r.playerRects={};r.boardLinks={}
@@ -37,8 +43,12 @@ function Board.priority(r,p,x,y,w,height)
     if type(holder)=='table'then holder=holder.id end
     local c=Board.color(r,p)
     if holder==p.id and game.running~=false then
-        height=height or 28
-        tint(c,.95);love.graphics.setLineWidth(2);love.graphics.rectangle('line',x-4,y-4,w+8,height+8,5,5)
+        height=height or 22
+        -- The caller reserves this lane separately from name, avatar and HP.
+        -- Every pixel, including the ember and elapsed label, stays inside it.
+        r:panel(x,y,w,height,'dark')
+        tint(c,.75);love.graphics.setLineWidth(1);love.graphics.rectangle('line',x+.5,y+.5,w-1,height-1,4,4)
+        r.assets:iconSymbol('focus',x+4,y+(height-14)/2,14,c)
         local stamp=game.priorityStartedAt or game.decisionStartedAt
         r.priorityObserved=r.priorityObserved or{}
         if r.priorityObserved.holder~=holder then r.priorityObserved={holder=holder,started=love.timer.getTime()}end
@@ -47,12 +57,13 @@ function Board.priority(r,p,x,y,w,height)
         local now=replay and(tonumber(frame and frame.timestamp)or tonumber(stamp)or 0)/1000 or os.time()
         local elapsed=tonumber(stamp)and math.max(0,now-tonumber(stamp)/1000)or(replay and 0 or math.max(0,love.timer.getTime()-(r.priorityObserved.started or love.timer.getTime())))
         local label=string.format('%d:%02d',math.floor(elapsed/60),math.floor(elapsed%60))
-        local ropeW=math.max(24,w-64)
-        tint(c,.35);love.graphics.setLineWidth(3);love.graphics.line(x,y+height+6,x+ropeW,y+height+6)
+        local ropeX=x+25;local ropeY=y+height/2;local ropeW=math.max(12,w-85)
+        tint(c,.35);love.graphics.setLineWidth(3);love.graphics.line(ropeX,ropeY,ropeX+ropeW,ropeY)
         -- An elapsed indicator, not a fabricated deadline or penalty.
         local still=r.model.settings.reducedMotion or r.model.settings.animations==false
-        local ember=x+(still and 1 or elapsed*.12%1)*ropeW;tint(r.colors.gold);love.graphics.circle('fill',ember,y+height+6,3)
-        r:text(label,x+ropeW+6,y+height-2,12,c,54,'right')
+        local ember=ropeX+(still and 1 or elapsed*.12%1)*ropeW;tint(r.colors.gold);love.graphics.circle('fill',ember,ropeY,3)
+        r:text(label,x+w-56,y+(height-16)/2,12,c,50,'right')
+        r:hit({x=x,y=y,w=w,h=height,tooltip='Holds priority · '..label..' elapsed. This match has no automatic time penalty.'})
     end
 end
 function Board.layers(r,card,x,y,w,h,options)
@@ -203,6 +214,19 @@ function Board.links(r)
         local a=point(Board.anchor(r,group.attackerId));local b=point(Board.anchor(r,group.defenderId))
         line(r,a,b,r.colors.red,true)
         for _,blocker in ipairs(list(group.blockerIds))do line(r,point(Board.anchor(r,blocker)),a,r.colors.gold,false)end
+        local label,confirmed=Board.blockStatus(group)
+        if label then
+            local box=Board.anchor(r,group.attackerId)
+            if box then
+                local width=math.min(116,math.max(82,box.w));local x=box.x+(box.w-width)/2;local y=box.y-23
+                local clip=box.clip
+                if not clip or(x>=clip.x and x+width<=clip.x+clip.w and y>=clip.y and y+22<=clip.y+clip.h)then
+                    r:panel(x,y,width,22,'dark');r.assets:iconSymbol('block',x+4,y+3,16,confirmed and r.colors.accent or r.colors.gold)
+                    r:text(label,x+23,y+4,11,confirmed and r.colors.accent or r.colors.gold,width-27,'center')
+                    r:hit({x=x,y=y,w=width,h=22,kind='permanent',card=(r.boardCards or{})[group.attackerId],tooltip=confirmed and'XMage confirmed this attacker is blocked. Removing its blockers does not remove that block.'or'Block assignment is provisional. Choose Done and wait for XMage confirmation.'})
+                end
+            end
+        end
     end
     local stackHits={};for _,hit in ipairs(r.model.stackHits or{})do stackHits[hit.id]=hit end
     local hovered=r.model.stackHover

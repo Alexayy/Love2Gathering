@@ -74,6 +74,8 @@ Recording participant metadata now includes a deck summary `{id,name,format}` wi
 
 `NativeViewFixture` (included in `scripts/test-engine-fixtures.sh`) verifies boosted Angel P/T/counters, real scry/surveil placement and order, precommit Woe Strider cancellation, committed-sacrifice preservation, flying/reach/landwalk/unblockable/menace, attachments, entitled linked exile, native tokens, stack targeting and structured damage/life events. Its initial zones are deterministic native fixtures; these are not frontend results. `bridge/tests/native-view-report.json` records this scope.
 
+[Combat timing and confirmation](../docs/COMBAT_TIMING.md) documents the native before-damage stop, provisional versus confirmed blockers, sacrifice/trample/first-strike cases, current keyword metadata and elapsed-priority lane. `CombatTimingFixture`, included in the native fixture gate, uses production bridge responses with deterministic native zones; `tests/combat_timing_ui.sh` separately exercises actual UI input against a test-only Ayara scene. Current cards expose `currentRules`, recognized native `keywords` and native `abilityIcons`; original `printing.keywords` remains separate so temporary trample is visible.
+
 For actual UI answers against those native positions, the test-only facade is separate from the production bridge:
 
 ```sh

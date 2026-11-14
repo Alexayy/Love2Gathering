@@ -1,5 +1,6 @@
 -- Paged, read-only art browsing. Card rules and playable actions stay elsewhere.
 local API=require('app.api')
+local Artwork=require('app.artwork')
 local Gallery={}
 local function defaults(m)
     m.galleryQuery=m.galleryQuery or '';m.galleryArtist=m.galleryArtist or '';m.gallerySet=m.gallerySet or ''
@@ -16,6 +17,7 @@ function Gallery.install(Model)
     function Model:galleryChanged()
         defaults(self);self.galleryOffset=0;self.galleryTimer=.23;self.galleryBusy=true;self.galleryError=nil
         self.galleryVersion=(self.galleryVersion or 0)+1
+        self.galleryItems={};self.galleryTotal=0
     end
     function Model:setGalleryLimit(limit)
         defaults(self);limit=math.max(1,math.min(60,math.floor(limit)))
@@ -46,31 +48,20 @@ function Gallery.install(Model)
         end
     end
     function Model:getGalleryArt(item)
-        self.galleryArt=self.galleryArt or {};self.galleryArtPending=self.galleryArtPending or 0
-        local key=item.printing_id..'-'..tostring(item.face or 0)..'-art_crop';local time=love.timer.getTime()
-        local entry=self.galleryArt[key]
-        if entry then
-            entry.used=time
-            if entry.image or entry.pending or (entry.retryAt or 0)>time then return entry.image end
-        end
-        if self.galleryArtPending>=4 then return nil end
-        entry={pending=true,used=time};self.galleryArt[key]=entry;self.galleryArtPending=self.galleryArtPending+1
-        self.api:request('art','GET','/gallery/art/'..API.escape(item.printing_id)..'?face='..tostring(item.face or 0)..'&kind=art_crop',nil,function(body,err,code)
-            self.galleryArtPending=math.max(0,self.galleryArtPending-1)
-            if self.galleryArt[key]~=entry then return end
-            entry.pending=false;entry.retryAt=love.timer.getTime()+30
-            if not err and code==200 and body then
-                local ok,img=pcall(function()return love.graphics.newImage(love.image.newImageData(love.filesystem.newFileData(body,'gallery.jpg')))end)
-                if ok then
-                    entry.image=img
-                    local count=0;for _,cached in pairs(self.galleryArt)do if cached.image then count=count+1 end end
-                    while count>60 do
-                        local oldest,used
-                        for candidate,cached in pairs(self.galleryArt)do if candidate~=key and cached.image and (not used or cached.used<used)then oldest,used=candidate,cached.used end end
-                        if not oldest then break end;self.galleryArt[oldest]=nil;count=count-1
-                    end
-                end
-            end
+        local key=item.printing_id..'-'..tostring(item.face or 0)..'-art_crop'
+        return Artwork.image(self,'galleryArt','galleryArtPending',key,'/gallery/art/'..API.escape(item.printing_id)..'?face='..tostring(item.face or 0)..'&kind=art_crop&network='..(self.settings.localArtworkOnly~=false and'0'or'1'),4,60)
+    end
+    function Model:galleryArtState(item)
+        local key=item.printing_id..'-'..tostring(item.face or 0)..'-art_crop';local entry=self.galleryArt and self.galleryArt[key]
+        return entry and entry.state or'loading'
+    end
+    function Model:downloadGalleryArt(item)
+        if not item or self.galleryDownloading then return end
+        self.galleryDownloading=true;self.galleryDownloadError=nil
+        self:request('catalog','POST','/art/download',{printingId=item.printing_id,face=item.face or 0,kind='art_crop'},function(data,err)
+            self.galleryDownloading=false
+            if data then self.galleryArt=self.galleryArt or{};self.galleryArt[item.printing_id..'-'..tostring(item.face or 0)..'-art_crop']=nil;item.art_cached=true;self:getGalleryArt(item)
+            else self.galleryDownloadError=err end
         end,true)
     end
     function Model:openGalleryLink(link)
@@ -108,23 +99,27 @@ local function art(v,item,x,y,width,height,id)
         S.Image(id,{Image=image,W=iw,H=ih,Tooltip='Inspect artwork'})
         if S.IsControlClicked()then m.galleryInspect=item end
     else
-        S.SetCursorPos(x+12,y+height/2-12,{Absolute=true})
-        S.Text('Loading artwork…',{Color=v.r.colors.muted})
+        S.SetCursorPos(x,y,{Absolute=true})
+        if S.Button(id..'-missing',{W=width,H=height,Image={Image=v.r.assets:buttonImage('image','',width,height)},Tooltip=Artwork.labels[m:galleryArtState(item)]})then m.galleryInspect=item end
     end
     S.SetCursorPos(x,y+height+9,{Absolute=true})
+    if not image then S.PushFont(v.r.fonts[12]);S.Textf(Artwork.labels[m:galleryArtState(item)]or Artwork.labels.error,{W=width,Color=v.r.colors.muted});S.PopFont()end
+    S.SetCursorPos(x,y+height+31,{Absolute=true})
 end
 function Gallery.layout(w,h)
     local width=w-76;local columns=math.max(2,math.floor((width+18)/330))
-    local cellW=(width-(columns-1)*18)/columns;local imageH=math.min(200,cellW*.60);local cellH=imageH+114
-    local rows=math.max(1,math.min(3,math.floor((h-278)/cellH)))
+    local cellW=(width-(columns-1)*18)/columns;local imageH=math.min(200,cellW*.60);local cellH=imageH+144
+    local rows=math.max(1,math.min(3,math.floor((h-326)/cellH)))
     return {columns=columns,rows=rows,cellW=cellW,imageH=imageH,cellH=cellH,limit=columns*rows}
 end
 function Gallery.build(v,w,h)
     local S,m,r=v.S,v.m,v.r;defaults(m);local C=r.colors;local l=Gallery.layout(w,h);m:setGalleryLimit(l.limit)
-    v:window('gallery-controls',24,102,w-48,132)
+    if m.refreshArtworkCacheInfo then m:refreshArtworkCacheInfo()end
+    v:window('gallery-controls',24,102,w-48,162)
     S.Image('gallery-heading',{Image=r.assets:iconImage('gallery',24,C.accent),W=24,H=24});S.SameLine()
-    S.PushFont(r.fonts[22]);S.Text('Artwork gallery',{Color=C.text});S.PopFont();S.SameLine()
-    S.Text(m.galleryBusy and 'Loading…' or tostring(m.galleryTotal or 0)..' artworks',{Color=C.muted})
+    S.PushFont(r.fonts[22]);S.Text('Artwork gallery',{Color=C.text});S.PopFont();S.SameLine({Pad=14})
+    local cache=m.artworkCacheInfo;local cacheText=cache and(' · '..cache.artCrops..' cached'..(cache.bulk and cache.bulk.paused and' · bulk download paused'or''))or''
+    S.Text(m.galleryBusy and 'Searching…' or tostring(m.galleryTotal or 0)..' artworks'..cacheText,{Color=C.muted})
     local fieldW=math.max(210,w*.30)
     S.Image('gallery-query-icon',{Image=r.assets:iconImage('search',20,C.muted),W=20,H=20,Tooltip='Search card, artist, set or year'});S.SameLine()
     if S.Input('gallery-search',{Text=m.galleryQuery,W=fieldW,H=29,Align='left',Tooltip='Search card, artist, set or year'})then m.galleryQuery=S.GetInputText();m:galleryChanged()end
@@ -148,7 +143,7 @@ function Gallery.build(v,w,h)
     if button(v,'Next','next',100,29,{Disabled=m.galleryBusy or m.galleryOffset+m.galleryLimit>=(m.galleryTotal or 0)})then m.galleryOffset=m.galleryOffset+m.galleryLimit;m:refreshGallery()end
     S.SameLine();S.Text(tostring(m.galleryOffset+((m.galleryTotal or 0)>0 and 1 or 0))..'–'..math.min(m.galleryOffset+m.galleryLimit,m.galleryTotal or 0),{Color=C.muted})
     S.EndWindow()
-    v:window('gallery-grid',24,248,w-48,h-272)
+    v:window('gallery-grid',24,288,w-48,h-314)
     if m.galleryError then
         S.Textf(m.galleryError,{W=w-90,Color=C.gold});S.NewLine()
         S.Textf('Choose a local Scryfall metadata file for the catalog, or run the optional image downloader with its explicit metadata bootstrap option. Your existing collection is preserved.',{W=w-90,Color=C.muted})
@@ -172,7 +167,10 @@ function Gallery.build(v,w,h)
         v:window('gallery-inspect',(w-ww)/2,48,ww,hh,'Artwork · '..item.name)
         if button(v,'Close artwork','close',inner,30)then m.galleryInspect=nil
         else
-            local x,y=S.GetCursorPos({Absolute=true});art(v,item,x,y,inner,math.max(120,hh-204),'gallery-full-art')
+            local missing=m:galleryArtState(item)=='missing'
+            if missing and button(v,m.galleryDownloading and'Downloading…'or'Download artwork','image',inner,30,{Disabled=m.galleryDownloading,Tooltip='Download this exact printing and face only'})then m:downloadGalleryArt(item)end
+            if m.galleryDownloadError then S.Textf(m.galleryDownloadError,{W=inner,Color=C.gold})end
+            local x,y=S.GetCursorPos({Absolute=true});art(v,item,x,y,inner,math.max(100,hh-250-(missing and 34 or 0)),'gallery-full-art')
             S.Textf(item.name,{W=inner,Color=C.text})
             iconText(v,'art-inspect-set','library',(item.set_name or item.set or '')..' · '..tostring(item.year or ''),inner,C.muted)
             iconText(v,'art-inspect-artist','artist',item.artist~='' and item.artist or 'Artist not supplied',inner,C.accent)

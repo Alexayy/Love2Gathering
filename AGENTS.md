@@ -15,8 +15,8 @@ This is a LÖVE 11.5 desktop frontend for the supplied XMage engine. Read `READM
 | `app/profile.lua`, `app/profile_ui.lua`, `service/profiles.py` | Profile name/exact avatar/playmat identities, persistence and public native/replay presentation |
 | `app/replays.lua`, `app/replay_ui.lua` | Recording browser, asynchronous frame loading, read-only playback and saved UI layouts |
 | `app/rooms.lua`, `app/room_ui.lua`, `app/draft_ui.lua` | Invite-only multiplayer, private draft packs/pools, native deck submission and tournament presentation |
-| `app/gallery.lua`, `service/gallery_catalog.py`, `service/artists.py`, `scripts/download-card-images.py` | Paged per-printing artwork, reviewed illustrator links, resumable full-card/art exports and SQLite cache integration |
-| `app/view.lua`, `app/builder.lua`, `app/settings.lua`, `lib/Slab/` | Slab controls, shared builder layout, modal choices, settings panels and text input |
+| `app/artwork.lua`, `app/gallery.lua`, `service/gallery_catalog.py`, `service/artists.py`, `scripts/download-card-images.py` | Bounded image/status cache, paged exact-printing artwork, reviewed illustrator links, resumable full-card/art exports and SQLite cache integration |
+| `app/view.lua`, `app/builder.lua`, `app/builder_simplified.lua`, `app/lobby_ui.lua`, `app/deck_picker.lua`, `app/settings.lua`, `lib/Slab/` | Slab controls, shared Classic/Simplified builder layout, grouped lobby selection, modal input locks, settings panels and text input |
 | `app/assets.lua`, `app/theme.lua`, `app/richtext.lua`, `app/fonts.lua`, `app/preferences.lua` | Curated glyphs/textures, Kenney skin, inline mana, installed fonts, effects, audio and applied presentation settings |
 | `service/` | Streaming JSONL index, search/printings/art, deck construction checks and user storage; default port 17370 |
 | `service/rooms.py`, `scripts/run-room-server.sh` | Network-facing room-code registry, desktop-local proxy and headless hosting; preferred port 17380 |
@@ -64,9 +64,11 @@ User decks, settings, hidden bundled-deck selections and artwork caches live in 
 
 Profiles store only bounded names and validated exact catalog printing/Oracle/face references for avatar/playmat art. No arbitrary image URLs or HP settings. Life always comes from XMage. Public identity travels with room/draft/native/replay seats; it grants no hidden-card access. Keep offline name updates possible for unchanged saved art references, and protect profile search/save responses from stale openings/edits. See `docs/PROFILES.md`.
 
-Catalog API 6 is required by the launcher for collection/profile endpoints. Compatible reuse must match configured user storage and an explicit metadata-source override. Never stop an incompatible running user catalog to make room; select another owned port. Product-source refresh is explicit, checksum verified and streamed; it must preserve original metadata, cached images, user SQL data and the previous complete prepared source on failure. Do not run acquisition against an active user's files for acceptance.
+Catalog API 8 is required by the launcher for storage/download controls and collection/profile endpoints. Compatible reuse must match configured user storage and an explicit metadata-source override. Never stop an incompatible running user catalog to make room; select another owned port. Product-source refresh is explicit, checksum verified and streamed; it must preserve original metadata, cached images, user SQL data and the previous complete prepared source on failure. Do not run acquisition against an active user's files for acceptance.
 
 The engine records authoritative projections and accepted actions into `replay-outbox.sqlite` before asynchronous delivery to the catalog. Keep recovery, explicit pending/error status and manual flush without ending a match. Playback renders saved projections, never reimplements the engine or exposes hidden information. Disable live action submission during playback. Protect frame and metadata loads with per-opening identity, including reopening the same recording ID; guard list refresh order and live revision order, and restore live prompt choices on close. A replay is not a resumable engine save.
+
+Storage maintenance/download work belongs in `service/maintenance.py`, `service/downloads.py` and `app/storage.lua`. The shared resolver `service/paths.py` honors application/XDG overrides before adopting an existing store at the project mount root. Never silently migrate/delete the original home store. Purge/compact and image downloads share cross-process locks; active/pending replay outboxes must survive. Purged image categories use import barriers and a generation fence so old mirrors/plans cannot silently refill them. Keep completed match history when purging playback. SQL-only is the managed-download default; estimates are sampled/fallback ranges, not exact remote sizes. Test destructive actions only in temporary data directories. See `service/STORAGE.md`.
 
 ## UI, input and assets
 
@@ -100,6 +102,12 @@ lua tests/api_rooms.lua
 lua tests/table_camera.lua
 lua tests/priority_model.lua
 lua tests/gallery_model.lua
+lua tests/artwork_model.lua
+lua tests/card_traits.lua
+lua tests/deck_picker_model.lua
+lua tests/duplicate_model.lua
+lua tests/modal_input.lua
+lua tests/stack_presentation.lua
 lua tests/library_model.lua
 lua tests/collection_model.lua
 lua tests/profile_model.lua
@@ -142,7 +150,9 @@ Those tests replace the game on the selected service. Do not run them against an
 
 `LOVE2GATHERING_CATALOG_PORT=PORT tests/gallery_ui.sh` requires a temporary ready catalog with real image fixtures. Gallery and downloader tests use their own temporary storage; never point bulk-download acceptance at an existing user cache. Full-card and art-crop folders are export mirrors; `app.sqlite` remains authoritative. Artist URLs require reviewed sources and dates; unknown artists have no invented destination. Preserve the user-provided full Kenney packs/ZIPs and use the curated `assets/kenney/theme/` selection at runtime.
 
-Artwork is local-only by default (current catalog API 6/schema 7). Cache lookup preserves printing/face/kind; Gallery does not alias another illustrator's printing. Token resolution uses the original native token template, not modified current P/T/colors. Imports preview before explicit save and never bypass a provider's refused public access. History derives outcomes only from native recorded results. See `service/LIBRARY.md`.
+`tests/global_controls_ui.sh` checks actual Beleren ink/caret geometry, tooltip pixels, cursor states, opacity/themes, the native ColorPicker and page/popup Settings. `tests/client_layout_ui.sh` and `tests/builder_modes_ui.sh` require an explicitly isolated catalog; the latter creates/removes only its own named test deck. Their reports retain actual clamped display dimensions. Builder geometry tests include Slab's extra 14px outer border. Modal guards must reject background presses, late drag releases and stale picker/duplicate callbacks, including Escape while a search input is focused. Current native keyword metadata is presentation only; preserve original printing keywords and use text when no verified icon exists.
+
+Artwork is local-only by default (current catalog API 8/schema 7). Cache lookup preserves printing/face/kind; Gallery does not alias another illustrator's printing. Token resolution uses the original native token template, not modified current P/T/colors. Imports preview before explicit save and never bypass a provider's refused public access. History derives outcomes only from native recorded results. See `service/LIBRARY.md`.
 
 `service/tests/test_precons.py` covers the actual packaged provider snapshot, bounded historical browsing, source/ownership preservation, unsaved invalid-copy repair and resumable acquisition. `service/tests/precons-live-report.json` records read-only actual service checks. `service/tests/test_profiles.py`, `tests/profile_model.lua`, native `ProfileFixture` and `tests/profile_live.py` cover separate storage/model/native/room-recording scopes. Use explicit owned services and restore isolated profile data. Graphical collection/profile checks need actual input and inspected captures; do not infer them from model/HTTP results. `tests/assets_presentation.sh` exercises real supplied fonts/icons, panorama pixels, exact dice, sound decoders, cursors and Slab settings dispatch without user saves.
 

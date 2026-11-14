@@ -21,4 +21,15 @@ for _,size in ipairs({{1088,592},{1408,772},{2505,913}}) do
         c:overview(true);check(c.focusIndex==nil and c.mode=='overview','Overview clears seat focus')
     end
 end
+do
+    local c=Camera.new();c:configure({x=20,y=220,w=1100,h=620},4)
+    local seats={{id='a'},{id='b'},{id='you'},{id='d'}}
+    check(c:followTurn('b',1,seats,nil,true)and c.focusIndex==2,'Native active player is followed by default')
+    c:focus(3,true);check(not c:followTurn('b',1,seats,true,true)and c.focusIndex==3,'Manual seat focus stays free during the current turn')
+    c:pan(30,20);check(not c:followTurn('b',1,seats,true,true)and c.mode=='free','Manual pan is not pulled back by repeated projections')
+    check(c:followTurn('d',2,seats,true,true)and c.focusIndex==4,'Next native turn resumes automatic focus')
+    c:focus(1,true);check(not c:followTurn('you',3,seats,false,true)and c.focusIndex==1,'Disabled follow preserves manual camera across turns')
+    check(c:followTurn('you',3,seats,true,true)and c.focusIndex==3,'Enabling follow focuses the current native active player')
+    c:pan(20,0);check(c:followTurn('you',4,seats,true,true)and c.focusIndex==3,'A native extra turn by the same player resumes follow')
+end
 print('Camera checks: '..n..' passed (presentation geometry only)')

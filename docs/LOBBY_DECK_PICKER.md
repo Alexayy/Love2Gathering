@@ -1,0 +1,11 @@
+# Lobby deck sources
+
+The lobby and room deck selectors use the same artwork picker. My Decks contains owned lists; Starter exposes the original supplied lists; Preconstructed fetches a bounded page of historical products and groups them under expandable expansion headers. The search and product-page controls work without loading the whole archive. Tiles preserve the complete artwork within a square layout, and the lobby's selected-deck controls retain their larger seat layout.
+
+Selecting a preconstructed product fetches its complete list and creates a temporary, format-specific lobby identity. Main, sideboard and commander entries retain their quantities and explicit array representation. Selecting, browsing or evicting a temporary list does not write a deck, modify its archived source or claim it passes current construction rules. XMage performs final validation when starting the match. A historical format label alone does not establish legality.
+
+Products containing planes or schemes require confirmation before those auxiliary cards are omitted from the temporary constructed selection. Their archived original remains unchanged. The collection's separate Edit/Copy flows continue to make owned, validated copies when requested.
+
+The temporary cache is limited to 16 full lists and protects the currently selected human, bot and room lists. Refreshing the saved collection preserves selected cached identities. Popup, query and selection versions reject late replies after search changes, closing, reopening or changing pages. Escape closes both the UI and its pending model identity.
+
+`tests/deck_picker_model.lua` has 18 checks for these bounds, complete arrays, refresh behavior, auxiliary confirmation and callback fences. `tests/deck_picker_ui.sh` has 16 actual UI/service checks using an explicitly isolated catalog and idle native engine: real source searches, expansion/tile controls, complete 99-card-plus-commander selection and final native Commander validation with native 40 starting life. It creates no owned deck and must not target user services. `tests/deck-picker-ui-report.json` records that scope. The isolated acceptance catalog lacks the selected Giada illustration, so those captures use the explicit artwork placeholder; they do not claim real-image pixel coverage for that printing.

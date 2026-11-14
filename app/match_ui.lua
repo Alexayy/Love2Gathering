@@ -3,6 +3,7 @@ local RichText=require('app.richtext')
 local Log=require('app.log')
 local Window=require('lib.Slab.Internal.UI.Window')
 local CardChoices=require('app.card_choices')
+local Priority=require('app.priority')
 local json=require('lib.json')
 local UI={}
 local function iconButton(v,label,icon,action,active,disabled,size)
@@ -19,7 +20,7 @@ local function option(v,choice,width)
 end
 function UI.toolbar(v,w,h)
     local S,m=v.S,v.m
-    v:window('match-toolbar',w-278,10,262,34)
+    v:window('match-toolbar',w-278,10,262,34,nil,{AllowFocus=false})
     local buttons={
         {m.roomConnectionId and 'Room' or 'Lobby','home',function() if m.roomConnectionId then m:showRooms() else m.page='lobby' end end},
         {'Settings','settings',function() m.settingsOpen=not m.settingsOpen end},
@@ -35,9 +36,33 @@ end
 function UI.priority(v,w,h)
     local m,S=v.m,v.S;if m.replay or not m.game or m.game.running==false then return end
     local state=m.game.priority or {};local options=m:priorityOptions()
-    v:window('priority-mode',w-320,10,34,34)
+    v:window('priority-mode',w-390,10,104,34,nil,{AllowFocus=false})
     iconButton(v,options.autoPass and 'Automatic priority · click for full control' or 'Full control · click for automatic priority',options.autoPass and 'play' or 'pause',function() m:toggleAutoPass() end,not options.autoPass,m.priorityBusy,28)
+    S.SameLine()
+    local beforeDamage=m:phaseStop(Priority.beforeDamage,'opponent')
+    iconButton(v,'Stop after confirmed blockers, before combat damage · opponents’ turns','block',function() m:togglePhaseStop(Priority.beforeDamage,'opponent') end,beforeDamage,m.priorityBusy,28)
+    S.SameLine()
+    iconButton(v,'Choose combat step stops','settings',function() v.combatStopsOpen=not v.combatStopsOpen end,v.combatStopsOpen,false,28)
     S.EndWindow()
+    if v.combatStopsOpen then
+        v:window('combat-step-stops',w-480,54,460,350,'Combat stops',{Layer='ContextMenu',BgColor={.025,.04,.06,.99}})
+        if S.Button('Close combat stops',{W=426,H=28})then v.combatStopsOpen=false end
+        S.NewLine();local sx,sy=S.GetCursorPos({Absolute=true})
+        for index,group in ipairs(Priority.combatSteps)do
+            S.PushID('combat-step-'..index)
+            local rowY=sy+(index-1)*31
+            S.SetCursorPos(sx,rowY,{Absolute=true});S.Text(group.label,{Color=v.r.colors.text})
+            for sideIndex,side in ipairs({'own','opponent'})do
+                S.SetCursorPos(sx+235+(sideIndex-1)*76,rowY,{Absolute=true})
+                local checked=m:phaseStop(group,side)
+                if S.CheckBox(checked,side=='own'and'You'or'Opponents',{Disabled=m.priorityBusy,Tooltip='Stop '..group.label..' · '..(side=='own'and'your turn'or'opponents’ turns')})then m:togglePhaseStop(group,side)end
+            end
+            S.PopID()
+        end
+        S.SetCursorPos(sx,sy+#Priority.combatSteps*31+6,{Absolute=true})
+        S.Textf('Before combat damage waits after Done confirms blockers. First-strike stops occur after first-strike damage.',{W=426,Color=v.r.colors.muted})
+        S.EndWindow()
+    end
     if state.yielding then
         v:window('cancel-yield',w-258,h-112,238,42)
         if S.Button('Cancel End Turn',{Image={Image=v.r.assets:buttonImage('pause','Cancel End Turn',210,30)},W=210,H=30,Disabled=m.priorityBusy}) then m:cancelYield() end
@@ -71,6 +96,15 @@ function UI.stack(v,w,h)
     local S,m=v.S,v.m;local stack=m.game and m.game.stack or {};m.stackHits={};m.stackHover=nil
     if #stack==0 or m.stackOpen==false then return end
     local prompt=m:prompt();if prompt and prompt.type=='order' then return end
+    local choiceKey=prompt and table.concat({tostring(m.roomConnectionId or'practice'),tostring(m.game.gameId),tostring(prompt.id)},':')
+    if prompt and CardChoices.prefersBoard(m,prompt)and v.stackChoiceExpandedPrompt~=choiceKey then
+        -- A floating stack can cover the very permanent XMage asks the user
+        -- to choose (notably a sacrifice cost in a small duel window).
+        -- Fold its presentation, preserving the real stack and saved layout.
+        v:window('stack-selection-summary',w-278,78,262,34,nil,{AllowFocus=false})
+        if S.Button('Show stack while choosing',{W=246,H=28,Image={Image=v.r.assets:buttonImage('stack','Stack · '..#stack..' · expand',246,28)},Tooltip='Stack folded to leave battlefield choices accessible. Expand to inspect it.'})then v.stackChoiceExpandedPrompt=choiceKey end
+        S.EndWindow();return
+    end
     local panelH=m.replay and math.min(360,math.max(100,h-520)) or math.min(430,h-365)
     v:window('floating-stack',w-536,340,386,panelH,'Stack · '..#stack)
     local width=select(1,S.GetWindowSize())-32

@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 from urllib.parse import urlsplit
 from replays import encode
+from search_text import words, register_search
 
 READY_TYPES = {'Theme Deck','Commander Deck','Intro Pack','Arena Starter Deck','Welcome Deck','Duel Deck','Sample Deck',
                'Planeswalker Deck','World Championship Deck','Event Deck','Challenger Deck','Starter Deck','Enhanced Deck',
@@ -134,9 +135,12 @@ class PreconStore:
         if format_name:clauses.append('(format=? COLLATE NOCASE OR historical_format=? COLLATE NOCASE)');params.extend((format_name,format_name))
         if set_code:clauses.append('set_code=?');params.append(set_code.lower())
         if product_type:clauses.append('product_type=? COLLATE NOCASE');params.append(product_type)
-        for word in query.casefold().split():clauses.append("instr(lower(name||' '||expansion||' '||product_type||' '||COALESCE(json_extract(summary,'$.faceCommander'),'')),?)>0");params.append(word)
+        if words(query):
+            clauses.append("l2g_words(name||' '||expansion||' '||product_type||' '||COALESCE(json_extract(summary,'$.faceCommander'),''),?)=1");params.append(query)
+        elif query.strip():clauses.append('instr(lower(name),?)>0');params.append(query.casefold())
         where=' WHERE '+' AND '.join(clauses)
         with self.connection() as c:
+            register_search(c)
             total=c.execute('SELECT count(*) FROM preconstructed'+where,params).fetchone()[0]
             rows=c.execute("SELECT summary FROM preconstructed"+where+" ORDER BY COALESCE(release_date,'') DESC,expansion COLLATE NOCASE,name COLLATE NOCASE,id LIMIT ? OFFSET ?",(*params,limit,offset))
             decks=[json.loads(row[0]) for row in rows]

@@ -35,7 +35,7 @@ local function seat(r,player,index,c,Table)
     love.graphics.setLineWidth(2);love.graphics.rectangle('line',c.x+2,c.y+2,c.w-4,c.h-4,6,6)
     r:drawAvatar(player,c.x+18,c.y+15,34)
     r:strong(r:fit(player.name or 'Player',350,20,1),c.x+60,c.y+18,20,tint,350)
-    r:priorityBadge(player,c.x+58,c.y+15,352)
+    r:priorityBadge(player,c.x+c.w-310,c.y+67,180,22)
     if active then r.assets:iconSymbol('turn',c.x+420,c.y+22,20,C.gold) end
     if player.lost or player.left then r:text('OUT',c.x+460,c.y+23,13,C.muted) end
     r.assets:iconSymbol('life',c.x+c.w-108,c.y+19,23,tint)
@@ -81,6 +81,7 @@ function Multi.draw(r,L,w,h,Table)
         local index=1;for i,p in ipairs(seats) do if p.human then index=i;break end end
         camera:focus(index,true);camera.opened=true
     end
+    camera:followTurn(game.activePlayerId,game.turn,seats,m.settings.autoFollowTurn,m.settings.reducedMotion or m.settings.animations==false)
     camera:update(r.dt,m.settings.reducedMotion or m.settings.animations==false)
     r.multiplayerView=view;r.multiplayerSeats=seats
     -- Keep seat navigation left of the existing floating log/actions defaults.

@@ -9,6 +9,8 @@ import mage.counters.CounterType;
 import mage.game.*;
 import mage.game.permanent.Permanent;
 import mage.game.turn.DeclareBlockersStep;
+import mage.game.turn.CombatPhase;
+import mage.game.turn.CombatDamageStep;
 import mage.util.Copier;
 import java.io.*;
 import java.net.*;
@@ -37,6 +39,8 @@ public final class NativeViewServer {
                 else if(name.equals("cancel"))cancel();
                 else if(name.equals("combat"))combat();
                 else if(name.equals("look"))look();
+                else if(name.equals("ayara"))ayara();
+                else if(name.equals("goreclaw"))goreclaw();
                 else throw new IllegalArgumentException("Unknown native fixture scene");
             }catch(Throwable ex){result=EngineBridge.map("done",true,"error",ex.toString());ex.printStackTrace();}
             finally{session.prompt=null;session.publish();completed.add(this);}
@@ -76,9 +80,36 @@ public final class NativeViewServer {
             session.game.getCombat().selectBlockers(session.game);
             result=EngineBridge.map("done",true,"combat",NativeProjection.combat(session));
         }
+        void ayara()throws Exception{
+            EngineBridge.Session s=session;
+            java.lang.reflect.Field cursor=GameImpl.class.getDeclaredField("playerList");cursor.setAccessible(true);cursor.set(s.game,s.game.getState().getPlayerList(s.human.getId()));
+            Card ayara=TriggerFixture.card("Ayara, First of Locthwain"),rat=TriggerFixture.card("Relentless Rats"),attacker=TriggerFixture.card("Grizzly Bears");
+            NativeViewFixture.battlefield(s,s.human.getId(),ayara,rat);NativeViewFixture.battlefield(s,s.bot.getId(),attacker);
+            s.game.cheat(s.human.getId(),Collections.singletonList(TriggerFixture.card("Forest")),TriggerFixture.NONE,Collections.emptyList(),TriggerFixture.NONE,TriggerFixture.NONE,TriggerFixture.NONE);
+            ((mage.game.permanent.PermanentImpl)s.game.getPermanent(ayara.getId())).removeSummoningSickness();
+            s.game.getState().clearTriggeredAbilities();s.game.getStack().clear();
+            s.game.getTurn().setPhase(new CombatPhase());s.game.getPhase().setStep(new DeclareBlockersStep());
+            s.game.getState().setActivePlayerId(s.bot.getId());s.game.getState().setPriorityPlayerId(s.human.getId());
+            s.game.getCombat().setAttacker(s.bot.getId());s.game.getCombat().getDefenders().add(s.human.getId());
+            s.game.getCombat().addAttackerToCombat(attacker.getId(),s.human.getId(),s.game);
+            s.game.getCombat().selectBlockers(s.game);s.game.getCombat().acceptBlockers(s.game);
+            s.human.priority(s.game); // Actual user activation through Session.action.
+            boolean sacrificed=s.game.getPermanent(rat.getId())==null;
+            if(!s.game.getStack().isEmpty())s.game.getStack().resolve(s.game);
+            int life=s.human.getLife();s.game.getPhase().setStep(new CombatDamageStep(false));s.game.getPhase().getStep().beginStep(s.game,s.bot.getId());
+            result=EngineBridge.map("done",true,"sacrificed",sacrificed,"nativeDamageToDefender",life-s.human.getLife(),"lifeAfter",s.human.getLife(),"combat",NativeProjection.combat(s));
+        }
+        void goreclaw(){
+            EngineBridge.Session s=session;Card gore=TriggerFixture.card("Goreclaw, Terror of Qal Sisma"),sage=TriggerFixture.card("Primordial Sage");
+            NativeViewFixture.battlefield(s,s.bot.getId(),gore,sage);s.game.getTurn().setPhase(new CombatPhase());s.game.getPhase().setStep(new mage.game.turn.DeclareAttackersStep());s.game.getState().setActivePlayerId(s.bot.getId());
+            s.game.getCombat().setAttacker(s.bot.getId());s.game.getCombat().getDefenders().add(s.human.getId());
+            for(Card card:Arrays.asList(gore,sage))s.game.getCombat().declareAttacker(card.getId(),s.human.getId(),s.bot.getId(),s.game);
+            s.game.getCombat().resumeSelectAttackers(s.game);s.game.getState().handleSimultaneousEvent(s.game);s.game.checkStateAndTriggered();s.game.getStack().resolve(s.game);s.game.applyEffects();
+            result=EngineBridge.map("done",true,"gainedTrample",((Collection<?>)s.card(s.game.getPermanent(gore.getId())).get("keywords")).contains("trample"));
+        }
     }
     static synchronized Scene setup(String name){
-        if(!Arrays.asList("angel","scry","surveil","cancel","combat","look").contains(name))throw new IllegalArgumentException("Unknown native fixture scene");
+        if(!Arrays.asList("angel","scry","surveil","cancel","combat","look","ayara","goreclaw").contains(name))throw new IllegalArgumentException("Unknown native fixture scene");
         if(current!=null)current.session.stop();Scene next=new Scene(name);current=next;EngineBridge.current=next.session;
         Thread game=new Thread(next::run,"GAME native GUI fixture "+name);game.setDaemon(true);next.session.gameThread=game;game.start();return next;
     }

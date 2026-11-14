@@ -1,88 +1,24 @@
-function love.errorhandler(message)
-    io.stderr:write('FONTS FAILED: '..tostring(message)..'\n'..debug.traceback()..'\n');io.stderr:flush()
-    return function()return 1 end
-end
-local Fonts=require('app.fonts');local Assets=require('app.assets');local Preferences=require('app.preferences')
-local S=require('lib.Slab');local Settings=require('app.settings');local Layout=require('app.layout')
-local r,m,v,prefs,frame,checks,systemFamily,beforeSelection
-local mouse={x=1,y=1};local mouseDown=false;local controls,choices,buttons={},{},{}
-local function check(condition,message)assert(condition,message);checks=checks+1;print('FONTS PASS '..message)end
-local function pixels(canvas)
-    local image=canvas:newImageData();local count=0
-    for y=0,image:getHeight()-1 do for x=0,image:getWidth()-1 do local _,_,_,a=image:getPixel(x,y);if a>.05 then count=count+1 end end end
-    return count
-end
+local Fonts=require('app.fonts');local Assets=require('app.assets');local Preferences=require('app.preferences');local S=require('lib.Slab')
+local checks=0;local r,m,p
+local function check(ok,text)assert(ok,text);checks=checks+1;print('FONTS PASS '..text)end
+function love.errorhandler(message)io.stderr:write('FONTS FAILED '..tostring(message)..'\n'..debug.traceback()..'\n');return function()return 1 end end
 function love.load()
-    checks=0;frame=0;S.SetINIStatePath(nil);S.Initialize({'nocursor'},true)
-    local catalog=Fonts.available();check(#catalog>=1 and #catalog<=Fonts.limit,'System font list is bounded and always includes the built-in font')
-    check(catalog==Fonts.available() and catalog[1].name==Fonts.default,'Discovery is cached with a stable fallback')
-    local sizes={10,12,14,16,18,20,22,24,28,32,36,44,52}
-    local fonts,bold,problem,effective=Fonts.createSet(Fonts.default,sizes)
-    check(not problem and effective==Fonts.default and fonts[16]:getHeight()>0 and bold:getHeight()>0,'Built-in fonts load at logical interface sizes')
-    r={assets=Assets.new(),fonts=fonts,bold=bold,colors={text={.90,.94,.98},muted={.46,.56,.66},accent={.28,.89,.72}}}
-    for _,name in ipairs({'player','bot','players','focus','pan','overview','commander','life'})do
-        local icon=r.assets:iconImage(name,28);check(pixels(icon)>20,'Visible '..name..' icon uses existing assets or interface geometry')
-    end
-    local mana=r.assets:font(24)
-    for i=2,#catalog do
-        local trial,_,issue=Fonts.createSet(catalog[i].name,{16})
-        if not issue and trial[16]:hasGlyphs('Čarobna šuma Aa0123456789') then systemFamily=catalog[i].name;break end
-    end
-    m={settings={},toasts={},toast=function(self,message)self.toasts[#self.toasts+1]=message end,saveSettings=function(self)self.savedFamily=self.settings.fontFamily end}
-    prefs=Preferences.new(m,S,r)
-    m.settings.fontFamily=Fonts.default;prefs:applyFont();beforeSelection=r.fonts[16]
-    m.settings.resolution='1120x720';m.settings.vsync=false
-    check(prefs.appliedFontFamily==m.settings.fontFamily and S.GetStyle().Font==r.fonts[16],'Applying a family updates the table fonts and Slab default')
-    check(r.assets.textFonts[16]==r.fonts[16] and r.assets:font(24)==mana,'Text fonts change without changing Mana symbols')
-    local original=r.fonts[16];prefs:applyFont();check(r.fonts[16]==original,'Unchanged family does not rebuild fonts')
-    m.settings.fontFamily='/tmp/a-font-path-is-not-a-family.ttf';prefs:applyFont()
-    check(prefs.appliedFontFamily==Fonts.default and #m.toasts==1,'Unavailable or path-like saved family safely falls back with feedback')
-    m.settings.fontFamily=Fonts.default;prefs:applyFont();beforeSelection=r.fonts[16]
-    v={S=S,m=m,r=r,preferences=prefs,settingsTab='Accessibility'}
-    function v:window(id,x,y,w,h,title)S.BeginWindow(id,{X=x,Y=y,W=w,H=h,Title=title,AutoSizeWindow=false,AllowMove=false,AllowResize=false})end
-    function v:combo(id,selected,items,width,changed)
-        if S.BeginComboBox(id,{Selected=tostring(selected),W=width})then for _,item in ipairs(items)do if S.TextSelectable(tostring(item),{Selected=item==selected})then changed(item)end end;S.EndComboBox()end
-    end
-    love.mouse.getPosition=function()return mouse.x,mouse.y end
-    love.mouse.isDown=function(button)return button==1 and mouseDown or false end
-    local Cursor=require('lib.Slab.Internal.Core.Cursor')
-    for _,name in ipairs({'BeginComboBox','TextSelectable','Button'})do
-        local original=S[name]
-        S[name]=function(id,options)
-            local result=original(id,options);local x,y,w,h=Cursor.GetItemBounds()
-            local target=name=='BeginComboBox' and controls or name=='TextSelectable' and choices or buttons
-            target[id]={x=x,y=y,w=w,h=h};return result
-        end
-    end
-    print(systemFamily and 'FONTS SYSTEM '..systemFamily or 'FONTS SYSTEM unavailable; built-in fallback verified')
-end
-local function click(box,pressed)
-    assert(box,'Expected font settings control is missing')
-    local x,y=(box.x+box.w/2)*Layout.scale,(box.y+box.h/2)*Layout.scale
-    mouse.x,mouse.y=x,y;mouseDown=pressed;S.OnMouseMoved(x,y,0,0)
-    if pressed then S.OnMousePressed(x,y,1,false,1)else S.OnMouseReleased(x,y,1,false,1)end
-end
-function love.update(dt)
-    frame=frame+1
-    if frame==4 then click(controls['setting-fontFamily'],true)
-    elseif frame==5 then click(controls['setting-fontFamily'],false)
-    elseif frame==8 then click(choices[systemFamily or Fonts.default],true)
-    elseif frame==9 then click(choices[systemFamily or Fonts.default],false)
-    elseif frame==12 then
-        check(m.settings.fontFamily==(systemFamily or Fonts.default),'Actual settings dropdown selects the installed family')
-        check(r.fonts[16]==beforeSelection,'Font selection waits for Apply and save')
-        click(buttons['Apply and save'],true)
-    elseif frame==13 then click(buttons['Apply and save'],false)
-    elseif frame==17 then
-        check(m.savedFamily==(systemFamily or Fonts.default) and prefs.appliedFontFamily==m.savedFamily,'Actual Apply and save applies the selected family and dispatches persistence')
-        check(not systemFamily or r.fonts[16]~=beforeSelection,'The selected system font replaces the visible interface font')
-    end
-    S.Update(dt);Settings.build(v,Layout.dimensions())
-    if frame>20 then print('FONTS COMPLETE '..checks..' checks');love.event.quit(0)end
-end
-function love.draw()
-    love.graphics.clear(.026,.036,.060,1);S.Draw()
-    for i,name in ipairs({'player','bot','players','focus','pan','overview','commander','life'})do r.assets:iconSymbol(name,45+(i-1)*44,665,30)end
-    if frame==18 then love.graphics.captureScreenshot(function(data)local file=assert(io.open('/tmp/love2gathering-fonts-icons.png','wb'));file:write(data:encode('png'):getString());file:close()end)end
+ S.SetINIStatePath(nil);S.Initialize({'nocursor'},true)
+ check(Fonts.default=='Beleren'and Fonts.names()[1]=='Beleren','Beleren is the single application typeface')
+ check(Fonts.available()==Fonts.available()and#Fonts.available()==1,'The public font catalog is stable and bounded')
+ local fonts,bold,problem,effective=Fonts.createSet('Legacy system preference',{12,14,16,18,22,28})
+ check(not problem and effective=='Beleren','Legacy font preferences cannot replace the requested Beleren typeface')
+ for _,size in ipairs({12,14,16,18,22,28})do check(fonts[size]==Fonts.font(size),'Body font uses actual cached Beleren at size '..size)end
+ check(fonts[16]:hasGlyphs('Čarobna šuma, Љубав 0123456789 →'),'Supplied face and UTF-8 fallback retain Serbian and interface characters')
+ check(bold==Fonts.title(22)and bold==fonts[22],'Body, headings and card names use the same actual face')
+ r={fonts=fonts,bold=bold,assets=Assets.new()};m={settings={fontFamily='Old custom family',titleFontFamily='Application font'},toast=function()end};p=Preferences.new(m,S,r);p:applyFont()
+ check(m.settings.fontFamily=='Beleren'and m.settings.titleFontFamily=='Beleren'and S.GetStyle().Font==fonts[16],'Applying preferences forces all interface text to Beleren')
+ local mana=r.assets:font(24);check(mana~=Fonts.font(24)and mana:hasGlyphs(require('utf8').char(58880)),'Mana symbols retain their separate supplied font')
+ local body=Fonts.font(18);S.GetStyle().Font=body;S.PushFont(Fonts.font(28));S.PushFont(Fonts.font(22));S.PopFont();S.PopFont()
+ check(S.GetStyle().Font==body,'Nested header font push/pop restores the current application base')
+ S.GetStyle().Font=Fonts.font(16);S.PushFont(Fonts.font(22));S.PopFont();check(S.GetStyle().Font==Fonts.font(16),'Changing the base after initialization never restores a stale font')
+ local info=love.filesystem.getInfo;Fonts.clearCache();love.filesystem.getInfo=function(path,...)if path=='assets/fonts/Beleren2016-Bold.ttf'then return nil end;return info(path,...)end
+ local fallback,family=Fonts.font(23);love.filesystem.getInfo=info;Fonts.clearCache();check(family=='Built-in DejaVu Sans'and fallback:hasGlyphs('Čarobna'),'Missing display files use the bundled readable fallback safely')
+ print('FONTS COMPLETE '..checks..' checks');love.event.quit(0)
 end
 function love.quit()S.OnQuit()end

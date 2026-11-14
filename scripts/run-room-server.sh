@@ -3,6 +3,7 @@
 set -euo pipefail
 PROJECT_ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$PROJECT_ROOT"
+export LOVE2GATHERING_DATA_DIR="$(python3 service/paths.py)"
 if [[ "${1:-}" == '--help' ]]; then
   python3 service/rooms.py --help
   printf '\nStarts an owned XMage engine and catalog without LÖVE.\nUse --public-url https://your-server.example with a reachable HTTPS reverse proxy.\n'

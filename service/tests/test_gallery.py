@@ -8,7 +8,8 @@ import unittest
 from unittest.mock import patch
 from http.server import ThreadingHTTPServer
 from urllib.error import HTTPError
-from urllib.request import urlopen
+from urllib.request import urlopen,Request
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from catalog import Catalog
@@ -84,6 +85,40 @@ class GalleryTest(unittest.TestCase):
     def test_selected_printing_card_details_keep_the_correct_artist(self):
         printing = self.catalog.get(identifier="oracle-one", printing_id="printing-b")
         self.assertEqual((printing["artist"], printing["released_at"], printing["frame_effects"]), ("Karl Kopinski", "2023-08-04", ["extendedart"]))
+
+    def test_ampersand_query_matches_words_and_ranks_card_prefix_before_metadata(self):
+        base=json.loads(self.source.read_text().splitlines()[0]);cards=[dict(base,id='rin',oracle_id='rin-oracle',name='Rin and Seri, Inseparable'),dict(base,id='river',oracle_id='river-oracle',name='Meandering River',set_name='Secret Lair Series & More'),dict(base,id='ring',oracle_id='ring-oracle',name="Aladdin's Ring")]
+        with self.source.open('a')as f:
+            for card in cards:f.write('\n'+json.dumps(card))
+        self.catalog.ensure()
+        page=self.read('/gallery?q=Rin%20%26%20Seri');self.assertEqual([row['name']for row in page['items']],['Rin and Seri, Inseparable'])
+        self.assertEqual(self.read('/gallery?q=Rin')['items'][0]['name'],'Rin and Seri, Inseparable')
+        self.assertEqual(self.read('/gallery?q=Rin%20%26%20Seri,%20Insep')['items'][0]['printing_id'],'rin')
+
+    def test_cache_status_is_exact_per_printing_face_kind_without_network(self):
+        self.storage.save_art('printing-b-0-art_crop.jpg',b'\xff\xd8cached-crop',{'printingId':'printing-b','oracleId':'oracle-one','face':0,'kind':'art_crop'})
+        with patch.object(self.server.RequestHandlerClass,'download_art',side_effect=AssertionError('Status must stay offline')):
+            items={row['id']:row for row in self.read('/gallery')['items']}
+            self.assertTrue(items['printing-b-0']['art_cached']);self.assertFalse(items['printing-a-0']['art_cached']);self.assertFalse(items['printing-dfc-1']['art_cached'])
+            self.assertEqual(items['printing-a-0']['artist'],'Ryan Pancoast');self.assertEqual(items['printing-b-0']['artist'],'Karl Kopinski')
+            summary=self.read('/art/cache-info');self.assertEqual((summary['cachedImages'],summary['artCrops'],summary['fullCards']),(1,1,0));self.assertIsNone(summary['bulk'])
+
+    def test_explicit_single_art_download_is_cached_and_respects_disk_reserve(self):
+        def post(value):
+            request=Request(self.base+'/art/download',json.dumps(value).encode(),headers={'Content-Type':'application/json'},method='POST')
+            with urlopen(request)as response:return json.load(response)
+        body={'printingId':'printing-b','face':0,'kind':'art_crop'}
+        with patch('server.shutil.disk_usage',return_value=SimpleNamespace(free=128*1024**2)),patch.object(self.server.RequestHandlerClass,'download_art',return_value=b'\xff\xd8exact-selected\xff\xd9')as fetch:
+            self.assertTrue(post(body)['downloaded']);self.assertFalse(post(body)['downloaded']);self.assertEqual(fetch.call_count,1)
+            self.assertEqual(fetch.call_args.args[0],'https://cards.scryfall.io/art_crop/a.jpg')
+        with patch('server.shutil.disk_usage',return_value=SimpleNamespace(free=1)),patch.object(self.server.RequestHandlerClass,'download_art')as fetch:
+            self.assertFalse(post(body)['downloaded'],'Existing cache does not require free download space')
+            with self.assertRaises(HTTPError)as error:post(dict(body,printingId='printing-c'))
+            self.assertEqual(error.exception.code,409);self.assertTrue(json.load(error.exception)['reserveBlocked']);fetch.assert_not_called()
+        self.assertIsNone(self.storage.get_art('printing-b-0-normal.jpg'))
+        for invalid in (None,True,7,{},[],"../outside"):
+            with self.subTest(printing=invalid),self.assertRaises(HTTPError)as error:post(dict(body,printingId=invalid))
+            self.assertEqual(error.exception.code,400)
 
     def test_gallery_art_reads_authoritative_blob_for_nonenglish_and_reverse_face(self):
         data = b"\xff\xd8" + b"gallery-test-jpeg" * 50

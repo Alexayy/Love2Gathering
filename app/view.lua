@@ -10,6 +10,7 @@ local function plain(value)
 end
 function View.new(S,model,renderer)
     local self=setmetatable({S=S,m=model,r=renderer},View)
+    renderer.view=self
     local style=S.GetStyle()
     style.Font=renderer.fonts[16]
     style.WindowBackgroundColor={.055,.073,.106,.99};style.WindowTitleFocusedColor={.08,.18,.20,1}
@@ -23,7 +24,8 @@ function View.new(S,model,renderer)
     require('app.theme').install(S,renderer.assets)
     return self
 end
-function View:window(id,x,y,w,h,title)
+function View:window(id,x,y,w,h,title,options)
+    options=options or{}
     local movable=title~=nil;local resizable=id=='floating-log' or id=='floating-stack'
     local border=(id=='match-toolbar' or id=='priority-mode') and 6 or 14
     local geometryId=id=='floating-stack' and self.m.replay and 'floating-stack-replay' or id
@@ -45,7 +47,9 @@ function View:window(id,x,y,w,h,title)
         x,y=base.x,base.y
         if resizable then w,h=base.w,base.h end
     end
-    self.S.BeginWindow(id,{X=x,Y=y,W=w,H=h,Title=title,AutoSizeWindow=false,AllowMove=movable,AllowResize=resizable,ResetPosition=not movable or first or self.floatReset[id],ResetSize=not resizable or first or self.floatReset[id],NoSavedSettings=true,Border=border,ShowMinimize=false,ConstrainPosition=true})
+    local windowOptions={X=x,Y=y,W=w,H=h,Title=title,AutoSizeWindow=false,AllowMove=movable,AllowResize=resizable,ResetPosition=not movable or first or self.floatReset[id],ResetSize=not resizable or first or self.floatReset[id],NoSavedSettings=true,Border=border,ShowMinimize=false,ConstrainPosition=true}
+    for key,value in pairs(options)do windowOptions[key]=value end
+    self.S.BeginWindow(id,windowOptions)
     self.floatReset[id]=nil
     if movable and not love.mouse.isDown(1) then
         local ax,ay=self.S.GetWindowPosition();local aw,ah=self.S.GetWindowSize()
@@ -69,61 +73,13 @@ function View:builder(w,h) require('app.builder').build(self,w,h) end
 function View:deckPicker(id,deckId,format,width,changed)
     require('app.deck_picker').button(self,id,deckId,format,width,changed)
 end
-function View:lobby(w,h)
-    local S,m=self.S,self.m;local height=h-226
-    self:window('lobby',28,202,math.min(515,w*.44),height)
-    local width=math.min(515,w*.44)-25;local count=m:lobbyPlayerCount()
-    local function label(text,icon,color)
-        S.Image('lobby-label-'..text,{Image=self.r.assets:iconImage(icon,19,color),W=19,H=19});S.SameLine();S.Text(text,{Color=color or C.text})
-    end
-    local function button(text,icon,bw,bh,options)
-        options=options or {};options.W=bw;options.H=bh
-        options.Image={Image=self.r.assets:buttonImage(icon,text,bw,bh,{font=self.r.fonts[16],iconSize=18})}
-        return S.Button(text,options)
-    end
-    label('MATCH SETUP',m.format=='Commander' and 'commander' or 'library',C.accent);S.Separator()
-    -- Keep the launch controls visible while additional seats scroll at small sizes.
-    S.BeginListBox('lobby-setup',{W=width,H=math.max(200,height-160)})
-    local content=width-14
-    label('Format','library')
-    self:combo('format',m.format,formats,content,function(v)m:setLobbyFormat(v)end)
-    if m.format=='Commander' then
-        S.NewLine();label('Players','players',C.accent)
-        local choices={2,4,5,6};local bw=(content-24)/4
-        for i,players in ipairs(choices) do
-            if i>1 then S.SameLine() end
-            if button(tostring(players),'players',bw,31,{Color=count==players and {.13,.37,.34,1} or nil,Tooltip=players..' players: you and '..(players-1)..' XMage bot'..(players>2 and 's' or '')}) then m:setLobbyPlayers(players);count=players end
-        end
-    end
-    S.NewLine();label('Your name','player',C.accent)
-    if S.Input('playerName',{Text=m.playerName,W=content,H=28,Align='left'}) then m.playerName=S.GetInputText() end
-    S.NewLine();label('YOUR DECK','library',C.accent)
-    self:deckPicker('yourDeck',m.playerDeckId,m.format,content,function(id) m.playerDeckId=id end)
-    local deck=m:findDeck(m.playerDeckId)
-    if deck then S.Textf(deck.description or '',{W=content,Color=C.muted}) end
-    for index=1,count-1 do
-        S.NewLine();label(count==2 and 'XMAGE BOT DECK' or 'XMAGE BOT '..index,'bot',C.purple)
-        self:deckPicker(index==1 and 'botDeck' or 'botDeck'..index,index==1 and m.botDeckId or m.botDeckIds[index],m.format,content,function(id)m:setBotDeck(index,id)end)
-        if count==2 then
-            local bot=m:findDeck(m.botDeckId);if bot then S.Textf(bot.description or '',{W=content,Color=C.muted}) end
-        end
-    end
-    S.NewLine();label(m.format=='Commander' and '40 life · one free mulligan' or '20 life · single game',m.format=='Commander' and 'commander' or 'library',C.muted)
-    S.Text(m.settings.manualTriggers and 'Trigger order: manual, left → right' or 'Trigger order: automatic',{Color=C.muted})
-    S.EndListBox();S.NewLine()
-    label('1 human · '..(count-1)..' XMage bot'..(count>2 and 's' or ''),'players',C.text)
-    local connected=m.engineHealth.ok or m.engineHealth.status=='ok' or m.engineHealth.ready
-    if button(m.gameBusy and 'Starting engine match…' or 'Start match','play',width,40,{Disabled=m.gameBusy or not connected}) then m:startGame() end
-    if not connected then S.Textf('The XMage bridge is starting. First launch compiles the engine; see the launcher log for progress.',{W=width,Color=C.gold}) end
-    if m.game then if button('Return to current match','back',width,28) then m.page='table' end end
-    S.EndWindow()
-end
+function View:lobby(w,h)require('app.lobby_ui').build(self,w,h)end
 function View:table(w,h) require('app.match_ui').build(self,w,h) end
 function View:replays(w,h) require('app.replay_ui').build(self,w,h) end
 function View:gallery(w,h) require('app.gallery').build(self,w,h) end
 function View:rooms(w,h) require('app.room_ui').build(self,w,h) end
 function View:draft(w,h) require('app.draft_ui').build(self,w,h) end
-function View:settings(w,h) require('app.settings').build(self,w,h) end
+function View:settings(w,h,options) require('app.settings').build(self,w,h,options) end
 function View:modals(w,h)
     local S,m=self.S,self.m
     require('app.deck_picker').popup(self,w,h)
@@ -154,11 +110,24 @@ function View:modals(w,h)
         if S.Button('Close details',{W=340,H=27}) then m.inspectCard=nil
         else
             local card=m:cardData(m.inspectCard) or m.inspectCard;local art=m:getArt(card)
+            local traits=require('app.card_traits').entries(m.inspectCard)
+            if#traits>0 then
+                S.Text('Current abilities',{Color=C.gold})
+                for _,entry in ipairs(traits)do
+                    if entry.icon then S.Image('native-trait-'..entry.name,{Image=self.r.assets:iconImage(entry.icon,20,entry.gained and C.gold or C.text),W=20,H=20});S.SameLine({CenterY=true})end
+                    S.Text(entry.label..(entry.gained and' · granted'or''),{Color=entry.gained and C.gold or C.text})
+                end
+                S.Separator()
+            end
             if art then S.Image('inspected-art',{Image=art,W=285,H=399}) end
             S.PushFont(self.r.assets:titleFont(22,m.settings));S.Textf(plain(card.name),{W=340,Color=C.accent});S.PopFont()
             RichText.slab(self,'inspected-cost',card.mana_cost or card.manaCost or '',340,{size=20,color=C.gold})
             S.Textf(plain(card.type_line or card.type),{W=340,Color=C.muted});S.Separator()
             RichText.slab(self,'inspected-rules',require('app.keywords').annotate(card.oracle_text or card.rules or'',m.settings.keywordReminders),340,{size=16,color=C.text})
+            if card.currentRules and card.currentRules~=''then
+                if S.Button('Show current rules',{W=340,H=32})then self.inspectCurrentRules=not self.inspectCurrentRules end
+                if self.inspectCurrentRules then RichText.slab(self,'inspected-current-rules',card.currentRules,340,{size=16,color=C.gold})end
+            end
             if m.inspectCard.power and m.inspectCard.toughness then S.Text('Current '..m.inspectCard.power..'/'..m.inspectCard.toughness,{Color=C.gold})end
             local attached=(self.r.boardAttached or{})[m.inspectCard.id]or{}
             if #attached>0 then S.Separator();S.Text('Attached cards',{Color=C.gold})end
@@ -168,14 +137,31 @@ function View:modals(w,h)
         S.EndWindow()
     end
     if m.settingsOpen then self:settings(w,h) end
+    require('app.storage').modal(self,w,h)
 end
 function View:build()
     local w,h=Layout.dimensions()
+    local storageVisible=(self.m.page=='settings'or self.m.settingsOpen)and self.settingsTab=='Storage'and(self.m.storageSection or'cleanup')or false
+    if(self.storageRegionVisible or false)~=storageVisible then
+        -- A hidden nested Slab list does not get another Begin to release hover.
+        -- Release it before rebuilding visible regions, keeping navbar input live.
+        require('lib.Slab.Internal.UI.Region').ClearHotInstance()
+    end
+    self.storageRegionVisible=storageVisible
+    if self.deckSelection and self.deckSelection.openPage and self.deckSelection.openPage~=self.m.page then require('app.deck_picker').close(self)end
+    local lock=self.themeColorEdit and'ColorPicker'or self.m.storagePurgePreview and'storage-purge-confirm'or self.deckSelection and'choose-deck-tiles'
+        or self.m.settingsOpen and'settings'or self.m.inspectCard and'inspect-card'or self.m.zoneView and'zone-view'
+        or self.m.galleryInspect and'gallery-inspect'or self.m.deleteConfirm and'delete-deck'or self.m.archiveCopy and'archive-copy'
+        or self.m.confirmConcede and'concede-confirm'or self.combatStopsOpen and'combat-step-stops'
+        or self.m.page=='builder'and(self.builderPopup and'builder-choice-popup'or self.builderFiltersOpen and'simplified-more-filters')
+    local Window=require('lib.Slab.Internal.UI.Window')
+    if lock then Window.SetStackLock(lock);self.inputLock=lock
+    elseif self.inputLock then Window.SetStackLock(nil);self.inputLock=nil end
     self.S.PushFont(self.r.fonts[16])
     if self.m.page=='decks' then self:decks(w,h)
     elseif self.m.page=='builder' then self:builder(w,h)
     elseif self.m.page=='lobby' then self:lobby(w,h)
-    elseif self.m.page=='table' then self:table(w,h)
+    elseif self.m.page=='table'and not self.m.settingsOpen then self:table(w,h)
     elseif self.m.page=='replays' then self:replays(w,h) end
     if self.m.page=='gallery' then self:gallery(w,h) end
     if self.m.page=='rooms' then self:rooms(w,h) end
@@ -184,7 +170,9 @@ function View:build()
     if self.m.page=='history' then require('app.library_ui').history(self,w,h)end
     if self.m.page=='tokens' then require('app.library_ui').tokens(self,w,h)end
     if self.m.page=='profile'then require('app.profile_ui').build(self,w,h)end
+    if self.m.page=='settings'then self:settings(w,h,{fullPage=true})end
     self:modals(w,h)
+    self.r.blockBuilderDrop=self.builderPopup or self.builderFiltersOpen or self.deckSelection or self.m.settingsOpen or self.m.inspectCard or self.m.storagePurgePreview
     self.S.PopFont()
 end
 return View

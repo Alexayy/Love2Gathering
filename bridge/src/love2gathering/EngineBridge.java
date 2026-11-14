@@ -190,6 +190,10 @@ public final class EngineBridge {
         final Map<String,Cards> lookedAtReferences = new LinkedHashMap<>();
         volatile long decisionStartedAt, priorityStartedAt;
         volatile UUID decisionPlayerId, timedPriorityPlayerId;
+        // A selected block is provisional until XMage validates the complete
+        // declaration and emits DECLARED_BLOCKERS for that defending player.
+        final Set<UUID> confirmedBlockerDefenders = new HashSet<>();
+        Object confirmedBlockersPhase;
         int nativePriorityDepth;
         final AtomicLong ids;
         final Deque<Map<String,Object>> log = new ArrayDeque<>();
@@ -546,6 +550,11 @@ public final class EngineBridge {
         void nativeEvent(GameEvent event,Game context) {
             if(context!=game||context.isSimulation()||context.inCheckPlayableState())return;
             if(event.getType().isBatch())return; // Individual members were observed separately.
+            if(event.getType()==GameEvent.EventType.DECLARE_BLOCKERS_STEP_PRE){owner.confirmedBlockerDefenders.clear();owner.confirmedBlockersPhase=game.getPhase();}
+            if(event.getType()==GameEvent.EventType.DECLARED_BLOCKERS){
+                if(owner.confirmedBlockersPhase!=game.getPhase()){owner.confirmedBlockerDefenders.clear();owner.confirmedBlockersPhase=game.getPhase();}
+                owner.confirmedBlockerDefenders.add(event.getPlayerId());
+            }
             UUID actor=event.getPlayerId(),sourceId=event.getSourceId();MageObject source=knownObject(sourceId);
             String sourceName=source!=null?String.valueOf(card(source).get("name")):null;
             boolean visual=visualEvent(event,source);
@@ -716,13 +725,13 @@ public final class EngineBridge {
             promptContext.enrich(p,event,choices);
             if(nativeOptions!=null&&nativeOptions.containsKey("possibleBlockers")){
                 Set<UUID> blockers=new LinkedHashSet<>();addIds(blockers,nativeOptions.get("possibleBlockers"));
-                try{p.put("combat",map("role","blockers","blockers",NativeProjection.blockerOptions(this,blockers)));}
+                try{p.put("combat",map("role","blockers","declarationConfirmed",false,"message","Blocks are not confirmed yet. Select blockers, then choose Done to confirm before activating abilities.","blockers",NativeProjection.blockerOptions(this,blockers)));}
                 catch(RuntimeException previewError){
                     // Optional explanatory projection must never abort a real
                     // blocker decision. Actual engine choices remain intact.
-                    p.put("combat",map("role","blockers","blockers",Collections.emptyList(),"blockerIds",NativeProjection.ids(blockers),"previewUnavailable",true));
+                    p.put("combat",map("role","blockers","declarationConfirmed",false,"message","Blocks are not confirmed yet. Choose Done to confirm.","blockers",Collections.emptyList(),"blockerIds",NativeProjection.ids(blockers),"previewUnavailable",true));
                 }
-            }else if(human.selectedBlockerId!=null)p.put("combat",map("role","block_target","blockerId",str(human.selectedBlockerId),"legalAttackerIds",new ArrayList<>(targets)));
+            }else if(human.selectedBlockerId!=null)p.put("combat",map("role","block_target","declarationConfirmed",false,"message","Choose the attacker to block, then choose Done to confirm all blocks.","blockerId",str(human.selectedBlockerId),"legalAttackerIds",new ArrayList<>(targets)));
             p.put("choices", choices);
             p.put("targets", targets);
             p.put("actionable",new ArrayList<>(targets));
@@ -919,6 +928,7 @@ public final class EngineBridge {
             boolean explicitlySeen=game.getState().getRevealed().values().stream().anyMatch(list->list.contains(c.getId()))||game.getState().getLookedAt(human.getId())!=null&&game.getState().getLookedAt(human.getId()).values().stream().anyMatch(list->list.contains(c.getId()));
             if(c instanceof Card && ((Card)c).isFaceDown(game) && !mage.util.CardUtil.canShowAsControlled((Card)c,human.getId())&&!explicitlySeen) return map("id",c.getId().toString(),"name","Face-down card","faceDown",true,"hidden",true,"manaCost","","type","","rules","","power","","toughness","");
             Map<String,Object> m = map("id",c.getId().toString(),"name",c.getName(),"manaCost",c.getManaCost().getText(),"type",c.getCardType(game).toString(),"rules",c.getAbilities().stream().map(a -> clean(a.getRule())).filter(s -> !s.isEmpty()).distinct().collect(Collectors.joining("\n")),"power",c.getPower().toString(),"toughness",c.getToughness().toString(),"set",c.getExpansionSetCode(),"number",c.getCardNumber());
+            m.put("currentRules",m.get("rules"));m.put("keywords",NativeProjection.keywords(c));m.put("abilityIcons",NativeProjection.abilityIcons(c,game));
             if(c instanceof Card) { Map<String,Object> counters=new LinkedHashMap<>(); ((Card)c).getCounters(game).forEach((name,counter)->counters.put(name,counter.getCount())); m.put("counters",counters); }
             MageObject printed=c instanceof mage.game.permanent.PermanentToken?((mage.game.permanent.PermanentToken)c).getToken():game.getCard(c.getId());
             if(c instanceof mage.game.permanent.PermanentToken&&((Permanent)c).isTransformed()&&((mage.game.permanent.PermanentToken)c).getToken().getBackFace()!=null)printed=((mage.game.permanent.PermanentToken)c).getToken().getBackFace();
@@ -927,7 +937,7 @@ public final class EngineBridge {
                 List<String> subtypes=printed.getSubtype(null).stream().map(Object::toString).collect(Collectors.toList());
                 String type=printed.getCardType(null).stream().map(Object::toString).collect(Collectors.joining(" "));
                 m.put("printing",map("name",printed.getName(),"power",printed.getPower().toString(),"toughness",printed.getToughness().toString(),"set",printed.getExpansionSetCode(),"number",printed.getCardNumber(),
-                    "colors",colorNames(printed.getColor()),"type",type,"type_line",type+(subtypes.isEmpty()?"":" — "+String.join(" ",subtypes)),"subtypes",subtypes));
+                    "colors",colorNames(printed.getColor()),"type",type,"type_line",type+(subtypes.isEmpty()?"":" — "+String.join(" ",subtypes)),"subtypes",subtypes,"keywords",NativeProjection.keywords(printed)));
             }
             if(c instanceof Card)m.put("ownerId",str(((Card)c).getOwnerId()));
             m.put("colors",colorNames(c.getColor(game)));m.put("subtypes",c.getSubtype(game).toString());

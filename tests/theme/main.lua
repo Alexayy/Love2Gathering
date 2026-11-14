@@ -16,6 +16,11 @@ function love.load()
     local style=S.GetStyle();style.Font=love.graphics.newFont('assets/fonts/DejaVuSans.ttf',16)
     check(assets.theme.ready,'Both supplied Kenney packs are available at runtime')
     check(Theme.install(S,assets) and Theme.install(S,assets),'Slab skin installation is idempotent')
+    Theme.apply(S,assets,{theme='Midnight',colorblindMode='Off'});local initial=S.GetStyle().CheckBoxSelectedColor[1]
+    Theme.apply(S,assets,{theme='Midnight',colorblindMode='Tritanopia'})
+    check(assets.theme.styles.CheckBoxSelectedColor[1]~=initial and assets.theme.styles.CheckBoxSelectedColor[1]==1,'Changing color vision palette immediately refreshes the cached Slab colors')
+    Theme.apply(S,assets,{theme='Midnight',colorblindMode='Off'})
+    check(assets.theme.styles.CheckBoxSelectedColor[1]==initial,'Resetting color vision palette restores the selected theme colors')
     for name,spec in pairs(Theme.manifest)do
         local image=assets.theme.slices[name].image;local data=love.image.newImageData('assets/kenney/theme/'..spec.file)
         local minA,maxA=1,0;for y=0,data:getHeight()-1 do for x=0,data:getWidth()-1 do local _,_,_,a=data:getPixel(x,y);minA=math.min(minA,a);maxA=math.max(maxA,a)end end
@@ -23,7 +28,7 @@ function love.load()
     end
     local canvas=Assets.rasterize(230,115,function()assets:panel(8,8,210,96,{.13,.22,.29,.4})end)
     local data=canvas:newImageData();local rr,gg,bb,aa=data:getPixel(110,60)
-    check(math.abs(rr-.13)<.02 and math.abs(gg-.22)<.02 and math.abs(bb-.29)<.02 and math.abs(aa-.4)<.02,'Panel preserves explicit tint and alpha instead of baking a bright background')
+    check(math.abs(rr-.13)<.02 and math.abs(gg-.22)<.02 and math.abs(bb-.29)<.02 and math.abs(aa-.4*.65)<.02,'Panel preserves explicit tint and multiplies its alpha by the default panel opacity')
     local _,_,_,corner=data:getPixel(0,0);check(corner==0,'Panel leaves pixels outside the requested rectangle transparent')
     love.graphics.push('all');love.graphics.translate(17,29);love.graphics.setScissor(10,20,100,150);love.graphics.setColor(.1,.2,.3,.6)
     local beforeFont=love.graphics.getFont();assets:control(20,30,180,40,'accent');assets:frame(20,90,160,110,'purple')

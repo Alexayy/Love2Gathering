@@ -1,11 +1,14 @@
 {
   "passed": true,
-  "checks": 24,
+  "checks": 54,
   "cases": [
     {
       "checks": [
         "Profile page opens through actual Model/View hooks",
-        "Actual Slab name input preserves UTF-8 text",
+        "Actual Slab name input preserves UTF-8 text (received \u010carobnjak 1440)",
+        "Actual prefix then ampersand input returns Rin and Seri, never the stale Meandering River result",
+        "Real cached and uncached printings have distinct ready/missing states without artist substitution",
+        "An uncached avatar keeps its exact selected printing and an explicit missing state",
         "Actual avatar selector changes the artwork destination",
         "Actual artwork click retains exact avatar printing and face",
         "Selected avatar uses a genuine cached illustration",
@@ -15,7 +18,10 @@
         "Save remains visible in the current viewport",
         "Actual Save persists name/avatar/playmat through SQLite HTTP",
         "Profile page never stores an HP override",
-        "Reopening restores both exact saved selections from the service"
+        "Reopening restores both exact saved selections from the service",
+        "Gallery keeps actual credits for an uncached printing and stops showing Loading",
+        "Actual missing-art click opens the exact printing inspector",
+        "Actual Close artwork returns to the mixed gallery grid"
       ],
       "height": 900,
       "passed": true,
@@ -41,7 +47,10 @@
     {
       "checks": [
         "Profile page opens through actual Model/View hooks",
-        "Actual Slab name input preserves UTF-8 text",
+        "Actual Slab name input preserves UTF-8 text (received \u010carobnjak 1120)",
+        "Actual prefix then ampersand input returns Rin and Seri, never the stale Meandering River result",
+        "Real cached and uncached printings have distinct ready/missing states without artist substitution",
+        "An uncached avatar keeps its exact selected printing and an explicit missing state",
         "Actual avatar selector changes the artwork destination",
         "Actual artwork click retains exact avatar printing and face",
         "Selected avatar uses a genuine cached illustration",
@@ -51,7 +60,10 @@
         "Save remains visible in the current viewport",
         "Actual Save persists name/avatar/playmat through SQLite HTTP",
         "Profile page never stores an HP override",
-        "Reopening restores both exact saved selections from the service"
+        "Reopening restores both exact saved selections from the service",
+        "Gallery keeps actual credits for an uncached printing and stops showing Loading",
+        "Actual missing-art click opens the exact printing inspector",
+        "Actual Close artwork returns to the mixed gallery grid"
       ],
       "height": 760,
       "passed": true,
@@ -73,6 +85,48 @@
       "scale": 1,
       "scope": "Actual main callbacks, Slab input and real temporary catalog SQLite; exact cached illustrations; no injected native gameplay",
       "width": 1120
+    },
+    {
+      "checks": [
+        "Profile page opens through actual Model/View hooks",
+        "Actual Slab name input preserves UTF-8 text (received \u010carobnjak 2560)",
+        "Actual prefix then ampersand input returns Rin and Seri, never the stale Meandering River result",
+        "Real cached and uncached printings have distinct ready/missing states without artist substitution",
+        "An uncached avatar keeps its exact selected printing and an explicit missing state",
+        "Actual avatar selector changes the artwork destination",
+        "Actual artwork click retains exact avatar printing and face",
+        "Selected avatar uses a genuine cached illustration",
+        "Actual playmat selector changes the artwork destination",
+        "Actual artwork click retains exact playmat printing and face",
+        "Selected playmat uses a genuine cached illustration",
+        "Save remains visible in the current viewport",
+        "Actual Save persists name/avatar/playmat through SQLite HTTP",
+        "Profile page never stores an HP override",
+        "Reopening restores both exact saved selections from the service",
+        "Gallery keeps actual credits for an uncached printing and stops showing Loading",
+        "Actual missing-art click opens the exact printing inspector",
+        "Actual Close artwork returns to the mixed gallery grid"
+      ],
+      "height": 1008,
+      "passed": true,
+      "profile": {
+        "avatar": {
+          "face": 0,
+          "name": "Angel of Vitality",
+          "oracleId": "635fe908-6f58-4c9e-ac55-0775a7c6f278",
+          "printingId": "2525d613-c037-4170-9b07-da6f6d9440bc"
+        },
+        "name": "\u010carobnjak 2560",
+        "playmat": {
+          "face": 0,
+          "name": "Forest",
+          "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+          "printingId": "0000419b-0bba-4488-8f7a-6194544ce91e"
+        }
+      },
+      "scale": 1,
+      "scope": "Actual main callbacks, Slab input and real temporary catalog SQLite; exact cached illustrations; no injected native gameplay",
+      "width": 2560
     }
   ]
 }

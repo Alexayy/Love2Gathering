@@ -4,6 +4,7 @@ local Renderer=require('app.renderer')
 local View=require('app.view')
 local Layout=require('app.layout')
 local Preferences=require('app.preferences')
+local Storage=require('app.storage')
 local model,renderer,view,preferences
 local smoke,smokeMatch,smokeTime,smokeStage=false,false,0,0
 function love.load(args)
@@ -70,8 +71,9 @@ function love.mousepressed(x,y,button,touch,clicks)
     Slab.OnMousePressed(x,y,button,touch,clicks)
     local lx,ly=Layout.toLogical(x,y)
     local choices=package.loaded['app.card_choices']
-    if choices and not model.settingsOpen and not model.inspectCard and not model.zoneView and choices.press(view,lx,ly,button)then return end
-    if not model.settingsOpen and not model.zoneView and not model.deleteConfirm and not model.inspectCard and Slab.IsVoidHovered() then
+    if choices and not renderer:inputBlocked()and choices.press(view,lx,ly,button)then return end
+    if not renderer:inputBlocked()and Storage.press(renderer,lx,ly,button)then return end
+    if not renderer:inputBlocked()and Slab.IsVoidHovered() then
         renderer:mousepressed(lx,ly,button,clicks)
     end
 end
@@ -93,9 +95,13 @@ end
 function love.textinput(...) Slab.OnTextInput(...) end
 function love.keypressed(key,scancode,isrepeat)
     Slab.OnKeyPressed(key,scancode,isrepeat)
-    if not Slab.IsAnyInputFocused() then
-        if key=='escape' then model.settingsOpen=false;model.zoneView=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.galleryInspect=nil;model.confirmConcede=false
-        elseif key=='space' and model.page=='table' then
+    if key=='escape'then
+        model:closeSettings();model.zoneView=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.galleryInspect=nil;model.confirmConcede=false;model.archiveCopy=nil;model.storagePurgePreview=nil
+        view.builderPopup=nil;view.builderFiltersOpen=nil;view.themeColorEdit=nil;view.combatStopsOpen=false;require('app.deck_picker').close(view)
+        return
+    end
+    if not Slab.IsAnyInputFocused()and not renderer:inputBlocked()then
+        if key=='space' and model.page=='table' then
             if model.replay then model:toggleReplay()
             else
                 local p=model:prompt()

@@ -7,6 +7,16 @@ from replays import encode, now
 
 
 class ArtworkStore:
+    def artwork_summary(self):
+        with self.connection()as c:
+            counts={row[0]:row[1]for row in c.execute("SELECT CASE WHEN cache_key LIKE '%-art_crop.jpg' THEN 'artCrops' WHEN cache_key LIKE '%-normal.jpg' OR cache_key LIKE '%-large.jpg' THEN 'fullCards' ELSE 'legacy' END,count(*)FROM art_cache INDEXED BY sqlite_autoindex_art_cache_1 GROUP BY 1")}
+        return {'cachedImages':sum(counts.values()),'fullCards':counts.get('fullCards',0),'artCrops':counts.get('artCrops',0),'legacy':counts.get('legacy',0)}
+    def artwork_statuses(self,items,kind='art_crop'):
+        keys={item['printing_id']+'-'+str(item.get('face',0))+'-'+kind+'.jpg'for item in items}
+        with self.connection()as c:
+            cached={row[0]for row in c.execute('SELECT cache_key FROM art_cache WHERE cache_key IN ('+','.join('?'for _ in keys)+')',tuple(keys))}if keys else set()
+        for item in items:item['art_cached']=item['printing_id']+'-'+str(item.get('face',0))+'-'+kind+'.jpg'in cached
+        return items
     def art_candidates(self, oracle_id, face=0, kind='normal', limit=40):
         kinds = ('normal', 'large') if kind == 'normal' else (kind,)
         with self.connection() as c:
@@ -33,6 +43,7 @@ class ArtworkStore:
         # They never overwrite a newer SQL image or masquerade as another kind.
         library = Path(os.environ.get('LOVE2GATHERING_IMAGE_LIBRARY', str(self.root / 'image-library')))
         for candidate in keys:
+            if not self.art_mirror_import_allowed(candidate):continue
             folder = 'art-crops' if candidate.endswith('-art_crop.jpg') else 'full-cards'
             for path in (self.root / 'art' / candidate, library / folder / candidate):
                 if not path.is_file() or not 2 <= path.stat().st_size <= 3 * 1024 * 1024: continue
@@ -43,6 +54,7 @@ class ArtworkStore:
                 if candidate == f'{oracle_id}-{face}.jpg' and oracle_id != printing_id: metadata['legacyOracleAlias'] = True
                 else: metadata['printingId'] = printing_id
                 with self.connection(write=True) as c:
+                    if not self.art_mirror_import_allowed(candidate,connection=c):continue
                     c.execute("INSERT OR IGNORE INTO art_cache VALUES (?,?,'image/jpeg',?,?)", (candidate, sqlite3.Binary(data), encode(metadata), now()))
                     row = c.execute('SELECT content,metadata FROM art_cache WHERE cache_key=?', (candidate,)).fetchone()
                     return bytes(row['content']), candidate, json.loads(row['metadata'])

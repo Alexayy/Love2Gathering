@@ -20,11 +20,7 @@ for executable in java python3 love; do
   if ! command -v "$executable" >/dev/null 2>&1; then printf 'Please install %s before starting.\n' "$executable" >&2; exit 1; fi
 done
 mkdir -p .runtime
-USER_DATA_DIR=$(python3 - "${LOVE2GATHERING_DATA_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/love2gathering}" <<'PYDATA'
-import pathlib,sys
-print(pathlib.Path(sys.argv[1]).resolve())
-PYDATA
-)
+USER_DATA_DIR=$(python3 service/paths.py)
 export LOVE2GATHERING_DATA_DIR="$USER_DATA_DIR"
 OWNED_PIDS=()
 BUILD_PID=''
@@ -54,7 +50,7 @@ try:
         data=json.load(response)
     assert data.get('status')=='ok' or data.get('engine')=='XMage'
     if sys.argv[2]=='catalog':
-        assert data.get('apiVersion',0)>=6
+        assert data.get('apiVersion',0)>=8
         assert data.get('storage',{}).get('dataDirectory')==sys.argv[3]
         source=os.environ.get('LOVE2GATHERING_CATALOG_SOURCE')
         if source:

@@ -78,6 +78,10 @@ local Style =
 	CheckBoxRounding = 2.0,
 	ComboBoxRounding = 2.0,
 	InputBgRounding = 2.0,
+	ControlHeight = 32.0,
+	InputPaddingY = 6.0,
+	TooltipsEnabled = true,
+	TooltipDelay = 0.55,
 	ScrollBarRounding = 2.0,
 	Indent = 14.0,
 	MenuPadH = 0.0,
@@ -212,8 +216,11 @@ end
 
 function API.PushFont(Font)
 	if Font ~= nil then
+		-- Synchronize direct application font changes with the stack base.
+		if #FontStack > 0 and FontStack[1] ~= Style.Font then FontStack[1] = Style.Font end
 		Style.Font = Font
 		table.insert(FontStack, 1, Font)
+		Cursor.SetNewLineSize(Font:getHeight())
 	end
 end
 
@@ -221,6 +228,7 @@ function API.PopFont()
 	if #FontStack > 1 then
 		table.remove(FontStack, 1)
 		Style.Font = FontStack[1]
+		Cursor.SetNewLineSize(Style.Font:getHeight())
 	end
 end
 

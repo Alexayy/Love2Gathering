@@ -1,6 +1,6 @@
 # Starter, owned and historical product decks
 
-The catalog reports API **6**. My Decks contains saved `origin:user` lists. Starter contains the twenty curated JSON lists shipped directly in `decks/`. Preconstructed is a separately indexed, immutable product archive; it does not add thousands of full lists to the lobby's `/decks` response.
+The catalog reports API **7**; collection endpoints were introduced in API6. My Decks contains saved `origin:user` lists. Starter contains the twenty curated JSON lists shipped directly in `decks/`. Preconstructed is a separately indexed, immutable product archive; it does not add thousands of full lists to the lobby's `/decks` response.
 
 ## Acquired source and coverage
 

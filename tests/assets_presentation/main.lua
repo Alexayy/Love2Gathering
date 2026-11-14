@@ -20,21 +20,22 @@ function love.load()
     S.SetINIStatePath(nil);S.Initialize({},true)
     local fonts,bold=Fonts.createSet(Fonts.default,{10,11,12,13,14,16,18,20,22,24,28,32,36,44,52})
     r={assets=Assets.new(),fonts=fonts,bold=bold,colors={text={.90,.94,.98},muted={.56,.65,.73},accent={.28,.89,.72}}}
-    m={settings={},toasts={},toast=function(self,s)self.toasts[#self.toasts+1]=s end,saveSettings=function(self)self.saved=true end,showProfile=function(self)self.profileShown=true end}
+    m={settings={resolution='1440x900',windowMode='Windowed'},toasts={},toast=function(self,s)self.toasts[#self.toasts+1]=s end,saveSettings=function(self)self.saved=true end,showProfile=function(self)self.profileShown=true end}
     prefs=Preferences.new(m,S,r);prefs:applyFont();Theme.install(S,r.assets)
-    check(m.settings.titleFontFamily=='Beleren'and m.settings.fontFamily==Fonts.default,'Beleren titles default independently of the readable body font')
+    check(m.settings.titleFontFamily=='Beleren'and m.settings.fontFamily=='Beleren','Beleren is the required body and heading typeface')
     local title,family=r.assets:titleFont(22,m.settings)
-    check(family=='Beleren'and title==Fonts.title(22,'Beleren')and title~=r.fonts[22],'The actual supplied Beleren font loads and is cached for titles')
+    check(family=='Beleren'and title==Fonts.title(22,'Beleren')and title==r.fonts[22],'The actual supplied Beleren font loads and is cached for titles')
     check(title:hasGlyphs('Magic Čarobna šuma 0123'),'Beleren titles retain UTF-8 via the bundled fallback')
     local custom=Fonts.names()[2]or Fonts.default;local appTitle,effective=Fonts.title(22,'Application font',custom)
-    check(effective==custom and appTitle~=title,'Explicit application-font titles preserve the chosen installed family')
+    check(effective=='Beleren'and appTitle==title,'Legacy title-font choices retain the required Beleren typeface')
     local realInfo=love.filesystem.getInfo;love.filesystem.getInfo=function(path,...)if path=='assets/fonts/Beleren2016-Bold.ttf'then return nil end;return realInfo(path,...)end
     local _,fallback=Fonts.title(23,'Beleren');love.filesystem.getInfo=realInfo
-    check(fallback==Fonts.default,'Missing display-font files fall back safely without affecting body copy')
+    check(fallback=='Built-in DejaVu Sans','Missing display-font files fall back safely without affecting body copy')
+    Fonts.clearCache()
     local n=0;for name,spec in pairs(Assets.runtime.icons)do
         local d=love.image.newImageData(spec.path);check(d:getWidth()==spec.width and d:getHeight()==spec.height and coverage(r.assets:iconImage(name,28))>40,'Supplied icon renders with source alpha: '..name);n=n+1
     end
-    check(n==30,'The semantic icon selection is bounded and provenance-backed')
+    check(n==31,'The semantic icon selection is bounded and provenance-backed')
     local keywords={'flying','hexproof','trample','haste','deathtouch','lifelink','defender','double-strike','first-strike','flash','indestructible','menace','reach','surveil','vigilance','ward'}
     for _,name in ipairs(keywords)do check(r.assets:font(24):hasGlyphs(utf8.char(glyphs['ability-'..name]))and coverage(r.assets:iconImage(name,28))>15,'Verified existing Mana keyword glyph: '..name)end
     local function bg(name,brightness,w,h)return Assets.rasterize(w or 300,h or 170,function()r.assets:background(w or 300,h or 170,{skybox=name,skyboxBrightness=brightness})end)end
@@ -59,7 +60,7 @@ function love.load()
     local newCursor=love.mouse.newCursor;love.mouse.newCursor=function()error('Unsupported cursor fixture')end;prefs.cursors={};m.settings.cursorStyle='Kenney';love.mouse.setCursor(love.mouse.getSystemCursor('arrow'))
     local ok=pcall(prefs.applyCursor,prefs);love.mouse.newCursor=newCursor;m.settings.cursorStyle='System';check(ok and not prefs.customCursorActive,'Unsupported custom cursor falls back without a crash')
     local play=r.assets.playSound;r.assets.playSound=function(self,kind,volume)uiSounds=uiSounds+1;return play(self,kind,volume)end
-    v={S=S,m=m,r=r,preferences=prefs,settingsTab='Presentation'}
+    v={S=S,m=m,r=r,preferences=prefs,settingsTab='Accessibility'}
     function v:window(id,x,y,w,h,title)S.BeginWindow(id,{X=x,Y=y,W=w,H=h,Title=title,AutoSizeWindow=false,AllowMove=false,AllowResize=false})end
     function v:combo(id,selected,items,width,changed)if S.BeginComboBox(id,{Selected=tostring(selected),W=width})then for _,item in ipairs(items)do if S.TextSelectable(tostring(item),{Selected=item==selected})then changed(item)end end;S.EndComboBox()end end
     local Cursor=require('lib.Slab.Internal.Core.Cursor')
@@ -68,25 +69,24 @@ function love.load()
 end
 function love.update(dt)
     frame=frame+1
-    if frame==7 then click(controls['setting-skybox'],true)
-    elseif frame==8 then click(controls['setting-skybox'],false)
-    elseif frame==11 then click(choices.Nebula,true)
-    elseif frame==12 then click(choices.Nebula,false)
-    elseif frame==15 then check(m.settings.skybox=='Nebula','Actual nested settings combo selects the supplied background');click(controls['setting-counterStyle'],true)
-    elseif frame==16 then click(controls['setting-counterStyle'],false)
-    elseif frame==19 then click(choices.Text,true)
-    elseif frame==20 then click(choices.Text,false)
-    elseif frame==23 then check(m.settings.counterStyle=='Text','Actual nested settings combo selects readable text counters');click(buttons['Apply and save'],true)
+    if frame==7 then click(controls['setting-cursorStyle'],true)
+    elseif frame==8 then click(controls['setting-cursorStyle'],false)
+    elseif frame==11 then click(choices.Kenney,true)
+    elseif frame==12 then click(choices.Kenney,false)
+    elseif frame==15 then check(m.settings.cursorStyle=='Kenney','Actual nested settings combo selects the supplied pointer style');click(controls['setting-uiScale'],true)
+    elseif frame==16 then click(controls['setting-uiScale'],false)
+    elseif frame==19 then click(choices['0.85'],true)
+    elseif frame==20 then click(choices['0.85'],false)
+    elseif frame==23 then check(m.settings.uiScale==.85,'Actual nested settings combo selects interface scale');click(buttons['Apply and save'],true)
     elseif frame==24 then click(buttons['Apply and save'],false)
-    elseif frame==27 then check(m.saved and not m.settingsOpen,'Actual Apply dispatches presentation settings persistence');click(buttons['Profile and playmat'],true)
-    elseif frame==28 then click(buttons['Profile and playmat'],false)
+    elseif frame==27 then check(m.saved and not m.settingsOpen,'Actual Apply dispatches presentation settings persistence')
+    elseif frame==28 then mouse.x,mouse.y=1,1
     elseif frame==31 then
-        check(m.profileShown,'Profile and playmat button opens the implemented profile flow')
-        check(uiSounds==4,'Themed controls play one sound per accepted selection or button activation')
+        check(uiSounds==3,'Themed controls play one sound per accepted selection or button activation')
         m.settings.sfxEnabled=false
     elseif frame==32 then click(buttons.Close,true)
     elseif frame==33 then
-        click(buttons.Close,false);check(uiSounds==4,'Disabled sound setting suppresses actual themed button audio')
+        click(buttons.Close,false);check(uiSounds==3,'Disabled sound setting suppresses actual themed button audio')
         local function entry()return{image=love.graphics.newImage(love.image.newImageData(2,2))}end
         m.art={card=entry()};m.profileImages={playmat=entry()};m.galleryArt={printing=entry()}
         local function filtered(value)for _,cache in ipairs({m.art,m.profileImages,m.galleryArt})do for _,item in pairs(cache)do local min,mag=item.image:getFilter();if min~=value or mag~=value then return false end end end;return true end

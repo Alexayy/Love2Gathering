@@ -16,6 +16,10 @@ check(options.stops.own[1]=='END_TURN' and options.stops.opponent[1]=='END_TURN'
 m.uiLayout={};m:togglePhaseStop(Priority.groups[6],'opponent')
 check(#calls==0 and m:phaseStop(Priority.groups[6],'opponent') and not m:phaseStop(Priority.groups[6],'own'),'Own and opponent stops stay separate and can be saved before a game')
 local encoded=json.encode(m:priorityOptions());check(encoded:find('"own":[]',1,true),'Empty stop lists remain JSON arrays')
+m:togglePhaseStop(Priority.beforeDamage,'opponent')
+check(m:phaseStop(Priority.beforeDamage,'opponent')and m:priorityOptions().stops.opponent[2]=='DECLARE_BLOCKERS','Before damage sends native after-blocker step independently from beginning of combat')
+local nativeSteps={BEGIN_COMBAT=true,DECLARE_ATTACKERS=true,DECLARE_BLOCKERS=true,FIRST_COMBAT_DAMAGE=true,COMBAT_DAMAGE=true,END_COMBAT=true}
+for _,group in ipairs(Priority.combatSteps)do check(nativeSteps[group.steps[1]],'Combat picker uses actual native priority step '..group.steps[1])end
 m:setGame(game());m:togglePhaseStop(Priority.groups[1],'own')
 local command=calls[#calls]
 check(command.path=='/session/priority' and command.body.command=='configure' and command.body.stops.own[1]=='UPKEEP','Stop control sends canonical native step names')

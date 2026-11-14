@@ -3,21 +3,22 @@ local palette={text={.90,.94,.98},muted={.46,.56,.66},accent={.28,.89,.72},gold=
 local Builder={}
 local formats={'Modern','Standard','Pioneer','Commander'}
 local function clamp(n,a,b)return math.max(a,math.min(b,n))end
-function Builder.layout(w,h)
-    local margin,gap,top=24,18,156
+function Builder.layout(w,h,mode)
+    if mode=='Simplified'then return require('app.builder_simplified').layout(w,h)end
+    local margin,gap,top=24,26,156
     local previewW=w>=1200 and clamp(w*.20,240,320) or 0
     local deckW=clamp(w*.31,328,448)
-    local searchW=w-margin*2-deckW-gap-(previewW>0 and previewW+gap or 0)
-    if searchW<280 then deckW=math.max(250,w*.38);searchW=w-margin*2-deckW-gap end
+    local searchW=w-margin*2-14-deckW-gap-(previewW>0 and previewW+gap or 0)
+    if searchW<280 then deckW=math.max(250,w*.38);searchW=w-margin*2-14-deckW-gap end
     local deckX=margin+searchW+gap
-    local gridY=top+202;local gridH=h-gridY-58
+    local gridY=top+214;local gridH=h-gridY-58
     local columns=math.max(2,math.floor((searchW+14)/154))
     local rows=gridH>=440 and 2 or 1
     local cardW=math.min((searchW-(columns-1)*14)/columns,(gridH/rows-33)/1.4)
     cardW=math.max(60,cardW)
     return {search={x=margin,y=top,w=searchW,h=184},grid={x=margin,y=gridY,w=searchW,h=gridH},
-        controls={x=deckX,y=top,w=deckW,h=216},list={x=deckX,y=top+230,w=deckW,h=h-top-254},
-        preview=previewW>0 and {x=deckX+deckW+gap,y=top,w=previewW,h=h-top-24} or nil,
+        controls={x=deckX,y=top,w=deckW,h=216},list={x=deckX,y=top+248,w=deckW,h=h-top-286},
+        preview=previewW>0 and {x=deckX+deckW+gap,y=top,w=previewW,h=h-top-38} or nil,
         columns=columns,rows=rows,cardW=cardW,cardH=cardW*1.4,pageSize=columns*rows}
 end
 local function short(text,length)
@@ -81,6 +82,7 @@ local function sortedEntries(m,zone)
     table.sort(entries,function(a,b)return key(a)<key(b)end);return entries
 end
 function Builder.build(v,w,h)
+    if v.m.settings.builderLayout=='Simplified'then return require('app.builder_simplified').build(v,w,h)end
     local RichText=require('app.richtext')
     local C=v.r.colors or palette
     local S,m=v.S,v.m;local deck=m.editDeck;if not deck then return end
@@ -157,7 +159,7 @@ function Builder.build(v,w,h)
         if preview then
             local card=m:cardData(preview) or preview;local art=m:getArt(card,true)
             local imageW=math.min(pw,(p.h-185)/1.4)
-            if art then S.Image('preview-art',{Image=art,W=imageW,H=imageW*1.4})else S.Textf('Loading card image…',{W=pw,Color=C.muted})end
+            if art then S.Image('preview-art',{Image=art,W=imageW,H=imageW*1.4})else S.Textf(m.artworkLabel and m:artworkLabel(card)or'Card image unavailable',{W=pw,Color=C.muted})end
             S.Textf(card.name or '',{W=pw,Color=C.accent})
             RichText.slab(v,'preview-cost',card.mana_cost or card.manaCost or '',pw,{size=18,lineHeight=26})
             RichText.slab(v,'preview-type',card.type_line or card.type or '',pw,{size=14,color=C.muted})
@@ -172,6 +174,7 @@ function Builder.build(v,w,h)
     popup(v,w,h)
 end
 function Builder.draw(r,w,h)
+    if r.model.settings.builderLayout=='Simplified'then return require('app.builder_simplified').draw(r,w,h)end
     local C=r.colors or palette
     local m=r.model;local l=Builder.layout(w,h);r.builderDrop=l.list
     r:text(m.editDeck and m.editDeck.name or 'Deck builder',24,96,22,C.text)

@@ -91,7 +91,7 @@ function ComboBox.Begin(id, options)
 
 	local instance = GetInstance(id)
 	local winItemId = Window.GetItemId(id)
-	local h = Style.Font:getHeight()
+	local h = options.H or max(Style.ControlHeight or 32, Style.Font:getHeight() + (Style.InputPaddingY or 6) * 2)
 
 	w = LayoutManager.ComputeSize(w, h)
 	LayoutManager.AddControl(w, h, 'ComboBox')
@@ -120,6 +120,7 @@ function ComboBox.Begin(id, options)
 	local hovered = not Window.IsObstructedAtMouse() and x <= mouseX and mouseX <= x + w and y <= mouseY and mouseY <= y + h
 
 	if hovered then
+		Mouse.SetCursor('hand')
 		inputBgColor = Style.ComboBoxHoveredColor
 		dropDownColor = Style.ComboBoxDropDownHoveredColor
 

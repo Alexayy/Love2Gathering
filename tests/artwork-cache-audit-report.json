@@ -1,0 +1,397 @@
+{
+  "checkedAt": "2026-11-14T18:25:44.207183+00:00",
+  "scope": "Read-only existing user cache/source audit; no cache/settings/profile writes, no mirror deletion. JPEG sample is40 actual files, not exhaustive decoding of all98780 images.",
+  "databaseBytes": 9968259072,
+  "cachedKinds": {
+    "art_crop": 49389,
+    "normal": 49391
+  },
+  "cachedDistinctPrintingKeys": 47739,
+  "cachedDistinctMetadataOracleIDs": 24222,
+  "metadata": {
+    "bytes": 656595034,
+    "oracleRows": 38840,
+    "indexedEnglishPrintings": 117474,
+    "galleryPrintingFaces": 124246,
+    "source": "assets/all-cards-20261114-scryfall-default.jsonl"
+  },
+  "mirrors": {
+    "fullCards": {
+      "files": 49365,
+      "bytes": 5024422415
+    },
+    "artCrops": {
+      "files": 49364,
+      "bytes": 3741896580
+    }
+  },
+  "bulkStatus": "paused",
+  "sampledCompleteJPEGs": [
+    {
+      "key": "0000419b-0bba-4488-8f7a-6194544ce91e-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 66292,
+      "dimensions": [
+        626,
+        747
+      ]
+    },
+    {
+      "key": "0000419b-0bba-4488-8f7a-6194544ce91e-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 61585,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "0000579f-7b35-4ed3-b44c-db2a538066fe-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 91353,
+      "dimensions": [
+        616,
+        452
+      ]
+    },
+    {
+      "key": "0000579f-7b35-4ed3-b44c-db2a538066fe-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 155817,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "00006596-1166-4a79-8443-ca9f82e6db4e-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 64827,
+      "dimensions": [
+        616,
+        452
+      ]
+    },
+    {
+      "key": "00006596-1166-4a79-8443-ca9f82e6db4e-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 107372,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "0000a54c-a511-4925-92dc-01b937f9afad-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 101991,
+      "dimensions": [
+        630,
+        550
+      ]
+    },
+    {
+      "key": "0000a54c-a511-4925-92dc-01b937f9afad-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 114040,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "0000cd57-91fe-411f-b798-646e965eec37-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 66954,
+      "dimensions": [
+        626,
+        457
+      ]
+    },
+    {
+      "key": "0000cd57-91fe-411f-b798-646e965eec37-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 91336,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "00012bd8-ed68-4978-a22d-f450c8a6e048-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 107090,
+      "dimensions": [
+        582,
+        467
+      ]
+    },
+    {
+      "key": "00012bd8-ed68-4978-a22d-f450c8a6e048-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 129447,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "0001b4a6-10bf-4bdd-a9da-fe78d9d39a82-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 50377,
+      "dimensions": [
+        626,
+        457
+      ]
+    },
+    {
+      "key": "0001b4a6-10bf-4bdd-a9da-fe78d9d39a82-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 77471,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "0001c639-8bd0-426f-89cb-4ca61f3cc054-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 46473,
+      "dimensions": [
+        626,
+        457
+      ]
+    },
+    {
+      "key": "0001c639-8bd0-426f-89cb-4ca61f3cc054-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 80318,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "0001e77a-7fff-49d2-a55c-42f6fdf6db08-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 47658,
+      "dimensions": [
+        626,
+        457
+      ]
+    },
+    {
+      "key": "0001e77a-7fff-49d2-a55c-42f6fdf6db08-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 82294,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "0001f1ef-b957-4a55-b47f-14839cdbab6f-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 98364,
+      "dimensions": [
+        626,
+        457
+      ]
+    },
+    {
+      "key": "0001f1ef-b957-4a55-b47f-14839cdbab6f-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 96107,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "00020b05-ecb9-4603-8cc1-8cfa7a14befc-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 76278,
+      "dimensions": [
+        626,
+        457
+      ]
+    },
+    {
+      "key": "00020b05-ecb9-4603-8cc1-8cfa7a14befc-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 127674,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "000225fc-9bc3-4eb3-905e-02c19c873b0b-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 82652,
+      "dimensions": [
+        972,
+        677
+      ]
+    },
+    {
+      "key": "000225fc-9bc3-4eb3-905e-02c19c873b0b-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 58783,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "000225fc-9bc3-4eb3-905e-02c19c873b0b-1-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 18307,
+      "dimensions": [
+        626,
+        457
+      ]
+    },
+    {
+      "key": "000225fc-9bc3-4eb3-905e-02c19c873b0b-1-normal.jpg",
+      "kind": "normal",
+      "bytes": 21723,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "0002ab72-834b-4c81-82b1-0d2760ea96b0-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 93285,
+      "dimensions": [
+        626,
+        457
+      ]
+    },
+    {
+      "key": "0002ab72-834b-4c81-82b1-0d2760ea96b0-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 100813,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "00030770-5e99-4943-819d-8d807c24cc14-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 107266,
+      "dimensions": [
+        626,
+        457
+      ]
+    },
+    {
+      "key": "00030770-5e99-4943-819d-8d807c24cc14-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 90423,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "000366c8-7a43-49d7-a103-ac5bd7efd9aa-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 69921,
+      "dimensions": [
+        571,
+        460
+      ]
+    },
+    {
+      "key": "000366c8-7a43-49d7-a103-ac5bd7efd9aa-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 108820,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "000376ef-8b6c-490d-98cb-d6de15b2e585-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 66905,
+      "dimensions": [
+        626,
+        457
+      ]
+    },
+    {
+      "key": "000376ef-8b6c-490d-98cb-d6de15b2e585-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 85116,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "0003aa31-d42e-4972-9fb9-086aefe29a2c-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 52607,
+      "dimensions": [
+        626,
+        457
+      ]
+    },
+    {
+      "key": "0003aa31-d42e-4972-9fb9-086aefe29a2c-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 73831,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "0003b07e-0d6e-4844-93c7-3f1f6a7d8c4d-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 77637,
+      "dimensions": [
+        571,
+        460
+      ]
+    },
+    {
+      "key": "0003b07e-0d6e-4844-93c7-3f1f6a7d8c4d-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 119448,
+      "dimensions": [
+        488,
+        680
+      ]
+    },
+    {
+      "key": "00042443-4d4e-4087-b4e5-5e781e7cc5fa-0-art_crop.jpg",
+      "kind": "art_crop",
+      "bytes": 70905,
+      "dimensions": [
+        571,
+        460
+      ]
+    },
+    {
+      "key": "00042443-4d4e-4087-b4e5-5e781e7cc5fa-0-normal.jpg",
+      "kind": "normal",
+      "bytes": 111600,
+      "dimensions": [
+        488,
+        680
+      ]
+    }
+  ],
+  "diagnoses": [
+    "Bulk download is partial and paused; not all exact printings have art.",
+    "Literal substring query Rin & Seri formerly matched Meandering River and set Series; normalized word matching now returns actual Rin variants.",
+    "Runtime allows sameOracle/face/kind local aliases; Gallery/Profile preserve exact printing/face credits.",
+    "Uncached results require an explicit missing state and selected download action; they are not ongoing downloads."
+  ]
+}

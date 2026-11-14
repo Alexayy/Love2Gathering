@@ -13,6 +13,68 @@ function Collection.install(Model)
     function Model:findDeck(id)
         local deck=find(self,id);if deck then return deck end
         for _,starter in ipairs(self.starterDecks or{})do if starter.id==id then return starter end end
+        return self.lobbyPrecons and self.lobbyPrecons[id]
+    end
+    function Model:lobbyPickerCurrent(state)
+        return state and not state.closed and self.lobbyDeckPicker==state and(not state.openPage or state.openPage==self.page)
+    end
+    function Model:loadLobbyStarters(state)
+        if self.startersLoaded or state.startersBusy or not self:lobbyPickerCurrent(state)then return end
+        state.startersBusy=true
+        self:request('catalog','GET','/decks?origin=starter',nil,function(data,err)
+            if not self:lobbyPickerCurrent(state)then return end
+            state.startersBusy=false;state.startersError=err
+            if data then
+                self.starterDecks=data.decks or data
+                for _,deck in ipairs(self.starterDecks)do for _,zone in ipairs({'main','sideboard','commander'})do deck[zone]=json.array(deck[zone]or{})end end
+                self.startersLoaded=true
+            end
+        end,true)
+    end
+    function Model:queryLobbyPrecons(state)
+        if not self:lobbyPickerCurrent(state)then return end
+        state.queryVersion=(state.queryVersion or 0)+1;local version=state.queryVersion
+        state.busy=true;state.error=nil;state.timer=nil
+        local path='/precons?category=deck&format='..API.escape(state.format)..'&q='..API.escape(state.search or'')..'&limit=24&offset='..tostring(state.offset or 0)
+        self:request('catalog','GET',path,nil,function(data,err)
+            if not self:lobbyPickerCurrent(state)or state.queryVersion~=version then return end
+            state.busy=false;state.error=err
+            if data then state.precons=data.decks or data.items or{};state.total=data.total or#state.precons end
+        end,true)
+    end
+    function Model:searchLobbyPrecons(state)
+        if not self:lobbyPickerCurrent(state)then return end
+        state.queryVersion=(state.queryVersion or 0)+1;state.selectionVersion=(state.selectionVersion or 0)+1
+        state.precons={};state.offset=0;state.busy=false;state.detailBusy=false;state.confirmAuxiliary=nil;state.timer=.25
+    end
+    function Model:cacheLobbyPrecon(state,source,confirmed)
+        if not self:lobbyPickerCurrent(state)then return end
+        local auxiliary=math.max(tonumber(source.counts and source.counts.planes)or 0,#(source.planes or{}))+math.max(tonumber(source.counts and source.counts.schemes)or 0,#(source.schemes or{}))
+        if auxiliary>0 and not confirmed then state.confirmAuxiliary={source=source,count=auxiliary};return end
+        local deck=json.decode(json.encode(source));deck.id='lobby-'..state.format:lower()..'-'..source.id
+        deck.sourceDeckId=source.id;deck.historicalFormat=source.historicalFormat or source.format;deck.format=state.format
+        deck.origin='lobby-preconstructed';deck.immutable=true;deck.nativeValidationRequired=true
+        for _,zone in ipairs({'main','sideboard','commander'})do deck[zone]=json.array(deck[zone]or{})end
+        if auxiliary>0 then deck.planes=nil;deck.schemes=nil;deck.excludedAuxiliary={count=auxiliary,confirmed=true}end
+        self.lobbyPrecons=self.lobbyPrecons or{};self.lobbyPreconUsage=self.lobbyPreconUsage or{}
+        self.lobbyPreconClock=(self.lobbyPreconClock or 0)+1;self.lobbyPrecons[deck.id]=deck;self.lobbyPreconUsage[deck.id]=self.lobbyPreconClock
+        local protected={[deck.id]=true};for _,key in ipairs({'playerDeckId','botDeckId','roomDeckId'})do if self[key]then protected[self[key]]=true end end
+        for _,key in pairs(self.botDeckIds or{})do protected[key]=true end
+        local count,oldest,used=0,nil,math.huge
+        for key in pairs(self.lobbyPrecons)do count=count+1;if not protected[key]and(self.lobbyPreconUsage[key]or 0)<used then oldest=key;used=self.lobbyPreconUsage[key]or 0 end end
+        if count>16 and oldest then self.lobbyPrecons[oldest]=nil;self.lobbyPreconUsage[oldest]=nil end
+        state.selected=deck.id;state.closed=true;if self.lobbyDeckPicker==state then self.lobbyDeckPicker=nil end;state.changed(deck.id)
+        return deck
+    end
+    function Model:selectLobbyPrecon(state,summary)
+        if not self:lobbyPickerCurrent(state)or state.detailBusy then return end
+        state.selectionVersion=(state.selectionVersion or 0)+1;local version=state.selectionVersion;local query=state.queryVersion
+        state.detailBusy=true;state.error=nil
+        self:request('catalog','GET','/precons/'..API.escape(summary.id),nil,function(data,err)
+            if not self:lobbyPickerCurrent(state)or state.selectionVersion~=version or state.queryVersion~=query then return end
+            state.detailBusy=false;state.error=err
+            if data then self:cacheLobbyPrecon(state,data.deck or data,false)end
+        end)
     end
     function Model:toggleCollectionSection(key)
         local state=Collection.sections(self);state[key]=not state[key];self.uiLayoutTimer=.4
@@ -43,6 +105,10 @@ function Collection.install(Model)
         self.preconVersion=(self.preconVersion or 0)+1
     end
     function Model:updateCollection(dt)
+        local picker=self.lobbyDeckPicker
+        if picker and self:lobbyPickerCurrent(picker)and picker.timer then
+            picker.timer=picker.timer-dt;if picker.timer<=0 then self:queryLobbyPrecons(picker)end
+        end
         if self.page~='decks'or not self.catalogHealth.ready then return end
         self.collectionClock=(self.collectionClock or 0)+dt
         if not self.preconStats and not self.preconStatsBusy and self.collectionClock>=(self.nextStatsRetry or 0)then

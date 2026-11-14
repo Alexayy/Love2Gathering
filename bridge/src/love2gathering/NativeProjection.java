@@ -3,6 +3,7 @@ package love2gathering;
 import mage.MageObject;
 import mage.abilities.Ability;
 import mage.abilities.effects.RestrictionEffect;
+import mage.abilities.keyword.*;
 import mage.constants.*;
 import mage.game.*;
 import mage.game.combat.CombatGroup;
@@ -14,6 +15,33 @@ import static love2gathering.EngineBridge.map;
 
 /** Read-only native relationships and isolated native legality previews. */
 final class NativeProjection {
+    // Display metadata from actual native ability identities, never an oracle
+    // text parser or a substitute for native legality.
+    private static final Map<Class<?>,String> KEYWORDS=new LinkedHashMap<>();
+    static{
+        KEYWORDS.put(TrampleAbility.class,"trample");KEYWORDS.put(FlyingAbility.class,"flying");
+        KEYWORDS.put(FirstStrikeAbility.class,"first_strike");KEYWORDS.put(DoubleStrikeAbility.class,"double_strike");
+        KEYWORDS.put(DeathtouchAbility.class,"deathtouch");KEYWORDS.put(LifelinkAbility.class,"lifelink");
+        KEYWORDS.put(ReachAbility.class,"reach");KEYWORDS.put(MenaceAbility.class,"menace");
+        KEYWORDS.put(VigilanceAbility.class,"vigilance");KEYWORDS.put(HasteAbility.class,"haste");
+        KEYWORDS.put(HexproofAbility.class,"hexproof");KEYWORDS.put(IndestructibleAbility.class,"indestructible");
+        KEYWORDS.put(ShroudAbility.class,"shroud");KEYWORDS.put(DefenderAbility.class,"defender");
+    }
+    static List<String> keywords(MageObject object){
+        Set<String> result=new LinkedHashSet<>();
+        for(Ability ability:object.getAbilities()){
+            String key=KEYWORDS.get(ability.getClass());if(key!=null)result.add(key);
+        }
+        return new ArrayList<>(result);
+    }
+    static List<Map<String,Object>> abilityIcons(MageObject object,Game game){
+        Map<String,Map<String,Object>> result=new LinkedHashMap<>();
+        for(Ability ability:object.getAbilities())for(mage.abilities.icon.CardIcon icon:ability.getIcons(game)){
+            String key=icon.getIconType().name()+":"+icon.getText()+":"+icon.getHint();
+            result.putIfAbsent(key,map("type",icon.getIconType().name(),"text",EngineBridge.clean(icon.getText()),"hint",EngineBridge.clean(icon.getHint())));
+        }
+        return new ArrayList<>(result.values());
+    }
     static String id(UUID value){return EngineBridge.Session.str(value);}
     static List<String> ids(Collection<UUID> values){return values.stream().map(NativeProjection::id).collect(Collectors.toList());}
     static Map<String,Object> combat(EngineBridge.Session session) {
@@ -22,6 +50,7 @@ final class NativeProjection {
             Permanent attacker=game.getPermanent(attackerId);
             groups.add(map("attackerId",id(attackerId),"attackerIds",ids(group.getAttackers()),"defenderId",id(group.getDefenderId()),
                 "defendingPlayerId",id(group.getDefendingPlayerId()),"blockerIds",ids(group.getBlockers()),"blocked",group.getBlocked(),
+                "declarationConfirmed",session.owner.confirmedBlockersPhase==game.getPhase()&&session.owner.confirmedBlockerDefenders.contains(group.getDefendingPlayerId()),
                 "minBlockers",attacker==null?0:attacker.getMinBlockedBy(),"maxBlockers",attacker==null?0:attacker.getMaxBlockedBy()));
         }
         return map("step",game.getTurnStepType()==null?null:game.getTurnStepType().name(),"groups",groups,

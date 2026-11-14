@@ -3,6 +3,10 @@ local json=require('lib.json')
 local Priority={groups={{label='Upkeep',key='UPKEEP',steps={'UPKEEP'}},{label='Draw',key='DRAW',steps={'DRAW'}},
     {label='Main 1',key='PRECOMBAT',steps={'PRECOMBAT_MAIN'}},{label='Combat',key='COMBAT',steps={'BEGIN_COMBAT'}},
     {label='Main 2',key='POSTCOMBAT',steps={'POSTCOMBAT_MAIN'}},{label='End step',key='END',steps={'END_TURN'}}}}
+Priority.beforeDamage={label='Before combat damage',key='BEFORE_DAMAGE',steps={'DECLARE_BLOCKERS'}}
+Priority.combatSteps={{label='Beginning of combat',steps={'BEGIN_COMBAT'}},{label='After attackers',steps={'DECLARE_ATTACKERS'}},
+    Priority.beforeDamage,{label='After first-strike damage',steps={'FIRST_COMBAT_DAMAGE'}},
+    {label='After combat damage',steps={'COMBAT_DAMAGE'}},{label='End of combat',steps={'END_COMBAT'}}}
 local function copy(value) return json.decode(json.encode(value)) end
 local function contains(items,value) for _,item in ipairs(items or {}) do if item==value then return true end end;return false end
 function Priority.install(Model)

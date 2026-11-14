@@ -2,6 +2,8 @@
 
 Profiles contain a name, card-art avatar and optional card-art playmat. The Profile page searches the existing printing/face gallery, shows the actual selected illustration and saves to the application's existing `app.sqlite`. Selection preserves the printing and face; another printing is never silently substituted. Missing local images remain placeholders under the normal local-artwork-only setting.
 
+Avatar choices preview their square crop; playmat choices preview landscape artwork. Fixed Save/Reset and pagination footers stay outside scrolling content. Search changes immediately clear older result tiles, and `Rin & Seri` matches the actual card name through normalized word search. An uncached selected illustration shows **Artwork is not cached** and an explicit download action. That action fetches only the selected printing/face crop into SQL, without enabling automatic network downloads. Bulk-cache progress and an applicable paused status appear beside the result count.
+
 The name becomes the default for new games and room joins. A per-match nickname can still be supplied by the lobby. Changes apply to new games/rooms; they do not rename an already-running native player. Life is read only from XMage's `players[].life`, including Commander starting life and later changes. Profiles have no HP/life setting.
 
 ## Data and transport

@@ -2,6 +2,9 @@ package.path='./?.lua;'..package.path
 local Board=require('app.board_fx');local passed=0
 local function check(value,label)assert(value,label);passed=passed+1;print('BOARD FX PASS '..label)end
 local function card(id)return{id=id,name=id,type='Creature',power='2',toughness='2'}end
+check(Board.blockStatus({blocked=true,declarationConfirmed=true,blockerIds={}})=='BLOCKED','Confirmed native block survives an empty blocker list after sacrifice')
+check(Board.blockStatus({blocked=true,declarationConfirmed=false,blockerIds={'rat'}})=='PROVISIONAL','A selected blocker remains visibly provisional until native acknowledgement')
+check(Board.blockStatus({blocked=false,declarationConfirmed=true})==nil,'Confirmed declaration without an assigned block never displays Blocked')
 local host,aura,exiled=card('host'),card('aura'),card('exiled');aura.attachedToId='host';host.linkedExile={exiled}
 local game={gameId='game',revision=1,turn=1,players={{id='human',human=true,life=40,battlefield={host,aura},graveyard={},hand={}},{id='bot',seat=1,life=40,battlefield={},graveyard={},hand={}}},stack={},combat={step='DECLARE_BLOCKERS',groups={{attackerId='host',defenderId='human',blockerIds={},blocked=true}}}}
 local r={model={game=game,settings={}},colors={accent={0,1,0},purple={1,0,1}},bursts={},cardRects={host={x=100,y=200,w=100,h=140}},playerRects={human={x=20,y=30,w=100,h=50},bot={x=600,y=30,w=100,h=50}}}

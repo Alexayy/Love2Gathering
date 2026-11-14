@@ -5,6 +5,9 @@ import argparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
+import shutil
+import ipaddress
+import signal
 from pathlib import Path
 import threading
 from urllib.parse import parse_qs, unquote, urlsplit
@@ -16,6 +19,9 @@ from storage import Storage, ConflictError
 from validation import validate
 from artwork import prefer_cached_card
 from deck_import import preview as import_preview
+from paths import default_data_dir
+from downloads import DownloadManager
+from maintenance import StorageMaintenance, operation_lock
 
 PROJECT = Path(__file__).resolve().parent.parent
 
@@ -23,6 +29,9 @@ PROJECT = Path(__file__).resolve().parent.parent
 def make_handler(catalog, storage):
     art_locks = {}
     art_guard = threading.Lock()
+    downloads = DownloadManager(catalog, storage)
+    maintenance = StorageMaintenance(storage)
+    storage_health = storage.health()
     class Handler(BaseHTTPRequestHandler):
         server_version = "Love2Gathering/1"
 
@@ -51,7 +60,13 @@ def make_handler(catalog, storage):
 
         def run_request(self, method):
             try:
-                self.route(method)
+                path=urlsplit(self.path).path
+                if path.startswith('/art/')or path.startswith('/gallery/art/'):
+                    # The whole image request participates, including a slow
+                    # network fetch or legacy import, so it cannot refill a
+                    # category immediately after an exclusive purge.
+                    with operation_lock(storage.root,blocking=False):self.route(method)
+                else:self.route(method)
             except ConflictError as exc:
                 self.respond(409, {"error": str(exc)})
             except KeyError as exc:
@@ -68,18 +83,57 @@ def make_handler(catalog, storage):
         def do_PUT(self): self.run_request("PUT")
         def do_DELETE(self): self.run_request("DELETE")
 
+        def local_storage_control(self):
+            # These explicit desktop actions must not be triggerable by a
+            # browser page submitting opaque cross-origin requests to loopback.
+            if not ipaddress.ip_address(self.client_address[0]).is_loopback or self.headers.get('Origin')or self.headers.get('Sec-Fetch-Site'):
+                self.respond(403,{'error':'Storage controls require a direct local desktop request'});return False
+            if self.headers.get_content_type()!='application/json':
+                self.respond(400,{'error':'Storage controls require application/json'});return False
+            return True
+
         def route(self, method):
             url = urlsplit(self.path)
             path = unquote(url.path).rstrip("/") or "/"
             query = parse_qs(url.query)
             param = lambda key, default="": query.get(key, [default])[0]
+            if path=='/storage/status'and method=='GET':
+                self.respond(200,maintenance.status(refresh=param('refresh')=='1'));return
+            if path=='/storage/purge'and method=='POST':
+                if not self.local_storage_control():return
+                body=self.read_json()
+                if not isinstance(body,dict)or set(body)!={'categories'}:raise ValueError('Choose only the storage categories to purge')
+                self.respond(202,maintenance.start_purge(body['categories']));return
+            if path=='/storage/compact'and method=='POST':
+                if not self.local_storage_control():return
+                if self.read_json()!={}:raise ValueError('Compaction takes no paths or extra options')
+                self.respond(202,maintenance.start_compact());return
+            if path=='/downloads/status'and method=='GET':
+                self.respond(200,downloads.status());return
+            if path=='/downloads/scan'and method=='POST':
+                if not self.local_storage_control():return
+                self.respond(202,downloads.scan(self.read_json()));return
+            if path=='/downloads/control'and method=='POST':
+                if not self.local_storage_control():return
+                body=self.read_json()
+                if not isinstance(body,dict)or set(body)!={'command'}:raise ValueError('Choose one image download command')
+                self.respond(200,downloads.control(body['command']));return
             if method == "GET" and path == "/health":
                 progress = catalog.status()
-                storage_status = storage.health()
+                try:
+                    storage_status = storage.health()
+                    with art_guard:
+                        storage_health.update(storage_status)
+                except ConflictError:
+                    # Maintenance owns the database briefly. Its last verified
+                    # identity is still valid; health/progress must not queue
+                    # behind VACUUM or make the catalog appear disconnected.
+                    with art_guard:
+                        storage_status = dict(storage_health, maintenanceBusy=True)
                 self.respond(200, {"status": "ok", "ready": progress["state"] == "ready",
                                    "index": progress, "source": catalog.source.name,
                                    "catalogSource": str(catalog.source.resolve()), "version": 3,
-                                   "apiVersion": 6, "schemaVersion": int(SCHEMA_VERSION),
+                                   "apiVersion": 8, "schemaVersion": int(SCHEMA_VERSION),
                                    "storage": storage_status, "userStore": storage_status})
                 return
             if path == "/ui-layout":
@@ -212,8 +266,36 @@ def make_handler(catalog, storage):
                 if catalog.status()["state"] != "ready":
                     self.respond(503, {"error": "Artwork index is not ready. Configure a local JSONL source or explicitly download Scryfall bulk metadata.", "index": catalog.status()})
                     return
-                self.respond(200, catalog.gallery(param("q"), param("artist"), param("set"), param("variant", "all"), param("lang", "en"), min(60, max(1, int(param("limit", "24")))), max(0, int(param("offset", "0")))))
+                result=catalog.gallery(param("q"), param("artist"), param("set"), param("variant", "all"), param("lang", "en"), min(60, max(1, int(param("limit", "24")))), max(0, int(param("offset", "0"))))
+                storage.artwork_statuses(result['items']);self.respond(200,result)
                 return
+            if method=='GET'and path=='/art/cache-info':
+                info=storage.artwork_summary();info['bulk']=None
+                status_path=PROJECT/'.runtime/card-image-download-status.json'
+                if status_path.is_file():
+                    try:
+                        progress=json.loads(status_path.read_text())
+                        if Path(progress.get('dataDirectory','')).resolve()==storage.root.resolve():info['bulk']={'stage':progress.get('stage'),'paused':progress.get('stage')=='paused','reason':progress.get('reason')}
+                    except(ValueError,OSError):pass
+                self.respond(200,info);return
+            if method=='POST'and path=='/art/download':
+                body=self.read_json()
+                if not isinstance(body,dict)or set(body)-{'printingId','face','kind'}:raise ValueError('Choose one exact printing, face and image kind')
+                face=body.get('face',0);kind=body.get('kind','art_crop')
+                if isinstance(face,bool)or not isinstance(face,int)or kind not in('normal','large','art_crop'):raise ValueError('Invalid artwork face or kind')
+                item=catalog.gallery_item(body.get('printingId',''),face)
+                if not item:raise ValueError('Artwork printing and face are not in the local catalog')
+                key=item['printing_id']+'-'+str(face)+'-'+kind+'.jpg'
+                with art_guard:lock=art_locks.setdefault(key,threading.Lock())
+                with lock:
+                    local=storage.local_art(item['printing_id'],item['oracle_id'],face,kind,aliases=False)
+                    if local:self.respond(200,{'cached':True,'downloaded':False,'printingId':item['printing_id'],'face':face,'kind':kind});return
+                    if shutil.disk_usage(storage.root).free<64*1024**2+3*3*1024**2:
+                        self.respond(409,{'error':'Free a little disk space before downloading this illustration (64 MiB reserve). Existing cached images remain available.','reserveBlocked':True});return
+                    url=item['image_uris'].get(kind)
+                    if not url or urlsplit(url).hostname!='cards.scryfall.io':raise ValueError('No Scryfall image for this printing and kind')
+                    data=self.download_art(url);storage.save_art(key,data,{'printingId':item['printing_id'],'oracleId':item['oracle_id'],'face':face,'kind':kind,'source':url})
+                self.respond(200,{'cached':True,'downloaded':True,'printingId':item['printing_id'],'face':face,'kind':kind});return
             if method == "GET" and (path.startswith("/art/") or path.startswith("/gallery/art/")):
                 gallery = path.startswith("/gallery/art/")
                 identifier = path[len("/gallery/art/"):] if gallery else path[len("/art/"):]
@@ -283,6 +365,12 @@ def make_handler(catalog, storage):
                 return
             self.respond(status, storage.save_deck(deck, identifier, result))
 
+    Handler.downloads=downloads
+    Handler.maintenance=maintenance
+    def close_managers():
+        maintenance.close()
+        downloads.close()
+    Handler.close_managers=staticmethod(close_managers)
     return Handler
 
 
@@ -292,7 +380,7 @@ def main():
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--source", type=Path, default=Path(os.environ["LOVE2GATHERING_CATALOG_SOURCE"]) if os.environ.get("LOVE2GATHERING_CATALOG_SOURCE") else next((PROJECT / "assets").glob("all-cards*.jsonl"), PROJECT / "assets" / "all-cards.jsonl"))
     parser.add_argument("--database", type=Path, default=PROJECT / "service" / "data" / "catalog.sqlite")
-    parser.add_argument("--data-dir", type=Path, default=Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share"))) / "love2gathering")
+    parser.add_argument("--data-dir", type=Path, default=default_data_dir())
     parser.add_argument("--build-only", action="store_true")
     args = parser.parse_args()
     catalog = Catalog(args.source, args.database)
@@ -306,12 +394,16 @@ def main():
     server = ThreadingHTTPServer((args.host, args.port), make_handler(catalog, storage))
     server.daemon_threads = True
     print(f"Catalog API listening on http://{args.host}:{args.port}", flush=True)
+    def stop_server(*_):
+        threading.Thread(target=server.shutdown,name='Catalog shutdown',daemon=True).start()
+    signal.signal(signal.SIGTERM,stop_server)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         pass
     finally:
         server.server_close()
+        server.RequestHandlerClass.close_managers()
     return 0
 
 

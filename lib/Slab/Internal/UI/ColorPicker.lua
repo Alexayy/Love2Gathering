@@ -256,6 +256,7 @@ function ColorPicker.Begin(Options)
 	Options = Options == nil and {} or Options
 	Options.Color = Options.Color == nil and {1.0, 1.0, 1.0, 1.0} or Options.Color
 	Options.Refresh = Options.Refresh == nil and false or Options.Refresh
+	Options.AllowAlpha = Options.AllowAlpha ~= false
 	Options.X = Options.X == nil and nil or Options.X
 	Options.Y = Options.Y == nil and nil or Options.Y
 
@@ -358,6 +359,7 @@ function ColorPicker.Begin(Options)
 		DrawCommands.Line(X, Y + TintY, X + TintW, Y + TintY, 2.0, {1.0, 1.0, 1.0, 1.0})
 
 		X = X + TintW + Cursor.PadX()
+		if Options.AllowAlpha then
 		DrawCommands.Mesh(AlphaMesh, X, Y)
 		Window.AddItem(X, Y, AlphaW, AlphaH)
 
@@ -385,6 +387,7 @@ function ColorPicker.Begin(Options)
 		local A = 1.0 - CurrentColor[4]
 		local AlphaY = A * AlphaH
 		DrawCommands.Line(X, Y + AlphaY, X + AlphaW, Y + AlphaY, 2.0, {A, A, A, 1.0})
+		end
 
 		Y = Y + AlphaH + Cursor.PadY()
 	end
@@ -405,7 +408,8 @@ function ColorPicker.Begin(Options)
 	CurrentColor[1], R = InputColor("R", R, OffsetX)
 	CurrentColor[2], G = InputColor("G", G, OffsetX)
 	CurrentColor[3], B = InputColor("B", B, OffsetX)
-	CurrentColor[4], A = InputColor("A", A, OffsetX)
+	if Options.AllowAlpha then CurrentColor[4], A = InputColor("A", A, OffsetX)
+	else CurrentColor[4] = 1.0 end
 
 	if R or G or B or A then
 		UpdateSaturationColors()

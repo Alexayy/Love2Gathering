@@ -6,13 +6,15 @@ import uuid
 FORMATS = {"modern", "standard", "pioneer", "commander"}
 ID = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$")
 DEFAULT_SETTINGS = {"manualTriggers": False, "autoMana": True, "showCardArt": True, "localArtworkOnly": True,
-    "resolution": "1440x900", "windowMode": "Windowed", "vsync": True, "msaa": 0,
+    "resolution": "Desktop", "windowMode": "Borderless", "vsync": True, "msaa": 0,
     "renderScale": 1.0, "textureFilter": "linear", "frameLimit": 0, "uiScale": 1.0,
     "animations": True, "particles": True, "musicEnabled": False, "musicVolume": 0.25,
     "sfxEnabled": True, "sfxVolume": 0.45, "masterVolume": 0.7, "reducedMotion": False,
     "highContrast": False, "colorblindMode": "Off", "showTooltips": True,
-    "fontFamily": "Built-in DejaVu Sans", "titleFontFamily":"Beleren", "skybox":"Galaxy", "skyboxBrightness":0.32,
-    "playmatOpacity":0.88,"counterStyle":"Dice","cursorStyle":"System","keywordReminders":True}
+    "fontFamily": "Beleren", "titleFontFamily":"Beleren", "skybox":"Galaxy", "skyboxBrightness":0.32,
+    "playmatOpacity":0.88,"counterStyle":"Dice","cursorStyle":"Kenney","keywordReminders":True,
+    "panelOpacity":0.65,"theme":"Midnight","accentColor":"","opponentColor":"","autoFollowTurn":True,
+    "builderLayout":"Classic","presentationVersion":2}
 
 class StorageSchema:
     @staticmethod
@@ -90,8 +92,9 @@ class StorageSchema:
         enums = {"windowMode": {"Windowed", "Borderless", "Fullscreen"}, "msaa": {0, 2, 4, 8},
                  "textureFilter": {"linear", "nearest"}, "frameLimit": {0, 30, 60, 120, 144},
                  "colorblindMode": {"Off", "Deuteranopia", "Protanopia", "Tritanopia"}, "titleFontFamily":{"Beleren","Application font"},
-                 "skybox":{"Galaxy","Nebula","Band","Dark","Day","Off"},"counterStyle":{"Dice","Text"},"cursorStyle":{"System","Kenney"}}
-        ranges = {"renderScale": (0.5, 1.5), "uiScale": (0.85, 1.75), "musicVolume": (0, 1), "sfxVolume": (0, 1), "masterVolume": (0, 1),"skyboxBrightness":(0,1),"playmatOpacity":(0,1)}
+                 "skybox":{"Galaxy","Nebula","Band","Dark","Day","Off"},"counterStyle":{"Dice","Text"},"cursorStyle":{"System","Kenney"},
+                 "theme":{"Midnight","Amethyst","Ocean","Ember","Obsidian"},"builderLayout":{"Classic","Simplified"},"presentationVersion":{2}}
+        ranges = {"renderScale": (0.5, 1.5), "uiScale": (0.85, 1.75), "musicVolume": (0, 1), "sfxVolume": (0, 1), "masterVolume": (0, 1),"skyboxBrightness":(0,1),"playmatOpacity":(0,1),"panelOpacity":(0,1)}
         for key, item in value.items():
             if key not in DEFAULT_SETTINGS:
                 raise ValueError("Unknown setting: " + key)
@@ -102,10 +105,13 @@ class StorageSchema:
                 low, high = ranges[key]
                 if isinstance(item, bool) or not isinstance(item, (int, float)) or not low <= item <= high:
                     raise ValueError("Invalid setting: " + key)
+            elif key in ('accentColor','opponentColor'):
+                if not isinstance(item,str)or(item!=''and not re.fullmatch(r'#[0-9a-fA-F]{6}',item)):raise ValueError('Color must be empty or #RRGGBB: '+key)
             elif key == "fontFamily":
                 if not isinstance(item, str) or not 1 <= len(item) <= 160 or any(ord(char) < 32 or ord(char) == 127 for char in item):
                     raise ValueError("Font family must contain 1 to 160 printable characters")
             elif key == "resolution":
+                if item=='Desktop':continue
                 if not isinstance(item, str) or not re.fullmatch(r"\d{3,5}x\d{3,5}", item):
                     raise ValueError("Resolution must be WIDTHxHEIGHT")
                 width, height = map(int, item.split("x"))

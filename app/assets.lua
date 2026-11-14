@@ -98,9 +98,14 @@ end
 function Assets:font(size,text)
     local cache=text and self.textFonts or self.fonts
     size=math.max(8,math.floor(size+.5))
-    if not cache[size] then cache[size]=love.graphics.newFont(text and 'assets/fonts/DejaVuSans.ttf' or 'assets/keyrune/mana.ttf',size) end
+    if not cache[size] then cache[size]=text and Fonts.font(size)or love.graphics.newFont('assets/keyrune/mana.ttf',size) end
     return cache[size]
 end
+function Assets:setSettings(settings)
+    self.settings=settings or{};self.titleSettings=self.settings;self.theme.settings=self.settings
+end
+function Assets:setInteractionCursor(kind)self.cursorState=kind end
+function Assets.palette(settings)return Theme.colors(settings)end
 function Assets:icon() return 'assets/icons/thb.png' end
 function Assets:mana(symbol,x,y,size,tint)
     symbol=tostring(symbol or '')
@@ -290,7 +295,7 @@ function Assets:buttonImage(symbol,label,width,height,opts)
     local canvas=Assets.rasterize(width*scale,height*scale,function()
         love.graphics.scale(scale);local total=iconSize+gap+font:getWidth(text);local left=math.max(6,(width-total)/2)
         self:iconSymbol(symbol,left,(height-iconSize)/2,iconSize,iconTint)
-        love.graphics.setFont(font);setcolor(tint);love.graphics.print(text,left+iconSize+gap,(height-font:getHeight())/2)
+        love.graphics.setFont(font);setcolor(tint);love.graphics.print(text,left+iconSize+gap,(height-font:getHeight())/2+Fonts.textOffset(font,text))
     end)
     self.iconCache[key]={image=canvas,used=self.iconClock}
     trimIconCache(self)

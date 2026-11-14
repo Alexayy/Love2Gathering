@@ -14,56 +14,75 @@ from tokens import TokenPreferences
 from history import HistoryStore
 from precons import PreconStore
 from profiles import ProfileStore
+from maintenance import MaintenanceStore, operation_lock
 USER_SCHEMA_VERSION=1
 
-class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistoryStore,PreconStore,ProfileStore):
+class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistoryStore,PreconStore,ProfileStore,MaintenanceStore):
     def __init__(self,data_dir,bundled_decks):
         self.root=Path(data_dir);self.bundled=Path(bundled_decks)
         self.root.mkdir(parents=True,exist_ok=True)
         self.database=self.root/'app.sqlite';self.lock=threading.RLock();self._bundle_signature=None
-        c=sqlite3.connect(self.database,timeout=30)
-        try:
-            c.execute('PRAGMA busy_timeout=30000')
-            deadline=time.monotonic()+30
-            while True:
-                try:
-                    c.execute('PRAGMA journal_mode=WAL');break
-                except sqlite3.OperationalError as exc:
-                    # Initial conversion to WAL can return SQLITE_BUSY without
-                    # honoring busy_timeout when services start concurrently.
-                    if 'locked' not in str(exc).lower() or time.monotonic()>=deadline:raise
-                    time.sleep(.025)
-            c.execute('PRAGMA synchronous=FULL')
-            c.executescript('''BEGIN IMMEDIATE;
-                CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY,value TEXT NOT NULL);
-                CREATE TABLE IF NOT EXISTS decks(id TEXT NOT NULL,origin TEXT NOT NULL,payload TEXT NOT NULL,updated_at INTEGER NOT NULL,PRIMARY KEY(id,origin));
-                CREATE TABLE IF NOT EXISTS hidden_decks(id TEXT PRIMARY KEY);
-                CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL);
-                CREATE TABLE IF NOT EXISTS ui_layout(key TEXT PRIMARY KEY,value TEXT NOT NULL);
-                CREATE TABLE IF NOT EXISTS migration_issues(source TEXT PRIMARY KEY,error TEXT NOT NULL);
-                CREATE TABLE IF NOT EXISTS art_cache(cache_key TEXT PRIMARY KEY,content BLOB NOT NULL,mime TEXT NOT NULL,metadata TEXT NOT NULL,updated_at INTEGER NOT NULL);
-                CREATE INDEX IF NOT EXISTS art_oracle_face_kind ON art_cache(json_extract(metadata,'$.oracleId'),CAST(json_extract(metadata,'$.face') AS INTEGER),json_extract(metadata,'$.kind'));
-                CREATE TABLE IF NOT EXISTS token_preferences(deck_id TEXT PRIMARY KEY,payload TEXT NOT NULL,updated_at INTEGER NOT NULL);
-                CREATE TABLE IF NOT EXISTS replays(id TEXT PRIMARY KEY,payload TEXT NOT NULL,status TEXT NOT NULL,created_at INTEGER NOT NULL,updated_at INTEGER NOT NULL,finished_at INTEGER);
-                CREATE TABLE IF NOT EXISTS replay_events(replay_id TEXT NOT NULL REFERENCES replays(id) ON DELETE CASCADE,sequence INTEGER NOT NULL,type TEXT NOT NULL,timestamp TEXT,payload TEXT NOT NULL,digest TEXT NOT NULL,PRIMARY KEY(replay_id,sequence));
-                CREATE INDEX IF NOT EXISTS replays_created ON replays(created_at DESC);
-                CREATE INDEX IF NOT EXISTS replay_frames ON replay_events(replay_id,type,sequence);
-                INSERT OR IGNORE INTO meta VALUES('schema_version','1');COMMIT;''')
-        finally:c.close()
-        self._migrate_legacy();self._migrate_legacy_art();self._seed_bundled();self._init_precons();self._init_profile_storage()
+        self.maintenance_lock=threading.RLock();self.maintenance_active=threading.Event()
+        self.maintenance_cancel=threading.Event();self.maintenance_process_lock=threading.Lock();self.maintenance_process=None
+        with operation_lock(self.root, blocking=False):
+            c=sqlite3.connect(self.database,timeout=30)
+            try:
+                c.execute('PRAGMA busy_timeout=30000')
+                deadline=time.monotonic()+30
+                while True:
+                    try:
+                        c.execute('PRAGMA journal_mode=WAL');break
+                    except sqlite3.OperationalError as exc:
+                        # Initial conversion to WAL can return SQLITE_BUSY without
+                        # honoring busy_timeout when services start concurrently.
+                        if 'locked' not in str(exc).lower() or time.monotonic()>=deadline:raise
+                        time.sleep(.025)
+                c.execute('PRAGMA synchronous=FULL')
+                c.executescript('''BEGIN IMMEDIATE;
+                    CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY,value TEXT NOT NULL);
+                    CREATE TABLE IF NOT EXISTS decks(id TEXT NOT NULL,origin TEXT NOT NULL,payload TEXT NOT NULL,updated_at INTEGER NOT NULL,PRIMARY KEY(id,origin));
+                    CREATE TABLE IF NOT EXISTS hidden_decks(id TEXT PRIMARY KEY);
+                    CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL);
+                    CREATE TABLE IF NOT EXISTS ui_layout(key TEXT PRIMARY KEY,value TEXT NOT NULL);
+                    CREATE TABLE IF NOT EXISTS migration_issues(source TEXT PRIMARY KEY,error TEXT NOT NULL);
+                    CREATE TABLE IF NOT EXISTS art_cache(cache_key TEXT PRIMARY KEY,content BLOB NOT NULL,mime TEXT NOT NULL,metadata TEXT NOT NULL,updated_at INTEGER NOT NULL);
+                    CREATE INDEX IF NOT EXISTS art_oracle_face_kind ON art_cache(json_extract(metadata,'$.oracleId'),CAST(json_extract(metadata,'$.face') AS INTEGER),json_extract(metadata,'$.kind'));
+                    CREATE TABLE IF NOT EXISTS token_preferences(deck_id TEXT PRIMARY KEY,payload TEXT NOT NULL,updated_at INTEGER NOT NULL);
+                    CREATE TABLE IF NOT EXISTS replays(id TEXT PRIMARY KEY,payload TEXT NOT NULL,status TEXT NOT NULL,created_at INTEGER NOT NULL,updated_at INTEGER NOT NULL,finished_at INTEGER);
+                    CREATE TABLE IF NOT EXISTS replay_events(replay_id TEXT NOT NULL REFERENCES replays(id) ON DELETE CASCADE,sequence INTEGER NOT NULL,type TEXT NOT NULL,timestamp TEXT,payload TEXT NOT NULL,digest TEXT NOT NULL,PRIMARY KEY(replay_id,sequence));
+                    CREATE INDEX IF NOT EXISTS replays_created ON replays(created_at DESC);
+                    CREATE INDEX IF NOT EXISTS replay_frames ON replay_events(replay_id,type,sequence);
+                    INSERT OR IGNORE INTO meta VALUES('schema_version','1');COMMIT;''')
+            finally:c.close()
+        self._init_maintenance();self._migrate_legacy();self._migrate_presentation_preferences();self._migrate_legacy_art();self._seed_bundled();self._init_precons();self._init_profile_storage()
+
+    def _migrate_presentation_preferences(self):
+        with self.connection(write=True)as c:
+            previous={row['key']:json.loads(row['value'])for row in c.execute('SELECT key,value FROM settings')}
+            if previous.get('presentationVersion')==2:return
+            changed={'fontFamily':'Beleren','titleFontFamily':'Beleren','presentationVersion':2}
+            if(previous.get('windowMode')=='Windowed'and previous.get('resolution')=='1440x900')or not('windowMode'in previous or'resolution'in previous):
+                changed.update(windowMode='Borderless',resolution='Desktop')
+            if previous.get('cursorStyle','System')=='System':changed['cursorStyle']='Kenney'
+            for key,value in changed.items():c.execute('INSERT INTO settings VALUES (?,?) ON CONFLICT(key)DO UPDATE SET value=excluded.value',(key,encode(value)))
 
     @contextmanager
     def connection(self,write=False):
-        c=sqlite3.connect(self.database,timeout=30,isolation_level=None);c.row_factory=sqlite3.Row
-        c.execute('PRAGMA busy_timeout=30000');c.execute('PRAGMA foreign_keys=ON');c.execute('PRAGMA synchronous=FULL')
-        try:
-            if write:c.execute('BEGIN IMMEDIATE')
-            yield c
-            if write:c.execute('COMMIT')
-        except BaseException:
-            if write and c.in_transaction:c.execute('ROLLBACK')
-            raise
-        finally:c.close()
+        if self.maintenance_active.is_set():
+            raise ConflictError('Storage maintenance is in progress; try again when it finishes')
+        with operation_lock(self.root, blocking=False):
+            if self.maintenance_active.is_set():
+                raise ConflictError('Storage maintenance is in progress; try again when it finishes')
+            c=sqlite3.connect(self.database,timeout=30,isolation_level=None);c.row_factory=sqlite3.Row
+            c.execute('PRAGMA busy_timeout=30000');c.execute('PRAGMA foreign_keys=ON');c.execute('PRAGMA synchronous=FULL')
+            try:
+                if write:c.execute('BEGIN IMMEDIATE')
+                yield c
+                if write:c.execute('COMMIT')
+            except BaseException:
+                if write and c.in_transaction:c.execute('ROLLBACK')
+                raise
+            finally:c.close()
 
     def _issue(self,c,source,error):
         c.execute('INSERT OR REPLACE INTO migration_issues VALUES (?,?)',(source,str(error)))
@@ -133,6 +152,7 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
                 except (OSError,ValueError) as exc:issues.append(('art/'+path.name,exc))
             with self.connection(write=True) as c:
                 if c.execute("SELECT 1 FROM meta WHERE key='legacy_art_migrated'").fetchone():return
+                prepared=[row for row in prepared if self.art_mirror_import_allowed(row[0],c)]
                 c.executemany("INSERT OR IGNORE INTO art_cache VALUES (?,?,'image/jpeg',?,?)",prepared)
                 for source,error in issues:self._issue(c,source,error)
         with self.connection(write=True) as c:c.execute("INSERT OR IGNORE INTO meta VALUES('legacy_art_migrated',?)",(str(now()),))
@@ -250,10 +270,14 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
                 if row:return bytes(row[0])
         for key in (cache_key,*legacy_keys):
             self._check_art_key(key);path=self.root/'art'/key
-            if path.is_file() and path.stat().st_size<=3*1024*1024:
+            if self.art_mirror_import_allowed(key) and path.is_file() and path.stat().st_size<=3*1024*1024:
                 data=path.read_bytes()
                 if data.startswith(b'\xff\xd8'):
-                    self.save_art(cache_key,data,{'legacySource':'art/'+key});return data
+                    with self.connection(write=True)as c:
+                        if not self.art_mirror_import_allowed(key,c):continue
+                        c.execute("INSERT INTO art_cache VALUES (?,?,'image/jpeg',?,?) ON CONFLICT(cache_key)DO NOTHING",(cache_key,sqlite3.Binary(data),encode({'legacySource':'art/'+key}),now()))
+                        row=c.execute('SELECT content FROM art_cache WHERE cache_key=?',(cache_key,)).fetchone()
+                    return bytes(row[0]) if row else None
         return None
 
     def save_art(self,cache_key,data,metadata=None):
