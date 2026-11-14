@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """Build a local Flatpak bundle from the compiled Linux payload and installed SDK."""
 import argparse
+from datetime import date, datetime, timezone
 import hashlib
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
+import xml.etree.ElementTree as ET
 
 PROJECT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
 APP_ID='io.github.Alexayy.Love2Gathering'
+RUNTIME_BRANCH='25.08'
 PERMISSIONS=['--share=network','--share=ipc','--socket=x11','--socket=wayland','--socket=pulseaudio','--device=dri','--filesystem=host']
 
 
@@ -17,12 +21,43 @@ def run(*args):
     subprocess.run([str(arg)for arg in args],check=True)
 
 
+def runtime_preflight(work):
+    """Check the shipping Platform, not the more complete SDK used to build."""
+    command=['flatpak','build','--runtime','--env=LD_LIBRARY_PATH=/app/lib/love',str(work)]
+    love=subprocess.check_output(command+['/app/share/Love2Gathering/runtime/love/bin/love','--version'],text=True).strip()
+    if not love.startswith('LOVE 11.5'):
+        raise ValueError('Packaged LÖVE 11.5 could not run in the Platform runtime')
+    python=json.loads(subprocess.check_output(command+['python3','-c',
+        'import ctypes,json,sqlite3,ssl,sys;print(json.dumps({"python":sys.version.split()[0],"sqlite":sqlite3.sqlite_version,"ssl":ssl.OPENSSL_VERSION}))'],text=True))
+    java=subprocess.check_output(command+['/app/share/Love2Gathering/runtime/java/bin/java','--version'],text=True).strip()
+    if not re.match(r'(?:openjdk|java) 21(?:[.\s]|$)',java):
+        raise ValueError('Packaged Java 21 could not run in the Platform runtime')
+    commits={}
+    for kind in ('Platform','Sdk'):
+        ref='org.freedesktop.'+kind+'//'+RUNTIME_BRANCH
+        value=subprocess.check_output(['flatpak','info','--arch=x86_64','--show-commit',ref],text=True).strip()
+        if not re.fullmatch('[0-9a-f]{64}',value):
+            raise ValueError('Cannot identify the installed Flatpak '+kind+' commit')
+        commits[kind.lower()]=value
+    return {'branch':RUNTIME_BRANCH,'commits':commits,'love':love,'java':java.splitlines()[0],**python}
+
+
+def write_metainfo(source,destination,version):
+    tree=ET.parse(source);releases=tree.getroot().find('releases')
+    if releases is None:releases=ET.SubElement(tree.getroot(),'releases')
+    match=re.match(r'^(\d{4})\.(\d{1,2})\.(\d{1,2})(?:\.|$)',version)
+    release_date=date(*(int(part)for part in match.groups()))if match else datetime.now(timezone.utc).date()
+    existing=next((node for node in releases if node.get('version')==version),None)
+    if existing is None:releases.insert(0,ET.Element('release',{'version':version,'date':release_date.isoformat()}))
+    tree.write(destination,encoding='UTF-8',xml_declaration=True)
+
+
 def build(payload,output,work,version):
     if not(payload/'runtime/java/bin/java').is_file():
         raise ValueError('The Linux payload must include runtime/java/bin/java')
     if work.exists():shutil.rmtree(work)
     work.parent.mkdir(parents=True,exist_ok=True);output.mkdir(parents=True,exist_ok=True)
-    run('flatpak','build-init','--arch=x86_64',work,APP_ID,'org.freedesktop.Sdk','org.freedesktop.Platform','25.08')
+    run('flatpak','build-init','--arch=x86_64',work,APP_ID,'org.freedesktop.Sdk','org.freedesktop.Platform',RUNTIME_BRANCH)
     files=work/'files';installed=files/'share/Love2Gathering'
     shutil.copytree(payload,installed)
     shutil.copy2(PROJECT/'packaging/runtime/launcher.py',installed/'launcher.py')
@@ -53,12 +88,12 @@ def build(payload,output,work,version):
     desktop=files/'share/applications';desktop.mkdir(parents=True,exist_ok=True)
     shutil.copy2(HERE/(APP_ID+'.desktop'),desktop/(APP_ID+'.desktop'))
     meta=files/'share/metainfo';meta.mkdir(parents=True,exist_ok=True)
-    shutil.copy2(HERE/(APP_ID+'.metainfo.xml'),meta/(APP_ID+'.metainfo.xml'))
+    write_metainfo(HERE/(APP_ID+'.metainfo.xml'),meta/(APP_ID+'.metainfo.xml'),version)
     icons=files/'share/icons/hicolor/256x256/apps';icons.mkdir(parents=True,exist_ok=True)
     shutil.copy2(installed/'share/icons/love2gathering.png',icons/(APP_ID+'.png'))
     manifest={'version':1,'files':{str(path.relative_to(installed)):hashlib.sha256(path.read_bytes()).hexdigest()for path in sorted(installed.rglob('*'))if path.is_file()and path.name!='payload-manifest.json'}}
     (installed/'payload-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
-    run('flatpak','build','--env=LD_LIBRARY_PATH=/app/lib/love',work,'/app/share/Love2Gathering/runtime/love/bin/love','--version')
+    provenance['runtime']=runtime_preflight(work)
     run('flatpak','build-finish','--command=love2gathering',*PERMISSIONS,work)
     repo=work.parent/'repo'
     run('flatpak','build-export','--arch=x86_64',repo,work,'stable')

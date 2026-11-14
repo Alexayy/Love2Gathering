@@ -6,6 +6,8 @@ A LÖVE desktop client with Slab controls, a 2D Magic table and a fanned hand. *
 
 Release builds include DEB, relocatable RPM, Flatpak, a Windows setup executable and a Linux installer with a folder picker. See [installation and build instructions](packaging/README.md) for custom locations such as `/mnt/Games/Love2Gathering`, menu shortcuts, dependencies and uninstall behavior. Saves and image caches remain separate from the application folder.
 
+Pushes to `development` build the installers and publish a complete development prerelease in [Releases](https://github.com/Alexayy/Love2Gathering/releases). Use `bash scripts/push-development.sh` after committing to check the outgoing XMage pin and push only the parent branch. The helper leaves the engine submodule untouched; [CI and publishing details](packaging/README.md#build-again) describe the checks and reports.
+
 ## Start
 
 XMage is a Git submodule pinned to the engine revision used by this client. Clone this repository with `git clone --recurse-submodules https://github.com/Alexayy/Love2Gathering.git`. For an existing clone, initialize it from the project root:

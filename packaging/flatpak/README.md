@@ -60,6 +60,36 @@ the selected path. Those tests verify helper behavior; the separate native
 Flatpak sandbox report establishes actual app installation/runtime readiness.
 See `packaging/flatpak/installer-test-report.json`.
 
+## GitHub-hosted build
+
+`scripts/ci/flatpak-setup.sh` prepares only an ephemeral GitHub-hosted
+Ubuntu 24.04 x86_64 job. It installs the native LÖVE 11.5 package/dependencies,
+Flatpak and D-Bus, then installs Freedesktop Platform and SDK 25.08 in a private
+`RUNNER_TEMP` user installation. The selected branch is stable while exact
+Platform/SDK commits and native binary hashes are recorded per build. It does
+not install anything when run on an ordinary desktop; `--dry-run` prints the
+plan without changing the machine.
+
+The setup applies Ubuntu's user-namespace exception only inside that disposable
+runner. This is needed for Bubblewrap on affected 24.04 images; it is not a
+persistent end-user setting. See [Ubuntu's release notes](https://documentation.ubuntu.com/release-notes/24.04/)
+and [Flatpak's own CI](https://github.com/flatpak/flatpak/blob/main/.github/workflows/check.yml).
+
+After downloading the compiled Linux payload from the preceding job, build via:
+
+```sh
+dbus-run-session -- python3 packaging/flatpak/build.py \
+  --payload dist/stage/linux/Love2Gathering \
+  --output dist --work build/flatpak/application --version 2026.11.15.42
+```
+
+Preflight explicitly uses `flatpak build --runtime` to exercise the shipping
+Platform rather than the SDK: native LÖVE, Python with SQLite/SSL/ctypes and the
+bundled Java 21 must run before an export is created. The metainfo's newest
+release receives the same nightly version/date as the artifact. Existing
+release history remains present. `test_build.py` checks the command boundary,
+failure behavior and metainfo update without modifying installed runtimes.
+
 References: [Flatpak environment and FLATPAK_USER_DIR](https://docs.flatpak.org/en/latest/flatpak-command-reference.html#environment),
 [system-wide custom installations](https://docs.flatpak.org/en/latest/tips-and-tricks.html#adding-a-custom-installation),
 [Flatpak bundles](https://docs.flatpak.org/en/latest/single-file-bundles.html).

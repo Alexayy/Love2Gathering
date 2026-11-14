@@ -22,6 +22,16 @@ CURATED = ('fonts', 'icons', 'keyrune', 'audio', 'card-backs')
 KENNEY = ('ui', 'theme', 'runtime', 'particles', 'sounds')
 
 
+def release_version(value):
+    """A numeric date/build version accepted by every produced package format."""
+    if not re.fullmatch(r'[0-9]{4}\.[0-9]{1,2}\.[0-9]{1,2}(?:\.[0-9]{1,10})?', value):
+        raise argparse.ArgumentTypeError('Version must be YYYY.MM.DD or YYYY.MM.DD.BUILD')
+    from datetime import date
+    try:date(*(int(part) for part in value.split('.')[:3]))
+    except ValueError as exc:raise argparse.ArgumentTypeError('Version must contain a valid calendar date') from exc
+    return value
+
+
 def run(command, **options):
     print('+ ' + ' '.join(map(str, command)), flush=True)
     subprocess.run(list(map(str, command)), check=True, **options)
@@ -38,6 +48,25 @@ def copy_tree(source, destination, predicate=None):
         shutil.copy2(item, target)
 
 
+def copy_deck_payload(source, destination):
+    """Include the one prepared product source, never arbitrary compressed files."""
+    catalog = source / 'preconstructed/catalog.jsonl.gz'
+    if catalog.is_symlink() or not catalog.is_file() or not catalog.stat().st_size:
+        raise SystemExit('Required bundled preconstructed source is missing: ' + str(catalog))
+    try:
+        # Read through the gzip trailer so a truncated/corrupt tracked snapshot
+        # fails the build instead of silently shipping an empty product browser.
+        with gzip.open(catalog, 'rb') as stream:
+            if not stream.read(1):
+                raise ValueError('empty prepared catalog')
+            while stream.read(1024 * 1024):
+                pass
+    except (OSError, EOFError, ValueError) as exc:
+        raise SystemExit('Invalid bundled preconstructed source: ' + str(catalog)) from exc
+    copy_tree(source, destination, lambda p: p.suffix in ('.json', '.md', '.txt')
+              or p.relative_to(source).as_posix() == 'preconstructed/catalog.jsonl.gz')
+
+
 def asset_paths():
     for folder in CURATED:
         path = ROOT / 'assets' / folder
@@ -52,10 +81,12 @@ def java_home():
     candidates = ([Path(explicit)] if explicit else []) + sorted((ROOT / '.tools').glob('jdk-*'))
     binary = shutil.which('jlink')
     if binary:
-        candidates.insert(0, Path(binary).resolve().parents[1])
+        candidates.insert(1 if explicit else 0, Path(binary).resolve().parents[1])
     for path in candidates:
         if (path / 'bin/jlink').is_file():
-            return path
+            try:release = (path / 'release').read_text()
+            except OSError:continue
+            if re.search(r'^JAVA_VERSION="21(?:\.|"$)', release, re.M):return path
     raise SystemExit('Java 21 JDK with jlink is required to build the Linux runtime.')
 
 
@@ -77,7 +108,7 @@ def common_payload(output, source):
         for path in sorted(set(frontend)):
             archive.write(path, path.relative_to(ROOT).as_posix())
     copy_tree(ROOT / 'service', target / 'service', lambda p: p.parent == ROOT / 'service' and p.suffix == '.py')
-    copy_tree(ROOT / 'decks', target / 'decks', lambda p: p.suffix in ('.json', '.md', '.txt'))
+    copy_deck_payload(ROOT / 'decks', target / 'decks')
     (target / 'bridge/target/lib').mkdir(parents=True)
     shutil.copy2(jar, target / 'bridge/target' / jar.name)
     for dependency in sorted((ROOT / 'bridge/target/lib').glob('*.jar')):
@@ -125,7 +156,8 @@ def seal(target):
     entries = {}
     for path in sorted(target.rglob('*')):
         if path.is_file() and not path.is_symlink() and path.name != 'payload-manifest.json':
-            entries[path.relative_to(target).as_posix()] = hashlib.file_digest(path.open('rb'), 'sha256').hexdigest()
+            with path.open('rb') as stream:
+                entries[path.relative_to(target).as_posix()] = hashlib.file_digest(stream, 'sha256').hexdigest()
     (target / 'payload-manifest.json').write_text(json.dumps({'version': 1, 'files': entries}, indent=2) + '\n')
 
 
@@ -212,7 +244,8 @@ if [ "$1" -eq 0 ]; then python3 -B "$RPM_INSTALL_PREFIX/register_system.py" unre
     binary, env = rpm_environment()
     run([binary, '-bb', '--define', '_topdir ' + str(stage), '--define', '__os_install_post %{nil}',
          '--define', '_build_id_links none', '--define', '_binary_payload w6T8.xzdio', spec], env=env)
-    source = next((stage / 'RPMS').rglob('*.rpm'))
+    source = stage / 'RPMS/x86_64' / f'love2gathering-{VERSION}-1.x86_64.rpm'
+    if not source.is_file():raise SystemExit('rpmbuild did not produce the selected release version')
     path = output / f'Love2Gathering-{VERSION}-linux-x86_64.rpm'
     shutil.copy2(source, path)
     return path
@@ -252,20 +285,27 @@ def checksums(output):
 
 
 def main():
+    global VERSION
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--format', choices=('common', 'linux', 'deb', 'rpm', 'portable', 'all-linux'), default='all-linux')
     parser.add_argument('--output', type=Path, default=ROOT / 'dist')
     parser.add_argument('--source', type=Path, default=next((ROOT / 'assets').glob('all-cards*.jsonl'), ROOT / 'assets/all-cards.jsonl'))
     parser.add_argument('--reuse-common', action='store_true')
     parser.add_argument('--reuse-linux', action='store_true', help='Reuse a previously verified Linux stage')
+    parser.add_argument('--version', type=release_version, default=VERSION, help='Shared package/release version (YYYY.MM.DD.BUILD)')
     args = parser.parse_args();output = args.output.resolve();output.mkdir(parents=True, exist_ok=True)
+    VERSION = args.version
     if platform.machine() not in ('x86_64', 'AMD64') and args.format != 'common':
         parser.error('These native packages target x86_64; use a matching builder.')
     common = output / 'stage/common/Love2Gathering'
     if not args.reuse_common:common = common_payload(output, args.source.resolve())
+    elif json.loads((common / 'release.json').read_text())['version'] != VERSION:
+        parser.error('Reused common payload version differs; rebuild it with the selected --version')
     if args.format == 'common':return
     payload = output / 'stage/linux/Love2Gathering' if args.reuse_linux else linux_payload(output, common)
     if not payload.is_dir():parser.error('Linux stage is missing; build --format linux first')
+    if args.reuse_linux and json.loads((payload / 'release.json').read_text())['version'] != VERSION:
+        parser.error('Reused Linux payload version differs; rebuild it with the selected --version')
     if args.format == 'linux':return
     products = []
     if args.format in ('deb', 'all-linux'):products.append(build_deb(output, payload))

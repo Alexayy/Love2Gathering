@@ -98,6 +98,44 @@ location checks and missing-drive errors remain active. See
 
 ## Build again
 
+Every push to `development` runs [Development installers](../.github/workflows/development-release.yml)
+on GitHub-hosted Ubuntu 24.04. It builds the pinned XMage bridge, Linux DEB/RPM,
+the chosen-folder Linux installer/archive, Windows setup EXE and Flatpak. A dated
+numeric version identifies the workflow run; a unique development tag also
+includes its attempt and source commit.
+
+The workflow publishes a **prerelease** in
+[GitHub Releases](https://github.com/Alexayy/Love2Gathering/releases) only after
+all builds and required checks pass. It stages a draft, uploads the complete
+asset set, verifies names/sizes and then publishes. Releases include SHA256SUMS,
+installation instructions and source/runtime/metadata provenance. Actions keeps
+only compact reports for seven days, avoiding another copy of the large
+installers in artifact storage. This uses Releases rather than GitHub's
+container/package registries.
+
+CI acquires current Scryfall **bulk metadata only** into an isolated build
+directory. It does not download card illustrations or read a developer's SQL
+databases. The source digest and upstream update time accompany the release.
+Windows setup is cross-built with NSIS; this is not a native Windows gameplay
+test. The compiled Linux service check uses temporary one-card metadata, and
+the Flatpak builder probes the actual Platform runtime before packaging.
+
+For a protected parent-only push after committing:
+
+```sh
+bash scripts/push-development.sh --check-only
+bash scripts/push-development.sh
+```
+
+The helper accepts only this repository's `development` destination, fetches
+without submodule recursion and checks **every outgoing commit** plus the index.
+It rejects changes to the canonical `.gitmodules` or XMage gitlink, including a
+temporary pin change restored by a later commit. It pushes one explicit parent
+ref with submodule recursion and tag following disabled. Uncommitted files
+inside `engine/mage` remain untouched and are not pushed. CI repeats the pin
+check before initializing the recorded engine and before publishing; it never
+updates the pin from upstream.
+
 From the repository root, with an existing JSONL snapshot and already compiled
 `bridge/target` + `bridge/card-map.json`:
 
@@ -106,6 +144,9 @@ python3 packaging/build.py --format all-linux --source assets/all-cards-20261114
 python3 packaging/windows/build.py --help
 python3 packaging/flatpak/build.py --help
 ```
+
+Pass `--version YYYY.MM.DD.BUILD` to use the same version across all three
+builders. A reused common payload must already carry that version.
 
 The Linux builder requires a Java 21 JDK with `jlink`, `dpkg-deb`, `rpmbuild`, and
 Python 3.11+ for the build scripts. It can use the project's local JDK and locally
