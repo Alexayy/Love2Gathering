@@ -84,6 +84,7 @@ function Theme.new()
             self.slices[name]=slice
         end
     end
+    self.surfaces=require('app.surfaces').new()
     self.focus=load(root..'space-focus.png');self.divider=load(root..'fantasy-divider.png')
     self.ready=self.slices.panel and self.slices.button and self.slices.frame and self.slices.inset
     self:configure({});return self
@@ -118,6 +119,10 @@ function Theme:panel(x,y,w,h,style)
     local color=copy(type(style)=='table'and style or style=='accent'and mix(c.panel,c.accent,.12)or c.panel)
     color[4]=color[4]*math.max(0,math.min(1,tonumber(self.settings.panelOpacity)or .65))
     love.graphics.push('all');self:slice('panel',x,y,w,h,color)
+    if w>=180 and h>=80 then
+        self.surfaces:mask('gradient',x+6,y+6,w-12,h-12,{c.accent[1],c.accent[2],c.accent[3],color[4]*.035})
+        self.surfaces:mask('noise',x+6,y+6,w-12,h-12,{.6,.7,.8,color[4]*.025},true)
+    end
     if w>=110 and h>=68 then
         local alpha=(color[4] or 1)*.6
         local frame=copy(style=='accent'and c.accent or mix(c.line,c.text,.2));frame[4]=alpha;self:slice('frame',x,y,w,h,frame)
@@ -181,7 +186,7 @@ function Theme.install(S,assets)
     local draw=require('lib.Slab.Internal.Core.DrawCommands')
     draw.SetSkin({classify=function(mode,color,w,h)
         if mode=='fill' and color and (color[4] or 1)>0 and w>0 and h>0 then return mapping[color]end
-    end,draw=function(kind,x,y,w,h,color)skin:draw(kind,x,y,w,h,color)end})
+    end,draw=function(kind,x,y,w,h,color)skin:draw(kind,x,y,w,h,color)end,slider=function(x,y,w,h,value)skin.surfaces:slider(x,y,w,h,value,skin.colors)end})
     -- Use accepted control activation, never hover/paint state, as the UI sound
     -- trigger. Installing the skin repeatedly must not stack wrappers or sounds.
     S._love2gatheringSkinAssets=assets

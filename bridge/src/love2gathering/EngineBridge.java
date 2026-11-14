@@ -71,7 +71,7 @@ public final class EngineBridge {
             if (path.startsWith("/multiplayer/") || path.startsWith("/draft/")) {
                 result = MultiplayerBridge.request(exchange, path, method);
             } else if ("/health".equals(path)) {
-                result = map("ok", true, "engine", "XMage", "version", "1.4.63", "implementedCards", cardMap.size(),"recordingError",ReplayRecorder.errors());
+                result = map("ok", true, "engine", "XMage", "version", "1.4.63", "implementedCards", cardMap.size(),"recordingError",ReplayRecorder.errors(),"storageRelocationProtocol",1);
             } else if ("/session/start".equals(path) && "POST".equals(method)) {
                 JsonObject body = readBody(exchange);
                 synchronized (EngineBridge.class) {
@@ -185,6 +185,8 @@ public final class EngineBridge {
         final PriorityController priority = new PriorityController();
         final PromptContext promptContext = new PromptContext(this);
         final Deque<Map<String,Object>> animationEvents = new ArrayDeque<>();
+        Map<String,Object> openingRoll;
+        final Map<UUID,Map<String,Object>> botPlaymats = new HashMap<>();
         final Map<UUID,UUID> tokenSources = new HashMap<>();
         final Deque<Map<String,Object>> rememberedLookedAt = new ArrayDeque<>();
         final Map<String,Cards> lookedAtReferences = new LinkedHashMap<>();
@@ -271,11 +273,11 @@ public final class EngineBridge {
             int count = seatConfigs.size();
             if (count > 2 && !commander && !limited) throw new IllegalArgumentException(room ? "More than two players require Commander or Limited" : "Multiple bots require Commander");
             if (commander && count > 2) {
-                CommanderFreeForAll multiplayer = new CommanderFreeForAll(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(1), 40, 7);
+                CommanderFreeForAll multiplayer = new PresentationGames.Multiplayer(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(1), 40, 7, this::spellResolved);
                 multiplayer.setNumPlayers(count); game = multiplayer;
-            } else if (limited && count > 2) game = new LimitedFreeForAll(count, new LondonMulligan(1));
-            else game = commander ? new CommanderDuel(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(1), 40, 7)
-                    : new TwoPlayerDuel(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(0), limited ? 40 : 60, 20, 7);
+            } else if (limited && count > 2) game = new LimitedFreeForAll(count, new LondonMulligan(1), this::spellResolved);
+            else game = commander ? new PresentationGames.Commander(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(1), 40, 7, this::spellResolved)
+                    : new PresentationGames.Duel(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(0), limited ? 40 : 60, 20, 7, this::spellResolved);
             GameOptions options = new GameOptions(); options.rollbackTurnsAllowed = false; game.setGameOptions(options);
             MatchOptions matchOptions = new MatchOptions(room ? "Room match" : "Local practice", game.getGameType().getName(), false);
             matchOptions.setDeckType(validator.getName()); matchOptions.setWinsNeeded(1); matchOptions.setFreeMulligans(commander || count > 2 ? 1 : 0);
@@ -307,6 +309,9 @@ public final class EngineBridge {
             }
             game.setTableId(match.getId());
             for (int i = 0; i < seatPlayers.size(); i++) registerPlayer(seatPlayers.get(i), decks.get(seatConfigs.get(i).seatId));
+            openingRoll=StartingOrder.choose(participants(),text(body,"startingSeatId","dice"),room);
+            game.setStartingPlayerId(UUID.fromString(String.valueOf(openingRoll.get("winnerId"))));
+            chooseBotPlaymats(decks);
             for (Session perspective : perspectives) {
                 if (perspective != this) { perspective.bots.addAll(bots); perspective.botSources.addAll(botSources); }
                 perspective.bot = seatPlayers.stream().filter(player -> !player.getId().equals(perspective.human.getId())).findFirst().orElse(null);
@@ -356,6 +361,37 @@ public final class EngineBridge {
             String cover=text(deck,"coverCard","");String chosen=names.contains(cover)?cover:commander!=null?commander:names.isEmpty()?null:names.get(0);
             return chosen==null?null:map("name",chosen,"portrait",true);
         }
+        void chooseBotPlaymats(Map<String,Deck> decks){
+            for(Player player:seatPlayers){
+                if(player instanceof BridgeHuman)continue;
+                int seat=seatOf(player);Deck deck=decks.get(seatConfigs.get(seat).seatId);
+                List<Card> identities=new ArrayList<>(deck.getCards());identities.addAll(deck.getSideboard());
+                Set<String> basics=new LinkedHashSet<>();
+                for(Card card:identities){
+                    mage.filter.FilterMana identity=card.getColorIdentity();
+                    if(identity.isWhite())basics.add("Plains");if(identity.isBlue())basics.add("Island");if(identity.isBlack())basics.add("Swamp");if(identity.isRed())basics.add("Mountain");if(identity.isGreen())basics.add("Forest");
+                }
+                if(basics.isEmpty())basics.add("Wastes");
+                List<String> candidates=new ArrayList<>(basics);
+                JsonObject source=seatConfigs.get(seat).deck;
+                if(source.has("commander")&&source.get("commander").isJsonArray())for(JsonElement entry:source.getAsJsonArray("commander")){
+                    String name=entry.isJsonPrimitive()?entry.getAsString():text(entry.getAsJsonObject(),"name","");if(!name.isBlank())candidates.add(name);
+                }
+                String chosen=candidates.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(candidates.size()));
+                botPlaymats.put(player.getId(),map("name",chosen,"preferFullArt",basics.contains(chosen),"botPlaymat",true));
+            }
+        }
+        Map<String,Object> playmatCard(Player player){return owner.botPlaymats.get(player.getId());}
+        void spellResolved(PresentationGames.Resolution spell){
+            if(!spell.commander&&spell.manaValue<=5)return;
+            for(Session view:perspectives){
+                if(view.knownObject(spell.sourceId)==null&&!spell.spell.isCopy())continue;
+                long sequence=ids.incrementAndGet();
+                view.animationEvents.addLast(map("id",game.getId()+"-impact-"+sequence,"sequence",sequence,"type","impact","nativeType","SPELL_RESOLVED",
+                    "sourceId",str(spell.sourceId),"sourceName",spell.name,"playerId",str(spell.controllerId),"commander",spell.commander,"manaValue",spell.manaValue,"timestamp",System.currentTimeMillis()));
+                while(view.animationEvents.size()>128)view.animationEvents.removeFirst();view.publish();
+            }
+        }
         String seatIdOf(Player player) { int index = seatOf(player); return index < 0 ? null : seatConfigs.get(index).seatId; }
         Session perspective(String playerId) {
             Session view;
@@ -380,7 +416,11 @@ public final class EngineBridge {
         }
         void start() {
             if (owner != this) throw new IllegalStateException("Only the shared game owner can start execution");
-            for (Session view : perspectives) view.prepareRecording();
+            try { for (Session view : perspectives) view.prepareRecording(); }
+            catch(RuntimeException ex) {
+                for(Session view:perspectives){view.running=false;view.error=ex.getMessage();view.prompt=null;view.publish();}
+                throw ex;
+            }
             gameThread = new Thread(() -> {
                 try { game.start(seatPlayers.get(0).getId()); }
                 catch (Throwable ex) {
@@ -866,7 +906,7 @@ public final class EngineBridge {
                     List<Map<String,Object>> battlefield = new ArrayList<>();
                     for (Permanent permanent : game.getBattlefield().getAllActivePermanents()) if (p.getId().equals(permanent.getControllerId())) battlefield.add(card(permanent));
                     ManaPool mana = p.getManaPool();
-                    players.add(map("id", p.getId().toString(), "seat", seatOf(p), "seatId", seatIdOf(p), "name", p.getName(), "isHuman", p instanceof BridgeHuman, "isLocal", p.getId().equals(human.getId()), "human", p.getId().equals(human.getId()), "profile", playerProfile(p), "avatarCard", avatarCard(p), "life", p.getLife(), "hand", p.getId().equals(human.getId()) ? cards(p.getHand().getCards(game)) : Collections.emptyList(), "handCount", p.getHand().size(), "libraryCount", p.getLibrary().size(), "sideboardCount",p.getSideboard().size(), "graveyard", cards(p.getGraveyard().getCards(game)), "battlefield", battlefield, "command", cards(game.getCommanderCardsFromCommandZone(p, CommanderCardType.ANY)), "exile",cards(game.getExile().getAllCards(game).stream().filter(c -> p.getId().equals(c.getOwnerId())).collect(Collectors.toList())),"mana", map("W",mana.getWhite(),"U",mana.getBlue(),"B",mana.getBlack(),"R",mana.getRed(),"G",mana.getGreen(),"C",mana.getColorless()), "won",p.hasWon(),"lost",p.hasLost(),"attachmentIds",NativeProjection.ids(p.getAttachments())));
+                    players.add(map("id", p.getId().toString(), "seat", seatOf(p), "seatId", seatIdOf(p), "name", p.getName(), "isHuman", p instanceof BridgeHuman, "isLocal", p.getId().equals(human.getId()), "human", p.getId().equals(human.getId()), "profile", playerProfile(p), "avatarCard", avatarCard(p), "playmatCard",playmatCard(p), "life", p.getLife(), "hand", p.getId().equals(human.getId()) ? cards(p.getHand().getCards(game)) : Collections.emptyList(), "handCount", p.getHand().size(), "libraryCount", p.getLibrary().size(), "sideboardCount",p.getSideboard().size(), "graveyard", cards(p.getGraveyard().getCards(game)), "battlefield", battlefield, "command", cards(game.getCommanderCardsFromCommandZone(p, CommanderCardType.ANY)), "exile",cards(game.getExile().getAllCards(game).stream().filter(c -> p.getId().equals(c.getOwnerId())).collect(Collectors.toList())),"mana", map("W",mana.getWhite(),"U",mana.getBlue(),"B",mana.getBlack(),"R",mana.getRed(),"G",mana.getGreen(),"C",mana.getColorless()), "won",p.hasWon(),"lost",p.hasLost(),"attachmentIds",NativeProjection.ids(p.getAttachments())));
                 }
                 List<Map<String,Object>> stack = new ArrayList<>();
                 int stackIndex=0;for (StackObject o : game.getStack()) {Map<String,Object> view=stackCard(o);view.put("stackIndex",stackIndex);view.put("isTop",stackIndex++==0);stack.add(view);}
@@ -885,7 +925,7 @@ public final class EngineBridge {
                 Map<String,Object> next = map("running", running, "format", format, "playerCount", seatPlayers.size(), "error", error, "revision", ids.incrementAndGet(), "gameId", game.getId().toString(), "turn", game.getTurnNum(), "phase", game.getTurn() != null && game.getTurn().getPhase() != null ? String.valueOf(game.getTurn().getPhase().getType()) : "", "step", String.valueOf(game.getTurnStepType()), "activePlayerId", str(game.getActivePlayerId()), "priorityPlayerId", str(game.getPriorityPlayerId()), "players", players, "stack", stack, "exile", exiled,"revealed",revealed,"lookedAt",lookedAt, "prompt", prompt, "log", new ArrayList<>(log), "manualTriggers", manualTriggers);
                 next.put("logEntries",new ArrayList<>(log));next.put("logText",log.stream().map(e->e.get("text")).collect(Collectors.toList()));
                 next.put("projectionError",projectionError);
-                next.put("combat",NativeProjection.combat(this));next.put("animationEvents",new ArrayList<>(animationEvents));
+                next.put("openingRoll",owner.openingRoll);next.put("combat",NativeProjection.combat(this));next.put("animationEvents",new ArrayList<>(animationEvents));
                 next.put("decisionPlayerId",str(owner.decisionPlayerId));next.put("decisionStartedAt",owner.decisionStartedAt==0?null:owner.decisionStartedAt);
                 next.put("priorityStartedAt",Objects.equals(owner.timedPriorityPlayerId,game.getPriorityPlayerId())?owner.priorityStartedAt:null);
                 next.put("clock",map("enabled",false,"limitSeconds",null,"remainingSeconds",null,"penalty",null));

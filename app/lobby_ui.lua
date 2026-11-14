@@ -6,7 +6,7 @@ local function button(v,label,icon,width,height,opts)
 end
 function UI.build(v,w,h)
     local S,m=v.S,v.m;local gap=18;local width=w-56;local setupW=math.min(width*.59,math.max(590,width*.52));local nameW=width-setupW-gap
-    v:window('lobby-setup',28,148,setupW,104,nil,{AutoSizeContent=false})
+    v:window('lobby-setup',28,148,setupW,154,nil,{AutoSizeContent=false})
     S.Text('Format and seats',{Color=v.r.colors.accent});S.NewLine()
     local rowX,rowY=S.GetCursorPos({Absolute=true});local formatW=math.min(205,setupW-320)
     v:combo('format',m.format,{'Modern','Standard','Pioneer','Commander'},formatW,function(value)m:setLobbyFormat(value)end)
@@ -16,14 +16,20 @@ function UI.build(v,w,h)
             if button(v,tostring(count),'players',62,36,{Active=m:lobbyPlayerCount()==count,Tooltip=count..' players · you and '..(count-1)..' bots'})then m:setLobbyPlayers(count)end
         end
     else S.SameLine({Pad=20,CenterY=true});S.Text('1 player · 1 bot',{Color=v.r.colors.muted})end
+    S.NewLine()
+    S.Image('opening-dice',{Image=v.r.assets:iconImage('dice-6',22,v.r.colors.gold),W=22,H=22});S.SameLine({CenterY=true})
+    local choices={'Roll 2d6'};local ids={'dice'};local selected='Roll 2d6'
+    for i=1,m:lobbyPlayerCount()do local label=i==1 and'You go first'or'Bot '..(i-1)..' goes first';choices[#choices+1]=label;ids[#ids+1]=i==1 and'local'or'bot-'..(i-1);if m.practiceStartingSeatId==ids[#ids]then selected=label end end
+    if selected=='Roll 2d6'then m.practiceStartingSeatId='dice'end
+    v:combo('practice-starting-player',selected,choices,math.min(330,setupW-75),function(value)for i,label in ipairs(choices)do if value==label then m.practiceStartingSeatId=ids[i]end end end)
     S.EndWindow()
     v:window('lobby-name',28+setupW+gap,148,nameW,104,nil,{AutoSizeContent=false})
     S.Text('Your name',{Color=v.r.colors.accent});S.NewLine()
     if S.Input('playerName',{Text=m.playerName,W=nameW-30,H=36,Align='left',Tooltip='Name for this match'})then m.playerName=S.GetInputText()end
     S.EndWindow()
-    v:window('lobby-decks',28,270,width,h-356)
+    v:window('lobby-decks',28,320,width,h-406)
     local columns=w>=1600 and 3 or 2;local tileW=(width-42-(columns-1)*18)/columns
-    S.BeginListBox('lobby-seats',{W=width-30,H=h-390})
+    S.BeginListBox('lobby-seats',{W=width-30,H=h-440})
     S.BeginLayout('lobby-seat-columns',{Columns=columns,AlignX='left',AlignY='top'})
     local count=m:lobbyPlayerCount()
     for i=1,count do

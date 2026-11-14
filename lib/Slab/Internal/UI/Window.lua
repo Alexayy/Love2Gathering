@@ -446,6 +446,10 @@ function Window.Top()
 end
 
 function Window.IsObstructed(x, y, skipScrollCheck)
+	if not skipScrollCheck and ActiveInstance ~= nil
+		and not Region.IsPointVisibleInWindow(ActiveInstance.Id, x, y) then
+		return true
+	end
 	if Region.IsScrolling() then
 		return true
 	end

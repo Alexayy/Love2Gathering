@@ -185,6 +185,7 @@ function Rooms.install(Model)
         return true
     end
     function Model:hostRoom()
+        if self.storageLocationBlocked then self:toast('Restart or cancel the storage location change before hosting a room.',true);return false end
         init(self);Rooms.fitSetup(self)
         return self:connectRoom(false,copy(self.roomSetup))
     end
@@ -219,7 +220,7 @@ function Rooms.install(Model)
         return self:roomMutation('/deck',{deck=copy(deck)})
     end
     function Model:setRoomBots(count)return self:roomMutation('/bots',{count=math.max(0,math.floor(tonumber(count)or 0))})end
-    function Model:startRoom()return self:roomMutation('/start',{})end
+    function Model:startRoom()if self.storageLocationBlocked then self:toast('Restart or cancel the storage location change before starting a match.',true);return false end;return self:roomMutation('/start',{})end
     function Model:nextRoomRound()return self:roomMutation('/next-round',{})end
     function Model:leaveRoom()
         if self.roomBusy or not self.roomConnectionId then return false end

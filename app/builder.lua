@@ -11,13 +11,13 @@ function Builder.layout(w,h,mode)
     local searchW=w-margin*2-14-deckW-gap-(previewW>0 and previewW+gap or 0)
     if searchW<280 then deckW=math.max(250,w*.38);searchW=w-margin*2-14-deckW-gap end
     local deckX=margin+searchW+gap
-    local gridY=top+214;local gridH=h-gridY-58
+    local gridY=top+258;local gridH=h-gridY-58
     local columns=math.max(2,math.floor((searchW+14)/154))
     local rows=gridH>=440 and 2 or 1
     local cardW=math.min((searchW-(columns-1)*14)/columns,(gridH/rows-33)/1.4)
     cardW=math.max(60,cardW)
-    return {search={x=margin,y=top,w=searchW,h=184},grid={x=margin,y=gridY,w=searchW,h=gridH},
-        controls={x=deckX,y=top,w=deckW,h=216},list={x=deckX,y=top+248,w=deckW,h=h-top-286},
+    return {search={x=margin,y=top,w=searchW,h=230},grid={x=margin,y=gridY,w=searchW,h=gridH},
+        controls={x=deckX,y=top,w=deckW,h=232},list={x=deckX,y=top+266,w=deckW,h=h-top-304},
         preview=previewW>0 and {x=deckX+deckW+gap,y=top,w=previewW,h=h-top-38} or nil,
         columns=columns,rows=rows,cardW=cardW,cardH=cardW*1.4,pageSize=columns*rows}
 end
@@ -33,6 +33,9 @@ local function iconButton(v,label,icon,width,height,options)
     opts.LabelColor=nil;opts.W=width;opts.H=height;opts.Tooltip=opts.Tooltip or label
     opts.Image={Image=v.r.assets:buttonImage(icon,label,width,height,{font=v.r.fonts[16],iconSize=18,color=tint})}
     return v.S.Button(label,opts)
+end
+local function space(v,pixels)
+    local _,y=v.S.GetCursorPos({Absolute=true});v.S.SetCursorPos(nil,y+(pixels or 6),{Absolute=true})
 end
 local function combo(v,id,label,value,items,width,changed)
 
@@ -90,11 +93,14 @@ function Builder.build(v,w,h)
     local content=l.search.w-24
     v:window('builder-search',l.search.x,l.search.y,l.search.w,l.search.h)
     if S.Input('query',{Text=m.search,W=content,H=36,Align='left',Tooltip='Search card names, rules and types'}) then m.search=S.GetInputText();m:searchChanged() end
-    local half=(content-8)/2
-    combo(v,'builder-format','Format',m.searchFormat,formats,half,function(value)m.searchFormat=value;m.searchSet='All';m:searchChanged();m:refreshSets()end);S.SameLine()
-    combo(v,'builder-color','Color',m.searchColor,{'All','W','U','B','R','G','C'},half,function(value)m.searchColor=value;m:searchChanged()end)
-    combo(v,'builder-type','Type',m.searchType=='' and 'All' or m.searchType,{'All','Creature','Instant','Sorcery','Artifact','Enchantment','Planeswalker','Land','Battle'},half,function(value)m.searchType=value=='All' and '' or value;m:searchChanged()end);S.SameLine()
+    space(v,6)
+    local half=(content-16)/2
+    combo(v,'builder-format','Format',m.searchFormat,formats,half,function(value)m.searchFormat=value;m.searchSet='All';m:searchChanged();m:refreshSets()end);S.SameLine({Pad=12})
+    combo(v,'builder-color','Color',m.searchColor,{'All','W','U','B','R','G','C'},half,function(value)m:setSearchColor(value)end)
+    space(v,6)
+    combo(v,'builder-type','Type',m.searchType=='' and 'All' or m.searchType,{'All','Creature','Instant','Sorcery','Artifact','Enchantment','Planeswalker','Land','Battle'},half,function(value)m.searchType=value=='All' and '' or value;m:searchChanged()end);S.SameLine({Pad=12})
     combo(v,'builder-sort','Sort',m.searchSort,{'Name','Color','Set'},half,function(value)m.searchSort=value;m:searchChanged()end)
+    space(v,6)
     local setItems={{label='All sets',value='All'}};local selected='All sets'
     for _,set in ipairs(m.sets)do local label=set.name..' ['..set.code:upper()..']';setItems[#setItems+1]={label=label,value=set.code};if set.code==m.searchSet then selected=set.code:upper()end end
     combo(v,'builder-set','Set',selected,setItems,content,function(value)m.searchSet=value;m:searchChanged()end)
@@ -102,16 +108,20 @@ function Builder.build(v,w,h)
     local d=l.controls;local dw=d.w-24
     v:window('builder-deck-controls',d.x,d.y,d.w,d.h)
     if S.Input('deck-name',{Text=deck.name,W=dw,H=36,Align='left'})then deck.name=S.GetInputText();m.dirty=true end
-    combo(v,'builder-deck-format','Deck',deck.format,formats,dw-106,function(value)m:changeDeckFormat(value)end);S.SameLine()
+    space(v,6)
+    combo(v,'builder-deck-format','Deck',deck.format,formats,dw-114,function(value)m:changeDeckFormat(value)end);S.SameLine({Pad=12})
     if iconButton(v,m.dirty and 'Save *' or 'Save','save',98,34)then m:saveDeck()end
+    space(v,6)
     local zones=(deck.format=='Commander' or Model.count(deck,'commander')>0) and {'main','commander','sideboard'} or {'main','sideboard'}
     local zoneLabels={main='Main',commander='Cmd',sideboard='Side'}
     for i,zone in ipairs(zones)do
         if i>1 then S.SameLine()end
         if iconButton(v,zoneLabels[zone]..' '..Model.count(deck,zone),({main='library',commander='commander',sideboard='sideboard'})[zone],(dw-(#zones-1)*8)/#zones,34,{Color=m.selectedSection==zone and {.13,.37,.34,1} or nil})then m.selectedSection=zone end
     end
+    space(v,6)
     local total=Model.count(deck,'main')+Model.count(deck,'commander')
     S.Text(total..(deck.format=='Commander' and '/100 cards' or ' main / 60 minimum')..' · '..Model.count(deck,'sideboard')..' sideboard',{Color=C.muted})
+    space(v,6)
     local validateW=math.floor((dw-48)*.46);local previewW=dw-48-validateW
     if iconButton(v,'Validate','check',validateW,32)then m:validateDeck()end;S.SameLine()
     if S.Button('Preview card',{W=previewW,H=32,Image={Image=v.r.assets:buttonImage('search','Preview',previewW,32)},Tooltip='Inspect preview card'})then m.inspectCard=m.previewCard or m.cards[1]end;S.SameLine()

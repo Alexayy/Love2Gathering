@@ -136,8 +136,9 @@ function View:modals(w,h)
         end
         S.EndWindow()
     end
-    if m.settingsOpen then self:settings(w,h) end
+    if m.settingsOpen and not m.storageFolderDialog and not m.storageLocationConfirm then self:settings(w,h) end
     require('app.storage').modal(self,w,h)
+    require('app.storage_locations').modal(self,w,h)
 end
 function View:build()
     local w,h=Layout.dimensions()
@@ -149,7 +150,7 @@ function View:build()
     end
     self.storageRegionVisible=storageVisible
     if self.deckSelection and self.deckSelection.openPage and self.deckSelection.openPage~=self.m.page then require('app.deck_picker').close(self)end
-    local lock=self.themeColorEdit and'ColorPicker'or self.m.storagePurgePreview and'storage-purge-confirm'or self.deckSelection and'choose-deck-tiles'
+    local lock=self.m.storageLocationConfirm and'storage-location-confirm'or self.themeColorEdit and'ColorPicker'or self.m.storagePurgePreview and'storage-purge-confirm'or self.deckSelection and'choose-deck-tiles'
         or self.m.settingsOpen and'settings'or self.m.inspectCard and'inspect-card'or self.m.zoneView and'zone-view'
         or self.m.galleryInspect and'gallery-inspect'or self.m.deleteConfirm and'delete-deck'or self.m.archiveCopy and'archive-copy'
         or self.m.confirmConcede and'concede-confirm'or self.combatStopsOpen and'combat-step-stops'
@@ -170,7 +171,7 @@ function View:build()
     if self.m.page=='history' then require('app.library_ui').history(self,w,h)end
     if self.m.page=='tokens' then require('app.library_ui').tokens(self,w,h)end
     if self.m.page=='profile'then require('app.profile_ui').build(self,w,h)end
-    if self.m.page=='settings'then self:settings(w,h,{fullPage=true})end
+    if self.m.page=='settings'and not self.m.storageFolderDialog and not self.m.storageLocationConfirm then self:settings(w,h,{fullPage=true})end
     self:modals(w,h)
     self.r.blockBuilderDrop=self.builderPopup or self.builderFiltersOpen or self.deckSelection or self.m.settingsOpen or self.m.inspectCard or self.m.storagePurgePreview
     self.S.PopFont()

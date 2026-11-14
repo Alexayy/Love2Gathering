@@ -96,6 +96,7 @@ local function setup(v,width,height)
     S.NewLine();local counts={};for count=m.roomSetupMinPlayers or 2,m.roomSetupMaxPlayers or 2 do counts[#counts+1]=count end
     choice(v,'room-players','Seats',setup.maxPlayers,counts,inner,function(value)setup.maxPlayers=value end)
     S.NewLine();info(v,'Only people with your invitation code can join. Add bot seats after creating the room.',inner)
+    S.NewLine();S.Image('room-starting-dice',{Image=v.r.assets:iconImage('dice',22,v.r.colors.gold),W=22,H=22});S.SameLine({CenterY=true});info(v,'Starting player: server 2d6 roll. Tied leaders roll again.',inner-32)
     if m.roomCapabilityError then S.NewLine();info(v,m.roomCapabilityError,inner,v.r.colors.gold)end
     S.EndListBox();S.NewLine()
     if Shared.button(v,m.roomBusy and 'Creating…'or'Create invite room','network',width,38,{Disabled=m.roomBusy or not m.roomCapabilities or m.roomCapabilitiesBusy})then m:hostRoom()end

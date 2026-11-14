@@ -19,18 +19,21 @@ from storage import Storage, ConflictError
 from validation import validate
 from artwork import prefer_cached_card
 from deck_import import preview as import_preview
-from paths import default_data_dir
+from playmats import lookup_playmat
+from paths import default_data_dir, default_cache_dir
 from downloads import DownloadManager
 from maintenance import StorageMaintenance, operation_lock
+from storage_locations import StorageLocations
 
 PROJECT = Path(__file__).resolve().parent.parent
 
 
-def make_handler(catalog, storage):
+def make_handler(catalog, storage, location_manager=None):
     art_locks = {}
     art_guard = threading.Lock()
     downloads = DownloadManager(catalog, storage)
     maintenance = StorageMaintenance(storage)
+    locations = location_manager or StorageLocations(storage)
     storage_health = storage.health()
     class Handler(BaseHTTPRequestHandler):
         server_version = "Love2Gathering/1"
@@ -97,6 +100,18 @@ def make_handler(catalog, storage):
             path = unquote(url.path).rstrip("/") or "/"
             query = parse_qs(url.query)
             param = lambda key, default="": query.get(key, [default])[0]
+            if path=='/playmat-art'and method=='GET':
+                self.respond(200,lookup_playmat(catalog,storage,param('name'),param('seed')));return
+            if path=='/storage/locations'and method=='GET':
+                self.respond(200,locations.status());return
+            if path=='/storage/locations/cancel'and method=='POST':
+                if not self.local_storage_control():return
+                if self.read_json()!={}:raise ValueError('Cancel takes no extra options')
+                self.respond(200,locations.cancel());return
+            if path in('/storage/locations','/storage/locations/validate')and method=='POST':
+                if not self.local_storage_control():return
+                body=self.read_json()
+                self.respond(200 if path.endswith('/validate')else 202,locations.validate(body)if path.endswith('/validate')else locations.prepare(body));return
             if path=='/storage/status'and method=='GET':
                 self.respond(200,maintenance.status(refresh=param('refresh')=='1'));return
             if path=='/storage/purge'and method=='POST':
@@ -133,7 +148,7 @@ def make_handler(catalog, storage):
                 self.respond(200, {"status": "ok", "ready": progress["state"] == "ready",
                                    "index": progress, "source": catalog.source.name,
                                    "catalogSource": str(catalog.source.resolve()), "version": 3,
-                                   "apiVersion": 8, "schemaVersion": int(SCHEMA_VERSION),
+                                   "apiVersion": 9, "schemaVersion": int(SCHEMA_VERSION),
                                    "storage": storage_status, "userStore": storage_status})
                 return
             if path == "/ui-layout":
@@ -241,7 +256,7 @@ def make_handler(catalog, storage):
             if method == "GET" and path == "/cards":
                 limit = min(200, max(1, int(param("limit", "50"))))
                 offset = max(0, int(param("offset", "0")))
-                self.respond(200, catalog.search(param("q"), param("format").lower(), param("color"), param("type"), limit, offset, param("sort", "name").lower(), param("set")))
+                self.respond(200, catalog.search(param("q"), param("format").lower(), param("color"), param("type"), limit, offset, param("sort", "name").lower(), param("set"), color_mode=param("colorMode", "legacy")))
                 return
             if method == "GET" and path == "/sets":
                 self.respond(200, {"sets": catalog.sets(param("format").lower())})
@@ -290,7 +305,7 @@ def make_handler(catalog, storage):
                 with lock:
                     local=storage.local_art(item['printing_id'],item['oracle_id'],face,kind,aliases=False)
                     if local:self.respond(200,{'cached':True,'downloaded':False,'printingId':item['printing_id'],'face':face,'kind':kind});return
-                    if shutil.disk_usage(storage.root).free<64*1024**2+3*3*1024**2:
+                    if min(shutil.disk_usage(storage.root).free,shutil.disk_usage(storage.cache_root).free)<64*1024**2+3*3*1024**2:
                         self.respond(409,{'error':'Free a little disk space before downloading this illustration (64 MiB reserve). Existing cached images remain available.','reserveBlocked':True});return
                     url=item['image_uris'].get(kind)
                     if not url or urlsplit(url).hostname!='cards.scryfall.io':raise ValueError('No Scryfall image for this printing and kind')
@@ -367,7 +382,9 @@ def make_handler(catalog, storage):
 
     Handler.downloads=downloads
     Handler.maintenance=maintenance
+    Handler.locations=locations
     def close_managers():
+        locations.close()
         maintenance.close()
         downloads.close()
     Handler.close_managers=staticmethod(close_managers)
@@ -381,6 +398,7 @@ def main():
     parser.add_argument("--source", type=Path, default=Path(os.environ["LOVE2GATHERING_CATALOG_SOURCE"]) if os.environ.get("LOVE2GATHERING_CATALOG_SOURCE") else next((PROJECT / "assets").glob("all-cards*.jsonl"), PROJECT / "assets" / "all-cards.jsonl"))
     parser.add_argument("--database", type=Path, default=PROJECT / "service" / "data" / "catalog.sqlite")
     parser.add_argument("--data-dir", type=Path, default=default_data_dir())
+    parser.add_argument("--cache-dir", type=Path, default=None)
     parser.add_argument("--build-only", action="store_true")
     args = parser.parse_args()
     catalog = Catalog(args.source, args.database)
@@ -388,7 +406,7 @@ def main():
         catalog.ensure()
         print(json.dumps(catalog.status()))
         return 0 if catalog.status()["state"] == "ready" else 1
-    storage = Storage(args.data_dir, PROJECT / "decks")
+    storage = Storage(args.data_dir, PROJECT / "decks", cache_dir=args.cache_dir if args.cache_dir is not None else default_cache_dir(args.data_dir,fresh_default=True))
     thread = threading.Thread(target=catalog.ensure, name="catalog-index", daemon=True)
     thread.start()
     server = ThreadingHTTPServer((args.host, args.port), make_handler(catalog, storage))

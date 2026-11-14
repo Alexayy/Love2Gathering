@@ -1,8 +1,8 @@
 # Supplied Kenney asset catalog
 
-Audited 2026-11-14. The 23 supplied pack directories contain 12,454 files: 8,927 PNGs and 297 audio files (54,032,968 source bytes). Every PNG header and every audio stream was inspected programmatically; source licenses were read. Twenty contact sheets, containing pack previews and evenly distributed real sprites, were visually inspected. This is a full file/format inventory with representative visual review, not a claim to have viewed all 8,927 PNGs individually.
+Audited 2026-11-14. The original inventory below records 23 supplied pack directories, 12,454 files, 8,927 PNGs and 297 audio streams. A subsequent exhaustive PNG pass counted 8,978 PNG files before the additional runtime copies: all 7,688 distinct binary images were represented and visually reviewed in **29 contact sheets**; identical copies share one tile. Selected runtime files were also viewed at larger scale. This does not claim individual review of every SVG variant or listening to every sound. The [presentation audit](kenney/presentation-audit.json) records that scope and the additional semantic selections.
 
-The machine-readable [inventory](kenney/inventory.json) records every dimension histogram, mode, extension count, license hash, audio file codec/rate/channels/duration and the reviewed representative source paths/alpha ranges. Original supplied distributions remain in place. Curated runtime files are byte-for-byte copies, with exact source paths in [provenance](kenney/runtime/provenance.json) and licenses beside them. No ZIP archives were present directly under `assets/kenney/` during this audit.
+The machine-readable [original inventory](kenney/inventory.json) records dimension histograms, modes, extension counts, license hashes, audio codecs/rates/channels/durations and representative source paths/alpha ranges. The table preserves those original per-pack measurements; runtime choices added afterward are described below. Original supplied distributions remain in place. Curated files are byte-for-byte copies, with exact source paths in [provenance](kenney/runtime/provenance.json) and licenses beside them.
 
 | Supplied pack | Files | PNGs | OGG | Image sizes and review decision |
 | --- | ---: | ---: | ---: | --- |
@@ -30,11 +30,19 @@ The machine-readable [inventory](kenney/inventory.json) records every dimension 
 | `kenney_splat-pack` | 113 | 73 | 0 | 256 x 256, 512 x 512, 918 x 515. White transparent splatter silhouettes at 256/512 px plus sheet. Preserved; no persistent ink splats over important cards. |
 | `kenney_ui-pack-space-expansion` | 1117 | 742 | 0 | 8 x 16–918 x 515; 33 distinct sizes. Neutral/colored glass/screw-corner controls, bars, shadows and focus reticles. Existing neutral nine-slice panel/button/square and reticle remain runtime skin. |
 
-All 23 pack notices identify Kenney assets under CC0 1.0; the original notices are preserved. Runtime copies keep eight relevant license notices under `kenney/runtime/licenses/`, and the pre-existing theme/particle notices remain. This does not extend to Magic card art, Mana/Keyrune font terms, the user-supplied Beleren font, or other unrelated files.
+All 23 pack notices identify Kenney assets under CC0 1.0; original and selected runtime notices are preserved. This does not extend to Magic card art, Mana/Keyrune font terms, the user-supplied Beleren font, or other unrelated files.
+
+## Current additional selections
+
+`runtime/enhancements.lua` extends the existing semantic manifest with neutral navigation/status/board icons, Esc/Space hints, an upward pointing hand and a small custom text cursor. It also selects boardgame dice-roll/landing sounds, four neutral card backs, Space Expansion slider track/handle, development gradients/noise, a hex pattern and two grayscale light masks. These replace corresponding controls or serve actual opening rolls, loading progress, table impacts, playmat fallback and card backs. Source poker faces, decorative eyes and unrelated scenery remain unused.
+
+`app/surfaces.lua` converts grayscale mask luminance to alpha; black pixels do not become opaque rectangles. Texture/quads are cached within bounds, patterns stay faint behind cards, and graphics state is restored after drawing. Sliders retain Slab's drag and double-click numeric entry. Cursor bitmaps are scaled at runtime to 55% by default, with scaled hotspots; Slab resolves the custom image in the same cursor transition, including text selection, avoiding an intermediate system pointer. System mode and unsupported-backend fallback remain available.
+
+High font quality rasterizes Beleren at twice native DPI with logical metrics preserved; Standard uses native DPI. Four card backs are Arcane, Azure, Verdant and Crimson. Playmats use aspect-cover cropping. Bot basic-land choices come from exact supplied `full_art:true` metadata in `assets/card-art/full-art-basics.json`; `scripts/prepare-playmat-basics.py` regenerates that bounded pool without downloading images.
 
 ## Audio details
 
-All 297 audio files probe as Vorbis in OGG containers. Boardgame bonus: 12 stereo 44.1 kHz clips, 0.230–1.481 s. Casino: 54 stereo 44.1 kHz clips plus one 48 kHz preview, 0.172–35.107 s. Impact: 130 stereo 44.1 kHz clips, 0.106–1.741 s. Interface: 77 mono and 23 stereo 44.1 kHz clips, 0.010–1.944 s. These are stream measurements, not a claim to have listened to all clips. The seven selected runtime effects are also decoded by LÖVE in the presentation test; playback is capped at 12 voices. Do not play a die-roll sound merely because a static counter is drawn.
+All 297 audio files probe as Vorbis in OGG containers. Boardgame bonus: 12 stereo 44.1 kHz clips, 0.230–1.481 s. Casino: 54 stereo 44.1 kHz clips plus one 48 kHz preview, 0.172–35.107 s. Impact: 130 stereo 44.1 kHz clips, 0.106–1.741 s. Interface: 77 mono and 23 stereo 44.1 kHz clips, 0.010–1.944 s. These are stream measurements, not a claim to have listened to all clips. All selected runtime effects decode in LÖVE; playback is capped at 12 voices. Dice sounds play during the opening roll, not when a static counter is drawn.
 
 ## Display font provenance
 
@@ -45,10 +53,12 @@ All 297 audio files probe as Vorbis in OGG containers. Boardgame bonus: 12 stere
 - Runtime icons use source alpha bounds in a draw quad; source pixels are unchanged. Masks preserve aspect ratio and are tinted mint/purple/neutral by the caller.
 - Dice 1–6 show actual pips. Other exact values, including 7/13/127, are printed on the blank die; no modulo or rule inference. Text is an available alternative.
 - Space images use centered aspect-cover cropping and a real brightness multiplier. The five source panoramas decode to roughly 32 MiB each; at most two are retained on the GPU. Off preserves the prior flat background.
-- Kenney cursors use their visible arrow/finger hotspots. Native I-beam feedback remains; pan/drag/resize states use reviewed Kenney sources and unsupported custom cursors fall back safely.
+- Kenney cursors use reviewed arrow/finger/text/resize hotspots. Hardware sizes follow the pointer-size setting; unsupported custom cursors fall back safely.
 - Existing fantasy/space nine-slice controls keep their geometry, clipping and dark mint/purple identity. Body labels on buttons use the supplied Beleren face with measured visible-ink centering.
 - Magic ability icons come from verified Mana 1.17.1 CSS mappings, not guessed Unicode or unrelated board-game symbols. Six existing plus ten newly verified keyword glyphs are covered by actual font/render checks.
 
 ## Verification
 
 `tests/assets_presentation.sh`: 82 actual LÖVE checks, including pixels, supplied fonts/UTF-8, icons, 16 keyword glyphs, panorama crop/dimming/cache bounds, exact counters, all seven sound decoders, native/custom cursors, cached card/profile/Gallery texture filtering, one-per-activation/muted UI audio and real Slab settings input/persistence dispatch. It uses temporary assets and no game/service/user saves. Captures: `/tmp/love2gathering-assets-presentation.png` and `/tmp/love2gathering-assets-settings.png`; both visually inspected. Report: `tests/assets-presentation-report.json`.
+
+The later `tests/presentation_refresh_ui.sh` report covers custom text/hover/selection cursor transitions, actual UTF-8 clipboard behavior, Standard/High font metrics, mask alpha/tint/state, distinct card backs, every curated sound decoder, real skinned-slider clicks and numeric entry, small/large Settings geometry, and clipped-input/combo hit rejection. `tests/startup_ui.sh` separately decodes all curated resources and prepares real graphics; launcher states in that fixture are synthetic. Actual launcher smoke evidence is in `tests/startup-main-report.json`.

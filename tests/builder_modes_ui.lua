@@ -1,6 +1,6 @@
 local S=require('lib.Slab');local Model=require('app.model');local Renderer=require('app.renderer');local View=require('app.view');local Preferences=require('app.preferences');local Layout=require('app.layout');local Builder=require('app.builder');local json=require('lib.json')
 local m,r,v,p,runner,Cursor,Region;local time,wake,frames=0,0,0;local mouse={x=1,y=1};local down=false;local held={}
-local checks,shots,captures,created={},{},{},{};local buttons,inputs,choices={},{},{};local id
+local checks,shots,captures,created,filterRequests={},{},{},{},{};local buttons,inputs,choices={},{},{};local id
 local function check(ok,s)assert(ok,s);checks[#checks+1]=s;print('BUILDER MODES PASS '..s)end
 local function wait(s)wake=time+(s or .08);coroutine.yield()end
 local function ready(fn,timeout,label)local untilTime=time+(timeout or 15);while not fn()do assert(time<untilTime,label);wait(.06)end end
@@ -10,7 +10,7 @@ local function release()down=false;S.OnMouseReleased(mouse.x,mouse.y,1,false,1);
 local function click(box)assert(box,'Missing actual builder control');move(box.x+box.w/2,box.y+box.h/2);wait(.05);press();wait(.05);release();wait(.15)end
 local function hit(kind,name)for _,h in ipairs(r.hits)do if h.kind==kind and h.card and h.card.name==name then return h end end end
 local function custom(label)for _,h in ipairs(r.hits)do if h.tooltip==label or h.tooltip==label..' deck builder layout'or(label=='Next'and h.tooltip=='Next ›')then return h end end end
-local function shot(name)shots[#shots+1]=name;wait(.14)end
+local function shot(name)move(2,2);wait(.06);shots[#shots+1]=name;wait(.14)end
 local function mode(w,h,scale,desktop)
  m.settings.resolution=desktop and'Desktop'or(w..'x'..h);m.settings.windowMode=desktop and'Borderless'or'Windowed';m.settings.uiScale=scale;m.settings.vsync=false;p:apply(true);wait(.2)
 end
@@ -19,6 +19,11 @@ local function query(value,target)
  click(inputs.query);held.lctrl=true;S.OnKeyPressed('a','a',false);wait(.04);S.OnKeyReleased('a','a');held.lctrl=false;S.OnTextInput(value)
  ready(function()return m.search==value and not m.searchTimer and not m.searchBusy and hit('search',target)end,20,'Actual card query did not render '..target);wait(.08)
 end
+local function clearQuery()
+ click(inputs.query);held.lctrl=true;S.OnKeyPressed('a','a',false);wait(.04);S.OnKeyReleased('a','a');held.lctrl=false;S.OnKeyPressed('backspace','backspace',false);wait(.04);S.OnKeyReleased('backspace','backspace');ready(function()return m.search==''and not m.searchTimer and not m.searchBusy and#m.cards>0 end,20,'Clearing actual search did not return cards')
+end
+local function colorSettled()ready(function()return not m.searchTimer and not m.searchBusy and#m.cards>0 end,20,'Actual identity filter returned no cards');wait(.08)end
+local function has(card,symbol)for _,value in ipairs(card.color_identity or{})do if value==symbol then return true end end;return false end
 local function idle()return not m.mutationBusy and#(m.mutationQueue or{})==0 end
 local function amount(name)for _,c in ipairs(m.editDeck.main)do if c.name==name then return c.count end end;return 0 end
 local function drag(name)
@@ -35,7 +40,11 @@ local function geometry(label)
  check(buttons.Validate and buttons.Validate.x+buttons.Validate.w<=w and buttons.Validate.y+buttons.Validate.h<=h,'Validate control remains fully visible in '..label)
  local next=assert(custom('Next'));check(next.y+next.h<=h-8 and next.x+next.w<=w,'Actual paging footer stays inside '..label)
  check(L.list.y+L.list.h<=h-12,'Shared deck drop target remains within '..label)
- if m.settings.builderLayout=='Simplified'then check(buttons['More filters']and buttons['More filters'].x+buttons['More filters'].w<=w-10,'All inline color/more-filter controls fit '..label)end
+ if m.settings.builderLayout=='Simplified'then
+  check(buttons['More filters']and buttons['More filters'].x+buttons['More filters'].w<=w-10,'All inline color/more-filter controls fit '..label)
+  local previous=inputs.query;for _,symbol in ipairs({'All','W','U','B','R','G','C'})do local next=assert(buttons['simple-color-'..symbol]);check(next.x>=previous.x+previous.w+6,'Actual color controls retain horizontal breathing room in '..label..': '..symbol);previous=next end
+  check(buttons.Exact.x>=previous.x+previous.w+8 and buttons['More filters'].x>=buttons.Exact.x+buttons.Exact.w+8,'Exact and More filters have separate padded hit regions in '..label)
+ end
 end
 local function save()
  click(buttons['Save *']or buttons.Save);ready(function()return not m.dirty and m:findDeck(id)end,20,'Actual deck save did not finish')
@@ -47,7 +56,7 @@ local function scenario()
  love.window.setMode(2560,1080,{fullscreen=true,fullscreentype='desktop',display=display,vsync=0});mode(2560,1080,1,true)
  m.format='Modern';m:newDeck();id=m.editDeck.id;m.editDeck.name='Builder UI acceptance '..os.time();wait(.15)
  click(custom('Simplified'));ready(function()return m.settings.builderLayout=='Simplified'end,5,'Actual Simplified switch did not apply');check(m.settings.builderLayout=='Simplified','Actual builder layout control switches to Simplified')
- query('Lightning Bolt');geometry('Simplified2560×1080');drag('Lightning Bolt');check(amount('Lightning Bolt')==1,'Actual validated Simplified drop adds exactly one Lightning Bolt')
+ shot('simple-initial');query('Lightning Bolt');geometry('Simplified2560×1080');drag('Lightning Bolt');check(amount('Lightning Bolt')==1,'Actual validated Simplified drop adds exactly one Lightning Bolt')
  query('Basic Land — Plains','Plains');drag('Plains');check(amount('Plains')==1,'Actual validated Simplified drop adds exactly one Plains')
  ready(function()return hit('builder-card','Plains')and hit('builder-card','Lightning Bolt')end,10,'Simplified spell/land columns did not render')
  local land,spell=hit('builder-card','Plains'),hit('builder-card','Lightning Bolt');check(land.x>spell.x+spell.w+15,'Actual land cards have a separate column after mana-value spell columns')
@@ -62,6 +71,14 @@ local function scenario()
  check(amount('Plains')==1,'Card details block outside double-click additions');click(buttons['Close details'])
  save();local done,data=false;m:request('catalog','GET','/decks/'..id,nil,function(d)data=d;done=true end,true);ready(function()return done end,10,'Saved deck read did not finish');data=data.deck or data
  check(m.count(data,'main')==2 and data.main[1].count==1 and data.main[2].count==1,'Actual saved unfinished deck preserves both dragged quantities')
+ clearQuery();click(buttons['simple-color-W']);colorSettled();check(m.searchColors.W and not m.searchColors.B,'Actual White mana button stays toggled')
+ for _,item in ipairs(m.cards)do check(has(item,'W'),'Actual White filter returns White identity: '..item.name)end
+ click(buttons['simple-color-B']);colorSettled();check(m.searchColors.W and m.searchColors.B,'Actual White and Black buttons remain selected together')
+ for _,item in ipairs(m.cards)do check(has(item,'W')or has(item,'B'),'Actual union returns White or Black identity: '..item.name)end
+ click(buttons['simple-color-G']);colorSettled();check(m.searchColors.W and m.searchColors.B and m.searchColors.G,'Actual three-color toggles preserve White Black Green')
+ click(buttons.Exact);colorSettled();check(m.searchColorExact and m.total>0,'Actual Exact button filters to complete Abzan identity')
+ for _,item in ipairs(m.cards)do check(#item.color_identity==3 and has(item,'W')and has(item,'B')and has(item,'G'),'Actual Exact results exclude subsets and supersets: '..item.name)end
+ shot('simple-abzan-exact-2560');click(buttons['simple-color-All']);colorSettled();check(not m.searchColorExact and next(m.searchColors)==nil,'Actual All button clears multi-color and Exact filters')
  local fresh=Model.new();ready(function()fresh:update(.05);return fresh.settingsLoaded end,20,'Fresh frontend settings did not load');check(fresh.settings.builderLayout=='Simplified','A fresh frontend instance restores the persisted Simplified layout');fresh.api:quit()
  mode(1120,720,.85);geometry('Simplified1120×720 at.85');shot('simple-1120-scaled')
  mode(1120,720,1.25);geometry('Simplified1120×720 requested1.25');check(Layout.scale<=1.25,'Smaller window records the actual clamped interface scale');shot('simple-1120-clamped')
@@ -71,14 +88,14 @@ local function scenario()
  check(boltCount==2 and m.count(data,'main')==3 and data.draft==true,'Actual Classic save persists two Lightning Bolts and one Plains as an unfinished deck')
  mode(2560,1080,1.25,true);geometry('Classic2560×1080 at1.25');shot('classic-2560-scaled')
  check(m.editDeck.main[1]and amount('Lightning Bolt')==2 and amount('Plains')==1,'Switching layouts and display scale preserves every deck quantity')
- local f=assert(io.open('/tmp/love2gathering-builder-modes-ui-report.json','w'));f:write(json.encode({passed=true,checks=checks,captures=captures,physical={love.graphics.getDimensions()},logical={Layout.dimensions()},scope='Actual Model/API7 catalog validation/storage, frontend pointer dispatch and card-image drag; Classic/Simplified shared bounds and fresh-model persisted settings. No native game or engine legality claim.'}));f:close();print('BUILDER MODES COMPLETE '..#checks..' checks');love.event.quit(0)
+ local f=assert(io.open('/tmp/love2gathering-builder-modes-ui-report.json','w'));f:write(json.encode({passed=true,checks=checks,captures=captures,physical={love.graphics.getDimensions()},logical={Layout.dimensions()},filterRequests=filterRequests,scope='Actual Model/local catalog identity queries, validation/storage, frontend mana toggle input and card-image drag; Classic/Simplified shared bounds and fresh-model persisted settings. No native game or engine legality claim.'}));f:close();print('BUILDER MODES COMPLETE '..#checks..' checks');love.event.quit(0)
 end
-function love.errorhandler(e)io.stderr:write('BUILDER MODES FAILED '..tostring(e)..'\n'..debug.traceback()..'\n');io.stderr:flush();return function()return 1 end end
+function love.errorhandler(e)io.stderr:write('BUILDER DEBUG '..json.encode({search=m and m.search,timer=m and m.searchTimer,busy=m and m.searchBusy,total=m and m.total,cards=m and m.cards,inputs=inputs,buttons=buttons})..'\n');io.stderr:write('BUILDER MODES FAILED '..tostring(e)..'\n'..debug.traceback()..'\n');io.stderr:flush();return function()return 1 end end
 function love.load()
  S.SetINIStatePath(nil);S.Initialize({'nocursor'},true);Cursor=require('lib.Slab.Internal.Core.Cursor');Region=require('lib.Slab.Internal.UI.Region')
  love.mouse.getPosition=function()return mouse.x,mouse.y end;love.mouse.isDown=function(b)return b==1 and down end;love.keyboard.isDown=function(...)for i=1,select('#',...)do if held[select(i,...)]then return true end end;return false end
  m=Model.new();r=Renderer.new(m);v=View.new(S,m,r);p=Preferences.new(m,S,r);v.preferences=p
- local req=m.request;m.request=function(self,service,method,path,body,callback,quiet)return req(self,service,method,path,body,function(data,err,failed)
+ local req=m.request;m.request=function(self,service,method,path,body,callback,quiet)if path:find('colorMode=',1,true)then filterRequests[#filterRequests+1]=path end;return req(self,service,method,path,body,function(data,err,failed)
   if method=='POST'and path=='/decks'and data then local d=data.deck or data;local found=false;for _,value in ipairs(created)do if value==d.id then found=true end end;if not found then created[#created+1]=d.id;local f=assert(io.open(os.getenv('LOVE2GATHERING_BUILDER_TEST_IDS'),'w'));f:write(json.encode(created));f:close()end end
   if callback then callback(data,err,failed)end
  end,quiet)end

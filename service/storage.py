@@ -15,13 +15,21 @@ from history import HistoryStore
 from precons import PreconStore
 from profiles import ProfileStore
 from maintenance import MaintenanceStore, operation_lock
+from paths import default_cache_dir
 USER_SCHEMA_VERSION=1
 
 class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistoryStore,PreconStore,ProfileStore,MaintenanceStore):
-    def __init__(self,data_dir,bundled_decks):
+    def __init__(self,data_dir,bundled_decks,cache_dir=None):
         self.root=Path(data_dir);self.bundled=Path(bundled_decks)
         self.root.mkdir(parents=True,exist_ok=True)
         self.database=self.root/'app.sqlite';self.lock=threading.RLock();self._bundle_signature=None
+        selected_cache=cache_dir if cache_dir is not None else default_cache_dir(self.root)
+        self.cache_root=Path(selected_cache).resolve()if selected_cache is not None else self.root
+        self.separate_cache=selected_cache is not None
+        self.cache_database=self.cache_root/'images.sqlite'if self.separate_cache else self.database
+        self.image_library=self.cache_root/'image-library'
+        self.relocation_active=threading.Event()
+        self.cache_root.mkdir(parents=True,exist_ok=True)
         self.maintenance_lock=threading.RLock();self.maintenance_active=threading.Event()
         self.maintenance_cancel=threading.Event();self.maintenance_process_lock=threading.Lock();self.maintenance_process=None
         with operation_lock(self.root, blocking=False):
@@ -38,6 +46,8 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
                         if 'locked' not in str(exc).lower() or time.monotonic()>=deadline:raise
                         time.sleep(.025)
                 c.execute('PRAGMA synchronous=FULL')
+                art_schema=''if self.separate_cache else '''CREATE TABLE IF NOT EXISTS art_cache(cache_key TEXT PRIMARY KEY,content BLOB NOT NULL,mime TEXT NOT NULL,metadata TEXT NOT NULL,updated_at INTEGER NOT NULL);
+                    CREATE INDEX IF NOT EXISTS art_oracle_face_kind ON art_cache(json_extract(metadata,'$.oracleId'),CAST(json_extract(metadata,'$.face') AS INTEGER),json_extract(metadata,'$.kind'));'''
                 c.executescript('''BEGIN IMMEDIATE;
                     CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY,value TEXT NOT NULL);
                     CREATE TABLE IF NOT EXISTS decks(id TEXT NOT NULL,origin TEXT NOT NULL,payload TEXT NOT NULL,updated_at INTEGER NOT NULL,PRIMARY KEY(id,origin));
@@ -45,15 +55,19 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
                     CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL);
                     CREATE TABLE IF NOT EXISTS ui_layout(key TEXT PRIMARY KEY,value TEXT NOT NULL);
                     CREATE TABLE IF NOT EXISTS migration_issues(source TEXT PRIMARY KEY,error TEXT NOT NULL);
-                    CREATE TABLE IF NOT EXISTS art_cache(cache_key TEXT PRIMARY KEY,content BLOB NOT NULL,mime TEXT NOT NULL,metadata TEXT NOT NULL,updated_at INTEGER NOT NULL);
-                    CREATE INDEX IF NOT EXISTS art_oracle_face_kind ON art_cache(json_extract(metadata,'$.oracleId'),CAST(json_extract(metadata,'$.face') AS INTEGER),json_extract(metadata,'$.kind'));
                     CREATE TABLE IF NOT EXISTS token_preferences(deck_id TEXT PRIMARY KEY,payload TEXT NOT NULL,updated_at INTEGER NOT NULL);
                     CREATE TABLE IF NOT EXISTS replays(id TEXT PRIMARY KEY,payload TEXT NOT NULL,status TEXT NOT NULL,created_at INTEGER NOT NULL,updated_at INTEGER NOT NULL,finished_at INTEGER);
                     CREATE TABLE IF NOT EXISTS replay_events(replay_id TEXT NOT NULL REFERENCES replays(id) ON DELETE CASCADE,sequence INTEGER NOT NULL,type TEXT NOT NULL,timestamp TEXT,payload TEXT NOT NULL,digest TEXT NOT NULL,PRIMARY KEY(replay_id,sequence));
                     CREATE INDEX IF NOT EXISTS replays_created ON replays(created_at DESC);
                     CREATE INDEX IF NOT EXISTS replay_frames ON replay_events(replay_id,type,sequence);
-                    INSERT OR IGNORE INTO meta VALUES('schema_version','1');COMMIT;''')
+                    INSERT OR IGNORE INTO meta VALUES('schema_version','1');'''+art_schema+'COMMIT;')
+                c.execute("INSERT OR IGNORE INTO meta VALUES('storage_identity',?)",(str(uuid.uuid4()),));c.commit()
+                if self.separate_cache:
+                    if c.execute("SELECT 1 FROM sqlite_master WHERE type='table'AND name='art_cache'").fetchone():
+                        raise ValueError('The database still contains legacy image BLOBs; prepare the location change before selecting a separate cache')
+                    self._attach_cache(c,initialize=True)
             finally:c.close()
+        initial_stat=self.database.stat();self._database_identity=(initial_stat.st_dev,initial_stat.st_ino)
         self._init_maintenance();self._migrate_legacy();self._migrate_presentation_preferences();self._migrate_legacy_art();self._seed_bundled();self._init_precons();self._init_profile_storage()
 
     def _migrate_presentation_preferences(self):
@@ -66,8 +80,32 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
             if previous.get('cursorStyle','System')=='System':changed['cursorStyle']='Kenney'
             for key,value in changed.items():c.execute('INSERT INTO settings VALUES (?,?) ON CONFLICT(key)DO UPDATE SET value=excluded.value',(key,encode(value)))
 
+    def _attach_cache(self,c,initialize=False):
+        if not self.separate_cache:return
+        if not self.cache_database.is_file():
+            persisted=c.execute("SELECT value FROM main.meta WHERE key='image_cache_directory'").fetchone()
+            if not initialize or persisted:raise ConflictError('Image cache is unavailable; reconnect its drive or prepare a verified location change before continuing')
+        c.execute('ATTACH DATABASE ? AS images',(str(self.cache_database),))
+        c.execute('PRAGMA images.busy_timeout=30000')
+        c.execute('PRAGMA images.synchronous=FULL')
+        if initialize:
+            c.execute('PRAGMA images.journal_mode=WAL')
+            c.execute('CREATE TABLE IF NOT EXISTS images.image_store_meta(key TEXT PRIMARY KEY,value TEXT NOT NULL)')
+            identity=c.execute("SELECT value FROM main.meta WHERE key='storage_identity'").fetchone()[0]
+            owner=c.execute("SELECT value FROM images.image_store_meta WHERE key='owner'").fetchone()
+            if owner and owner[0]!=identity:raise ValueError('Image cache belongs to another application database')
+            c.execute("INSERT OR IGNORE INTO images.image_store_meta VALUES('owner',?)",(identity,))
+            c.commit()
+            c.execute("CREATE TABLE IF NOT EXISTS images.art_cache(cache_key TEXT PRIMARY KEY,content BLOB NOT NULL,mime TEXT NOT NULL,metadata TEXT NOT NULL,updated_at INTEGER NOT NULL)")
+            c.execute("CREATE INDEX IF NOT EXISTS images.art_oracle_face_kind ON art_cache(json_extract(metadata,'$.oracleId'),CAST(json_extract(metadata,'$.face') AS INTEGER),json_extract(metadata,'$.kind'))")
+            c.execute("INSERT INTO main.meta VALUES('image_cache_directory',?) ON CONFLICT(key)DO UPDATE SET value=excluded.value",(str(self.cache_root.resolve()),));c.commit()
+
     @contextmanager
     def connection(self,write=False):
+        if self.relocation_active.is_set():raise ConflictError('Storage relocation is prepared or in progress; restart the application')
+        try:current_stat=self.database.stat()
+        except FileNotFoundError as exc:raise ConflictError('Storage is being activated; restart the application')from exc
+        if hasattr(self,'_database_identity')and self._database_identity!=(current_stat.st_dev,current_stat.st_ino):raise ConflictError('Storage was replaced by a prepared copy; restart the application')
         if self.maintenance_active.is_set():
             raise ConflictError('Storage maintenance is in progress; try again when it finishes')
         with operation_lock(self.root, blocking=False):
@@ -76,6 +114,9 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
             c=sqlite3.connect(self.database,timeout=30,isolation_level=None);c.row_factory=sqlite3.Row
             c.execute('PRAGMA busy_timeout=30000');c.execute('PRAGMA foreign_keys=ON');c.execute('PRAGMA synchronous=FULL')
             try:
+                retired=c.execute("SELECT value FROM meta WHERE key='storage_relocated_to'").fetchone()
+                if retired:raise ConflictError('This storage was relocated; restart the application to use '+retired[0])
+                self._attach_cache(c)
                 if write:c.execute('BEGIN IMMEDIATE')
                 yield c
                 if write:c.execute('COMMIT')
@@ -159,7 +200,7 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
 
     def health(self):
         with self.connection() as c:issues=[dict(r) for r in c.execute('SELECT source,error FROM migration_issues ORDER BY source')]
-        return {'database':'app.sqlite','dataDirectory':str(self.root.resolve()),'schemaVersion':USER_SCHEMA_VERSION,'journalMode':'wal','legacyFilesPreserved':True,'migrationIssues':issues}
+        return {'database':'app.sqlite','dataDirectory':str(self.root.resolve()),'cacheDirectory':str(self.cache_root.resolve()),'cacheDatabase':str(self.cache_database.resolve()),'separateCache':self.separate_cache,'schemaVersion':USER_SCHEMA_VERSION,'journalMode':'wal','legacyFilesPreserved':True,'migrationIssues':issues}
 
     def list_decks(self,origin=None):
         self._seed_bundled()

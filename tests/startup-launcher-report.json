@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "scope": "Real launcher plus catalog/XMage/room gateway in isolated temporary directories; no GUI assertion and no user storage mutation.",
+  "apiVersion": 9,
+  "storageRelocationProtocol": 1,
+  "separateCacheFileExists": true,
+  "databaseFileExists": true,
+  "nativeDataDirectoryMatches": true,
+  "nativeCacheDirectoryMatches": true,
+  "startupState": "ready",
+  "startupChecks": [
+    {
+      "stage": "dependencies",
+      "state": "ready",
+      "message": "Checking local dependencies"
+    },
+    {
+      "stage": "storage",
+      "state": "ready",
+      "message": "Checking saved database and image-cache locations"
+    },
+    {
+      "stage": "version",
+      "state": "ready",
+      "message": "Checking the installed client revision and bridge freshness"
+    },
+    {
+      "stage": "assets",
+      "state": "ready",
+      "message": "Checking supplied fonts and curated assets"
+    },
+    {
+      "stage": "catalog",
+      "state": "ready",
+      "message": "Starting the local catalog and saved data"
+    },
+    {
+      "stage": "bridge",
+      "state": "ready",
+      "message": "Starting the XMage bridge"
+    },
+    {
+      "stage": "rooms",
+      "state": "ready",
+      "message": "Starting private room and draft services"
+    },
+    {
+      "stage": "ready",
+      "state": "ready",
+      "message": "Local services are ready"
+    }
+  ]
+}

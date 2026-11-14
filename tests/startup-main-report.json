@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "scope": "Actual run.sh early desktop splash and production main.lua warmup/gate, actual isolated catalog/XMage/room services, real deck/builder/lobby smoke. No user data changes, migration or game rules assertion.",
+  "temporaryDataOnly": true,
+  "separateImageCache": true,
+  "durationSeconds": 13.49,
+  "captures": {
+    "smoke-startup.png": "/tmp/love2gathering-main-smoke-startup.png",
+    "smoke-decks.png": "/tmp/love2gathering-main-smoke-decks.png",
+    "smoke-builder.png": "/tmp/love2gathering-main-smoke-builder.png",
+    "smoke-lobby.png": "/tmp/love2gathering-main-smoke-lobby.png"
+  }
+}

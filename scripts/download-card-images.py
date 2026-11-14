@@ -27,7 +27,7 @@ from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_ope
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT / 'service'))
 from storage import Storage
-from paths import default_data_dir
+from paths import default_data_dir, default_cache_dir
 
 MAX_IMAGE = 3 * 1024 * 1024
 MAX_RECORD = 2 * 1024 * 1024
@@ -302,12 +302,12 @@ def download(metadata, output, store, fetcher, limit=0, dry_run=False, full_size
                     except ValueError:
                         data = None
                     if data is not None:
-                        if reserve_bytes and shutil.disk_usage(store.root).free<reserve_bytes+MAX_IMAGE*3:
+                        if reserve_bytes and min(shutil.disk_usage(store.root).free,shutil.disk_usage(store.cache_root).free)<reserve_bytes+MAX_IMAGE*3:
                             raise DownloadPaused('Paused to retain the configured free-space reserve; restart to import mirrors')
                         store.save_art(job['key'], data, job['metadata'])
                         stats['imported'] += 1
                 if data is None:
-                    if reserve_bytes and shutil.disk_usage(store.root).free<reserve_bytes+MAX_IMAGE*3:
+                    if reserve_bytes and min(shutil.disk_usage(store.root).free,shutil.disk_usage(store.cache_root).free)<reserve_bytes+MAX_IMAGE*3:
                         raise DownloadPaused('Paused to retain the configured free-space reserve; restart to resume committed images')
                     data = fetcher.image(job['url'])
                     # Commit the authoritative copy first. A restart repairs a
@@ -316,7 +316,7 @@ def download(metadata, output, store, fetcher, limit=0, dry_run=False, full_size
                     stats['downloaded'] += 1
                     stats['bytesDownloaded'] += len(data)
                 if path is not None and(not path.exists() or path.stat().st_size != len(data) or path.read_bytes() != data):
-                    if reserve_bytes and shutil.disk_usage(store.root).free<reserve_bytes+MAX_IMAGE*3:
+                    if reserve_bytes and min(shutil.disk_usage(store.root).free,shutil.disk_usage(store.cache_root).free)<reserve_bytes+MAX_IMAGE*3:
                         raise DownloadPaused('Paused to retain the configured free-space reserve; restart to repair mirrors')
                     write_mirror(path, data)
                     stats['mirrored'] += 1
@@ -335,10 +335,10 @@ def parser():
     default_source = os.environ.get('LOVE2GATHERING_CATALOG_SOURCE') or next((PROJECT / 'assets').glob('all-cards*.jsonl'), PROJECT / 'assets/all-cards.jsonl')
     p.add_argument('--metadata', type=Path, default=Path(default_source), help='Local JSONL or JSONL.GZ printing metadata; never modified')
     p.add_argument('--bootstrap-metadata', choices=['default_cards', 'all_cards'], help='Explicitly download bulk metadata to a NEW --metadata path (can be several GB)')
-    p.add_argument('--output', type=Path, default=user_data / 'image-library', help='Separate full-cards/ and art-crops/ JPEG mirrors')
-    p.add_argument('--sql-only',action='store_true',help='Cache only in app.sqlite, without creating duplicate export JPEGs')
+    p.add_argument('--output', type=Path, default=None, help='Separate full-cards/ and art-crops/ JPEG mirrors')
+    p.add_argument('--sql-only',action='store_true',help='Cache only in the configured SQLite image store, without duplicate export JPEGs')
     p.add_argument('--reserve-gib',type=float,default=3,help='Pause image work before free space falls below this reserve (default 3 GiB)')
-    p.add_argument('--data-dir', type=Path, default=user_data, help='Application data directory containing authoritative app.sqlite')
+    p.add_argument('--data-dir', type=Path, default=user_data, help='Application saves directory; its configured image cache is resolved independently')
     p.add_argument('--full-size', choices=['normal', 'large'], default='normal', help='Full-card JPEG size (normal=488×680; large=672×936)')
     p.add_argument('--limit', type=int, default=0, help='Maximum image entries examined from the start; 0 means all')
     p.add_argument('--dry-run', action='store_true', help='Stream/count the selected entries without network or storage writes')
@@ -361,9 +361,10 @@ def main(argv=None):
             bootstrap_metadata(args.metadata, args.bootstrap_metadata, fetcher)
         if not args.metadata.is_file():
             p.error('Metadata source is missing. Supply --metadata PATH or explicitly use --bootstrap-metadata TYPE with a new path.')
-        store = None if args.dry_run else Storage(args.data_dir, PROJECT / 'decks')
+        store = None if args.dry_run else Storage(args.data_dir, PROJECT / 'decks',cache_dir=default_cache_dir(args.data_dir,fresh_default=True))
+        output=args.output if args.output is not None else(store.image_library if store else(default_cache_dir(args.data_dir,fresh_default=True)or args.data_dir)/'image-library')
         with cli_image_lock(args.data_dir)if store is not None else null_lock():
-            stats = download(args.metadata, None if args.sql_only else args.output, store, fetcher, args.limit, args.dry_run, args.full_size,int(args.reserve_gib*1024**3))
+            stats = download(args.metadata, None if args.sql_only else output, store, fetcher, args.limit, args.dry_run, args.full_size,int(args.reserve_gib*1024**3))
         print(json.dumps(stats, ensure_ascii=False, indent=2))
         return 2 if stats.get('paused')else 1 if stats['failed'] else 0
     except KeyboardInterrupt:

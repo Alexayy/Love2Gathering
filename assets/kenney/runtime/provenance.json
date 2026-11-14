@@ -371,6 +371,474 @@
         59,
         61
       ]
+    },
+    "home": {
+      "path": "assets/kenney/runtime/icons/home.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/home.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        20,
+        18,
+        84,
+        82
+      ]
+    },
+    "lobby": {
+      "path": "assets/kenney/runtime/icons/door.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/1x/door.png",
+      "width": 50,
+      "height": 50,
+      "bounds": [
+        13,
+        10,
+        38,
+        43
+      ]
+    },
+    "network": {
+      "path": "assets/kenney/runtime/icons/share2.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/share2.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        16,
+        16,
+        84,
+        88
+      ]
+    },
+    "bot": {
+      "path": "assets/kenney/runtime/icons/gamepad.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/gamepad.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        10,
+        22,
+        90,
+        76
+      ]
+    },
+    "play": {
+      "path": "assets/kenney/runtime/icons/forward.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/1x/forward.png",
+      "width": 50,
+      "height": 50,
+      "bounds": [
+        15,
+        9,
+        35,
+        41
+      ]
+    },
+    "pause": {
+      "path": "assets/kenney/runtime/icons/pause.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/pause.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        22,
+        16,
+        78,
+        81
+      ]
+    },
+    "close": {
+      "path": "assets/kenney/runtime/icons/cross.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/cross.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        18,
+        20,
+        82,
+        84
+      ]
+    },
+    "check": {
+      "path": "assets/kenney/runtime/icons/checkmark.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/checkmark.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        18,
+        23,
+        82,
+        80
+      ]
+    },
+    "validate": {
+      "path": "assets/kenney/runtime/icons/checkmark.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/checkmark.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        18,
+        23,
+        82,
+        80
+      ]
+    },
+    "back": {
+      "path": "assets/kenney/runtime/icons/arrowLeft.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/arrowLeft.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        16,
+        22,
+        84,
+        78
+      ]
+    },
+    "previous": {
+      "path": "assets/kenney/runtime/icons/arrowLeft.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/arrowLeft.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        16,
+        22,
+        84,
+        78
+      ]
+    },
+    "next": {
+      "path": "assets/kenney/runtime/icons/arrowRight.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/arrowRight.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        16,
+        22,
+        84,
+        78
+      ]
+    },
+    "search": {
+      "path": "assets/kenney/runtime/icons/zoom.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/zoom.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        20,
+        20,
+        84,
+        85
+      ]
+    },
+    "import": {
+      "path": "assets/kenney/runtime/icons/import.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/import.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        18,
+        20,
+        82,
+        84
+      ]
+    },
+    "export": {
+      "path": "assets/kenney/runtime/icons/export.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/export.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        18,
+        20,
+        82,
+        84
+      ]
+    },
+    "warning": {
+      "path": "assets/kenney/runtime/icons/warning.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/warning.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        18,
+        22,
+        84,
+        84
+      ]
+    },
+    "info": {
+      "path": "assets/kenney/runtime/icons/information.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/information.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        34,
+        18,
+        70,
+        86
+      ]
+    },
+    "overview": {
+      "path": "assets/kenney/runtime/icons/menuGrid.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/menuGrid.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        18,
+        16,
+        82,
+        80
+      ]
+    },
+    "audio": {
+      "path": "assets/kenney/runtime/icons/audioOn.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/audioOn.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        18,
+        20,
+        82,
+        85
+      ]
+    },
+    "graphics": {
+      "path": "assets/kenney/runtime/icons/contrast.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/contrast.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        16,
+        19,
+        80,
+        84
+      ]
+    },
+    "music": {
+      "path": "assets/kenney/runtime/icons/musicOn.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/musicOn.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        22,
+        22,
+        77,
+        84
+      ]
+    },
+    "stop": {
+      "path": "assets/kenney/runtime/icons/stop.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/stop.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        20,
+        22,
+        80,
+        82
+      ]
+    },
+    "external": {
+      "path": "assets/kenney/runtime/icons/share1.png",
+      "source": "assets/kenney/kenney_game-icons/PNG/White/2x/share1.png",
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        22,
+        24,
+        80,
+        82
+      ]
+    },
+    "players": {
+      "path": "assets/kenney/runtime/icons/pawns.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/pawns.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        0,
+        6,
+        64,
+        58
+      ]
+    },
+    "pan": {
+      "path": "assets/kenney/runtime/icons/arrow_cross.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/arrow_cross.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        1,
+        1,
+        63,
+        63
+      ]
+    },
+    "life": {
+      "path": "assets/kenney/runtime/icons/suit_hearts.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/suit_hearts.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        7,
+        12,
+        57,
+        52
+      ]
+    },
+    "log": {
+      "path": "assets/kenney/runtime/icons/notepad.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/notepad.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        7,
+        7,
+        59,
+        57
+      ]
+    },
+    "stack": {
+      "path": "assets/kenney/runtime/icons/cards_stack_high.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/cards_stack_high.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        1,
+        1,
+        63,
+        62
+      ]
+    },
+    "replay": {
+      "path": "assets/kenney/runtime/icons/arrow_counterclockwise.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/arrow_counterclockwise.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        4,
+        8,
+        60,
+        56
+      ]
+    },
+    "turn": {
+      "path": "assets/kenney/runtime/icons/arrow_clockwise.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/arrow_clockwise.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        6,
+        8,
+        62,
+        56
+      ]
+    },
+    "concede": {
+      "path": "assets/kenney/runtime/icons/flag_square.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/flag_square.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        4,
+        6,
+        59,
+        58
+      ]
+    },
+    "attack": {
+      "path": "assets/kenney/runtime/icons/sword.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/sword.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        5,
+        5,
+        59,
+        59
+      ]
+    },
+    "timer": {
+      "path": "assets/kenney/runtime/icons/hourglass.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/hourglass.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        11,
+        5,
+        53,
+        59
+      ]
+    },
+    "locked": {
+      "path": "assets/kenney/runtime/icons/lock_closed.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/lock_closed.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        12,
+        6,
+        52,
+        58
+      ]
+    },
+    "ready": {
+      "path": "assets/kenney/runtime/icons/tag_d6_check.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/tag_d6_check.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        38,
+        38,
+        62,
+        62
+      ]
+    },
+    "inspect": {
+      "path": "assets/kenney/runtime/icons/cards_seek.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/cards_seek.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        1,
+        5,
+        63,
+        62
+      ]
+    },
+    "roll": {
+      "path": "assets/kenney/runtime/icons/dice_3D_detailed.png",
+      "source": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/dice_3D_detailed.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        0,
+        0,
+        64,
+        63
+      ]
+    },
+    "help-key": {
+      "path": "assets/kenney/runtime/icons/keyboard_escape_outline.png",
+      "source": "assets/kenney/kenney_input-prompts_1.5/Keyboard & Mouse/Default/keyboard_escape_outline.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        8,
+        8,
+        56,
+        56
+      ]
+    },
+    "pass-key": {
+      "path": "assets/kenney/runtime/icons/keyboard_space_outline.png",
+      "source": "assets/kenney/kenney_input-prompts_1.5/Keyboard & Mouse/Default/keyboard_space_outline.png",
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        8,
+        18,
+        56,
+        46
+      ]
     }
   },
   "skyboxes": {
@@ -402,14 +870,30 @@
       "hotspot": [
         20,
         16
+      ],
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        20,
+        16,
+        44,
+        48
       ]
     },
     "hand": {
-      "path": "assets/kenney/runtime/cursors/hand_point.png",
-      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/hand_point.png",
+      "path": "assets/kenney/runtime/cursors/hand_point_n.png",
+      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/hand_point_n.png",
       "hotspot": [
         28,
-        8
+        4
+      ],
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        8,
+        4,
+        56,
+        58
       ]
     },
     "pan": {
@@ -418,6 +902,14 @@
       "hotspot": [
         32,
         32
+      ],
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        10,
+        7,
+        54,
+        56
       ]
     },
     "drag": {
@@ -426,6 +918,14 @@
       "hotspot": [
         32,
         32
+      ],
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        10,
+        13,
+        53,
+        51
       ]
     },
     "sizewe": {
@@ -434,6 +934,14 @@
       "hotspot": [
         32,
         32
+      ],
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        8,
+        22,
+        56,
+        42
       ]
     },
     "sizens": {
@@ -442,6 +950,14 @@
       "hotspot": [
         32,
         32
+      ],
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        22,
+        8,
+        42,
+        56
       ]
     },
     "sizenesw": {
@@ -450,6 +966,14 @@
       "hotspot": [
         32,
         32
+      ],
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        14,
+        14,
+        50,
+        50
       ]
     },
     "sizenwse": {
@@ -458,6 +982,30 @@
       "hotspot": [
         32,
         32
+      ],
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        14,
+        14,
+        50,
+        50
+      ]
+    },
+    "ibeam": {
+      "path": "assets/kenney/runtime/cursors/bracket_a_vertical.png",
+      "source": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/bracket_a_vertical.png",
+      "hotspot": [
+        32,
+        32
+      ],
+      "width": 64,
+      "height": 64,
+      "bounds": [
+        24,
+        8,
+        40,
+        56
       ]
     }
   },
@@ -489,6 +1037,154 @@
     "shuffle": {
       "path": "assets/kenney/runtime/sounds/card-shuffle.ogg",
       "source": "assets/kenney/kenney_casino-audio/Audio/card-shuffle.ogg"
+    },
+    "dice-roll": {
+      "path": "assets/kenney/runtime/sounds/dice-shake-3.ogg",
+      "source": "assets/kenney/kenney_casino-audio/Audio/dice-shake-3.ogg"
+    },
+    "dice-land": {
+      "path": "assets/kenney/runtime/sounds/die-throw-2.ogg",
+      "source": "assets/kenney/kenney_casino-audio/Audio/die-throw-2.ogg"
+    },
+    "table-impact": {
+      "path": "assets/kenney/runtime/sounds/impactSoft_heavy_003.ogg",
+      "source": "assets/kenney/kenney_impact-sounds/Audio/impactSoft_heavy_003.ogg"
+    }
+  },
+  "surfaces": {
+    "gradient": {
+      "path": "assets/kenney/runtime/surfaces/gradient-vertical.png",
+      "source": "assets/kenney/kenney_development-essentials/Gradient/gradient-vertical.png",
+      "width": 256,
+      "height": 256,
+      "bounds": [
+        0,
+        0,
+        256,
+        256
+      ]
+    },
+    "noise": {
+      "path": "assets/kenney/runtime/surfaces/perlin-noise.png",
+      "source": "assets/kenney/kenney_development-essentials/Noise/perlin-noise.png",
+      "width": 256,
+      "height": 256,
+      "bounds": [
+        0,
+        0,
+        256,
+        256
+      ]
+    },
+    "halo": {
+      "path": "assets/kenney/runtime/surfaces/ring_a_noise.png",
+      "source": "assets/kenney/kenney_light-masks-1.0/Default/ring_a_noise.png",
+      "width": 512,
+      "height": 512,
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ]
+    },
+    "spotlight": {
+      "path": "assets/kenney/runtime/surfaces/circle_a.png",
+      "source": "assets/kenney/kenney_light-masks-1.0/Default/circle_a.png",
+      "width": 512,
+      "height": 512,
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ]
+    },
+    "slider-track": {
+      "path": "assets/kenney/runtime/surfaces/bar_round_large.png",
+      "source": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Grey/Default/bar_round_large.png",
+      "width": 96,
+      "height": 24,
+      "bounds": [
+        0,
+        0,
+        96,
+        24
+      ]
+    },
+    "slider-thumb": {
+      "path": "assets/kenney/runtime/surfaces/bar_round_large_square.png",
+      "source": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Grey/Default/bar_round_large_square.png",
+      "width": 24,
+      "height": 24,
+      "bounds": [
+        0,
+        0,
+        24,
+        24
+      ]
+    },
+    "hex-pattern": {
+      "path": "assets/kenney/runtime/surfaces/pattern_72.png",
+      "source": "assets/kenney/kenney_pattern-pack/PNG/Default/pattern_72.png",
+      "width": 256,
+      "height": 256,
+      "bounds": [
+        0,
+        0,
+        256,
+        256
+      ]
+    }
+  },
+  "cardBacks": {
+    "Azure": {
+      "path": "assets/kenney/runtime/cardBacks/cardBack_blue3.png",
+      "source": "assets/kenney/kenney_boardgame-pack/PNG/Cards/cardBack_blue3.png",
+      "width": 140,
+      "height": 190,
+      "bounds": [
+        0,
+        0,
+        140,
+        190
+      ]
+    },
+    "Verdant": {
+      "path": "assets/kenney/runtime/cardBacks/cardBack_green3.png",
+      "source": "assets/kenney/kenney_boardgame-pack/PNG/Cards/cardBack_green3.png",
+      "width": 140,
+      "height": 190,
+      "bounds": [
+        0,
+        0,
+        140,
+        190
+      ]
+    },
+    "Crimson": {
+      "path": "assets/kenney/runtime/cardBacks/cardBack_red3.png",
+      "source": "assets/kenney/kenney_boardgame-pack/PNG/Cards/cardBack_red3.png",
+      "width": 140,
+      "height": 190,
+      "bounds": [
+        0,
+        0,
+        140,
+        190
+      ]
+    },
+    "Arcane": {
+      "path": "assets/kenney/runtime/cardBacks/cardBack_blue1.png",
+      "source": "assets/kenney/kenney_boardgame-pack/PNG/Cards/cardBack_blue1.png",
+      "width": 140,
+      "height": 190,
+      "bounds": [
+        0,
+        0,
+        140,
+        190
+      ]
     }
   }
 }

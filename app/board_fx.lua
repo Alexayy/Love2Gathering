@@ -1,10 +1,30 @@
 -- Presentation of authoritative projections only. No legality or combat rules.
 local Board={}
+local Dice=require('app.dice')
 local palette={{.70,.53,1},{.34,.69,1},{1,.64,.30},{1,.43,.64},{.67,.83,.34},{.45,.82,.88},{.88,.65,.91},{.84,.76,.48},{.55,.73,.98}}
 local function list(value)return type(value)=='table'and value or{}end
 local function id(value)return type(value)=='table'and(value.id or value.targetId or value.playerId)or value end
 local function point(box)return box and{x=box.x+box.w/2,y=box.y+box.h/2}end
 local function tint(c,a)love.graphics.setColor(c[1],c[2],c[3],a or 1)end
+local function hash(value)
+    local result=0;for i=1,#tostring(value or'')do result=(result*31+tostring(value):byte(i))%65521 end;return result
+end
+local function pulse(age,duration)
+    if age<0 or age>=duration then return 0 end
+    local t=age/duration;local attack=math.min(1,t/.14);attack=attack*attack*(3-2*attack)
+    return math.sin(t*math.pi*2.2)*attack*(1-t)^2
+end
+function Board.worldOffset(r)
+    local e=r.boardImpact
+    if not e or r.model.settings.reducedMotion or r.model.settings.animations==false then return 0,0 end
+    local amount=pulse(e.age,e.duration)*e.intensity
+    return amount*5,amount*3
+end
+function Board.linkColor(index)
+    local h=(index*.618033988749895)%1;local v=.96;local low=.34;local sector=h*6;local part=sector%1;local high=low+(v-low)*part;local down=v-(v-low)*part
+    local colors={{v,high,low},{down,v,low},{low,v,high},{low,down,v},{high,low,v},{v,low,down}}
+    return colors[math.floor(sector)+1]
+end
 function Board.color(r,player)
     if type(player)~='table'then player=(r.boardPlayers or{})[player]end
     if player and player.human then return r.colors.accent end
@@ -111,6 +131,8 @@ local function particles(r,e)
     e.spawned=true
 end
 function Board.update(r,dt)
+    Dice.update(r,dt)
+    if r.boardImpact then r.boardImpact.age=r.boardImpact.age+dt;if r.boardImpact.age>=r.boardImpact.duration then r.boardImpact=nil end end
     r.boardEffects=r.boardEffects or{};r.cardMotions=r.cardMotions or{}
     if r.model.settings.reducedMotion or r.model.settings.animations==false then r.cardMotions={}end
     r.seenVisualEvents=r.seenVisualEvents or{}
@@ -123,7 +145,7 @@ function Board.update(r,dt)
     if r.fxIdentity~=identity or seeking then
         r.fxIdentity=identity;r.fxRevision=nil;r.oldBoardLife=nil;r.oldBoardCards=nil;r.oldCombatKey=nil;r.seenVisualEvents={};r.boardEffects={};r.cardMotions={};r.pendingBoardFX={}
         r.combatAnimationStep=nil;r.combatAnimationStart=nil;r.combatAnimationUntil=nil
-        r.visualStepEpoch=nil
+        r.visualStepEpoch=nil;r.boardImpact=nil
     end
     r.fxReplayIndex=r.model.replay and r.model.replay.index
     if r.fxRevision==game.revision and not r.model.replay then return end
@@ -147,6 +169,11 @@ function Board.update(r,dt)
         if key then retainedEvents[key]=true end
         if key and not r.seenVisualEvents[key]then
             if event.type=='step'then r.visualStepEpoch=key end
+            if r.oldBoardLife and event.type=='impact'and(event.commander==true or(tonumber(event.manaValue)or 0)>5)and not r.model.settings.reducedMotion and r.model.settings.animations~=false then
+                local level=math.max(0,math.min(1,tonumber(r.model.settings.boardImpactIntensity)or .55))
+                r.boardImpact={age=0,duration=.92,seed=hash(key),intensity=level*2*(event.commander and 1.15 or math.min(1.4,.8+(tonumber(event.manaValue)or 6)/20))}
+                if r.sound then r:sound('table-impact')end
+            end
             if r.oldBoardLife and event.type=='zone'and event.fromZone=='BATTLEFIELD'and event.toZone=='GRAVEYARD'and type(event.targetId)=='string'and not deathTargets[event.targetId]then
                 add(r,{kind='death',targetId=event.targetId,card=(r.oldBoardCards or{})[event.targetId]or cards[event.targetId]});deathTargets[event.targetId]=true
             end
@@ -177,11 +204,23 @@ function Board.update(r,dt)
     r.fxRevision=game.revision
 end
 function Board.offset(r,card)
-    local motion=r.cardMotions and r.cardMotions[card.id]
-    if not motion or motion.age<0 or r.model.settings.animations==false or r.model.settings.reducedMotion then return 0,0 end
+    if r.model.settings.animations==false or r.model.settings.reducedMotion then return 0,0,0 end
     local scale=r.worldTransform and r.worldTransform.scale or 1
-    local progress=math.sin(math.pi*math.min(1,motion.age/motion.duration))
-    return motion.dx*progress/scale,motion.dy*progress/scale
+    local dx,dy,angle=0,0,0
+    local motion=r.cardMotions and r.cardMotions[card.id]
+    if motion and motion.age>=0 then
+        local progress=math.sin(math.pi*math.min(1,motion.age/motion.duration));dx,dy=motion.dx*progress/scale,motion.dy*progress/scale
+    end
+    local e=r.boardImpact
+    if e then
+        local seed=hash(tostring(card.id)..':'..e.seed);local lag=(seed%7)*.009
+        local amount=pulse(e.age-lag,e.duration-lag)*e.intensity
+        local direction=(seed%360)*math.pi/180
+        dx=dx+math.cos(direction)*amount*(2+seed%4)/scale
+        dy=dy+math.sin(direction)*amount*(2+(seed%5))/scale
+        angle=amount*((seed%2==0)and 1 or-1)*(.018+(seed%5)*.003)
+    end
+    return dx,dy,angle
 end
 function Board.flush(r)
     for _,e in ipairs(r.pendingBoardFX or{})do
@@ -196,23 +235,28 @@ function Board.flush(r)
     end
     r.pendingBoardFX={}
 end
-local function line(r,a,b,c,dashed)
+local function line(r,a,b,c,dashed,outline)
     if not a or not b then return end
     local dx,dy=b.x-a.x,b.y-a.y;local length=math.sqrt(dx*dx+dy*dy);if length<1 then return end
     local ux,uy=dx/length,dy/length
-    tint(c,.85);love.graphics.setLineWidth(2.5)
-    if dashed then for distance=0,length,16 do local finish=math.min(length,distance+9);love.graphics.line(a.x+ux*distance,a.y+uy*distance,a.x+ux*finish,a.y+uy*finish)end
-    else love.graphics.line(a.x,a.y,b.x,b.y)end
-    local tipX,tipY=b.x-ux*10,b.y-uy*10
-    love.graphics.polygon('fill',b.x,b.y,tipX-uy*5,tipY+ux*5,tipX+uy*5,tipY-ux*5)
+    local function stroke(color,width,tip)
+        tint(color,.94);love.graphics.setLineWidth(width)
+        if dashed then for distance=0,length,16 do local finish=math.min(length,distance+10);love.graphics.line(a.x+ux*distance,a.y+uy*distance,a.x+ux*finish,a.y+uy*finish)end
+        else love.graphics.line(a.x,a.y,b.x,b.y)end
+        local tipX,tipY=b.x-ux*(tip*2),b.y-uy*(tip*2)
+        love.graphics.polygon('fill',b.x,b.y,tipX-uy*tip,tipY+ux*tip,tipX+uy*tip,tipY-ux*tip)
+    end
+    if outline then stroke(outline,6.5,7.5)end
+    stroke(c,2.5,4.5)
     r.assets:iconSymbol('focus',b.x-9,b.y-9,18,c)
 end
 function Board.links(r)
     if r.model.page~='table'then return end
     local game=r.model.game or{}
-    for _,group in ipairs(list((game.combat or{}).groups))do
+    for index,group in ipairs(list((game.combat or{}).groups))do
         local a=point(Board.anchor(r,group.attackerId));local b=point(Board.anchor(r,group.defenderId))
-        line(r,a,b,r.colors.red,true)
+        local owner=group.attackingPlayerId or((r.boardCards or{})[group.attackerId]or{}).controllerId or game.activePlayerId
+        line(r,a,b,Board.linkColor(index),true,Board.color(r,owner))
         for _,blocker in ipairs(list(group.blockerIds))do line(r,point(Board.anchor(r,blocker)),a,r.colors.gold,false)end
         local label,confirmed=Board.blockStatus(group)
         if label then
@@ -230,12 +274,12 @@ function Board.links(r)
     end
     local stackHits={};for _,hit in ipairs(r.model.stackHits or{})do stackHits[hit.id]=hit end
     local hovered=r.model.stackHover
-    for _,item in ipairs(list(game.stack))do
+    for index,item in ipairs(list(game.stack))do
         local start=point(stackHits[item.id])or point(Board.anchor(r,item.sourceId))
         local targets=item.targetIds or item.targets or{}
         for _,target in ipairs(list(targets))do
             local box=Board.anchor(r,id(target))
-            if not hovered or hovered.id==item.id then line(r,start,point(box),Board.color(r,item.controllerId),false)end
+            if not hovered or hovered.id==item.id then line(r,start,point(box),Board.linkColor(index+#list((game.combat or{}).groups)),false,Board.color(r,item.controllerId))end
         end
     end
 end
@@ -259,5 +303,6 @@ function Board.foreground(r)
         end
         end
     end
+    Dice.draw(r)
 end
 return Board

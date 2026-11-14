@@ -41,7 +41,7 @@ class ArtworkStore:
                 if row: return bytes(row['content']), row['cache_key'], json.loads(row['metadata'])
         # Mirrors are only imported when no entitled SQL image is available.
         # They never overwrite a newer SQL image or masquerade as another kind.
-        library = Path(os.environ.get('LOVE2GATHERING_IMAGE_LIBRARY', str(self.root / 'image-library')))
+        library = Path(os.environ.get('LOVE2GATHERING_IMAGE_LIBRARY', str(self.image_library)))
         for candidate in keys:
             if not self.art_mirror_import_allowed(candidate):continue
             folder = 'art-crops' if candidate.endswith('-art_crop.jpg') else 'full-cards'

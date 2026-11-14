@@ -911,9 +911,10 @@ local function DrawSlider(Instance, DrawSliderAsHandle)
 		if Value ~= nil then
 			local Min = Instance.MinNumber == nil and -huge or Instance.MinNumber
 			local Max = Instance.MaxNumber == nil and huge or Instance.MaxNumber
-			local Ratio = (Value - Min) / (Max - Min)
+			local Ratio = Max > Min and (Value - Min) / (Max - Min) or 0
 			local SliderSize = 6.0
 			local MinX, MinY = Cursor.GetPosition()
+			if DrawCommands.Slider(MinX, MinY, Instance.W, Instance.H, Ratio) then return true end
 			local MaxX, MaxY = MinX + Instance.W - SliderSize, MinY + Instance.H
 			local X = (MaxX - MinX) * Ratio + MinX
 			if DrawSliderAsHandle then
@@ -1482,13 +1483,14 @@ function Input.Begin(Id, Options)
 		end
 	end
 
+	local SkinnedSlider = false
 	if Options.UseSlider then
 		if not IsEditing then
-			DrawSlider(Instance, Options.DrawSliderAsHandle)
+			SkinnedSlider = DrawSlider(Instance, Options.DrawSliderAsHandle) == true
 		end
 	end
 
-	if Instance.Text ~= "" then
+	if Instance.Text ~= "" and not SkinnedSlider then
 		Cursor.SetPosition(X + GetAlignmentOffset(Instance), Y + GetVerticalOffset(Instance))
 
 		LayoutManager.Begin(Instance.Id .. "_TextLayout", {Ignore = true})

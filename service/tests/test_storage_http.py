@@ -49,7 +49,7 @@ class StorageHttpTests(unittest.TestCase):
         return self.wait(lambda:(lambda s:s if s.get('stats')and not s.get('scanning')else None)(self.request('/storage/status')),'storage stats')
 
     def test_mounted_identity_and_no_download_side_effect_from_status(self):
-        health=self.request('/health');self.assertEqual(health['apiVersion'],8)
+        health=self.request('/health');self.assertEqual(health['apiVersion'],9)
         self.assertEqual(health['storage']['dataDirectory'],str(self.storage.root))
         status=self.request('/downloads/status');self.assertEqual(status['state'],'idle')
         self.assertEqual(self.usage()['dataDirectory'],str(self.storage.root))

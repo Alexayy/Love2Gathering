@@ -1,15 +1,16 @@
 local Layout=require('app.layout')
 local RichText=require('app.richtext')
+local Colors=require('app.builder_colors')
 local Simple={}
 local function contains(box,x,y)return x>=box.x and y>=box.y and x<=box.x+box.w and y<=box.y+box.h end
 function Simple.layout(w,h)
-    local split=math.max(480,math.min(650,math.floor(h*.58)))
-    local width=w-48;local formWidth=width-14;local gridY=280;local gridH=split-gridY-36
+    local split=math.max(504,math.min(680,math.floor(h*.60)))
+    local width=w-48;local formWidth=width-14;local gridY=304;local gridH=split-gridY-36
     local cardH=math.min(226,math.max(126,gridH-24));local cardW=cardH/1.4
     local columns=math.max(2,math.floor((width+14)/(cardW+14)))
-    return{mode='Simplified',controls={x=24,y=146,w=formWidth,h=42},search={x=24,y=214,w=formWidth,h=40},
+    return{mode='Simplified',controls={x=24,y=146,w=formWidth,h=48},search={x=24,y=220,w=formWidth,h=58},
         grid={x=24,y=gridY,w=width,h=gridH},list={x=24,y=split+80,w=width,h=h-split-104},
-        deckToolbar={x=24,y=split+18,w=formWidth,h=36},columns=columns,rows=1,cardW=cardW,cardH=cardH,pageSize=columns,pagerY=split-32}
+        deckToolbar={x=24,y=split+18,w=formWidth,h=40},columns=columns,rows=1,cardW=cardW,cardH=cardH,pageSize=columns,pagerY=split-32}
 end
 local function button(v,label,icon,w,h,opts)
     opts=opts or{};opts.W=w;opts.H=h;opts.Tooltip=opts.Tooltip or label
@@ -33,28 +34,31 @@ local function filters(v,w,h)
         for _,set in ipairs(m.sets or{})do if S.TextSelectable(set.name..' ['..set.code:upper()..']')then m.searchSet=set.code;m:searchChanged()end end
         S.EndComboBox()
     end
-    S.NewLine();if button(v,'Reset filters','refresh',inner,34)then m.searchColor='All';m.searchType='';m.searchSet='All';m.searchSort='Name';m:searchChanged()end
+    S.NewLine();if button(v,'Reset filters','refresh',inner,36)then m:setSearchColor('All');m.searchType='';m.searchSet='All';m.searchSort='Name';m:searchChanged()end
     S.EndWindow()
 end
 function Simple.build(v,w,h)
     local S,m=v.S,v.m;local deck=m.editDeck;if not deck then return end
     local L=Simple.layout(w,h);m:setSearchLimit(L.pageSize)
     v:window('simple-deck-controls',L.controls.x,L.controls.y,L.controls.w,L.controls.h,nil,{AutoSizeContent=false})
-    local available=L.controls.w-30;local nameW=math.max(240,available-490)
+    local available=L.controls.w-30;local nameW=math.max(220,available-530)
     if S.Input('deck-name',{Text=deck.name,W=nameW,H=36,Align='left',Tooltip='Deck name'})then deck.name=S.GetInputText();m.dirty=true end
-    S.SameLine();v:combo('simple-deck-format',deck.format,{'Modern','Standard','Pioneer','Commander'},150,function(value)m:changeDeckFormat(value)end)
-    S.SameLine();if button(v,m.dirty and'Save *'or'Save','save',96,36)then m:saveDeck()end
-    S.SameLine();if button(v,'Validate','check',108,36)then m:validateDeck()end
-    S.SameLine();if button(v,'Preview','search',100,36)then m.inspectCard=m.previewCard or m.cards[1]end
+    S.SameLine({Pad=12});v:combo('simple-deck-format',deck.format,{'Modern','Standard','Pioneer','Commander'},150,function(value)m:changeDeckFormat(value)end)
+    S.SameLine({Pad=12});if button(v,m.dirty and'Save *'or'Save','save',96,36)then m:saveDeck()end
+    S.SameLine({Pad=12});if button(v,'Validate','check',108,36)then m:validateDeck()end
+    S.SameLine({Pad=12});if button(v,'Preview','search',100,36)then m.inspectCard=m.previewCard or m.cards[1]end
     S.EndWindow()
     v:window('simple-search',L.search.x,L.search.y,L.search.w,L.search.h,nil,{AutoSizeContent=false})
-    local inputW=L.search.w-30-7*36-128-32
-    if S.Input('query',{Text=m.search,W=inputW,H=34,Align='left',Tooltip='Search cards in '..deck.format})then m.search=S.GetInputText();m:searchChanged()end
+    local inputW=math.max(160,L.search.w-30-596)
+    if S.Input('query',{Text=m.search,W=inputW,H=36,Align='left',Tooltip='Search cards in '..deck.format})then m.search=S.GetInputText();m:searchChanged()end
     for _,symbol in ipairs({'All','W','U','B','R','G','C'})do
-        S.SameLine({Pad=4})
-        if S.Button('simple-color-'..symbol,{W=32,H=34,Image={Image=v.r.assets:iconImage(symbol=='All'and'filter'or symbol,22)},Active=m.searchColor==symbol,Tooltip=symbol=='All'and'All colors'or symbol})then m.searchColor=symbol;m:searchChanged()end
+        S.SameLine({Pad=8})
+        local tooltip=symbol=='All'and'Clear color filters' or symbol=='C'and'Colorless identity only' or'Toggle '..Colors.names[symbol]..' identity; selected colors are combined with OR'
+        if S.Button('simple-color-'..symbol,{W=36,H=36,Image={Image=v.r.assets:iconImage(symbol=='All'and'filter'or symbol,23)},Active=Colors.selected(m,symbol),Tooltip=tooltip})then m:toggleSearchColor(symbol)end
     end
-    S.SameLine({Pad=8});if button(v,'More filters','filter',128,34)then v.builderFiltersOpen=not v.builderFiltersOpen end
+    S.SameLine({Pad=12})
+    if button(v,'Exact','filter',100,36,{Active=m.searchColorExact,Disabled=Colors.symbols(m)=='',Tooltip='Exact color identity: require every selected color and exclude all other colors. '..Colors.summary(m)})then m:toggleExactSearchColors()end
+    S.SameLine({Pad=12});if button(v,'More filters','filter',128,36)then v.builderFiltersOpen=not v.builderFiltersOpen end
     S.EndWindow()
     v:window('simple-deck-toolbar',L.deckToolbar.x,L.deckToolbar.y,L.deckToolbar.w,L.deckToolbar.h,nil,{AutoSizeContent=false})
     local zones=(deck.format=='Commander'or m.count(deck,'commander')>0)and{'main','commander','sideboard'}or{'main','sideboard'}

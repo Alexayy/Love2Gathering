@@ -14,7 +14,7 @@ DEFAULT_SETTINGS = {"manualTriggers": False, "autoMana": True, "showCardArt": Tr
     "fontFamily": "Beleren", "titleFontFamily":"Beleren", "skybox":"Galaxy", "skyboxBrightness":0.32,
     "playmatOpacity":0.88,"counterStyle":"Dice","cursorStyle":"Kenney","keywordReminders":True,
     "panelOpacity":0.65,"theme":"Midnight","accentColor":"","opponentColor":"","autoFollowTurn":True,
-    "builderLayout":"Classic","presentationVersion":2}
+    "builderLayout":"Classic","presentationVersion":2,"fontQuality":"High","cursorScale":0.55,"boardImpactIntensity":0.55,"cardBackStyle":"Arcane"}
 
 class StorageSchema:
     @staticmethod
@@ -93,8 +93,8 @@ class StorageSchema:
                  "textureFilter": {"linear", "nearest"}, "frameLimit": {0, 30, 60, 120, 144},
                  "colorblindMode": {"Off", "Deuteranopia", "Protanopia", "Tritanopia"}, "titleFontFamily":{"Beleren","Application font"},
                  "skybox":{"Galaxy","Nebula","Band","Dark","Day","Off"},"counterStyle":{"Dice","Text"},"cursorStyle":{"System","Kenney"},
-                 "theme":{"Midnight","Amethyst","Ocean","Ember","Obsidian"},"builderLayout":{"Classic","Simplified"},"presentationVersion":{2}}
-        ranges = {"renderScale": (0.5, 1.5), "uiScale": (0.85, 1.75), "musicVolume": (0, 1), "sfxVolume": (0, 1), "masterVolume": (0, 1),"skyboxBrightness":(0,1),"playmatOpacity":(0,1),"panelOpacity":(0,1)}
+                 "theme":{"Midnight","Amethyst","Ocean","Ember","Obsidian"},"builderLayout":{"Classic","Simplified"},"presentationVersion":{2},"fontQuality":{"Standard","High"},"cardBackStyle":{"Arcane","Azure","Verdant","Crimson"}}
+        ranges = {"renderScale": (0.5, 1.5), "uiScale": (0.85, 1.75), "musicVolume": (0, 1), "sfxVolume": (0, 1), "masterVolume": (0, 1),"skyboxBrightness":(0,1),"playmatOpacity":(0,1),"panelOpacity":(0,1),"cursorScale":(.4,1),"boardImpactIntensity":(0,1)}
         for key, item in value.items():
             if key not in DEFAULT_SETTINGS:
                 raise ValueError("Unknown setting: " + key)

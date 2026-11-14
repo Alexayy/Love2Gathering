@@ -49,7 +49,7 @@ final class NativeProjection {
         for(CombatGroup group:game.getCombat().getGroups())for(UUID attackerId:group.getAttackers()) {
             Permanent attacker=game.getPermanent(attackerId);
             groups.add(map("attackerId",id(attackerId),"attackerIds",ids(group.getAttackers()),"defenderId",id(group.getDefenderId()),
-                "defendingPlayerId",id(group.getDefendingPlayerId()),"blockerIds",ids(group.getBlockers()),"blocked",group.getBlocked(),
+                "attackingPlayerId",attacker==null?null:id(attacker.getControllerId()),"defendingPlayerId",id(group.getDefendingPlayerId()),"blockerIds",ids(group.getBlockers()),"blocked",group.getBlocked(),
                 "declarationConfirmed",session.owner.confirmedBlockersPhase==game.getPhase()&&session.owner.confirmedBlockerDefenders.contains(group.getDefendingPlayerId()),
                 "minBlockers",attacker==null?0:attacker.getMinBlockedBy(),"maxBlockers",attacker==null?0:attacker.getMaxBlockedBy()));
         }

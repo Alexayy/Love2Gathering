@@ -62,4 +62,19 @@ package.preload['app.api']=function()return{new=function()return{}end}end
 local Model=require('app.model');local m=setmetatable({byName={['Angel of Vitality']=metadata}},{__index=Model})
 local live=m:cardData({id='native-id',name='Angel of Vitality',power='5',toughness='5',counters={['+1/+1']=1}})
 check(live.id=='printing-id'and live.objectId=='native-id'and live.power=='5'and metadata.power=='2','Artwork identity stays distinct from current native P/T and the catalog is not mutated')
+local quake={model={settings={boardImpactIntensity=.55},game={gameId='quake',revision=1,players={{id='p',life=20,battlefield={host,aura},hand={},graveyard={}}},stack={}}},colors=r.colors}
+Board.update(quake,.01);quake.model.game.revision=2;quake.model.game.animationEvents={{id='native-impact',type='impact',sourceId='host',playerId='p',manaValue=7}}
+Board.update(quake,.01)
+check(Board.worldOffset(quake)==0,'A native impact eases in from rest instead of jumping')
+Board.update(quake,.15);local qx,qy=Board.worldOffset(quake);local ax,ay,aa=Board.offset(quake,host);local bx,by,ba=Board.offset(quake,aura)
+check(qx~=0 and math.abs(qx)<7 and math.abs(qy)<5,'Whole-terrain displacement is gentle and bounded')
+check(ax~=bx or ay~=by or aa~=ba,'Each permanent gets a distinct stable impulse instead of shared jitter')
+local repeatX,repeatY,repeatAngle=Board.offset(quake,host)
+check(repeatX==ax and repeatY==ay and repeatAngle==aa,'Repeated draws at one animation time have identical poses')
+quake.model.settings.reducedMotion=true;check(Board.worldOffset(quake)==0 and Board.offset(quake,host)==0,'Reduced motion disables both terrain and independent card shakes');quake.model.settings.reducedMotion=false
+Board.update(quake,1);check(quake.boardImpact==nil,'Impact settles fully without residual displacement')
+quake.model.game.revision=3;Board.update(quake,.01);check(quake.boardImpact==nil,'A retained native resolution event shakes only once')
+quake.model.game.revision=4;quake.model.game.stack={{id='countered',manaValue=20}};Board.update(quake,.01)
+quake.model.game.revision=5;quake.model.game.stack={};Board.update(quake,.01);check(quake.boardImpact==nil,'Stack disappearance alone never invents a resolved large spell')
+local hues={};for i=1,20 do local color=Board.linkColor(i);local key=table.concat(color,':');check(not hues[key],'Independent attack/target group '..i..' has its own color');hues[key]=true end
 print('Board presentation checks: '..passed..' passed')

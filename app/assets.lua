@@ -21,7 +21,7 @@ local function image(path)
 end
 function Assets.new()
     local self=setmetatable({fonts={},textFonts={},particles={},sounds={},soundVoices={},maxParticles=180,iconCache={},iconClock=0,iconCacheLimit=96,runtimeImages={},skyboxes={},skyboxClock=0},Assets)
-    self.theme=Theme.new()
+    self.theme=Theme.new();self.surfaces=self.theme.surfaces
     self.panelImage=image('assets/kenney/ui/panel.png')
     self.textures={};for name,path in pairs(texturePaths) do self.textures[name]=image(path) end
     if self.panelImage then
@@ -106,6 +106,8 @@ function Assets:setSettings(settings)
 end
 function Assets:setInteractionCursor(kind)self.cursorState=kind end
 function Assets.palette(settings)return Theme.colors(settings)end
+function Assets:cardBack(x,y,w,h,style)return self.surfaces:cardBack(x,y,w,h,style,self.theme.colors)end
+function Assets:surface(name,x,y,w,h,tint,tiled)return self.surfaces:mask(name,x,y,w,h,tint,tiled)end
 function Assets:icon() return 'assets/icons/thb.png' end
 function Assets:mana(symbol,x,y,size,tint)
     symbol=tostring(symbol or '')

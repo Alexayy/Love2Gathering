@@ -124,7 +124,8 @@ function Multi.draw(r,L,w,h,Table)
     end
     r:panel(view.x,view.y,view.w,view.h,'dark')
     Layout.clip(view.x,view.y,view.w,view.h)
-    local t=camera:transform();r.worldTransform=t
+    local base=camera:transform();local dx,dy=require('app.board_fx').worldOffset(r)
+    local t={x=base.x+dx,y=base.y+dy,scale=base.scale,clip=base.clip};r.worldTransform=t
     love.graphics.push();love.graphics.translate(t.x,t.y);love.graphics.scale(t.scale)
     for i,p in ipairs(seats) do seat(r,p,i,camera:cell(i),Table) end
     love.graphics.pop();r.worldTransform=nil;Layout.clip()

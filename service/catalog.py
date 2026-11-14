@@ -169,7 +169,7 @@ class Catalog(GalleryCatalog,TokenCatalog):
             temporary.unlink(missing_ok=True)
             raise
 
-    def search(self, query="", format_name="", color="", type_name="", limit=50, offset=0, sort="name", set_code=""):
+    def search(self, query="", format_name="", color="", type_name="", limit=50, offset=0, sort="name", set_code="", color_mode="legacy"):
         clauses, params = [], []
         for token in query.casefold().split():
             clauses.append("search LIKE ? ESCAPE '\\'")
@@ -178,15 +178,32 @@ class Catalog(GalleryCatalog,TokenCatalog):
             if format_name not in FORMATS:
                 raise ValueError("Unsupported format")
             clauses.append(f"{format_name} IN ('legal','restricted')")
+        if color_mode not in ("legacy", "any", "exact"):
+            raise ValueError("Color mode must be legacy, any or exact")
         if color:
             if not re.fullmatch("[WUBRGCwubrgc]+", color):
                 raise ValueError("Colors must be W, U, B, R, G or C")
-            for value in color.upper():
-                if value == "C":
+            selected = set(color.upper())
+            if color_mode != "legacy" and "C" in selected and len(selected) > 1:
+                raise ValueError("Colorless identity cannot be combined with colored identities")
+            if color_mode == "any":
+                if selected == {"C"}:
                     clauses.append("colors = ''")
                 else:
-                    clauses.append("colors LIKE ?")
-                    params.append("%" + value + "%")
+                    clauses.append("(" + " OR ".join("instr(colors, ?) > 0" for _ in selected) + ")")
+                    params.extend(sorted(selected))
+            else:
+                if color_mode == "exact":
+                    # The indexed colors field stores identity, including mana
+                    # symbols in rules/lands. Do not depend on snapshot order.
+                    clauses.append("length(colors) = ?")
+                    params.append(0 if selected == {"C"} else len(selected))
+                for value in sorted(selected):
+                    if value == "C":
+                        clauses.append("colors = ''")
+                    else:
+                        clauses.append("instr(colors, ?) > 0")
+                        params.append(value)
         if type_name:
             clauses.append("instr(type_line, ?) > 0")
             params.append(type_name.casefold())

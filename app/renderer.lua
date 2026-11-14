@@ -28,10 +28,9 @@ function Renderer:text(text,x,y,size,tint,width,align)
     if width then love.graphics.printf(tostring(text or ''),x,y,width,align or 'left') else love.graphics.print(tostring(text or ''),x,y) end
 end
 function Renderer:strong(text,x,y,size,tint,width,align)
-    local scale=(size or 22)/22
-    love.graphics.push();love.graphics.translate(x,y);love.graphics.scale(scale)
-    love.graphics.setFont(self.assets.titleFont and self.assets:titleFont(22,self.model.settings)or self.bold);color(tint or C.text)
-    if width then love.graphics.printf(tostring(text or ''),0,0,width/scale,align or'left')else love.graphics.print(tostring(text or''),0,0)end
+    love.graphics.push();love.graphics.translate(x,y)
+    love.graphics.setFont(self.assets.titleFont and self.assets:titleFont(size or 22,self.model.settings)or self.bold);color(tint or C.text)
+    if width then love.graphics.printf(tostring(text or ''),0,0,width,align or'left')else love.graphics.print(tostring(text or''),0,0)end
     love.graphics.pop()
 end
 function Renderer:playerColor(player)return Board.color(self,player)end
@@ -55,7 +54,12 @@ end
 function Renderer:drawPlaymat(player,x,y,w,h)
     if w<=0 or h<=0 then return end
     local m=self.model;local profile=m.profileForPlayer and m:profileForPlayer(player)or{}
-    local art=m.profileArt and m:profileArt(profile.playmat);if not art then return end
+    local art=m.profileArt and m:profileArt(profile.playmat)
+    if not art and m.botPlaymatArt and player and not player.human then art=m:botPlaymatArt(player)end
+    if not art then
+        if player and not player.human and self.assets.surface then local c=self:playerColor(player);self.assets:surface('hex-pattern',x,y,w,h,{c[1],c[2],c[3],.035})end
+        return
+    end
     local opacity=m.settings.playmatOpacity or .88;if opacity<=0 then return end
     love.graphics.push('all')
     local box=self:screenRect({x=x,y=y,w=w,h=h});local factor=Layout.scale*(Layout.renderScale or 1)
@@ -138,7 +142,7 @@ function Renderer:drawCard(card,x,y,w,h,options)
         for k,v in pairs(target) do pose[k]=pose[k]+(v-pose[k])*ease end
         x,y,w,h,angle=pose.x,pose.y,pose.w,pose.h,pose.angle
     end
-    if not options.noHit and(options.kind=='permanent'or options.kind=='attachment')and self.model.settings.animations~=false and not self.model.settings.reducedMotion then local dx,dy=Board.offset(self,card);x=x+dx;y=y+dy end
+    if not options.noHit and(options.kind=='permanent'or options.kind=='attachment')and self.model.settings.animations~=false and not self.model.settings.reducedMotion then local dx,dy,tilt=Board.offset(self,card);x=x+dx;y=y+dy;angle=angle+(tilt or 0)end
     if card.id and not options.noHit then
         local box=self:screenRect({x=x,y=y,w=w,h=h,angle=angle});box.kind=options.kind;self.cardRects[card.id]=box
     end
@@ -147,8 +151,9 @@ function Renderer:drawCard(card,x,y,w,h,options)
     local bx,by=-w/2,-h/2
     rect(bx+3,by+5,w,h,{.005,.009,.016,.6},7)
     if options.back then
-        rect(bx,by,w,h,{.07,.075,.14},7);color({.32,.29,.55});love.graphics.rectangle('line',bx+5,by+5,w-10,h-10,5,5)
-        color(C.purple,.5);love.graphics.circle('line',0,0,w*.28);love.graphics.polygon('line',0,-w*.25,w*.20,0,0,w*.25,-w*.20,0)
+        if not self.assets.cardBack or not self.assets:cardBack(bx,by,w,h,self.model.settings.cardBackStyle)then
+            rect(bx,by,w,h,{.07,.075,.14},7);color({.32,.29,.55});love.graphics.rectangle('line',bx+5,by+5,w-10,h-10,5,5)
+        end
     else
         local data=self.model:cardData(card) or card
         local img=self.model:getArt(data,options.imageOnly)
@@ -257,7 +262,8 @@ end
 function Renderer:drawDecks(w,h)require('app.collection_ui').draw(self,w,h)end
 function Renderer:inputBlocked()
     local m,v=self.model,self.view
-    return m.settingsOpen or m.zoneView or m.deleteConfirm or m.inspectCard or m.galleryInspect or m.confirmConcede or m.archiveCopy or m.storagePurgePreview
+    local dice=package.loaded['app.dice']
+    return (dice and dice.busy(self))or m.storageLocationConfirm or m.storageFolderDialog or m.settingsOpen or m.zoneView or m.deleteConfirm or m.inspectCard or m.galleryInspect or m.confirmConcede or m.archiveCopy or m.storagePurgePreview
         or v and(v.deckSelection or v.themeColorEdit or v.combatStopsOpen or m.page=='builder'and(v.builderPopup or v.builderFiltersOpen))
         or not v and self.blockBuilderDrop
 end

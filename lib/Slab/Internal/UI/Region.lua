@@ -511,6 +511,27 @@ function Region.Contains(x, y)
 	return false
 end
 
+-- Hit testing must use the same ancestor clips as drawing. Coordinates here
+-- are already in logical screen space; SX/SY include the enclosing scroll
+-- transforms. Stop at the control's own window, since popup windows have
+-- their own clip even while their parent form's regions remain on the stack.
+function Region.IsPointVisibleInWindow(id, x, y)
+	local owner
+	for index, instance in ipairs(Stack) do
+		if instance.Id == id then owner = index; break end
+	end
+	-- Window.Begin checks its title/focus before opening the body region.
+	if owner == nil then return true end
+	for index = 1, owner do
+		local instance = Stack[index]
+		if x < instance.SX or x > instance.SX + instance.W
+			or y < instance.SY or y > instance.SY + instance.H then
+			return false
+		end
+	end
+	return true
+end
+
 function Region.ResetContentSize(id)
 	local instance = GetInstance(id)
 	if instance ~= nil then

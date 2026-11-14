@@ -38,6 +38,7 @@ final class ReplayRecorder {
             s.execute("PRAGMA busy_timeout=5000");s.execute("PRAGMA journal_mode=WAL");s.execute("PRAGMA synchronous=FULL");
             s.execute("CREATE TABLE IF NOT EXISTS replay_outbox(id TEXT PRIMARY KEY,port INTEGER NOT NULL,owner_pid INTEGER NOT NULL,metadata TEXT NOT NULL,next_sequence INTEGER NOT NULL DEFAULT 0,finish TEXT,status TEXT NOT NULL DEFAULT 'recording',last_error TEXT,updated INTEGER NOT NULL)");
             s.execute("CREATE TABLE IF NOT EXISTS replay_outbox_events(replay_id TEXT NOT NULL,sequence INTEGER NOT NULL,payload TEXT NOT NULL,PRIMARY KEY(replay_id,sequence))");
+            s.execute("CREATE TABLE IF NOT EXISTS replay_outbox_control(key TEXT PRIMARY KEY,value TEXT NOT NULL)");
         }
         return c;
     }
@@ -57,19 +58,48 @@ final class ReplayRecorder {
     }
     ReplayRecorder(Path database,int port,String id,JsonObject metadata,boolean recovery) throws Exception {
         this.id=id;this.database=database;this.port=port;this.metadata=metadata.deepCopy();connection=open(database);
-        if(!recovery)try(PreparedStatement s=connection.prepareStatement("INSERT INTO replay_outbox(id,port,owner_pid,metadata,updated) VALUES(?,?,?,?,?)")) {
-            s.setString(1,id);s.setInt(2,port);s.setLong(3,ProcessHandle.current().pid());s.setString(4,EngineBridge.JSON.toJson(metadata));s.setLong(5,System.currentTimeMillis());s.executeUpdate();
-        }
-        try(PreparedStatement s=connection.prepareStatement("SELECT next_sequence,finish FROM replay_outbox WHERE id=?")) {
-            s.setString(1,id);try(ResultSet r=s.executeQuery()){if(r.next()){nextSequence=r.getLong(1);String f=r.getString(2);if(f!=null)finish=JsonParser.parseString(f).getAsJsonObject();}}
-        }
-        try(PreparedStatement s=connection.prepareStatement("SELECT count(*) FROM replay_outbox_events WHERE replay_id=?")) {s.setString(1,id);try(ResultSet r=s.executeQuery()){r.next();pending=r.getLong(1);}}
+        try(Statement transaction=connection.createStatement()) {
+            // The migration's final outbox backup/retirement takes the same
+            // writer lock. Either this recording wins and migration refuses
+            // its active row, or retirement wins and this insert is rejected.
+            transaction.execute("BEGIN IMMEDIATE");
+            try {
+                checkLocation(connection);registerOwnerProtocol(connection);
+                if(!recovery)try(PreparedStatement s=connection.prepareStatement("INSERT INTO replay_outbox(id,port,owner_pid,metadata,updated) VALUES(?,?,?,?,?)")) {
+                    s.setString(1,id);s.setInt(2,port);s.setLong(3,ProcessHandle.current().pid());s.setString(4,EngineBridge.JSON.toJson(metadata));s.setLong(5,System.currentTimeMillis());s.executeUpdate();
+                }
+                try(PreparedStatement s=connection.prepareStatement("SELECT next_sequence,finish FROM replay_outbox WHERE id=?")) {
+                    s.setString(1,id);try(ResultSet r=s.executeQuery()){if(r.next()){nextSequence=r.getLong(1);String f=r.getString(2);if(f!=null)finish=JsonParser.parseString(f).getAsJsonObject();}}
+                }
+                try(PreparedStatement s=connection.prepareStatement("SELECT count(*) FROM replay_outbox_events WHERE replay_id=?")) {s.setString(1,id);try(ResultSet r=s.executeQuery()){r.next();pending=r.getLong(1);}}
+                transaction.execute("COMMIT");
+            } catch(Exception ex) {
+                try{transaction.execute("ROLLBACK");}catch(Exception ignored){}
+                try{connection.close();}catch(Exception ignored){}
+                throw ex;
+            }
+        }catch(Exception ex){try{connection.close();}catch(Exception ignored){}throw ex;}
         savedSequence=nextSequence-pending-1;
         worker=new Thread(this::drain,"Replay SQLite outbox "+id);worker.setDaemon(true);
+    }
+    static void registerOwnerProtocol(Connection connection) throws SQLException {
+        String pid=Long.toString(ProcessHandle.current().pid());
+        long started=ProcessHandle.current().info().startInstant().map(java.time.Instant::toEpochMilli).orElse(0L);
+        try(PreparedStatement statement=connection.prepareStatement("INSERT INTO replay_outbox_control(key,value) VALUES(?,?) ON CONFLICT(key)DO UPDATE SET value=excluded.value")) {
+            statement.setString(1,"owner_protocol:"+pid);statement.setString(2,"1");statement.executeUpdate();
+            statement.setString(1,"owner_started:"+pid);statement.setString(2,Long.toString(started));statement.executeUpdate();
+        }
+    }
+    static boolean relocated(Connection connection) throws SQLException {
+        try(PreparedStatement query=connection.prepareStatement("SELECT value FROM replay_outbox_control WHERE key='relocated'");ResultSet row=query.executeQuery()) { return row.next(); }
+    }
+    static void checkLocation(Connection connection) throws SQLException {
+        if(relocated(connection))throw new SQLException("The data directory was relocated. Restart the application before recording another game.");
     }
     static synchronized void recoverPending(int catalogPort) {
         Path path=databasePath();if(!Files.exists(path))return;
         try(Connection c=open(path);Statement s=c.createStatement();ResultSet rows=s.executeQuery("SELECT id,owner_pid,metadata FROM replay_outbox WHERE status NOT IN ('completed','failed','aborted')")) {
+            if(relocated(c))return;
             List<JsonObject> orphaned=new ArrayList<>();
             while(rows.next()) {
                 long pid=rows.getLong("owner_pid");
@@ -78,9 +108,18 @@ final class ReplayRecorder {
             }
             for(JsonObject row:orphaned) {
                 String id=row.get("id").getAsString();
-                try(PreparedStatement claim=c.prepareStatement("UPDATE replay_outbox SET owner_pid=?,port=?,updated=? WHERE id=? AND owner_pid=? AND status NOT IN ('completed','failed','aborted')")) {
-                    claim.setLong(1,ProcessHandle.current().pid());claim.setInt(2,catalogPort);claim.setLong(3,System.currentTimeMillis());claim.setString(4,id);claim.setLong(5,row.get("owner").getAsLong());if(claim.executeUpdate()!=1)continue;
+                boolean claimed=false;
+                try(Statement transaction=c.createStatement()) {
+                    transaction.execute("BEGIN IMMEDIATE");
+                    try {
+                        checkLocation(c);registerOwnerProtocol(c);
+                        try(PreparedStatement claim=c.prepareStatement("UPDATE replay_outbox SET owner_pid=?,port=?,updated=? WHERE id=? AND owner_pid=? AND status NOT IN ('completed','failed','aborted')")) {
+                            claim.setLong(1,ProcessHandle.current().pid());claim.setInt(2,catalogPort);claim.setLong(3,System.currentTimeMillis());claim.setString(4,id);claim.setLong(5,row.get("owner").getAsLong());claimed=claim.executeUpdate()==1;
+                        }
+                        transaction.execute("COMMIT");
+                    }catch(Exception ex){try{transaction.execute("ROLLBACK");}catch(Exception ignored){}throw ex;}
                 }
+                if(!claimed)continue;
                 ReplayRecorder recorder=new ReplayRecorder(path,catalogPort,id,row.getAsJsonObject("metadata"),true);
                 if(recorder.finish==null)recorder.finish("aborted",EngineBridge.map("reason","Recovered after the game engine exited"),null);
                 LIVE.add(recorder);recorder.worker.start();

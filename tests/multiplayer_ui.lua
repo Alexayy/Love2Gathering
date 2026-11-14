@@ -90,7 +90,7 @@ local function scenario()
             m.settings.autoFollowTurn=true;wait(.15)
             check(camera.focusIndex==1,'Enabling automatic follow focuses the current active player: '..name)
             click(hit('table-overview'));check(camera.mode=='overview','Overview icon restores the entire terrain: '..name)
-            click(hit('seat-focus','p1'));wait(.1)
+            click(hit('seat-focus','p1'));wait(.4) -- Inspect a stationary card after the camera tween arrives.
             local permanent=assert(hit('permanent','p1-creature2'),'Human field card not rendered')
             check(permanent.clip and permanent.clip.x==view.x and permanent.clip.y==view.y and permanent.clip.w==view.w and permanent.clip.h==view.h,'World card hit region has the same viewport clip: '..name)
             click(permanent,2);check(m.inspectCard and m.inspectCard.id==permanent.card.id,'Stationary right-click still inspects a card: '..name)

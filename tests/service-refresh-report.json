@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "scope": "Complete Python service suite against temporary stores/fixtures; no destructive operation on user data. CLI downloader uses bounded fake/temp image sources, not a complete online library download.",
+  "command": "python3 -m unittest discover -s service/tests -v",
+  "serviceTests": 172,
+  "durationSeconds": 73.936,
+  "sourceSha256": {
+    "service/artists.py": "a5e7e5cbf721d31d712cff84bd7923f802c88a940d96d7f98f329a52032f4d1f",
+    "service/artwork.py": "24d7efaa3d6d6b0f0bd6be3e66f45de4fd7988367127a53fab0b6025b6b2f6ec",
+    "service/catalog.py": "35dd61b699ddbb769e7e1ee127d41d517ce1d1b4377f836b6a1492b6787c1294",
+    "service/deck_import.py": "5056e79a722139ad9aa1f5668baa85f482f222452eab22142f9ff3e1b00a0f79",
+    "service/downloads.py": "922bfa3851f2e7273dd7d9d79b1996ff9b212ef1eaf21503c70f63623533e16a",
+    "service/gallery_catalog.py": "8b89ddf02fb960b9178495eba3e28e2bf2348094187a42f77b874daaec99d62d",
+    "service/history.py": "3d9b738e38bcd9eb46ac74ff4338830cb40245f24342d3accaa6864061a4f20f",
+    "service/maintenance.py": "7083af23650d53a31f9bf4b6f365ceb745a18613fd90fe98bb1925f93e56014e",
+    "service/paths.py": "6078f9d90760417e8734ebba0f68761ff36f0ed45873fbeba8db1a34f007ef63",
+    "service/playmats.py": "6620fd3134b602bfc7a294925e94d6985db63c15ab5cec5d3d17e99678b32949",
+    "service/precons.py": "9c08656d10fa368c164030427b599548efd31246aef378872db05b0089701faa",
+    "service/profiles.py": "20938ed34c561f780d1d5ab7196d9cc866ac3f5c177f7352d394b0784eb1abd9",
+    "service/replays.py": "833f0ff2970192e8dbbfd4ac29388405d02a0cbbe15999887ae6ad0090df6598",
+    "service/rooms.py": "c4107150ebb113ddb4dbf31f8c10d8066e301ecfefa76a56708e2063e662311c",
+    "service/search_text.py": "9206f42b4c161d83e9afe0d7e3836d00059d2d06dd621fa60608150969ffdb3d",
+    "service/server.py": "7f2b4588224419eba47f276680bcd4933f6262e7925c91682ca9396a900b0931",
+    "service/storage.py": "d2cb9c1ca2f5b2ce1f99f941d27214f859072f67943c238e1aaf60bdc170aab0",
+    "service/storage_locations.py": "5aff07d12eaded9d9287c1b984d2bfc2348bfedca3efe3e7163320124642f76a",
+    "service/storage_schema.py": "483021de8cbcf656919a36d89521463d67c4ab81ff17e14dc0af0ca37ef354d1",
+    "service/tokens.py": "a7f225732e28fcb6f6d710b35f5fe9b812cabe1459e4bc39c8818cec35dde25b",
+    "service/validation.py": "512c1d4071afbaca2aefb4088e099b13a354e5edbceac5a56cfb72fe130f1688"
+  },
+  "includedDownloaderTests": 11
+}

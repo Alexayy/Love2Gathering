@@ -1,5 +1,13 @@
 local Layout=require('app.layout')
 local Table={}
+local Board=require('app.board_fx')
+local function terrain(r,view,draw)
+    local dx,dy=Board.worldOffset(r)
+    r.worldTransform={x=dx,y=dy,scale=1,clip=view,shakeOnly=true}
+    love.graphics.push();love.graphics.translate(dx,dy);Layout.clip(view.x,view.y,view.w,view.h)
+    draw()
+    love.graphics.pop();r.worldTransform=nil;Layout.clip()
+end
 local function land(c) return tostring(c.type_line or c.type or ''):lower():find('land',1,true)~=nil end
 local phases=require('app.priority').groups
 local function activePhase(game,key)
@@ -21,7 +29,7 @@ function Table.field(r,player,x,y,w,rowH,foe)
         if not attached then local group=land(card) and lands or permanents;group[#group+1]=card end
     end
     local _,height=Layout.dimensions();local available=math.max(58,rowH-14)
-    local inWorld=r.worldTransform~=nil
+    local inWorld=r.worldTransform~=nil and not r.worldTransform.shakeOnly
     local landH=math.min(inWorld and 154 or 128,math.max(66,inWorld and 154 or height*.12),available)
     local permanentH=math.min(inWorld and 196 or 157,available)
     if #lands>0 and #permanents>0 then
@@ -82,8 +90,10 @@ function Table.draw(r,w,h)
     local human,enemy=Table.players(game)
     r:panel(B.x,B.y,B.w,B.h,'dark')
     if #(game.players or{})<=2 and human and enemy then
-        r:drawPlaymat(enemy,B.x+8,112,B.w-16,math.max(0,L.divider-113))
-        r:drawPlaymat(human,B.x+8,L.divider+2,B.w-16,B.y+B.h-L.divider-10)
+        terrain(r,L.viewport,function()
+            r:drawPlaymat(enemy,B.x+8,112,B.w-16,math.max(0,L.divider-113))
+            r:drawPlaymat(human,B.x+8,L.divider+2,B.w-16,B.y+B.h-L.divider-10)
+        end)
     end
     love.graphics.setColor(C.accent[1],C.accent[2],C.accent[3],.05)
     love.graphics.circle('line',B.x+B.w/2,B.y+B.h*.48,math.min(220,B.w*.24))
@@ -126,9 +136,11 @@ function Table.draw(r,w,h)
         local backs=math.min(enemy.handCount or 0,16);local ew=math.min(87,(B.w-320)/math.max(1,math.min(backs,7)));local eh=ew*1.4
         local es=math.min(ew*.55,(B.w-340-ew)/math.max(1,backs-1));local start=B.x+(B.w-(backs-1)*es-ew)/2
         for i=1,backs do r:drawCard({},start+(i-1)*es,124,ew,eh,{back=true,noHit=true}) end
-        Table.field(r,enemy,L.fieldX,L.enemyY,L.fieldW,L.rowH,true)
-        Table.field(r,human,L.fieldX,L.humanY,L.fieldW,L.rowH,false)
-        love.graphics.setColor(C.line);love.graphics.line(L.fieldX,L.divider,B.x+B.w-132,L.divider)
+        terrain(r,L.viewport,function()
+            Table.field(r,enemy,L.fieldX,L.enemyY,L.fieldW,L.rowH,true)
+            Table.field(r,human,L.fieldX,L.humanY,L.fieldW,L.rowH,false)
+            love.graphics.setColor(C.line);love.graphics.line(L.fieldX,L.divider,B.x+B.w-132,L.divider)
+        end)
         local zoneW=L.zoneW;local zoneH=zoneW*1.4+34
         local enemyZone=math.max(330,L.enemyY+5);local ownZone=math.max(enemyZone+zoneH+15,L.humanY+10)
         local enemyLibrary=250;local humanLibrary=math.max(enemyLibrary+zoneH+14,L.humanY-10)

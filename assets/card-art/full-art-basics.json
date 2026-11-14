@@ -1,0 +1,4419 @@
+{
+  "source": "all-cards-20261114-scryfall-default.jsonl",
+  "provenance": "Exact full_art:true, English basic-land printing metadata from supplied Scryfall snapshot; no image files included.",
+  "lands": {
+    "Plains": [
+      {
+        "printingId": "b741bbf0-40b3-4ee7-9844-cecc64cb0840",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6b2fba64-b85f-42bc-991e-4bb6201b78fb",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5b5385bf-54b3-4885-84c9-a383a4b95a5b",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "30cf6c68-74f7-4dae-b472-769f703be625",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2026-11-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "796b72af-5078-427d-b566-9bccad17090f",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "57999b70-74c6-415a-aef8-3afc546e7557",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "48964496-cbbb-4646-a257-153497bbc83d",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "20d35e6b-ee5a-47cd-8e65-175a9df607a7",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2026-09-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ea2b50fa-aaf9-4f82-977a-b773d4ef4c31",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "9e47a158-3d98-4ba6-9ffa-e8d1581ba604",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "70b9088a-8657-488d-afb5-499a880bc650",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f82548c7-24ed-4529-8b57-7407dc0b8c8b",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c5b472d5-da70-4fd9-a68c-10e17797ad0d",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a3ae6956-7f2d-4569-a9f8-3972b5ec5e56",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8e07d3e6-c602-446f-a453-f54f13bfc55a",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "46c75f8e-6590-4338-abbd-a37e08dbd58c",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3550f914-cacb-4849-af06-1a7b25c2c95f",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "24dc369c-020a-4115-a4bb-d60a44de64e3",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "15dd9a36-55df-4942-a7eb-1c49a7999e68",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "128226f4-a733-4f0a-ab2b-7789cfa8b443",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e2289fd7-19bb-4034-a6dd-267c4914975b",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2026-08-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "dabb5c08-3529-448f-be7f-179d71682d9f",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "be30f027-ffdd-4d81-bed2-4adb6b4b803f",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "69a24fc3-90f9-4f2e-91d9-1aaca888e432",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "427edc1d-0c8c-4a63-9c86-e38afbe7d35f",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "64903853-2a91-47ce-9001-9b73dbdf4a81",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "pana",
+        "releasedAt": "2026-06-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6089330b-dc26-4c35-ba58-522d5bfb963a",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2026-04-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a845de50-4af0-4f4a-9c2a-db587973571c",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sos",
+        "releasedAt": "2026-04-24",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ec9ecf19-9f9d-4642-ac70-ddc08fad7e17",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b0e22017-301e-4c02-b496-c648ef97d919",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5c2812cb-4fce-4ec0-a2d5-88ef4e34d5ef",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1b405611-27d4-435a-8e8e-6d528626fd27",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6624e111-8c1e-4a39-812e-3ca2dd9f0dc7",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "pl26",
+        "releasedAt": "2026-02-17",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c260e1fd-8de2-41f1-a228-5476dbc56b17",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2026-02-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d8fdfa7d-fd11-4c11-8743-a21538474314",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "ecl",
+        "releasedAt": "2026-01-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6242dbef-8412-4ebd-9486-42cec1dc6794",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "ecl",
+        "releasedAt": "2026-01-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a8d4a0cf-9bbc-43da-a88c-47cb43fe13af",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "fic",
+        "releasedAt": "2025-12-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d812b6f3-83f0-44c9-8583-eb97fd8fade8",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "tla",
+        "releasedAt": "2025-11-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8a880169-41ca-4507-83fd-306a489d31ce",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "tla",
+        "releasedAt": "2025-11-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1164f7ec-7b2f-4cc9-90bb-7eaaa331b4cd",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "spm",
+        "releasedAt": "2025-09-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b98f9405-b8bb-4f50-8ace-0969abc86308",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2025-09-25",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "021f3a8e-5ce2-4edf-827d-b748d146e6f3",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2025-09-22",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "926aad15-87a8-4510-b327-d1648f89c497",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "eoe",
+        "releasedAt": "2025-08-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "089ae01b-e042-4255-b0ee-17d8f416a8d9",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "eoe",
+        "releasedAt": "2025-08-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f8dca86c-4dd3-4016-bab1-dd259b68b66c",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2025-07-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ee86ac2f-f398-4422-8721-8ac859fbf5bc",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e623b058-76d2-476b-9ee6-82807f7992c3",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "dec72b07-8f41-4d42-a455-794bf106302c",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "9dd2d666-7c6b-48ce-93dc-c004ebdd1fe9",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1299d0cf-76d1-4111-939c-5e1b43347a83",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2025-04-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3e8c67e5-587a-43b2-af47-bbad1f8b52e9",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "tdm",
+        "releasedAt": "2025-04-11",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0d0f1dd6-9564-4adc-af7d-f83252e8581a",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "tdm",
+        "releasedAt": "2025-04-11",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "471577f8-dc62-4f10-8adf-1e566ffc75fa",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2025-03-24",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5dd76e71-df9b-4fd2-b534-d3f724a56a91",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "4e196d67-1923-459d-98cf-646337914d3b",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2d2da8b9-797f-46e8-a15d-a86c7c56dc84",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e7667207-283c-4318-b918-caa6368bb6e3",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2025-01-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6a5c5dcc-8e06-43ae-b765-f45957291eb9",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "prm",
+        "releasedAt": "2024-11-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7a0f9892-89cd-46ff-bc87-114e175cb575",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "fdn",
+        "releasedAt": "2024-11-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6e6f19b3-4c76-4078-8ed2-b2832a33d066",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "fdn",
+        "releasedAt": "2024-11-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e67ce864-bf29-42f1-81ca-a98022892eec",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "dsk",
+        "releasedAt": "2024-09-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "afc24e1d-2fb0-46eb-926b-7345741d443e",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "slp",
+        "releasedAt": "2024-08-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ab53b300-38b2-436c-834c-b0162dd3b757",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "4f04188d-9a76-495d-b3a7-ee44810cf671",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3663ff0c-d02f-49ac-bb88-6f0dbd684337",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "11a94c04-b6d3-4118-b252-5146eedae4e8",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f5bccd95-0703-4755-8f31-bd8ab615bd04",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2024-07-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "dd81973f-c7a8-4855-affe-6a65b7f88406",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2024-07-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "66ad5a57-7296-43cb-b477-826e65d37222",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "acr",
+        "releasedAt": "2024-07-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "4578c984-afb6-4532-b5be-093ed4ecb8b9",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "acr",
+        "releasedAt": "2024-07-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e81ecd4f-4cde-4d8f-a9b7-d7c6098be981",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "mh3",
+        "releasedAt": "2024-06-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "cfe51d97-66f6-4ac3-b926-01ab7e4c5686",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "otj",
+        "releasedAt": "2024-04-19",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c3f33598-1344-4365-9067-17a7379de894",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ad6be912-4d77-45d2-b653-7fbbee6a881a",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "783eeb62-ab10-437d-a6cd-c3f99401b818",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "07c15c48-8425-48f5-80f7-c8f74ad773e1",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d5175a22-82f0-41d6-9d04-d524ace5c899",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "pss4",
+        "releasedAt": "2024-02-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "598f857d-ee17-4478-bb39-cc3ab77ab8d8",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "mkm",
+        "releasedAt": "2024-02-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f8b86eac-3cd5-48ef-9fda-b4beff540c94",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2024-01-22",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b5453630-bfff-4403-a9a9-49f1534e1d42",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "lci",
+        "releasedAt": "2023-11-17",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c05ce2e3-44e9-441b-9467-46a3c6642184",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "ltr",
+        "releasedAt": "2023-11-03",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "4d48ef1f-e000-452b-aae8-c3257f149c7d",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "ltr",
+        "releasedAt": "2023-11-03",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "cefbe595-93a9-4a5d-b5a5-4f517cec7bdd",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2023-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7432b894-e7a9-4de7-9470-846e65cd4d0c",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2023-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d7147b73-a7fa-4ecf-b9a1-a3f4851a5bef",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2023-09-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c9cd4d57-8c51-4fcf-8a9f-5d6a61c33e3d",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "woe",
+        "releasedAt": "2023-09-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8538a97f-302d-468a-8a6c-50c800d614e5",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "ltr",
+        "releasedAt": "2023-06-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "4ff9fbf5-de6f-4ef9-a6ab-56da4b341b77",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "ltr",
+        "releasedAt": "2023-06-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ee7f525c-d777-4adf-8920-8adfc73bbc55",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "mom",
+        "releasedAt": "2023-04-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8a790328-70b3-477d-bf02-8718870367ae",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "mom",
+        "releasedAt": "2023-04-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "50958c6e-9555-42ad-9bb3-2da9faa5cb52",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "one",
+        "releasedAt": "2023-02-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f087c400-0ba2-4635-a928-dfbb01f550f8",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "p23",
+        "releasedAt": "2023-01-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "912e30e7-9b8b-4c27-af3a-ffdcfe8b6feb",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2022-12-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "026777d1-e3a7-45a3-8967-527c0b4236e2",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "sld",
+        "releasedAt": "2022-12-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "80b6636d-a342-4d49-9d1a-ab15b3d837c5",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "bro",
+        "releasedAt": "2022-11-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7e134268-9ce9-4192-b548-90bedbfe654e",
+        "oracleId": "bc71ebf6-2056-41f7-be35-b2e5c34afa99",
+        "name": "Plains",
+        "set": "bro",
+        "releasedAt": "2022-11-18",
+        "fullArt": true,
+        "face": 0
+      }
+    ],
+    "Island": [
+      {
+        "printingId": "ee2e4482-afad-41ae-9e1a-120e805c4563",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a0a6038e-f812-415d-b54a-0229d338e969",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1c5b534a-128f-4235-8f69-646a55ae4d67",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "fed27bb0-3c64-472b-b9d8-c2901a99dc8f",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2026-11-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "bc4cd881-9c34-4cf9-8afe-050e803f34a6",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b256a981-ba4b-43b9-83a3-f31a105a2c26",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6ff3f00e-4ec2-41ef-bd19-fa830480245d",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7a191d35-1d61-404c-b518-6c4188e8afce",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2026-09-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f91a0d5c-ab04-4df6-bba9-b8705b7e4774",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "667f769e-3330-4ffd-a909-23a35d9dff7f",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "134b18c1-b1b3-46e2-bd03-76a864dd732d",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "739aaaac-c424-4ea7-a084-62a6fc0438b0",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "937b3d7d-decb-4e17-998a-6def3f2c97a2",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8c1467b1-ff2c-4f73-91ba-bc2b07afc2c3",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "87a0e243-ebb8-4237-886f-632aa72e1c73",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "35ecaa17-6528-4d73-b282-288b4939b96f",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b2fba3ad-4c61-484b-a788-8468dcdb7345",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "pana",
+        "releasedAt": "2026-06-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "212e84a3-e028-42a6-a639-f42b64ab7015",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2026-04-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "937250fe-bcad-4ff8-9406-286a69db7e0a",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sos",
+        "releasedAt": "2026-04-24",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "be2319a6-d089-4d13-8a7b-3552e654cdc5",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "affd8e02-5bae-447a-8621-d8fcfeff7135",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "aedefd13-4a00-4b8c-b955-ced6e73b46fe",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "57d9b053-ed45-41f3-a0ab-0a08c41f587a",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ec2bacc7-22b2-4f71-b7d7-bb4bb46d6eda",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2026-02-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d6a5ba11-3156-4a0c-958d-5756e18b767b",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "ecl",
+        "releasedAt": "2026-01-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "12ebd9c8-6587-456e-aba9-7aad1c2a09ea",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "ecl",
+        "releasedAt": "2026-01-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "95ef40f4-7d88-4fb6-bfdd-8d07c96e4ff8",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "fic",
+        "releasedAt": "2025-12-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "9a15b06c-8a5c-4e19-887e-e7daf6f653b9",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2025-12-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "930f3d56-d159-4a9d-a2c3-672feb10adce",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2025-12-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5af6a3cb-69da-4f7a-9b40-533bc86acb1d",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2025-12-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "123368da-1d72-45e1-bd07-4b3a506012d1",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2025-12-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "dd5b22ec-847a-46bd-828e-be6059b4faec",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "tla",
+        "releasedAt": "2025-11-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d894c61a-4062-442e-8ead-5197c3bffd00",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "tla",
+        "releasedAt": "2025-11-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d59cb0b5-fd4f-4dde-a69f-7ca6aa12b89f",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "spm",
+        "releasedAt": "2025-09-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "46d76200-cd39-4abd-9e7c-546bd58de5ae",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2025-09-25",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2f3edb9a-de7c-445a-a32b-25bd9fd97c91",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2025-09-22",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "81368899-5fef-4f10-80ea-b282eca0f42f",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "eoe",
+        "releasedAt": "2025-08-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "76313c69-8ec7-49e3-a34e-ade26097284c",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "eoe",
+        "releasedAt": "2025-08-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c0a03261-6766-47e6-ba81-c6c58618939d",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2025-07-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "eeecf096-87dd-4dcb-953f-700445bf3f3a",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b92ec9f6-a56d-40c6-aee2-7d5e1524c985",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "46255a65-b735-4888-85db-3ab2ab3d903c",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "347e00db-abcf-4053-aa27-4a5b42e1da55",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "80784e7c-2939-4233-9953-87370f85a3ae",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2025-04-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b300be80-6618-4284-b5c3-95c1ab373e6f",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "tdm",
+        "releasedAt": "2025-04-11",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "4208e66c-8c98-4c48-ab07-8523c0b26ca4",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "tdm",
+        "releasedAt": "2025-04-11",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e0bf27bd-ebd8-40bf-9e8a-8ccde26bd1ec",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2025-03-24",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ef2f3e0d-43e5-4d62-8a93-821ec723d522",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "slp",
+        "releasedAt": "2025-02-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f53ed206-8ec4-46a6-8603-c819682e1433",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d13bb767-1123-48d2-960f-b90b6db3f6ed",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "9b33841e-7006-41d4-98b0-313ab151c9ec",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "73014252-76c1-4554-bd1a-c01ec5342dde",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2025-01-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e8732213-62b1-428d-bcb5-33c15b5e2120",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "prm",
+        "releasedAt": "2024-11-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "886eae6e-ced2-4d94-96fa-9bb5385b06f4",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "fdn",
+        "releasedAt": "2024-11-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6f534ddc-f610-45cd-84dc-bb6df6c5a84f",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "fdn",
+        "releasedAt": "2024-11-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "40e3bf00-84cc-498c-b214-1052b4904d92",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "dsk",
+        "releasedAt": "2024-09-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f7b92adb-a384-4e03-8ba7-1e41b9fb2516",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "408eb23f-13fa-4f98-b316-18e3057f9136",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2a9db98e-9f1d-4139-95c5-49f9d17a2107",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "106a5332-0104-4ec9-9e1f-806381ae4cad",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d3b7f1bb-b47d-4096-b17a-db0587f566c6",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2024-07-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "21d03913-c905-439c-a603-7d7fae6b9cd9",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2024-07-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a76f785d-1972-4bd6-8a43-848d51068712",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "acr",
+        "releasedAt": "2024-07-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a22426c4-914a-4e0b-a28a-b8573b63e320",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "acr",
+        "releasedAt": "2024-07-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1cb1ac28-ee04-4892-97ea-2cfdebbafcad",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "mh3",
+        "releasedAt": "2024-06-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a624d656-207d-4e73-b615-59e7cf64ad64",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "otj",
+        "releasedAt": "2024-04-19",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a5b0a88d-7049-4206-8085-4a68ab0bfd81",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6317711a-83fc-4f6e-87d2-a147b34275ec",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0480b669-e72b-4b21-b0f3-09d78abe421c",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "040ed422-663a-4b6c-bdcd-09092f1c9004",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5dbd2888-56f7-4fe4-9eb2-1f125b581dde",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "pss4",
+        "releasedAt": "2024-02-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "fe5f01e9-f85f-41e8-9527-88f76e7bfc02",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "mkm",
+        "releasedAt": "2024-02-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "338e5b63-1fee-4a7c-af9b-483d383f79b7",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "lci",
+        "releasedAt": "2023-11-17",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "aa03a3b5-cdc3-40cc-bd45-69ad65809d2f",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "ltr",
+        "releasedAt": "2023-11-03",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7abc7b3d-c0cb-438f-b9a9-a1f785cb1c9b",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "ltr",
+        "releasedAt": "2023-11-03",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b3a5eda4-6339-4303-97ef-c5a467585949",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2023-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "839e97b5-c04d-4088-af4e-fa64f4575e51",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2023-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "cca2b9b7-9c12-488d-8f8b-540249d0d350",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2023-09-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "bd4b4da4-83f6-4280-880b-b6033308f2a2",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "woe",
+        "releasedAt": "2023-09-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "eba0c7c5-ed63-41a5-93e1-a979a6f983b9",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "ltr",
+        "releasedAt": "2023-06-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8fee8302-39ca-43c3-b139-62e591559306",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "ltr",
+        "releasedAt": "2023-06-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "560c7de9-0046-4a76-a41a-fa1c3ef92f04",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "mom",
+        "releasedAt": "2023-04-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2039d727-3bb6-4a76-89ca-159ecf10cad8",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "mom",
+        "releasedAt": "2023-04-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5c6322d4-52bf-471a-a5b2-8329ef4be39a",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "one",
+        "releasedAt": "2023-02-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0d0d544b-82b2-4b51-8410-4c5cb126d3f3",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "p23",
+        "releasedAt": "2023-01-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d0a2259b-9ee8-42d7-92c0-d9421dd196e5",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2022-12-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "96cb4d9d-4f2b-4f60-b48f-749747aa7c15",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2022-12-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "fe9d36d3-9373-407c-91fd-975d8ee9e4fe",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "bro",
+        "releasedAt": "2022-11-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d20af588-2ce3-4e5a-9ab3-949401ead071",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "bro",
+        "releasedAt": "2022-11-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3352b213-4ebc-4b4c-ae75-f256fbb33d95",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2022-10-31",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f670e5e4-721b-422a-b10e-09bb742cbc4b",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "38e083ce-0f15-4ff0-8af1-747565f2d0d8",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1d018af9-dd14-46fa-8fd5-226defc9698f",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "15303b22-ddf0-488d-b07e-a118f35ef00f",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e67477a4-6878-4356-8037-807f41590ad1",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "dmu",
+        "releasedAt": "2022-09-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f7c81707-adf0-48fd-8720-25db4d21b0b2",
+        "oracleId": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
+        "name": "Island",
+        "set": "sld",
+        "releasedAt": "2022-07-07",
+        "fullArt": true,
+        "face": 0
+      }
+    ],
+    "Swamp": [
+      {
+        "printingId": "e046c0ef-0af3-4f48-8329-7d659e7d1a89",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b4e1965a-dbab-4edb-ada9-43898c57c5fe",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a75fe304-8764-4868-8ee8-d5fb094386c0",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a3d6f54d-c44f-410d-8300-2a49122aa753",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2026-11-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f080e0af-cd86-488b-968e-e69b0fa0fe93",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e8418418-10bb-48e1-83ed-0081390384b4",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "140ba675-3922-48cf-b6ec-8639267dcab8",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "fdfb7347-04cd-437f-955f-aab99e32b679",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2026-09-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d9ffaff7-6310-43ee-8cb0-dc4287d3c93d",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d29f58da-015f-48eb-a8e7-4ae0e49eaf78",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "305b78db-47ce-47d7-9749-3619b81f3269",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c5f590a3-9993-4ac4-a93c-1beb44eda17b",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "dda87be6-317e-4227-a96d-7742ac054d2e",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "69eee76e-5714-4503-8170-3f551410abec",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "06b5576e-968a-41b6-bc5c-a0ed6521d419",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "02e71e69-ff6c-4821-81d3-e30931eb7bfe",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "671a7144-2b3b-4641-9f1d-833f95e427b9",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "pana",
+        "releasedAt": "2026-06-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e9ca6518-aa90-4614-86aa-b972f60cce49",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2026-04-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1797d5c7-d3fa-4184-85ae-46db14ddf523",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sos",
+        "releasedAt": "2026-04-24",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "fcdfd30f-91f0-493c-92ac-b2e64eb08d89",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5f1ecc8a-4f83-46ce-80cc-acdff31d9ece",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "41c7688d-8155-45fd-83ba-ff9be4d414a3",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "20f26dde-d1a3-4d0f-9ed9-cfcd9e4ce01e",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "89b84af6-8fa6-4224-9f51-0edf48358dcd",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2026-02-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "35fe42f9-dd55-4ca4-af0a-59ecdff0dba8",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "ecl",
+        "releasedAt": "2026-01-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0cf904da-496c-4d88-a62b-c736ba895078",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "ecl",
+        "releasedAt": "2026-01-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6c0ea7e6-0659-4944-a997-f46e00340542",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "fic",
+        "releasedAt": "2025-12-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "874f0f27-81a4-4853-aaa0-2c15e07c177e",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "tla",
+        "releasedAt": "2025-11-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5c818f03-0e20-4ef4-bac7-11b2b7f41b5c",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "tla",
+        "releasedAt": "2025-11-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5cb03b18-d74c-4c89-9539-3549d2e8ff5f",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "spm",
+        "releasedAt": "2025-09-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3dd02eca-557a-4ed8-af50-994d16dfc7f3",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2025-09-25",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "eb10bac7-f839-4a28-9a85-b7e8d98ca010",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2025-09-22",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b938ac10-bd0f-4ce3-a743-958d5beadf58",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "eoe",
+        "releasedAt": "2025-08-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3e724e54-a622-4c77-8183-5a397a7c14a9",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "eoe",
+        "releasedAt": "2025-08-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5b643680-4e28-4ae2-b4d6-609d2150a171",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2025-07-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7847ca54-c608-452a-a19e-3d08b8d8b8f3",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "slp",
+        "releasedAt": "2025-06-20",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f66094ef-059b-4511-aa6e-835906736de4",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a7f56d20-16dc-4b7f-98bf-124817a83bae",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1176ebbf-4130-4e4e-ad49-65101a7357b4",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "08ec1e4f-e284-4216-a022-bd94c4dae02b",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b8e58e37-6393-4e51-b129-849711e15335",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2025-04-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ef235170-8276-4ef0-bdfd-ba68d5b218ec",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "tdm",
+        "releasedAt": "2025-04-11",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "57da24a0-89a7-4756-b4ca-4dea132e8f67",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "tdm",
+        "releasedAt": "2025-04-11",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "58c53fd4-032f-47a9-9f1f-4f6d3c907bd2",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2025-03-24",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f4d198b3-2ff5-484a-905f-c272de7c139d",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e969e168-e74c-4608-9fa0-a5660bf7fa02",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ba042d60-b1e8-44ad-9103-f40588a0b29c",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e35962e5-00ed-4a2c-a6e1-67373615178a",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2025-01-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c411f718-0676-480a-ab7e-0926e5138383",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "prm",
+        "releasedAt": "2024-11-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "fda1dbfa-a57b-4aa8-9993-c8f97aec28bb",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "fdn",
+        "releasedAt": "2024-11-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6f23a73a-522b-40cf-a14b-ffdf47a24c01",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "fdn",
+        "releasedAt": "2024-11-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7442c1c7-1c10-4387-92e6-4bdea263064f",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "dsk",
+        "releasedAt": "2024-09-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "faa54bef-c90e-4e9b-b94b-942ea829e0d2",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "dcdbc78a-7854-4a66-911f-a40b33e25f39",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "4650ebaf-8e9f-431c-998d-e0f426b24d41",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0223cf7f-4c6e-487f-babb-a740a15e1f0c",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "4187a894-1a26-43ec-8e38-5422ae7e6b9b",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2024-07-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0c70db5a-3d7f-4534-9e5a-01d510b8d62a",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2024-07-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c163a697-01ee-4a55-814f-b0ba79be3a7f",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "acr",
+        "releasedAt": "2024-07-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "07a6df7a-a080-4aef-9a76-5b08bbc4e762",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "acr",
+        "releasedAt": "2024-07-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c8e3909e-e00a-4855-a0be-b1c538f89cb8",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "mh3",
+        "releasedAt": "2024-06-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3b383b16-8128-4d9e-a0d0-9b8ccc9ad6df",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "otj",
+        "releasedAt": "2024-04-19",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a37f8bb9-1d63-4f28-b15d-06f423785599",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "74c16759-117f-4f17-baea-88b18d391c38",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "237204ad-ab8a-496f-a093-48d00417350b",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "09af769d-a051-40d4-b203-7ec818c367ca",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "31c98e87-f86d-4daa-b400-65f72cbbb460",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "pss4",
+        "releasedAt": "2024-02-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "53d0a415-26b8-4ba2-9503-b4ee2b93617c",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "mkm",
+        "releasedAt": "2024-02-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a825ac86-d642-42fd-b6aa-94aa804907d9",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "lci",
+        "releasedAt": "2023-11-17",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e59eff2f-2f15-4f70-90e5-759de12caf55",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "ltr",
+        "releasedAt": "2023-11-03",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d56b5831-e39a-4898-be06-b84f62d38456",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "ltr",
+        "releasedAt": "2023-11-03",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "db3c0baf-9b5c-44ff-86eb-ca0f24ab0fe1",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2023-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a22f49c5-1dcd-453c-b169-0b2519c44d0c",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2023-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "387ec72f-dd6b-4769-be3a-981d580715be",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2023-09-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ee68f2cb-851b-4196-ac58-844d72628e6a",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "woe",
+        "releasedAt": "2023-09-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d412d727-4fe8-4c21-a2cb-609395935dd8",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "ltr",
+        "releasedAt": "2023-06-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "9b5f68bc-1842-4efd-b85a-d897cfd63bde",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "ltr",
+        "releasedAt": "2023-06-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e19e24a8-5a4f-4a2d-b8dd-eb92aac7be78",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "mom",
+        "releasedAt": "2023-04-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "013612b4-fed9-4112-8018-9267ae608fd7",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "mom",
+        "releasedAt": "2023-04-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "736a0484-e091-4178-92c5-c517b0e92f3d",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "one",
+        "releasedAt": "2023-02-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "540ff80a-71a3-4a06-ac0f-0408f4acec13",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "p23",
+        "releasedAt": "2023-01-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f49d825e-0a51-43e8-9b5a-43a376b58d6f",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2022-12-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f32a6e87-a9fb-4bd8-a09d-b160aa302a2b",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2022-12-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "cabe866d-01c3-4ec5-9d41-70305208c2b1",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "bro",
+        "releasedAt": "2022-11-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7232adef-c8eb-461f-b563-cb54cdeb22d5",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "bro",
+        "releasedAt": "2022-11-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "4b0c331d-56c6-47d9-bd52-30a92b6415b3",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2022-11-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f3c850b9-d014-4cd1-8ffd-361ed4fe1e6d",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "58c4bbf1-2e52-4b43-ad35-9272b48d36a8",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "46a6375e-9477-4871-8a15-02439f3f6f34",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2d49fc14-e848-4c44-a03c-6dfb83efed80",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f1b8c9a6-62eb-436e-9277-e2b8075d482d",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "dmu",
+        "releasedAt": "2022-09-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0520813a-fe20-4bde-8dc9-9a7add51c722",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2022-07-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b4569823-af23-4eea-acc9-2a2c62bce3b0",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "snc",
+        "releasedAt": "2022-04-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5f917d8d-7037-4f11-91f6-1ef96b3541bb",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "snc",
+        "releasedAt": "2022-04-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "085b4641-62fb-4820-aded-ccc9403d319e",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2022-02-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6079aea9-145a-445d-a00f-1c0f4018a529",
+        "oracleId": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
+        "name": "Swamp",
+        "set": "sld",
+        "releasedAt": "2022-01-04",
+        "fullArt": true,
+        "face": 0
+      }
+    ],
+    "Mountain": [
+      {
+        "printingId": "95409599-e700-4e16-bea2-bc7b607f9cc4",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "87908c55-4ac4-4b57-a8ee-a28640a18f0f",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "81564344-1c9b-4fac-8a7d-682f57331d61",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7a0d76ab-35f4-42f1-8207-b7cf6c4c403f",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2026-11-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ec2ceca8-2d90-4d8f-ac47-cd8134e8d859",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ddc91faf-dd36-4c26-b3b4-0a6a624b5663",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a49ae3b7-4b1f-41b6-8c05-cbdc44f070cb",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "935543cb-87f4-4568-8610-d7f776975666",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2026-09-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "99cb4ea9-fbf1-4b10-a8d7-e4fb9a4ee942",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "63dbab59-20d2-4f96-8e98-e4e4cf7c7802",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3caf869c-7f93-48d2-8e97-b56c3398ee11",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "51acfb01-4b0b-48fc-9704-a9b4a1e43a23",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "bc4409dc-aadf-4c0e-a854-190ccc971ea5",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "9c29ba11-7438-4fd7-98b9-961be882122d",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5388993c-685b-4d9a-91d3-ea678ff11b71",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "22cc3a0c-ab10-490d-b309-df87df551328",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "bb6bc9eb-c207-44bd-960a-cbdd13634193",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "pana",
+        "releasedAt": "2026-06-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "eef2a9c2-2079-4a34-80f0-f0ca7f882498",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2026-05-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "eb5257a6-5a4d-4b7d-ad4f-3ff0b7c74dfd",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2026-05-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "68c35440-ddb6-4b43-baba-889ff3ce0c0d",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2026-05-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2a7b2779-92dd-455d-920f-684276608244",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2026-04-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6af1f1db-eb91-4297-83f6-9318b87fd220",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sos",
+        "releasedAt": "2026-04-24",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "eb359844-c9e7-4ab2-ac5f-d426c4fe6fc7",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b7bf8555-019d-4a08-8004-b31fe7bf494d",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6243f79f-b0e3-4fba-b899-7535e1a277e2",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "50e349f8-9860-4197-a40f-610659057365",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "63a9637b-61de-4d77-8c35-b12a075d7faa",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2026-02-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "9b6fe3e2-a2cf-4209-ac9b-e04d02599360",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "ecl",
+        "releasedAt": "2026-01-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "96e14936-5614-46ba-874c-c1357243fe02",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "ecl",
+        "releasedAt": "2026-01-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "9a58d03b-1b47-4d3c-9d8a-18f20c8f978b",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "fic",
+        "releasedAt": "2025-12-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ea96ecc4-72f3-46a4-8900-6a7c5a83d4df",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "tla",
+        "releasedAt": "2025-11-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "488ca216-de75-4acc-9c67-fd37070d7e92",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "tla",
+        "releasedAt": "2025-11-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b044630d-50e7-431b-8e91-bd53e967f594",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "spm",
+        "releasedAt": "2025-09-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "9f883975-3505-4b5a-8dd4-8b8df9da658f",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "slp",
+        "releasedAt": "2025-09-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "66f1953d-e12c-4192-a4f1-930eb489f681",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2025-09-25",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "aac1b0e2-d164-4c98-ab9b-57fbbc95ea0e",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2025-09-22",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6b092822-f34f-4384-9d0a-23d863d27231",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "eoe",
+        "releasedAt": "2025-08-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3204f401-1bcb-4d97-b15d-113a5d3c3e9f",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "eoe",
+        "releasedAt": "2025-08-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5256e591-7510-41fd-8564-330562c00adb",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2025-07-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ea1735b9-fd10-4c9c-b9d3-046d8c22b852",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d061b9a8-e95d-48ec-a1c9-337433b62dfc",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a18ef64b-a9de-4548-b4d5-168758442db7",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0cef98b7-d54a-456e-8240-1c5af3a72a04",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "fdf1fea6-3e04-474c-9cda-ff49fee255f7",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2025-04-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "fe0865ba-47c0-40bc-b0c6-e1ea5ae08a98",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "tdm",
+        "releasedAt": "2025-04-11",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a4db1b7a-93f2-40a5-b649-80a099ddeb62",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "tdm",
+        "releasedAt": "2025-04-11",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6d65590b-f390-4faa-80e8-43bd87a70ff7",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2025-03-24",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c7533cbb-ab73-4a0c-9ea0-baa97c4665b8",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5e4952a8-4e1f-4a74-8a06-c9d633b25dcd",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "50748a4c-43a0-4274-9a84-046d76027166",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2373014c-21d1-43d5-b774-352cdc2a840e",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2025-01-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e0c1a97b-f64c-40f0-ab17-fbb3a2ef8982",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "prm",
+        "releasedAt": "2024-11-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3a3afd00-da06-4a9f-8cd1-7133728e0fdd",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "fdn",
+        "releasedAt": "2024-11-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "042b04b4-f7f4-4c1a-86ad-b50d788aa99e",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "fdn",
+        "releasedAt": "2024-11-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8c8841b2-9b4e-4f65-8e30-1e9423cb8fbc",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "dsk",
+        "releasedAt": "2024-09-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c1bba8fb-d763-4efa-8db1-e5e81994b5f9",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8a38bea4-2d1b-442b-aad5-ab1a0ae67aac",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0b384d24-8771-4860-8fc1-1b74217f1c4c",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "02244055-cbeb-4074-9482-42ec20721312",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ccf928c4-c8ee-479c-88df-d6bb35e0778a",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2024-07-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "603114eb-c0eb-4734-87e6-7fc94beda3c7",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2024-07-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d0a55d99-d668-4621-bb14-f7df210adbe4",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "acr",
+        "releasedAt": "2024-07-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1a534ae1-4e6f-43ae-a8ad-89e306f11f21",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "acr",
+        "releasedAt": "2024-07-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e9744bb5-9ad1-4287-9929-1146377d975b",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "mh3",
+        "releasedAt": "2024-06-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0a7dbfd2-cda7-4fc9-9677-e442fb5f5f6f",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "otj",
+        "releasedAt": "2024-04-19",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "85f5bbab-7bf0-48d4-8138-d64f84f4d769",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "84298c7a-8bae-4e62-bd0a-bcce2156fdf1",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3d5691d3-751a-41dd-b2a3-c766c8973bfe",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3d0e93c3-48e3-4ae5-a33f-4ef83f67ee37",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f6d36bf6-a1fb-4a2b-a1ee-18cc7e1a6e1a",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "pss4",
+        "releasedAt": "2024-02-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5383b66e-e559-47d2-9967-9c2d5f898653",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "mkm",
+        "releasedAt": "2024-02-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5eeddb97-3b50-4ba3-b48d-d1807e644b72",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "pl24",
+        "releasedAt": "2024-02-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f76d6ecc-a774-44d5-8c16-e2ba4bf7d283",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2024-01-22",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7cb82fdb-5090-45c0-ae67-4846667c8625",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "lci",
+        "releasedAt": "2023-11-17",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6410d20e-408a-42c6-9884-ea9e22e2ee7c",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "ltr",
+        "releasedAt": "2023-11-03",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "28cde170-c7af-4ee1-85f4-8a9289c5a4d3",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "ltr",
+        "releasedAt": "2023-11-03",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d3740beb-7fa5-4b83-be7d-039750b126c5",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2023-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "01550676-3659-47d7-9a47-67c31438ec09",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2023-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "70099566-ba66-4d66-aafa-8232aa664a6d",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2023-09-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8822db23-34dc-452a-92bc-a3ceee4db375",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "woe",
+        "releasedAt": "2023-09-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b1902b98-7579-4b7a-8cb8-9bd0e0da5f67",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "ltr",
+        "releasedAt": "2023-06-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "af1b83d9-078b-44dc-a118-4659201f4854",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "ltr",
+        "releasedAt": "2023-06-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a6a57c6a-3603-466c-8a81-a9eb8de92aec",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "mom",
+        "releasedAt": "2023-04-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7e19c7e1-1b4b-4c7e-b011-eff8ed7de0fd",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "mom",
+        "releasedAt": "2023-04-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6d9e44c1-7b51-47cb-b564-608deb46cc44",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "one",
+        "releasedAt": "2023-02-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6d5d112e-7018-48a1-95b8-fba6fc6b4e3b",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "p23",
+        "releasedAt": "2023-01-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "edf40698-620e-4032-b2e3-0d513a4a4250",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2022-12-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "82b5f331-3d6f-4e0f-b5a4-61040ed61d39",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2022-12-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "cd757142-45b7-40db-80f2-fe161379aa4e",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "bro",
+        "releasedAt": "2022-11-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c464b81a-3d91-4d07-bc9d-6756780417e3",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "bro",
+        "releasedAt": "2022-11-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "9e1170a5-e5bb-4b86-8718-f75eec679b4e",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7e998ce9-4853-44d1-a01a-e2d493718ceb",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3d6da8eb-31b0-48c1-9ad9-552827967f91",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "08bc7313-8b12-4ce1-9016-59b4e3c78ff1",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0aaf15b9-1bf5-424a-a994-67beaae29d36",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "dmu",
+        "releasedAt": "2022-09-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "52248fe8-0f1b-4e3d-9024-842c921b6071",
+        "oracleId": "a3fb7228-e76b-4e96-a40e-20b5fed75685",
+        "name": "Mountain",
+        "set": "sld",
+        "releasedAt": "2022-07-07",
+        "fullArt": true,
+        "face": 0
+      }
+    ],
+    "Forest": [
+      {
+        "printingId": "f026379b-f00f-4897-b03f-dd164d69b925",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c7ca6a54-f4e9-45f0-abb0-db14922cf157",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "17923ce1-56db-4f18-b6a7-fda2eca7edbd",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "trk",
+        "releasedAt": "2026-11-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "cdb37419-ee6a-4b98-bae5-70f141e46bf4",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2026-11-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a0d12fc5-c7bd-4734-9259-98fe65241f60",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "790dcf48-ab51-4b10-9933-6b7e3baf0f52",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1c2ac08e-3810-46f4-94ab-8b32986f9185",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "fra",
+        "releasedAt": "2026-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "191c278a-cfcf-45e8-a2e6-403f71157f7a",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2026-09-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "48ab999b-3ba0-4fce-9c72-6b9bc0965d0f",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "28c348e8-9f4c-4af3-b24d-b39908e6894f",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5f533364-0f91-4e49-aaeb-83c4c1f6d316",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "hob",
+        "releasedAt": "2026-08-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8dd6cfef-6eac-4fa2-b9f3-808bd5502f27",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2026-08-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e5da22bf-bc8a-4810-b273-1e33a6b37323",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7cc4d5d1-4471-43b0-877a-b3af0b8d67c6",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6b6a8792-2355-4948-9c19-68491888d73f",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "47eb96ec-a417-4dbc-82d2-6317372dda11",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "msh",
+        "releasedAt": "2026-06-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d42c760b-3451-4223-a811-4bf1da5f8d07",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "pana",
+        "releasedAt": "2026-06-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "aea42376-97f6-4313-b139-7eeaf427b22b",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "slp",
+        "releasedAt": "2026-05-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "bc9f3d1b-bb3a-4a78-9031-ed439212a48b",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2026-04-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "46196e8f-9339-4f00-b9cf-cab8f9abc80e",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sos",
+        "releasedAt": "2026-04-24",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "815261f8-daaa-4d76-86d9-d2801eb3f1f7",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "6194850b-d70a-4f3e-be3e-bfb23ce1170b",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2f60db2d-7594-43af-8554-ba54e9023306",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1d91255d-e3d1-412b-8031-994779372496",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "tmt",
+        "releasedAt": "2026-03-06",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f6e1cd0b-1f50-4a56-b015-269e3a95051d",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2026-02-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "bdbce923-c05e-4554-8c4c-5c4e6d791856",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "ecl",
+        "releasedAt": "2026-01-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b43297de-7378-474f-a85f-910fa7cbb4f4",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "ecl",
+        "releasedAt": "2026-01-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0a45560e-ce25-45a5-aa43-aa33d1964cd8",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "fic",
+        "releasedAt": "2025-12-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7ca91ba8-c08d-4239-b9f2-d6c960466456",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "tla",
+        "releasedAt": "2025-11-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "05683891-cdd4-4401-b7d5-0ef17e79c699",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "tla",
+        "releasedAt": "2025-11-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7b6c2532-be5a-4f1f-893c-36bcda2a699d",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "spm",
+        "releasedAt": "2025-09-26",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "4b535df5-f79c-4ab5-9b2f-cbbb5adad70a",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2025-09-25",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b548b48c-a004-4f17-90d6-1ef5b9769e38",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2025-09-22",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8335b9f1-e726-423b-8ba7-6151448ab3fd",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "eoe",
+        "releasedAt": "2025-08-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0d6250d3-728b-4412-8efc-911bb6f5e910",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "eoe",
+        "releasedAt": "2025-08-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "59f95235-3ca9-47d7-be6a-aebfb29fcbbd",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2025-07-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c52038c8-5bba-4d8e-845f-30af44300acc",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "be72862d-d71e-4b18-98a6-59019399f631",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3d08f6a6-316d-45d8-aabe-1760a20903ac",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2036f825-ef57-4a40-b45f-0668d9c8ec6a",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2ccc7cf2-c9ed-4505-9341-7b8dcf10590f",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2025-04-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7e33e540-2828-46ad-a441-366552843d9c",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "tdm",
+        "releasedAt": "2025-04-11",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "48811e13-5774-4da1-95ec-6ea5dc4976ad",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "tdm",
+        "releasedAt": "2025-04-11",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "32636e80-9455-43c8-b55f-dfa2d7b7465b",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2025-03-24",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "fd1b6c5c-4585-47c1-82eb-a324189f3ebd",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ed22c591-19f4-4096-a08c-5523a26b307c",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "pl25",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "777e868d-cb88-4b8e-99d1-12ff67f5eae2",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2a7aba60-d300-4c33-9e1e-846d6167dc50",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "dft",
+        "releasedAt": "2025-02-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "98548336-f0f6-47ce-8ed6-977c8c8150af",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2025-01-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3af807cd-f640-4b13-9751-f74107b34f2b",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "prm",
+        "releasedAt": "2024-11-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "bbbeb57d-5fa0-4ff7-b5e8-caafc139669b",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "fdn",
+        "releasedAt": "2024-11-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "117ab60a-b888-4585-b0c6-769d387069f7",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "fdn",
+        "releasedAt": "2024-11-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ba2a4cbb-f325-4178-80db-7090f5672414",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "dsk",
+        "releasedAt": "2024-09-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f791876a-f3fb-45b8-90a9-af846d8b8f74",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3a7a2a54-47e1-4694-b4f6-b7d659bb2b1f",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "208014f4-eed8-4856-a9d9-dbac10c4aa6a",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0000419b-0bba-4488-8f7a-6194544ce91e",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "blb",
+        "releasedAt": "2024-08-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "da462ed3-c8f5-409e-bdc8-53e36a4961dd",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2024-07-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "9cbaa22a-d679-48ef-805a-d09d6f1091aa",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2024-07-29",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "b8a081ef-a2d4-4989-8b06-721f8b2c9798",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "acr",
+        "releasedAt": "2024-07-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "650e47f3-476f-4b32-b892-c1a01335d0fe",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "acr",
+        "releasedAt": "2024-07-05",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ff4c78b4-7178-4a60-ba22-086fb18146df",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "mh3",
+        "releasedAt": "2024-06-14",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "baf8a774-65f3-431e-b084-328ff1000895",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "otj",
+        "releasedAt": "2024-04-19",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d35801ab-e484-44cb-b9ec-80723cb25bc7",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "be13351c-ca20-410c-8959-bbaa59816002",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a9305b9c-63af-49a3-97c2-0b3597555cc2",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3a1e5ef3-790d-4f45-a264-157448bab2e8",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "pip",
+        "releasedAt": "2024-03-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f9bc7454-c312-48b9-95f4-43dbf7d00162",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "pss4",
+        "releasedAt": "2024-02-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8126b842-ea58-4988-8b3f-0394cf766b91",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "mkm",
+        "releasedAt": "2024-02-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "79053ce4-62d4-416c-b001-93740521fd07",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2024-01-22",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "8c13cafb-3078-4856-a5b0-c38aace8a34a",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "lci",
+        "releasedAt": "2023-11-17",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e7059825-0844-4271-89e8-645e2f515b59",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "ltr",
+        "releasedAt": "2023-11-03",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "150d0710-9ecb-4187-a0f8-a70b330c8879",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "ltr",
+        "releasedAt": "2023-11-03",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "cadcd72e-90ca-4cfc-a181-742e35c4a8ed",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2023-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "715c6de3-5f4a-483f-9b73-ddb23207c0f4",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2023-10-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "56afe767-c967-4094-8d60-165bc7d11ab1",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2023-09-15",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "ecd6d8fb-780c-446c-a8bf-93386b22fe95",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "woe",
+        "releasedAt": "2023-09-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3efeaa30-9db9-4e68-a658-9064d6e67516",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "ltr",
+        "releasedAt": "2023-06-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "2f5b488e-d725-4ef7-90f4-71091325c0b6",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "ltr",
+        "releasedAt": "2023-06-23",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e0ce5575-2d62-43c9-9c4b-fca4aff6ae4d",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "mom",
+        "releasedAt": "2023-04-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7e6151d4-5129-4631-84a1-5cffc551c1e9",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "mom",
+        "releasedAt": "2023-04-21",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "4fce7045-4572-4e9e-8853-2a5dcfc989ac",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "one",
+        "releasedAt": "2023-02-10",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c044cd23-60bc-4b05-a8e1-cc0d69c9fa33",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "p23",
+        "releasedAt": "2023-01-01",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "3c5c5d09-6f93-44f5-894d-4c7be40bb006",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2022-12-27",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f8f694e1-f9c9-428e-a85c-d09b3474c79b",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2022-12-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1a13a86b-c4c5-4a7a-9e01-8669e9ed6557",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2022-12-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c1c2a41c-e974-4c14-8d01-d278ecdb31bc",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "bro",
+        "releasedAt": "2022-11-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "1a1b7277-0c09-42ab-aa6b-542a1e402580",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "bro",
+        "releasedAt": "2022-11-18",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "f1488e6b-f677-44c5-8ff3-6a2f9bdb28c2",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c46df0e0-648d-4dc9-a2c7-ac96125ba77c",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "977ec5e4-3b44-4359-9ab8-4e25e2a9ec86",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "5dda1113-352c-471a-a7e0-a9a3cb3f19c5",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "unf",
+        "releasedAt": "2022-10-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "e8e9959a-b422-4906-8d35-8b05c5dd6de1",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "dmu",
+        "releasedAt": "2022-09-09",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "a940a241-4efd-42f7-a670-2c4fed4755bb",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2022-07-07",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "249104ba-65fc-42d6-ad8b-d97640545d89",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "sld",
+        "releasedAt": "2022-05-03",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c726424a-3336-4e15-9055-4a26371df361",
+        "oracleId": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
+        "name": "Forest",
+        "set": "snc",
+        "releasedAt": "2022-04-29",
+        "fullArt": true,
+        "face": 0
+      }
+    ],
+    "Wastes": [
+      {
+        "printingId": "6f514fff-594e-4577-973b-adc53e5ea045",
+        "oracleId": "05d24b0c-904a-46b6-b42a-96a4d91a0dd4",
+        "name": "Wastes",
+        "set": "slz",
+        "releasedAt": "2026-09-02",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c61feafd-ef09-437c-a12c-fd7d6cb8c15a",
+        "oracleId": "05d24b0c-904a-46b6-b42a-96a4d91a0dd4",
+        "name": "Wastes",
+        "set": "fin",
+        "releasedAt": "2025-06-13",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "643d0ee1-016c-4ea8-b469-3599ae7532e6",
+        "oracleId": "05d24b0c-904a-46b6-b42a-96a4d91a0dd4",
+        "name": "Wastes",
+        "set": "plg25",
+        "releasedAt": "2025-04-11",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "837edd3f-5380-4c1c-8323-0e61dac385e5",
+        "oracleId": "05d24b0c-904a-46b6-b42a-96a4d91a0dd4",
+        "name": "Wastes",
+        "set": "sld",
+        "releasedAt": "2024-04-08",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "d9b38015-985f-4718-a6f8-fe19de225801",
+        "oracleId": "05d24b0c-904a-46b6-b42a-96a4d91a0dd4",
+        "name": "Wastes",
+        "set": "sld",
+        "releasedAt": "2022-11-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "c0040569-c4b1-46ad-8115-1fdb82ba3710",
+        "oracleId": "05d24b0c-904a-46b6-b42a-96a4d91a0dd4",
+        "name": "Wastes",
+        "set": "sld",
+        "releasedAt": "2022-11-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "0f93e8ad-8ef6-4cf1-a664-d1477f1ebae4",
+        "oracleId": "05d24b0c-904a-46b6-b42a-96a4d91a0dd4",
+        "name": "Wastes",
+        "set": "sld",
+        "releasedAt": "2022-11-28",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "7019912c-bd9b-4b96-9388-400794909aa1",
+        "oracleId": "05d24b0c-904a-46b6-b42a-96a4d91a0dd4",
+        "name": "Wastes",
+        "set": "ogw",
+        "releasedAt": "2016-01-22",
+        "fullArt": true,
+        "face": 0
+      },
+      {
+        "printingId": "69b215fe-0d97-4ca1-9490-174220fd454b",
+        "oracleId": "05d24b0c-904a-46b6-b42a-96a4d91a0dd4",
+        "name": "Wastes",
+        "set": "ogw",
+        "releasedAt": "2016-01-22",
+        "fullArt": true,
+        "face": 0
+      }
+    ]
+  }
+}

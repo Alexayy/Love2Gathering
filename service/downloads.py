@@ -142,7 +142,9 @@ class DownloadManager:
             busy=False
         except ConflictError:
             state=json.loads(encode(self.last_snapshot));generation=None;busy=True
-        state['freeBytes'] = self.disk_usage(self.storage.root).free
+        state['freeBytes'] = self.disk_usage(self.storage.cache_root).free
+        state['databaseFreeBytes'] = self.disk_usage(self.storage.root).free
+        state['cacheDirectory'] = str(self.storage.cache_root.resolve())
         state['maintenanceBusy']=busy
         state['scanValid'] = not busy and bool(state.get('scanComplete')) and state.get('artPurgeGeneration') == generation
         state['scanInvalidReason'] = ('Storage maintenance is in progress.'if busy else None if not state.get('scanComplete') or state['scanValid'] else 'Image cache was purged after this scan. Scan again before downloading.')
@@ -260,9 +262,9 @@ class DownloadManager:
         prepared = []
         with self.storage.connection(write=True) as c:
             c.execute('DELETE FROM image_download_mirrors')
-        if (self.storage.root/'image-library').is_symlink():return True
+        if (self.storage.image_library).is_symlink():return True
         for folder in ('full-cards', 'art-crops'):
-            path = self.storage.root / 'image-library' / folder
+            path = self.storage.image_library / folder
             if not path.is_dir() or path.is_symlink():
                 continue
             for entry in os.scandir(path):
@@ -371,8 +373,8 @@ class DownloadManager:
         estimated_download = round(sum(means[row[0]]*row[1] for row in network))
         sql_bytes = round(sum((v['total']-v['cached'])*means[k] for k,v in by_kind.items()))
         mirror_bytes = round(sum(v['mirrorExports']*means[k]for k,v in by_kind.items()))if state['options']['mirrors']else 0
-        page_size = c.execute('PRAGMA page_size').fetchone()[0]
-        reusable = c.execute('PRAGMA freelist_count').fetchone()[0]*page_size
+        page_size = c.execute('PRAGMA '+('images.'if self.storage.separate_cache else'')+'page_size').fetchone()[0]
+        reusable = c.execute('PRAGMA '+('images.'if self.storage.separate_cache else'')+'freelist_count').fetchone()[0]*page_size
         return {'total':total,'cached':cached,'missing':missing,'mirrorCandidates':mirrors,'byKind':by_kind,
                 'uniqueUrls':c.execute('SELECT count(DISTINCT url)FROM image_download_items WHERE job_id=?',(job_id,)).fetchone()[0],
                 'networkRequests':sum(row[1]for row in network),'estimatedDownloadBytes':estimated_download,
@@ -395,9 +397,9 @@ class DownloadManager:
             if candidate:
                 return bytes(candidate[0]),candidate[1],True
         if row['mirror']:
-            path = self.storage.root / row['mirror']
+            path = self.storage.cache_root / row['mirror']
             try:
-                if (self.storage.root/'image-library').is_symlink()or path.parent.is_symlink():return None,None,False
+                if (self.storage.image_library).is_symlink()or path.parent.is_symlink():return None,None,False
                 if path.is_symlink() or not stat.S_ISREG(path.stat().st_mode) or path.stat().st_size>_cli.MAX_IMAGE:
                     return None,None,False
                 data = path.read_bytes()
@@ -438,7 +440,7 @@ class DownloadManager:
             data, existing, needs_save = self._local(row)
             network = data is None
             if network:
-                if self.disk_usage(self.storage.root).free < RESERVE_BYTES + _cli.MAX_IMAGE*3:
+                if min(self.disk_usage(self.storage.root).free,self.disk_usage(self.storage.cache_root).free) < RESERVE_BYTES + _cli.MAX_IMAGE*3:
                     state.update(state='paused',rateBytesPerSecond=0,error='Paused to retain at least 3 GiB free. Free space and resume to continue.')
                     self._save(state)
                     return
@@ -451,11 +453,11 @@ class DownloadManager:
                 return
             mirror_path=None;mirror_write=False
             if state['options']['mirrors']:
-                mirror_path=self.storage.root/'image-library'/('art-crops'if row['kind']=='art_crop'else'full-cards')/row['cache_key']
-                if (self.storage.root/'image-library').is_symlink()or mirror_path.parent.is_symlink()or mirror_path.is_symlink():
+                mirror_path=self.storage.image_library/('art-crops'if row['kind']=='art_crop'else'full-cards')/row['cache_key']
+                if (self.storage.image_library).is_symlink()or mirror_path.parent.is_symlink()or mirror_path.is_symlink():
                     raise ValueError('Image mirror exports must remain inside the application data directory')
                 mirror_write=not mirror_path.is_file()or mirror_path.stat().st_size!=len(data)or mirror_path.read_bytes()!=data
-            if (needs_save or mirror_write)and self.disk_usage(self.storage.root).free < RESERVE_BYTES+_cli.MAX_IMAGE*3:
+            if (needs_save or mirror_write)and min(self.disk_usage(self.storage.root).free,self.disk_usage(self.storage.cache_root).free) < RESERVE_BYTES+_cli.MAX_IMAGE*3:
                 state.update(state='paused',rateBytesPerSecond=0,error='Paused to retain at least 3 GiB free. Free space and resume to continue.')
                 self._save(state)
                 return

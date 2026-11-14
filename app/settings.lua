@@ -12,7 +12,8 @@ function Settings.build(view,w,h,options)
     local tabs={'Game','Graphics','Presentation','Audio','Accessibility','Storage'}
     for i,tab in ipairs(tabs) do
         if i>1 then S.SameLine() end
-        if S.Button(tab,{W=math.min(158,(inner-(#tabs-1)*8)/#tabs),H=40,Active=view.settingsTab==tab}) then view.settingsTab=tab end
+        local tw=math.min(158,(inner-(#tabs-1)*8)/#tabs);local icon=({Game='dice',Graphics='graphics',Presentation='playmat',Audio='audio',Accessibility='inspect',Storage='save'})[tab]
+        if S.Button(tab,{W=tw,H=42,Active=view.settingsTab==tab,Image={Image=r.assets:buttonImage(icon,tab,tw,42,{font=r.fonts[16],iconSize=19})}}) then view.settingsTab=tab end
     end
     S.Separator();S.NewLine()
     local function heading(text) S.PushFont(r.assets.titleFont and r.assets:titleFont(22,s)or r.fonts[22]);S.Text(text,{Color=C.accent});S.PopFont();S.NewLine() end
@@ -24,14 +25,15 @@ function Settings.build(view,w,h,options)
     local function choice(key,label,items)
         S.Text(label,{Color=C.text});view:combo('setting-'..key,tostring(s[key]),items,math.min(330,inner),function(value) s[key]=value end);S.NewLine()
     end
-    local function slider(key,label)
+    local function slider(key,label,low,high)
         S.Text(label..'  '..math.floor((s[key] or 0)*100)..'%')
-        if S.InputNumberSlider('setting-'..key,s[key] or 0,0,1,{W=math.min(460,inner),H=29,Step=.05}) then s[key]=S.GetInputNumber() end
+        if S.InputNumberSlider('setting-'..key,s[key] or 0,low or 0,high or 1,{W=math.min(460,formWidth),H=38,Step=.01,Precision=2}) then s[key]=S.GetInputNumber() end
         S.NewLine()
     end
     local storageTab=view.settingsTab=='Storage'
     if storageTab then require('app.storage').tabs(view,formWidth)end
     S.BeginListBox(storageTab and('settings-storage-'..(m.storageSection or'cleanup'))or'settings-content',{W=inner,H=height-(storageTab and 224 or 176)})
+    S.Indent(14);S.NewLine(.4)
     if view.settingsTab=='Game' then
         heading('Rules and decisions')
         toggle('manualTriggers','Manual trigger ordering','Drag simultaneous abilities left to right. The leftmost resolves first. Otherwise XMage places them automatically.')
@@ -44,6 +46,8 @@ function Settings.build(view,w,h,options)
         choice('windowMode','Window mode',{'Windowed','Borderless','Fullscreen'})
         toggle('vsync','Vertical sync')
         choice('msaa','Antialiasing',{0,2,4,8})
+        choice('fontQuality','Text quality',{'Standard','High'})
+        S.Textf('High uses a denser Beleren glyph atlas. Menus and text retain native display resolution independently of table render scale.',{W=formWidth,Color=C.muted});S.NewLine()
         choice('renderScale','Table render scale',{.5,.75,1,1.25,1.5})
         choice('textureFilter','Texture filtering',{'linear','nearest'})
         choice('frameLimit','Frame limit (0 = unlimited)',{0,30,60,120,144})
@@ -73,6 +77,12 @@ function Settings.build(view,w,h,options)
         if m.showProfile and S.Button('Profile and playmat',{W=math.min(330,inner),H=34,Image={Image=r.assets:buttonImage('profile','Profile and playmat',math.min(330,inner),34,{font=r.fonts[16],iconSize=19})}})then m.settingsOpen=false;m:showProfile()end
         S.NewLine()
         heading('Cards and effects')
+        choice('cardBackStyle','Card back',{'Arcane','Azure','Verdant','Crimson'})
+        if r.assets.surfaces then
+            local spec=require('assets.kenney.runtime.manifest').cardBacks[s.cardBackStyle or'Arcane'];local image=spec and r.assets.surfaces:load(spec)
+            if image then S.Image('card-back-preview',{Image=image,W=70,H=95})end
+        end
+        S.NewLine();slider('boardImpactIntensity','Board impact strength')
         toggle('showCardArt','Show card artwork on the table','The builder always uses card images. Artwork that is not cached shows a placeholder; use the artwork downloader for selected cards.')
         toggle('localArtworkOnly','Use local artwork only','Load cached cards and art without contacting Scryfall or its CDN. The separate downloader fills missing images. Disable this to allow on-demand downloads.')
         toggle('animations','Card movement and drag tweens')
@@ -86,6 +96,7 @@ function Settings.build(view,w,h,options)
         slider('musicVolume','Music volume')
         toggle('sfxEnabled','Interface and game sounds')
         slider('sfxVolume','Sound effect volume')
+        if S.Button('Preview dice sound',{W=260,H=38,Image={Image=r.assets:buttonImage('dice','Preview dice sound',260,38,{font=r.fonts[16],iconSize=20})}})then r:sound('dice-roll')end;S.NewLine()
         S.Textf('Ambient loop: Dark Portents — Shrouded Future. Credits and asset metadata are in assets/ASSET_GUIDE.md.',{W=formWidth,Color=C.muted})
     elseif view.settingsTab=='Storage' then
         require('app.storage').build(view,formWidth)
@@ -93,16 +104,17 @@ function Settings.build(view,w,h,options)
         heading('Readability and motion')
         S.Textf('Beleren is used throughout the application. Missing characters use the bundled UTF-8 fallback; Magic symbols retain their own font.',{W=formWidth,Color=C.muted});S.NewLine()
         choice('cursorStyle','Pointer style',{'System','Kenney'})
+        slider('cursorScale','Pointer size',.4,1)
         choice('uiScale','Interface scale',{.85,1,1.15,1.25,1.5,1.75})
         S.Textf('Scale fits the current window so controls remain reachable. Larger display modes allow larger interface scales.',{W=formWidth,Color=C.muted});S.NewLine()
         toggle('highContrast','High contrast text and borders')
         choice('colorblindMode','Color vision palette',{'Off','Deuteranopia','Protanopia','Tritanopia'})
         toggle('reducedMotion','Reduce motion','Disables movement tweens and particles. Legal actions also have an outline, so color is not the only cue.')
     end
-    S.EndListBox();S.NewLine()
+    S.Unindent(14);S.EndListBox();S.NewLine()
     local validColors=true;for _,key in ipairs({'accentColor','opponentColor'})do local value=s[key]or'';if value~=''and not value:match('^#%x%x%x%x%x%x$')then validColors=false end end
     local buttonWidth=math.min(300,(inner-12)/2)
-    if S.Button('Apply and save',{W=buttonWidth,H=42,Disabled=not validColors}) then
+    if S.Button('Apply and save',{W=buttonWidth,H=42,Disabled=not validColors or m.storageLocationBlocked,Tooltip=m.storageLocationBlocked and'Restart or cancel the storage location change before saving preferences.'or'Apply and save'}) then
         if view.preferences then view.preferences:apply(true) end
         m:saveSettings();close()
     end;S.SameLine()

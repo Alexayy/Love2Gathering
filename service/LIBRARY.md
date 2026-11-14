@@ -4,7 +4,7 @@ These features use catalog API **5** and generated schema **7**. A future launch
 
 ## Local image identity
 
-`app.sqlite` remains authoritative. Requests first try the exact printing/face/kind BLOB, then the same printing's `large` scan for a missing `normal` image. Runtime `/art/<id>` may reuse the same oracle/face/kind from another printing; `/cards/by-name` prefers an available cached catalog printing and returns its **actual printing metadata**. Explicit `printing=` card lookups retain their selection; `exact=1` disables cross-printing aliases on `/art`.
+Configured SQL image storage remains authoritative: `images.sqlite` for a split cache, or `app.sqlite` for an existing combined store. Requests first try the exact printing/face/kind BLOB, then the same printing's `large` scan for a missing `normal` image. Runtime `/art/<id>` may reuse the same oracle/face/kind from another printing; `/cards/by-name` prefers an available cached catalog printing and returns its **actual printing metadata**. Explicit `printing=` card lookups retain their selection; `exact=1` disables cross-printing aliases on `/art`. See [independent database/cache locations](STORAGE.md).
 
 `/gallery/art/<printing>` always stays on that printing/face, including legacy keys. A different printing's image cannot satisfy a Gallery credit. Full-card scans and art crops never substitute for each other. Aliases are served without rewriting the original cache key/source metadata. `X-Love2Gathering-Art-Key` identifies the served cache entry.
 

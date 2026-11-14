@@ -106,7 +106,7 @@ The Gallery uses the existing icon API with `gallery`, `artist`, `calendar` and 
 
 ## Optional offline card-image library
 
-`scripts/download-card-images.py` streams the supplied Scryfall JSONL metadata rather than issuing a search for each card. It retains every printing and image face in the chosen source, with separate **full-cards/** and **art-crops/** JPEG mirrors. The same images are committed to the authoritative `app.sqlite` cache under the application's printing/face/kind keys. Existing SQLite images win over older mirrors; restarting repairs missing mirrors without repeating downloads. Interrupted or incomplete JPEGs are retried within bounds and are never accepted as complete mirror files.
+`scripts/download-card-images.py` streams the supplied Scryfall JSONL metadata rather than issuing a search for each card. It retains every printing and image face in the chosen source, with separate **full-cards/** and **art-crops/** JPEG mirrors. The same images are committed to the configured SQL image cache under the application's printing/face/kind keys. Existing SQLite images win over older mirrors; restarting repairs missing mirrors without repeating downloads. Interrupted or incomplete JPEGs are retried within bounds and are never accepted as complete mirror files.
 
 First inspect a bounded selection without writing or downloading:
 
@@ -140,13 +140,13 @@ Board overlays continue using the curated Kenney focus reticle, impact/cast/reso
 
 ## Supplied-pack inventory and applied presentation
 
-The current [Kenney catalog](KENNEY_CATALOG.md) inventories all 23 supplied packs, 8,927 PNG headers and 297 Vorbis audio streams. Twenty representative contact sheets were visually reviewed; every selected runtime file has its exact source in `kenney/runtime/provenance.json`, with eight copied CC0 notices under `runtime/licenses/`. Original packs are untouched.
+The [Kenney catalog](KENNEY_CATALOG.md) preserves the original 23-pack inventory and the later complete PNG review: 8,978 PNG files, 7,688 unique binaries and 29 visually reviewed contact sheets. SVG variants and audio listening are not claimed exhaustive. Every selected runtime file has its exact source in `kenney/runtime/provenance.json` with copied CC0 notices. Original packs are untouched.
 
 `Assets:titleFont(size,settings)` and the body font now use the user-supplied `fonts/Beleren2016-Bold.ttf` throughout the application. Legacy font settings remain readable, but the current presentation always selects Beleren. Missing files/glyphs use DejaVu fallbacks. `Fonts.textOffset` measures the supplied face's glyph bearings in a bounded cache so controls center visible ink rather than its unusually generous line box. The catalog records Beleren's actual proprietary copyright and absence of a bundled license; it is not represented as CC0 or OFL.
 
 `Assets:background(w,h,settings)` centers and crops the selected full 4096×2048 panorama with aspect preserved; `skyboxBrightness` multiplies real image pixels. `skybox` accepts Galaxy/Nebula/Band/Dark/Day/Off. Only two decoded panoramas remain cached, and Off preserves the earlier flat scene. The renderer separately applies `playmatOpacity` to real profile artwork.
 
-`Assets:counterBadge(value,x,y,size,style,tint)` shows actual pips for 1–6, then exact text on the blank die for any other value; `counterStyle='Text'` removes the die surface. These labels display native counters without adding game rules. `cursorStyle='Kenney'` is the default and applies reviewed pointer, hand, pan, drag and resize hotspots after Slab; text editing retains the native I-beam and unsupported cursor backends fall back safely. `keywordReminders` controls explanatory card-detail text. Presentation keys have matching backend validation and defaults.
+`Assets:counterBadge(value,x,y,size,style,tint)` shows actual pips for 1–6, then exact text on the blank die for any other value; `counterStyle='Text'` removes the die surface. These labels display native counters without adding game rules. `cursorStyle='Kenney'` is the default and applies reviewed pointer, hand, pan, drag and resize hotspots after Slab; text editing uses a smaller custom Kenney bracket cursor and unsupported cursor backends fall back safely. `keywordReminders` controls explanatory card-detail text. Presentation keys have matching backend validation and defaults.
 
 `assets:setSettings(settings)` synchronizes custom panels and the Slab skin. `Assets.palette(settings)` resolves the five reviewed dark palettes and optional player/opponent colors; `panelOpacity` defaults to `.65` while readable controls and tooltip surfaces remain opaque. Runtime additions are the source pack's open/closed hands, four resize cursors and confirmed-block shield. Exact paths, bounds and CC0 provenance are in `kenney/runtime/provenance.json`; complete supplied packs remain untouched.
 
@@ -157,3 +157,14 @@ Additional verified Mana 1.17.1 mappings support defender, double strike, first 
 `Theme.install` now emits one quiet UI click per accepted button/checkbox/list selection, independent of hover/paint frames. It remains idempotent and observes the applied sound toggle/volume. `Assets:playSound` keeps its 12-voice bound and supplies reviewed click/cast/resolve/impact/confirm/cancel/shuffle clips. Native game-event sound triggers belong to the renderer; static dice never roll or make random sounds.
 
 `tests/assets_presentation.sh` checks actual LÖVE fonts, pixels, audio decoders, custom/system cursors and Slab settings clicks using temporary assets and no service/user data. Its report and inspected captures are listed in the catalog. Existing fonts/theme/input checks remain separate regressions.
+
+
+## Split cache, surfaces and startup preparation
+
+Cached BLOBs live in `images.sqlite` when the cache is split; existing combined stores remain supported. JPEG folders are optional mirrors, never the only index of cached artwork. Settings → Storage → Locations prepares independent database/cache folders, verifies copies and requires a launcher restart. See [storage recovery and cleanup](../service/STORAGE.md). No bulk download runs during startup.
+
+`runtime/enhancements.lua` adds the reviewed generic controls, a custom text cursor, dice Foley, four card backs, Space Expansion slider surfaces, development gradients/noise, hex pattern and light masks. `app/surfaces.lua` renders grayscale masks with luminance-to-alpha conversion, retains bounded texture/quad caches and restores graphics state. Do not draw these opaque grayscale source files as ordinary transparent PNGs. Slider handles preserve Slab input behavior; numeric text appears only during editing. Small custom cursors resolve through Slab's provider, preserving scaled hotspots and system fallback.
+
+Beleren uses native-DPI rasterization in Standard quality and twice native DPI in High quality. Both keep logical text/caret geometry; they are independent of board render scale. The splash decodes only curated modules/resources and prepares real fonts/canvases while launcher build/services progress. Failures remain visible. Detailed GUI evidence is in `tests/presentation-refresh-ui-report.json`, `tests/startup-ui-report.json` and the separate real-launcher `tests/startup-main-report.json`.
+
+Bot basic-land playmats use a bounded metadata pool of English basic printings explicitly marked `full_art:true` in the supplied snapshot. Regenerate it with `scripts/prepare-playmat-basics.py --source PATH`; this streams the snapshot without fetching images. Exact cached illustrations retain their printing identity. Missing illustrations stay as a faint supplied pattern; they do not cause network downloads.

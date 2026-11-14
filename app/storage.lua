@@ -39,7 +39,7 @@ function Storage.scanMatches(m)
 end
 local function state(m)return m.downloadStatus and m.downloadStatus.state or'idle'end
 function Storage.maintenanceBusy(m)
-    return m.storageActionBusy or m.storageStatus and m.storageStatus.operation and m.storageStatus.operation.state=='running'
+    return m.storageLocationBlocked or m.storageActionBusy or m.storageStatus and m.storageStatus.operation and m.storageStatus.operation.state=='running'
         or busyDownload[state(m)]or m.downloadActionBusy
 end
 local function categoryStats(m,key)
@@ -186,6 +186,7 @@ function Storage.install(Model)
         return true
     end
     function Model:updateStorage(dt)
+        if self.updateStorageLocations then self:updateStorageLocations(dt)end
         if self.catalogHealth and self.catalogHealth.ready and(tonumber(self.catalogHealth.apiVersion)or 0)>=8 then self.storageApiSupported=true end
         if not self.storageApiSupported then return end
         self.storagePollIn=(self.storagePollIn or 0)-dt;self.downloadPollIn=(self.downloadPollIn or 0)-dt
@@ -216,13 +217,14 @@ local function statusLabel(m)
 end
 function Storage.tabs(v,width)
     local m=v.m;m.storageSection=m.storageSection or'cleanup'
-    for i,item in ipairs({{'cleanup','Cleanup','delete'},{'downloads','Downloads','gallery'}})do
+    for i,item in ipairs({{'cleanup','Cleanup','delete'},{'downloads','Downloads','gallery'},{'locations','Locations','save'}})do
         if i>1 then v.S.SameLine({Pad=12})end
-        if button(v,item[2],item[3],math.min(220,(width-12)/2),36,{Active=m.storageSection==item[1]})then m.storageSection=item[1]end
+        if button(v,item[2],item[3],math.min(220,(width-24)/3),36,{Active=m.storageSection==item[1]})then m.storageSection=item[1]end
     end
     v.S.NewLine()
 end
 function Storage.build(v,width)
+    if v.m.storageSection=='locations'then require('app.storage_locations').build(v,width);return end
     local S,m=v.S,v.m;local C=v.r.colors;local data=m.storageStatus or{};local stats=object(data.stats)and data.stats or{};local busy=Storage.maintenanceBusy(m)
     if m.storageUsageStale and not m.storageBusy then m.storageUsageStale=nil;m:refreshStorage(true,true)
     elseif not m.storageStatus and not m.storageBusy then m:refreshStorage()end
@@ -236,7 +238,11 @@ function Storage.build(v,width)
     if m.storageError then text(v,m.storageError,width,C.gold)end
     S.NewLine()
     local db=stats.database or{}
-    text(v,'Database '..Storage.bytes(db.bytes)..' · reusable space '..Storage.bytes(db.reusableBytes)..' · disk free '..Storage.bytes(db.freeBytes),width,C.text)
+    text(v,'Saves database '..Storage.bytes(db.bytes)..' · reusable space '..Storage.bytes(db.reusableBytes)..' · disk free '..Storage.bytes(db.freeBytes),width,C.text)
+    if db.separateCache then
+        text(v,'Image cache '..Storage.bytes(db.cacheBytes)..' · reusable '..Storage.bytes(db.cacheReusableBytes)..' · cache drive free '..Storage.bytes(db.cacheFreeBytes),width,C.text)
+        text(v,db.cacheDatabaseFile,width)
+    end
     text(v,'Purge makes deleted space reusable inside the database. Compact database returns that reusable space to the disk, using temporary space on this same drive.',width)
     if button(v,'Compact database','collections',225,34,{Disabled=busy or not db.canCompact})then m:compactStorage()end
     if not db.canCompact and db.compactionBlockedReason then text(v,db.compactionBlockedReason,width,C.gold)
@@ -257,7 +263,7 @@ function Storage.build(v,width)
     if busyDownload[state(m)]then text(v,'Pause the image download before purging or compacting storage.',width,C.gold)end
     S.NewLine();return end
     line(v,'gallery','Download card images and artwork',width,C.accent);S.NewLine()
-    text(v,'Save to '..tostring(data.dataDirectory or m.catalogHealth and m.catalogHealth.dataDirectory or'Loading…'),width)
+    text(v,'Cache: '..tostring(m.downloadStatus and m.downloadStatus.cacheDirectory or stats.cacheDirectory or data.dataDirectory or'Loading…'),width)
     S.NewLine()
     local config=options(m);local changing=busyDownload[state(m)]or m.downloadActionBusy
     if S.CheckBox(config.fullCards,'Full-card scans',{Size=20,Disabled=changing})then config.fullCards=not config.fullCards;m.storageDownloadOptionsDirty=true end
@@ -334,14 +340,20 @@ function Storage.press(r,x,y,button)
     local box=r.storageProgressRect
     if button~=1 or not box or r:inputBlocked()or x<box.x or x>box.x+box.w or y<box.y or y>box.y+box.h then return false end
     local op=r.model.storageStatus and r.model.storageStatus.operation
-    r.model:showStorage(op and op.state=='running'and'cleanup'or'downloads')
+    r.model:showStorage(r.model.storageLocationBlocked and'locations'or op and op.state=='running'and'cleanup'or'downloads')
     return true
 end
 function Storage.drawProgress(r,w,h)
     local m=r.model;local download=m.downloadStatus or{};local op=m.storageStatus and m.storageStatus.operation
-    local visible=liveDownload[download.state]or op and op.state=='running';if not visible then r.storageProgressRect=nil;return end
+    local location=m.storageLocations;local locationOp=location and object(location.operation)and location.operation or{}
+    local relocating=m.storageLocationBlocked
+    local visible=relocating or liveDownload[download.state]or op and op.state=='running';if not visible then r.storageProgressRect=nil;return end
     local progress=math.max(0,math.min(1,tonumber(download.progress)or 0));local label=statusLabel(m)
     if op and op.state=='running'then progress=0;label=op.message or'Maintaining local storage…'end
+    if relocating then
+        progress=location and location.restartRequired and 1 or(locationOp.total or 0)>0 and(locationOp.done or 0)/locationOp.total or 0
+        label=location and location.restartRequired and'Storage ready · restart to activate'or locationOp.message or'Preparing storage copies…'
+    end
     local x,y,width,height
     if m.page=='table'then x,y,width,height=w-268,46,246,3
     else width=math.min(480,w-48);x,y,height=(w-width)/2,66,16 end

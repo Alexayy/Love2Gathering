@@ -1,14 +1,14 @@
 local API=require('app.api')
 local json=require('lib.json')
 local Model={};Model.__index=Model
-local defaults={manualTriggers=false,autoMana=true,showCardArt=true,localArtworkOnly=true,resolution='Desktop',windowMode='Borderless',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,titleFontFamily='Beleren',skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='Kenney',keywordReminders=true,fontFamily='Beleren',panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=true,builderLayout='Classic',presentationVersion=2}
+local defaults={manualTriggers=false,autoMana=true,showCardArt=true,localArtworkOnly=true,resolution='Desktop',windowMode='Borderless',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,titleFontFamily='Beleren',skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='Kenney',keywordReminders=true,fontFamily='Beleren',panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=true,builderLayout='Classic',presentationVersion=2,fontQuality='High',cursorScale=.55,boardImpactIntensity=.55,cardBackStyle='Arcane'}
 local function copy(t) return json.decode(json.encode(t)) end
 local function errorText(body,err,code)
     if err then return err end
     if code and code>=400 then return type(body)=='table' and tostring(body.error or body.message or ('HTTP '..code)) or ('HTTP '..code) end
 end
 function Model.new()
-    local self=setmetatable({api=API.new(),page='decks',decks={},format='Modern',selectedDeck=nil,search='',searchFormat='All',searchColor='All',searchType='',cards={},total=0,offset=0,searchTimer=0.1,
+    local self=setmetatable({api=API.new(),page='decks',decks={},format='Modern',selectedDeck=nil,search='',searchFormat='All',searchColor='All',searchColors={},searchColorExact=false,searchType='',cards={},total=0,offset=0,searchTimer=0.1,
         settings=copy(defaults),catalogHealth={},engineHealth={},healthTimer=0,pollTimer=0,searchSort='Name',searchSet='All',sets={},searchLimit=12,deckSort='Name',validation=nil,
         art={},byName={},lookupPending={},artPending=0,toasts={},botDeckId=nil,botDeckIds={},commanderPlayers=4,playerDeckId=nil,playerName='Planeswalker',game=nil,gameBusy=false,selectedSection='main',promptOrder={},orderPrompt=nil},Model)
     return self
@@ -18,6 +18,10 @@ function Model:toast(message,bad)
     if #self.toasts>4 then table.remove(self.toasts,1) end
 end
 function Model:request(service,method,path,body,callback,quiet)
+    if self.storageLocationBlocked and service=='catalog'and method~='GET'and not path:find('^/storage/locations')then
+        local message='Storage is paused. Restart or cancel the prepared location change before saving.'
+        if not quiet then self:toast(message,true)end;if callback then callback(nil,message)end;return false
+    end
     return self.api:request(service,method,path,body,function(data,err,code)
         local problem=errorText(data,err,code)
         if problem then if not quiet then self:toast(problem,true) end; if callback then callback(nil,problem,data) end
@@ -77,7 +81,10 @@ function Model:searchCards()
     local version=(self.searchVersion or 0)+1;self.searchVersion=version;self.searchBusy=true
     local path='/cards?q='..API.escape(self.search)..'&limit='..self.searchLimit..'&offset='..self.offset..'&sort='..API.escape(self.searchSort:lower())
     if self.searchFormat~='All' then path=path..'&format='..API.escape(self.searchFormat:lower()) end
-    if self.searchColor~='All' then path=path..'&color='..API.escape(self.searchColor) end
+    if self.settings.builderLayout=='Simplified'then
+        local colors=require('app.builder_colors').symbols(self)
+        if colors~=''then path=path..'&color='..colors..'&colorMode='..(self.searchColorExact and'exact'or'any')end
+    elseif self.searchColor~='All'then path=path..'&color='..API.escape(self.searchColor)end
     if self.searchType~='' then path=path..'&type='..API.escape(self.searchType) end
     if self.searchSet~='All' then path=path..'&set='..API.escape(self.searchSet) end
     self:request('catalog','GET',path,nil,function(data)
@@ -149,7 +156,7 @@ function Model:openDeck(deck)
     self.editGeneration=(self.editGeneration or 0)+1;self.deckRevision=0;self.mutationQueue={};self.mutationBusy=false;self.saveAfterMutations=false;self.lastBuilderError=nil
     self.editDeck=copy(deck)
     for _,zone in ipairs({'main','sideboard','commander'}) do self.editDeck[zone]=json.array(self.editDeck[zone] or {}) end
-    self.page='builder';self.dirty=false;self.selectedSection='main';self.searchFormat=deck.format;self.search='';self.searchSet='All';self.searchColor='All';self.searchType='';self.validation=nil;self.previewCard=nil;self:searchChanged();self:refreshSets();self:validateDeck()
+    self.page='builder';self.dirty=false;self.selectedSection='main';self.searchFormat=deck.format;self.search='';self.searchSet='All';self.searchColor='All';self.searchColors={};self.searchColorExact=false;self.searchType='';self.validation=nil;self.previewCard=nil;self:searchChanged();self:refreshSets();self:validateDeck()
 end
 function Model:newDeck()
     self:openDeck({id='custom-'..os.time()..'-'..love.math.random(1000,9999),name='New '..self.format..' deck',format=self.format,description='',main=json.array(),sideboard=json.array(),commander=json.array()})
@@ -278,6 +285,7 @@ function Model:closeSettings()
     if self.page=='settings'then self.page=self.settingsReturnPage or'decks';self.settingsReturnPage=nil end
 end
 function Model:startGame()
+    if self.storageLocationBlocked then self:toast('Restart the client to use the prepared storage locations.',true);return end
     if self.roomConnectionId then self:toast('Leave your multiplayer room before starting a practice match',true);return end
     if self.gameBusy then return end
     local deck=self:findDeck(self.playerDeckId)
@@ -292,7 +300,7 @@ function Model:startGame()
     if deck.format:lower()~=self.format:lower() then self:toast('Your deck must use the selected format',true);return end
     if self.replay then self:closeReplay() end
     self.gameBusy=true;self.answeredPrompt=nil;self.orderPrompt=nil;self.promptOrder={};self.actionBusy=false
-    local body={format=deck.format,playerName=self.playerName,deck=deck,settings=self.settings,priority=self:priorityOptions(),recordingPort=self.api.catalogPort or tonumber(os.getenv('LOVE2GATHERING_CATALOG_PORT')) or 17370}
+    local body={format=deck.format,playerName=self.playerName,deck=deck,settings=self.settings,priority=self:priorityOptions(),startingSeatId=self.practiceStartingSeatId or'dice',recordingPort=self.api.catalogPort or tonumber(os.getenv('LOVE2GATHERING_CATALOG_PORT')) or 17370}
     body.profile=self:profileOptions();body.profile.name=body.playerName
     if count==1 then body.botDeck=bots[1].deck else body.bots=bots end
     self:request('engine','POST','/session/start',body,function(data)
@@ -402,4 +410,7 @@ require('app.collection').install(Model)
 require('app.profile').install(Model)
 require('app.artwork').install(Model)
 require('app.storage').install(Model)
+require('app.storage_locations').install(Model)
+require('app.playmats').install(Model)
+require('app.builder_colors').install(Model)
 return Model

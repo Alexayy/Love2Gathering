@@ -89,6 +89,9 @@ class MaintenanceStore:
             c = sqlite3.connect(path.resolve().as_uri() + '?mode=ro', uri=True, timeout=2)
             try:
                 c.row_factory = sqlite3.Row
+                if not c.execute("SELECT 1 FROM sqlite_master WHERE type='table'AND name='replay_outbox'").fetchone():
+                    if c.execute("SELECT 1 FROM sqlite_master WHERE type='table'AND name='replay_outbox_control'").fetchone():return set()
+                    raise ConflictError('Replay outbox schema is unavailable; recordings were preserved')
                 rows = c.execute("SELECT id,status,owner_pid,finish,EXISTS(SELECT 1 FROM replay_outbox_events e WHERE e.replay_id=r.id) AS pending FROM replay_outbox r")
                 # A terminal outbox status is written only after the catalog
                 # acknowledges /finish. Its engine PID may safely remain alive.
@@ -99,7 +102,7 @@ class MaintenanceStore:
             raise ConflictError('Replay outbox could not be inspected; recordings were preserved') from exc
 
     def _mirror_files(self):
-        library = self.root / 'image-library'
+        library = self.image_library
         if library.is_symlink():
             return
         for kind, name in (('full_cards', 'full-cards'), ('art_crops', 'art-crops')):
@@ -117,9 +120,17 @@ class MaintenanceStore:
         size = _file_size(self.database)
         free = shutil.disk_usage(self.root).free
         required = size * 2 + RESERVE
+        cache_size = _file_size(self.cache_database) if self.separate_cache else 0
+        cache_free = shutil.disk_usage(self.cache_root).free
+        cache_reusable = c.execute('PRAGMA images.freelist_count').fetchone()[0] * c.execute('PRAGMA images.page_size').fetchone()[0] if self.separate_cache else 0
+        cache_required = cache_size * 2 + RESERVE if self.separate_cache else 0
         return {'bytes': size, 'walBytes': _file_size(Path(str(self.database) + '-wal')),
                 'reusableBytes': reusable, 'freeBytes': free, 'compactRequiredBytes': required,
-                'canCompact': free >= required, 'outboxBytes': _file_size(self.root / 'replay-outbox.sqlite')}
+                'cacheBytes': cache_size, 'cacheWalBytes': _file_size(Path(str(self.cache_database)+'-wal')) if self.separate_cache else 0,
+                'cacheReusableBytes': cache_reusable, 'cacheFreeBytes': cache_free, 'cacheCompactRequiredBytes': cache_required,
+                'totalBytes': size + cache_size, 'cacheDirectory': str(self.cache_root.resolve()),
+                'cacheDatabaseFile': str(self.cache_database.resolve()), 'separateCache': self.separate_cache,
+                'canCompact': free >= required and cache_free >= cache_required, 'outboxBytes': _file_size(self.root / 'replay-outbox.sqlite')}
 
     def maintenance_stats(self):
         result = {kind: {'count': 0, 'bytes': 0, 'mirrorCount': 0, 'mirrorBytes': 0}
@@ -176,15 +187,21 @@ class MaintenanceStore:
         result['export_duplicates'] = duplicates
         result['export_mirrors'] = mirrors
         result['retainedLegacyBackups'] = True
-        result['externalMirrorsExcluded'] = bool(os.environ.get('LOVE2GATHERING_IMAGE_LIBRARY') and Path(os.environ['LOVE2GATHERING_IMAGE_LIBRARY']).resolve() != (self.root / 'image-library').resolve())
+        result['cacheDirectory']=str(self.cache_root.resolve())
+        result['externalMirrorsExcluded'] = bool(os.environ.get('LOVE2GATHERING_IMAGE_LIBRARY') and Path(os.environ['LOVE2GATHERING_IMAGE_LIBRARY']).resolve() != self.image_library.resolve())
         return result
 
     @contextmanager
     def _exclusive_maintenance(self, readonly=False):
+        if self.relocation_active.is_set():raise ConflictError('Storage is awaiting restart after relocation')
         # Acquire the download lifetime lock first: a download never resumes
         # into freshly purged data after a network request finishes.
         with operation_lock(self.root, exclusive=True, blocking=False, filename='.image-download.lock'):
             with self.maintenance_lock:
+                retired=_raw_connection(self.database)
+                try:
+                    if retired.execute("SELECT 1 FROM meta WHERE key='storage_relocated_to'").fetchone():raise ConflictError('Storage was relocated; restart the application')
+                finally:retired.close()
                 if readonly:
                     # Duplicate exports only: keep ordinary SQL readers usable
                     # while excluding another destructive operation/download.
@@ -235,6 +252,7 @@ class MaintenanceStore:
             self._maintenance_check_cancelled()
             protected = self._outbox_protected() if 'replays' in categories else set()
             c = _raw_connection(self.database)
+            self._attach_cache(c)
             try:
                 c.set_progress_handler(lambda:1 if self.maintenance_cancel.is_set() else 0,10000)
                 c.execute('BEGIN IMMEDIATE')
@@ -293,7 +311,9 @@ class MaintenanceStore:
                         if len(warnings)<10:warnings.append('Kept export '+path.name+': '+str(exc))
                     if index % 100 == 0:
                         update('Checking managed export copies' if categories == ['export_duplicates'] else 'Removing selected managed image exports', index, len(mirrors))
-                result['reusableBytes'] = self._database_stats(c)['reusableBytes']
+                remaining=self._database_stats(c)
+                result['reusableBytes'] = remaining['reusableBytes']
+                result['cacheReusableBytes'] = remaining['cacheReusableBytes']
                 result['message'] = 'Selected data removed. SQLite pages are reusable; Compact database separately releases unused pages to the disk.'
                 if result.get('cancelled'):result['message']='SQLite purge committed; remaining export removal was stopped. Remaining exports cannot automatically restore purged images. Repeat purge to remove them.'
                 return result
@@ -309,6 +329,7 @@ class MaintenanceStore:
             self._maintenance_check_cancelled()
             protected = self._outbox_protected()
             c = _raw_connection(self.database)
+            self._attach_cache(c)
             try:
                 if c.execute("SELECT 1 FROM replays WHERE status='recording' LIMIT 1").fetchone() or protected:
                     raise ConflictError('Finish the current game and flush pending recordings before compacting the database')
@@ -316,35 +337,35 @@ class MaintenanceStore:
                 if not before['canCompact']:
                     raise ConflictError('Compaction needs up to twice the database size plus 64 MiB free on the data drive; deleted pages remain reusable meanwhile')
                 checkpoint = c.execute('PRAGMA wal_checkpoint(TRUNCATE)').fetchone()
-                if checkpoint[0]:
+                cache_checkpoint=c.execute('PRAGMA images.wal_checkpoint(TRUNCATE)').fetchone()if self.separate_cache else(0,)
+                if checkpoint[0]or cache_checkpoint[0]:
                     raise ConflictError('A database reader is active; try compaction again when it finishes')
             finally:
                 c.close()
-            if progress:
-                progress({'message': 'Compacting unused SQLite pages on the data drive', 'done': 0, 'total': 0})
-            # SQLite reads SQLITETMPDIR once at process initialization. A child
-            # keeps VACUUM's temporary database on the spacious data drive
-            # without changing global temp-directory settings in HTTP threads.
-            temporary = self.root / '.maintenance-temp'
-            temporary.mkdir(mode=0o700, exist_ok=True)
-            if temporary.is_symlink():
-                raise ValueError('Maintenance temporary directory must not be a symbolic link')
             code = "import sqlite3,sys;c=sqlite3.connect(sys.argv[1],timeout=5,isolation_level=None);c.execute('PRAGMA busy_timeout=5000');c.execute('PRAGMA synchronous=FULL');c.execute('VACUUM');c.execute('PRAGMA wal_checkpoint(TRUNCATE)');c.close()"
-            env = dict(os.environ, SQLITETMPDIR=str(temporary.resolve()), TMPDIR=str(temporary.resolve()))
-            with self.maintenance_process_lock:
+            databases=[self.database]+([self.cache_database]if self.separate_cache else[])
+            before_size=sum(_file_size(path)for path in databases)
+            for index,database in enumerate(databases):
                 self._maintenance_check_cancelled()
-                process=subprocess.Popen([sys.executable,'-c',code,str(self.database)],env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
-                self.maintenance_process=process
-            try:
-                _,stderr=process.communicate()
-            finally:
-                with self.maintenance_process_lock:self.maintenance_process=None
-            if process.returncode:
-                raise ConflictError('Database compaction did not complete: ' + stderr[-1200:].strip())
-            after_size = _file_size(self.database)
-            return {'databaseBytesBefore': before['bytes'], 'databaseBytesAfter': after_size,
-                    'bytesFreed': max(0, before['bytes'] - after_size), 'databaseCompacted': True,
-                    'message': 'Unused SQLite pages were released to the data drive; saved decks, history and remaining images were retained.'}
+                if progress:progress({'message':'Compacting '+('image cache'if index else'application database')+' on its selected drive','done':index,'total':len(databases)})
+                # Each SQLite temporary file stays beside the DB being compacted.
+                temporary=database.parent/'.maintenance-temp';temporary.mkdir(mode=0o700,exist_ok=True)
+                if temporary.is_symlink():raise ValueError('Maintenance temporary directory must not be a symbolic link')
+                env=dict(os.environ,SQLITETMPDIR=str(temporary.resolve()),TMPDIR=str(temporary.resolve()))
+                with self.maintenance_process_lock:
+                    self._maintenance_check_cancelled()
+                    process=subprocess.Popen([sys.executable,'-c',code,str(database)],env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+                    self.maintenance_process=process
+                try:_,stderr=process.communicate()
+                finally:
+                    with self.maintenance_process_lock:self.maintenance_process=None
+                if process.returncode:raise ConflictError('Database compaction did not complete: '+stderr[-1200:].strip())
+            after_size=sum(_file_size(path)for path in databases)
+            return {'databaseBytesBefore':before_size,'databaseBytesAfter':after_size,
+                    'bytesFreed':max(0,before_size-after_size),'databaseCompacted':True,
+                    'cacheCompacted':self.separate_cache,
+                    'message':'Unused SQLite pages were released on their selected drives; saved decks, history and remaining images were retained.'}
+
 
 
 class StorageMaintenance:

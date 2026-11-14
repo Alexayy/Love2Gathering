@@ -218,3 +218,11 @@ with tempfile.TemporaryDirectory(prefix='love2gathering-native-rooms-') as folde
             child.wait(timeout=20)
 PY
 ```
+
+## Starting order and presentation events
+
+`StartingOrder` rolls two server-owned d6 for each seat and rerolls only tied highest players. The winner becomes XMage's native starting player. Local practice can submit an actual `startingSeatId` (`local`, `bot-1`, etc.); omission or `dice` uses 2d6. Authenticated room and draft games always roll, ignoring a preferred starting seat. Public `openingRoll` snapshots retain every round's actual dice and the winner; Lua only animates those values.
+
+`PresentationGames` wraps the native concrete game types solely to observe a completed native `resolve()` call. It emits `animationEvents.type=impact` for an actual non-countered resolved commander or a spell whose native stack mana value is greater than five. The captured value includes announced X. Simulation copies omit these callbacks. Battlefield impulses and distinct target/combat arrow colors remain presentation; neither changes native legality or resolution.
+
+Replay relocation uses protocol 1, advertised by `/health.storageRelocationProtocol`. Native outbox construction and orphan claims use `BEGIN IMMEDIATE`, refuse a `replay_outbox_control` retirement marker and register `owner_protocol:<pid>=1` plus `owner_started:<pid>` process-birth milliseconds. This lets storage migration distinguish cooperative live engines from older idle clients and detect PID reuse. A retired source cannot receive a new guarded recorder; the client must restart into the prepared directory. Existing active/pending rows prevent migration. `ReplayRelocationFixture` checks actual writer contention; separate-JVM crash/recovery acceptance verifies durable delivery still works.

@@ -4,6 +4,20 @@ local Fonts={default='Beleren',titleDefault='Beleren',limit=1,maxBytes=24*1024*1
 local cache,clock={},0
 local metrics=setmetatable({},{__mode='k'})
 local catalog={{name='Beleren'}}
+Fonts.quality='High';Fonts.dpiScale=2
+function Fonts.configure(settings)
+    settings=settings or{}
+    local quality=settings.fontQuality=='Standard'and'Standard'or'High'
+    local native=love.window and love.window.getDPIScale and love.window.getDPIScale()or 1
+    local dpi=math.max(1,native)*(quality=='High'and 2 or 1)
+    local signature=quality..':'..dpi
+    if signature==Fonts.signature then return false end
+    Fonts.signature=signature;Fonts.quality=quality;Fonts.dpiScale=dpi;cache={};return true
+end
+local function create(path,size)
+    local font=love.graphics.newFont(path,size,'normal',Fonts.dpiScale)
+    font:setFilter('linear','linear');return font
+end
 function Fonts.available()return catalog end
 function Fonts.names()return{'Beleren'}end
 local function sizeOf(size)return math.max(8,math.min(96,math.floor((tonumber(size)or 16)+.5)))end
@@ -13,10 +27,10 @@ function Fonts.font(size)
     if entry then entry.used=clock;return entry.font,entry.family end
     local font,family,source
     if love.filesystem.getInfo('assets/fonts/Beleren2016-Bold.ttf')then
-        local ok,result=pcall(love.graphics.newFont,'assets/fonts/Beleren2016-Bold.ttf',size)
-        if ok then font=result;family='Beleren';source='assets/fonts/Beleren2016-Bold.ttf';font:setFallbacks(love.graphics.newFont('assets/fonts/DejaVuSans.ttf',size))end
+        local ok,result=pcall(create,'assets/fonts/Beleren2016-Bold.ttf',size)
+        if ok then font=result;family='Beleren';source='assets/fonts/Beleren2016-Bold.ttf';font:setFallbacks(create('assets/fonts/DejaVuSans.ttf',size))end
     end
-    if not font then source='assets/fonts/DejaVuSans.ttf';font=love.graphics.newFont(source,size);family='Built-in DejaVu Sans'end
+    if not font then source='assets/fonts/DejaVuSans.ttf';font=create(source,size);family='Built-in DejaVu Sans'end
     metrics[font]={source=source,size=size,offsets={},order={}}
     cache[size]={font=font,family=family,used=clock}
     local count=0;for _ in pairs(cache)do count=count+1 end

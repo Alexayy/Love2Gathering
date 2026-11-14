@@ -5,8 +5,10 @@ local View=require('app.view')
 local Layout=require('app.layout')
 local Preferences=require('app.preferences')
 local Storage=require('app.storage')
-local model,renderer,view,preferences
+local Startup=require('app.startup')
+local model,renderer,view,preferences,startup
 local smoke,smokeMatch,smokeTime,smokeStage=false,false,0,0
+local startupCaptured=false
 function love.load(args)
     love.graphics.setDefaultFilter('linear','linear')
     Slab.SetINIStatePath(nil)
@@ -21,8 +23,10 @@ function love.load(args)
     love.window.setTitle('Love: 2 Gathering')
     love.window.setIcon(love.image.newImageData(renderer.assets:icon()))
     if smoke then model.settings.showCardArt=false end
+    startup=Startup.new(model,renderer)
 end
 function love.update(dt)
+    if startup and not startup.ready then startup:update(dt);return end
     model:update(dt);preferences:update();Slab.Update(dt);renderer:update(dt);view:build()
     renderer.uiHovered=not Slab.IsVoidHovered()
     renderer:mousemoved(Layout.mouse())
@@ -58,6 +62,7 @@ function love.update(dt)
     end
 end
 function love.draw()
+    if startup and not startup.ready then startup:draw();preferences:endFrame();if smoke and not startupCaptured then love.graphics.captureScreenshot('smoke-startup.png');startupCaptured=true end;love.timer.sleep(.012);return end
     local started=love.timer.getTime()
     preferences:beginFrame();renderer:draw();preferences:endScene();Slab.Draw()
     love.graphics.push();love.graphics.scale(Layout.scale)
@@ -68,6 +73,7 @@ function love.draw()
     preferences:limitFrame(started)
 end
 function love.mousepressed(x,y,button,touch,clicks)
+    if startup and not startup.ready then startup:press(x,y,button);return end
     Slab.OnMousePressed(x,y,button,touch,clicks)
     local lx,ly=Layout.toLogical(x,y)
     local choices=package.loaded['app.card_choices']
@@ -78,25 +84,29 @@ function love.mousepressed(x,y,button,touch,clicks)
     end
 end
 function love.mousereleased(x,y,button,touch,clicks)
+    if startup and not startup.ready then return end
     Slab.OnMouseReleased(x,y,button,touch,clicks);local lx,ly=Layout.toLogical(x,y)
     local choices=package.loaded['app.card_choices'];if choices and choices.release(view,lx,ly,button)then return end
     renderer:mousereleased(lx,ly,button)
 end
 function love.mousemoved(x,y,dx,dy,touch)
+    if startup and not startup.ready then return end
     Slab.OnMouseMoved(x,y,dx,dy,touch);local lx,ly=Layout.toLogical(x,y)
     local choices=package.loaded['app.card_choices'];if choices then choices.move(view,lx,ly)end
     renderer:mousemoved(lx,ly)
 end
 function love.wheelmoved(...)
+    if startup and not startup.ready then return end
     local empty=Slab.IsVoidHovered();Slab.OnWheelMoved(...)
     renderer.uiHovered=not empty
     if empty then renderer:wheelmoved(...)end
 end
-function love.textinput(...) Slab.OnTextInput(...) end
+function love.textinput(...) if startup and not startup.ready then return end;Slab.OnTextInput(...) end
 function love.keypressed(key,scancode,isrepeat)
+    if startup and not startup.ready then if key=='escape'then love.event.quit()end;return end
     Slab.OnKeyPressed(key,scancode,isrepeat)
     if key=='escape'then
-        model:closeSettings();model.zoneView=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.galleryInspect=nil;model.confirmConcede=false;model.archiveCopy=nil;model.storagePurgePreview=nil
+        model:closeSettings();model.zoneView=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.galleryInspect=nil;model.confirmConcede=false;model.archiveCopy=nil;model.storagePurgePreview=nil;model.storageLocationConfirm=nil;model.storageFolderDialog=nil
         view.builderPopup=nil;view.builderFiltersOpen=nil;view.themeColorEdit=nil;view.combatStopsOpen=false;require('app.deck_picker').close(view)
         return
     end
@@ -112,7 +122,7 @@ function love.keypressed(key,scancode,isrepeat)
         end
     end
 end
-function love.keyreleased(...) Slab.OnKeyReleased(...) end
-function love.filedropped(file)if model.importDeckFile then model:importDeckFile(file)end end
+function love.keyreleased(...) if startup and not startup.ready then return end;Slab.OnKeyReleased(...) end
+function love.filedropped(file)if startup and not startup.ready then return end;if model.importDeckFile then model:importDeckFile(file)end end
 function love.resize() if preferences then preferences:update() end end
 function love.quit() if preferences then preferences:quit() end;if model then model:quit() end;Slab.OnQuit() end

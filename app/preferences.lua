@@ -5,7 +5,7 @@ local defaults={resolution='Desktop',windowMode='Borderless',vsync=true,msaa=0,r
     animations=true,particles=true,localArtworkOnly=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,
     reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,fontFamily=Fonts.default,titleFontFamily='Beleren',
     skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='Kenney',keywordReminders=true,
-    panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=true,builderLayout='Classic',presentationVersion=2}
+    panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=true,builderLayout='Classic',presentationVersion=2,fontQuality='High',cursorScale=.55,boardImpactIntensity=.55,cardBackStyle='Arcane'}
 Preferences.defaults=defaults
 function Preferences.new(model,S,renderer)
     for k,v in pairs(defaults) do if model.settings[k]==nil then model.settings[k]=v end end
@@ -17,10 +17,12 @@ function Preferences:applyFont()
     self.m.settings.fontFamily=family;self.m.settings.titleFontFamily=family
     if not self.r then return end
     self.r.assets:setSettings(self.m.settings)
+    local fontChanged=Fonts.configure(self.m.settings)
     local titles=self.m.settings.titleFontFamily or Fonts.titleDefault
     if self.titleSignature~=titles then self.titleSignature=titles;require('app.assets').invalidateRasterCaches() end
-    if family==self.fontSignature then return end
-    self.fontSignature=family
+    local signature=family..':'..tostring(Fonts.signature)
+    if signature==self.fontSignature and not fontChanged then return end
+    self.fontSignature=signature
     local sizes={};for size in pairs(self.r.fonts) do sizes[#sizes+1]=size end;table.sort(sizes)
     local fonts,bold,problem,effective=Fonts.createSet(family,sizes)
     self.r.fonts,self.r.bold=fonts,bold
@@ -30,38 +32,51 @@ function Preferences:applyFont()
     self.appliedFontFamily=effective
     if problem then self.m:toast(problem,true) end
 end
+function Preferences:cursorFor(kind)
+    self.cursorNativeType=kind;self.cursors=self.cursors or{}
+    local have,manifest=pcall(require,'assets.kenney.runtime.manifest')
+    local spec=have and manifest.cursors[kind];if not spec then return end
+    local scale=math.max(.4,math.min(1,tonumber(self.m.settings.cursorScale)or .55))
+    local key=kind..':'..scale
+    if self.cursors[key]==nil then
+        local success,cursor=pcall(function()
+            local source=love.image.newImageData(spec.path)
+            local width,height=source:getDimensions();local w,h=math.max(1,math.floor(width*scale+.5)),math.max(1,math.floor(height*scale+.5))
+            local data=love.image.newImageData(w,h)
+            data:mapPixel(function(x,y)return source:getPixel(math.min(width-1,math.floor(x/scale)),math.min(height-1,math.floor(y/scale)))end)
+            local result=love.mouse.newCursor(data,math.min(w-1,math.floor(spec.hotspot[1]*scale+.5)),math.min(h-1,math.floor(spec.hotspot[2]*scale+.5)))
+            source:release();data:release();return result
+        end)
+        self.cursors[key]=success and cursor or false
+    end
+    return self.cursors[key]or nil
+end
 function Preferences:applyCursor()
-    if not love.mouse or not love.mouse.getCursor or not love.mouse.setCursor then return end
-    local enabled=self.m.settings.cursorStyle=='Kenney'
-    if not enabled then
+    if not love.mouse or not love.mouse.setCursor then return end
+    local Mouse=require('lib.Slab.Internal.Input.Mouse')
+    if self.m.settings.cursorStyle~='Kenney'then
         if self.customCursorActive then
-            pcall(function()love.mouse.setCursor(love.mouse.getSystemCursor(self.cursorNativeType or 'arrow'))end)
+            Mouse.SetCursorProvider(nil)
+            pcall(function()love.mouse.setCursor(love.mouse.getSystemCursor(Mouse.GetCursorType()or'arrow'))end)
             self.customCursorActive=false
         end
         return
     end
-    local ok,current=pcall(love.mouse.getCursor);if not ok then return end
-    local kind=current and current:getType()or 'arrow'
-    if kind=='image' then kind=self.cursorNativeType or 'arrow'else self.cursorNativeType=kind end
+    if not self.cursorProvider then
+        self.cursorProvider=function(kind)return self:cursorFor(kind)end
+    end
+    Mouse.SetCursorProvider(self.cursorProvider)
+    local kind=Mouse.GetCursorType()or'arrow'
     if self.r and not self.r.uiHovered then
         local state=self.r.assets.cursorState
         if self.r.drag or self.r.panGesture or state=='drag'then kind='drag'
         elseif state=='pan'then kind='pan'
         elseif self.r.hover and(self.r.hover.action or self.r.hover.kind=='player')then kind='hand'end
     end
-    self.cursorType=kind;self.cursors=self.cursors or {}
-    local have,manifest=pcall(require,'assets.kenney.runtime.manifest')
-    if not have or not manifest.cursors[kind]then self.customCursorActive=false;return end
-    if self.cursors[kind]==nil then
-        local success,cursor=pcall(function()
-            local spec=require('assets.kenney.runtime.manifest').cursors[kind]
-            return love.mouse.newCursor(spec.path,spec.hotspot[1],spec.hotspot[2])
-        end)
-        self.cursors[kind]=success and cursor or false
-    end
-    if self.cursors[kind] then
-        local success=pcall(love.mouse.setCursor,self.cursors[kind]);self.customCursorActive=success
-    end
+    if self.S.IsAnyInputFocused and self.S.IsAnyInputFocused()and love.mouse.isDown(1)and self.cursorNativeType=='ibeam'then kind='ibeam'end
+    self.cursorType=kind
+    local cursor=self:cursorFor(kind)
+    if cursor then self.customCursorActive=pcall(love.mouse.setCursor,cursor)end
 end
 function Preferences:apply(force)
     local s=self.m.settings

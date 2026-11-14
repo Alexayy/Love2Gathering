@@ -129,7 +129,11 @@ local function DrawRect(Rect)
 	Stats.End(StatHandle)
 end
 local function DrawSkinRect(Rect)
-	Rect.Skin.draw(Rect.Kind, Rect.X, Rect.Y, Rect.Width, Rect.Height, Rect.Color)
+    if Rect.Kind == 'slider' then
+        Rect.Skin.slider(Rect.X, Rect.Y, Rect.Width, Rect.Height, Rect.Value)
+    else
+        Rect.Skin.draw(Rect.Kind, Rect.X, Rect.Y, Rect.Width, Rect.Height, Rect.Color)
+    end
 end
 
 local function GetTriangleVertices(X, Y, Radius, Rotation)
@@ -497,6 +501,17 @@ end
 function DrawCommands.SetSkin(skin)
 	assert(skin == nil or (type(skin.classify) == 'function' and type(skin.draw) == 'function'), 'Invalid draw skin')
 	Skin = skin
+end
+
+-- Optional native-slider paint hook; retain Slab input, focus and clipping.
+function DrawCommands.Slider(X, Y, W, H, Value)
+    if not Skin or type(Skin.slider) ~= 'function' then return false end
+    AssertActiveBatch()
+    local Item = pool[TypeSkinRect]:pull()
+    Item.Type, Item.Skin, Item.Kind = TypeSkinRect, Skin, 'slider'
+    Item.X, Item.Y, Item.Width, Item.Height, Item.Value = X, Y, W, H, Value
+    insert(ActiveBatch, Item)
+    return true
 end
 
 function DrawCommands.Triangle(Mode, X, Y, Radius, Rotation, Color)
