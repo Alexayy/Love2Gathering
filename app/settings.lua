@@ -77,10 +77,10 @@ function Settings.build(view,w,h,options)
         if m.showProfile and S.Button('Profile and playmat',{W=math.min(330,inner),H=34,Image={Image=r.assets:buttonImage('profile','Profile and playmat',math.min(330,inner),34,{font=r.fonts[16],iconSize=19})}})then m.settingsOpen=false;m:showProfile()end
         S.NewLine()
         heading('Cards and effects')
-        choice('cardBackStyle','Card back',{'Arcane','Azure','Verdant','Crimson'})
+        choice('cardBackStyle','Card back',require('app.surfaces').cardBackNames)
         if r.assets.surfaces then
-            local spec=require('assets.kenney.runtime.manifest').cardBacks[s.cardBackStyle or'Arcane'];local image=spec and r.assets.surfaces:load(spec)
-            if image then S.Image('card-back-preview',{Image=image,W=70,H=95})end
+            local spec=require('app.surfaces').cardBackSpec(s.cardBackStyle);local image=spec and r.assets.surfaces:load(spec)
+            if image then local scale=math.min(70/image:getWidth(),95/image:getHeight());S.Image('card-back-preview',{Image=image,W=image:getWidth()*scale,H=image:getHeight()*scale})end
         end
         S.NewLine();slider('boardImpactIntensity','Board impact strength')
         toggle('showCardArt','Show card artwork on the table','The builder always uses card images. Artwork that is not cached shows a placeholder; use the artwork downloader for selected cards.')

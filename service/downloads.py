@@ -6,7 +6,7 @@ requests and retains only bounded batches in memory; the plan lives in SQL.
 from __future__ import annotations
 
 from contextlib import contextmanager
-import fcntl
+import filelocks as fcntl
 import importlib.util
 import json
 import os

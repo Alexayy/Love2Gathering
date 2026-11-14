@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "scope": "Actual compiled Linux payload, bundled Java21, real explicitly small metadata fixture and actual L\u00d6VE app.love splash/decks/builder/lobby. Temporary user storage only; no full metadata index/native match/WAN/Windows assertion. Full-metadata native GUI attempt separately recorded an180s index timeout.",
+  "durationSeconds": 11.48,
+  "captures": {
+    "smoke-startup.png": "/tmp/love2gathering-packaged-smoke-startup.png",
+    "smoke-decks.png": "/tmp/love2gathering-packaged-smoke-decks.png",
+    "smoke-builder.png": "/tmp/love2gathering-packaged-smoke-builder.png",
+    "smoke-lobby.png": "/tmp/love2gathering-packaged-smoke-lobby.png"
+  },
+  "bytecodeInPayload": false,
+  "log": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/acceptance/packaged-desktop-small/launcher.log"
+}

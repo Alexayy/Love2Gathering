@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "scope": "Actual frozen folder-installer updates an older owned deployed Flatpak to the final catalog-lock bundle without uninstall/data deletion; saves bytes and menu/symlink registration preserved.",
+  "fromCommit": "2142d3b2ab925893b8282a6b27601a7e5e0632dd66885862287562c04e8c8af7",
+  "toCommit": "357ddf8bc251d89f7e9eab94289ae1873c7e0cfcad5e86264ede2ed167f03b6c",
+  "earlierUpgradeAlsoVerified": "9b9c4e8d7fdadce726795137eafd545c02f4190aa93529b2a6542d2d670167f6 \u2192 2142d3b2ab925893b8282a6b27601a7e5e0632dd66885862287562c04e8c8af7",
+  "savesPreserved": true,
+  "chosenFolderHasSpacesAndPercent": true,
+  "sourceSha256": {
+    "packaging/flatpak/install-flatpak.py": "71a77e17ac1de04f1e2ffc72a37488e5cb834ce03c5ecca8283b7bcc11892e86"
+  }
+}

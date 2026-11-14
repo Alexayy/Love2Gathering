@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "scope": "Bundled Windows runtimes and Win32 storage primitives under isolated Wine9. Actual installed runtime --check passed; no native Windows OS/gameplay claim.",
+  "runtimeVersions": {
+    "python": "3.13.11",
+    "love": "11.5",
+    "java": "Temurin21.0.13+9"
+  },
+  "win32StorageTests": 3,
+  "installedRuntimeVersionsStarted": true,
+  "installerSha256": "30b64b50ac57ba3a25d3a5293153d9071661e9ed079b07221659217c9af111ed",
+  "nativeWindowsVerified": false,
+  "fullStackWine": {
+    "passed": false,
+    "error": "Temurin21 native java.net.NetworkInterface adapter enumeration raises kernelbase.dll0xc06d007f inside Wine9; native Windows10/11 validation remains required."
+  },
+  "sourceSha256": {
+    "packaging/runtime/launcher.py": "9d2563629d941377670cafaa134d21189ac1d2a541198acd1ff9d554cda7a06e",
+    "service/filelocks.py": "eb681e0e9bc6d2fd2c5ffc1da026ffd9370afe721aaf8733bc1d8d10ed416724",
+    "service/processes.py": "5c23b803e637b0ad69f06b9ba32cd5e6ed43fdb9b502ed425f42c231bf017542",
+    "service/catalog.py": "69d8be7ab77d0917c12b587ee831ebc81e6c031bcefbfc3111ccc33a8bbdac44"
+  }
+}

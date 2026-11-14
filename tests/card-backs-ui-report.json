@@ -1,0 +1,37 @@
+{
+  "captures": [
+    "/tmp/love2gathering-card-back-classic-settings.png",
+    "/tmp/love2gathering-card-back-eye-settings.png",
+    "/tmp/love2gathering-card-back-supplied-backs.png"
+  ],
+  "checks": [
+    "Both supplied backs extend the four existing styles",
+    "Actual renderer draws Classic Magic",
+    "Rendering restores graphics state for Classic Magic",
+    "Complete upright artwork retains original colors without tint or overlays: Classic Magic",
+    "Actual Settings dropdown offers Classic Magic",
+    "Actual Settings selects Classic Magic",
+    "Settings preview fits its bounded area: Classic Magic",
+    "The complete Settings preview remains reachable: Classic Magic",
+    "Apply sends the selected Classic Magic preference",
+    "Actual renderer draws Mystic Eye",
+    "Rendering restores graphics state for Mystic Eye",
+    "Complete upright artwork retains original colors without tint or overlays: Mystic Eye",
+    "Actual Settings dropdown offers Mystic Eye",
+    "Actual Settings selects Mystic Eye",
+    "Settings preview fits its bounded area: Mystic Eye",
+    "The complete Settings preview remains reachable: Mystic Eye",
+    "Apply sends the selected Mystic Eye preference"
+  ],
+  "passed": true,
+  "scope": "Actual L\u00d6VE image decoding/pixel equality, aspect fit, graphics-state restoration and real Settings dropdown/Apply dispatch. Saves captured in memory; real temporary SQLite persistence is a separate backend test. No user-data or engine changes.",
+  "sourceSha256": {
+    "app/surfaces.lua": "f9b87b643977a2bf49fcf8592f52eb8a7f158a2c491ad77210d0e1f9d538be84",
+    "app/settings.lua": "ff39be1539297757cbe3fcafd07c9084d99a0b9d8dae517cec89924fd7700af2",
+    "tests/card_backs_ui.lua": "d0733f915582b7ab50d219339543af0c1ba88b33f6feca249e18bf16a17d502f",
+    "assets/card-backs/classic-magic.jpg": "6997a991f22568a32e921514883b44ac8b1a2fba52bdb0c0e413279f0283daa0",
+    "assets/card-backs/README.md": "69bcc6d47c99571a2ad7fa66f829941104080ead4f8d7560c92ab826b5e488f5",
+    "assets/card-backs/provenance.json": "11e001915b84b0ece17b64fe6222a0068d6756ba7e98310c1a8584fa87be06d7",
+    "assets/card-backs/mystic-eye.png": "4f9a8db956bf8593d952ea31840e424aa511947dfe0295591e18dc7dafe77c5f"
+  }
+}

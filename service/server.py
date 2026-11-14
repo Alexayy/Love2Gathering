@@ -148,7 +148,7 @@ def make_handler(catalog, storage, location_manager=None):
                 self.respond(200, {"status": "ok", "ready": progress["state"] == "ready",
                                    "index": progress, "source": catalog.source.name,
                                    "catalogSource": str(catalog.source.resolve()), "version": 3,
-                                   "apiVersion": 9, "schemaVersion": int(SCHEMA_VERSION),
+                                   "apiVersion": 10, "schemaVersion": int(SCHEMA_VERSION),
                                    "storage": storage_status, "userStore": storage_status})
                 return
             if path == "/ui-layout":

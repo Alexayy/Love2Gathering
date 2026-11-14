@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "scope": "Actual generated NSIS x64 installer/uninstaller under isolated Wine9; chosen path includes spaces, Start Menu target checked, unlisted real SQLite saves inside/outside installation preserved. Bundled runtime version checks are separate; not native Windows gameplay acceptance.",
+  "checks": {
+    "chosenFolder": true,
+    "startMenuTarget": true,
+    "applicationRemoved": true,
+    "unlistedSQLitePreserved": true,
+    "outsideSQLitePreserved": true
+  },
+  "installerSha256": "30b64b50ac57ba3a25d3a5293153d9071661e9ed079b07221659217c9af111ed",
+  "sourceSha256": {
+    "packaging/windows/test_installer.py": "9fa5ecf8a262e25c2c3e4bed65e34ece124bc6ce57244bc4ac42e001c01a91b5",
+    "packaging/windows/installer.nsi": "e7e64e89611621a693b4e687aec998eefed6e32fa82359ef81a313b0816264f5",
+    "packaging/runtime/launcher.py": "9d2563629d941377670cafaa134d21189ac1d2a541198acd1ff9d554cda7a06e"
+  }
+}

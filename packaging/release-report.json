@@ -1,0 +1,62 @@
+{
+  "built": true,
+  "version": "2026.11.14",
+  "targets": [
+    "Linux x86_64",
+    "Windows x64"
+  ],
+  "artifacts": [
+    {
+      "file": "Love2Gathering-2026.11.14-linux-amd64.deb",
+      "bytes": 299414908,
+      "sha256": "46900cf8b23b577f2d5b4dd1aae4f66d7e009f073e09ce309740b5d5a7bd8a3f"
+    },
+    {
+      "file": "Love2Gathering-2026.11.14-linux-x86_64.rpm",
+      "bytes": 285185969,
+      "sha256": "397ef7c30dab7cf9caf5e23588a3b0035fe895940534eb5cafc214f62fa56e08"
+    },
+    {
+      "file": "Love2Gathering-2026.11.14-linux-x86_64.run",
+      "bytes": 291506154,
+      "sha256": "aeacc21a297aed156e274db8acc6c28b4c7a25546289c6210862b42878f8a0e5"
+    },
+    {
+      "file": "Love2Gathering-2026.11.14-x86_64.flatpak",
+      "bytes": 270781720,
+      "sha256": "750cf54964703760abf5719c7ac984976418335f78692101ef1e0f3658d583b8"
+    },
+    {
+      "file": "Love2Gathering-2026.11.14-windows-x64-setup.exe",
+      "bytes": 325444833,
+      "sha256": "30b64b50ac57ba3a25d3a5293153d9071661e9ed079b07221659217c9af111ed"
+    },
+    {
+      "file": "Love2Gathering-2026.11.14-linux-x86_64.tar.xz",
+      "bytes": 291505780,
+      "sha256": "7d8bd37b8316c56006372f18bc91c80efcafd456a1ed8da16bacac17eb6fb084"
+    },
+    {
+      "file": "install-flatpak.py",
+      "bytes": 16923,
+      "sha256": "71a77e17ac1de04f1e2ffc72a37488e5cb834ce03c5ecca8283b7bcc11892e86"
+    }
+  ],
+  "checks": {
+    "serviceTests": 176,
+    "cardBackGuiChecks": 17,
+    "linuxInstallerTests": 12,
+    "flatpakHelperTests": 16,
+    "linuxInstalledServicesAndUninstall": true,
+    "debPayloadFileHashesChecked": 273,
+    "rpmHeaderPayloadDigests": "verified",
+    "selfExtractorArchiveMatchesTar": true,
+    "flatpakActualFinalInstallUpdateServicesGui": true,
+    "windowsNsisInstallUninstallWine": true,
+    "windowsWin32StorageChecks": 3,
+    "windowsNativeOsGameplayVerified": false,
+    "nativeLinuxFullSnapshotDesktopAttempt": "180s index deadline expired; separate actual Flatpak full-catalog/GUI acceptance passed; native small-metadata desktop passed"
+  },
+  "scope": "Artifacts built and tested in isolated installation/data paths. No user saves/cache or generated catalog shipped. Native OS package-manager transactions and a real Windows game are not claimed.",
+  "engineGitlink": "d9b266fc981024873ac7ec5f90ee7121a060725e"
+}

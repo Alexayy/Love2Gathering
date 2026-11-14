@@ -1,0 +1,32 @@
+{
+  "images": [
+    {
+      "name": "Classic Magic",
+      "path": "assets/card-backs/classic-magic.jpg",
+      "suppliedFilename": "default-card-back.jpg",
+      "sha256": "6997a991f22568a32e921514883b44ac8b1a2fba52bdb0c0e413279f0283daa0",
+      "dimensions": [
+        763,
+        1039
+      ],
+      "mode": "RGB",
+      "modified": false,
+      "provenance": "Image attached by the project owner on 2026-11-14.",
+      "license": "No separate license supplied. This is not a Kenney/CC0 asset."
+    },
+    {
+      "name": "Mystic Eye",
+      "path": "assets/card-backs/mystic-eye.png",
+      "suppliedFilename": "r4ZBhRX.png",
+      "sha256": "4f9a8db956bf8593d952ea31840e424aa511947dfe0295591e18dc7dafe77c5f",
+      "dimensions": [
+        474,
+        672
+      ],
+      "mode": "RGB",
+      "modified": false,
+      "provenance": "Image attached by the project owner on 2026-11-14.",
+      "license": "No separate license supplied. This is not a Kenney/CC0 asset."
+    }
+  ]
+}

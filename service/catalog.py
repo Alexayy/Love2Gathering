@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import gzip
+import filelocks
 import os
 from pathlib import Path
 import re
@@ -51,12 +52,19 @@ class Catalog(GalleryCatalog,TokenCatalog):
 
     def ensure(self):
         try:
-            if self.current():
-                with self.connect() as connection:
-                    count = connection.execute("SELECT count(*) FROM cards").fetchone()[0]
-                self._status(state="ready", cards=count)
-                return
-            self.build()
+            self.database.parent.mkdir(parents=True, exist_ok=True)
+            # Installed desktop instances can share an index while owning
+            # separate services. Serialize its temporary build across processes,
+            # then recheck the complete index before doing expensive work.
+            with (self.database.parent / (self.database.name + '.build.lock')).open('a+b') as lock:
+                self._status(state='waiting', error=None)
+                filelocks.flock(lock, filelocks.LOCK_EX)
+                if self.current():
+                    with self.connect() as connection:
+                        count = connection.execute("SELECT count(*) FROM cards").fetchone()[0]
+                    self._status(state="ready", cards=count)
+                    return
+                self.build()
         except Exception as exc:
             self._status(state="error", error=str(exc))
 

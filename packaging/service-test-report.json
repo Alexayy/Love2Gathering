@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "scope": "Full Python service suite after API10 card-back validation and cross-platform storage lock/process changes. Temporary stores and controlled fetch fixtures only. Windows primitive execution and installed payload scopes are recorded separately.",
+  "tests": 176,
+  "seconds": 81.784,
+  "sourceSha256": {
+    "service/artists.py": "a5e7e5cbf721d31d712cff84bd7923f802c88a940d96d7f98f329a52032f4d1f",
+    "service/artwork.py": "24d7efaa3d6d6b0f0bd6be3e66f45de4fd7988367127a53fab0b6025b6b2f6ec",
+    "service/catalog.py": "69d8be7ab77d0917c12b587ee831ebc81e6c031bcefbfc3111ccc33a8bbdac44",
+    "service/deck_import.py": "5056e79a722139ad9aa1f5668baa85f482f222452eab22142f9ff3e1b00a0f79",
+    "service/downloads.py": "ea9e47118aa13353e9dfbc2a1166bf52fdd2706a0a9fc466f36651739e58d6d6",
+    "service/filelocks.py": "eb681e0e9bc6d2fd2c5ffc1da026ffd9370afe721aaf8733bc1d8d10ed416724",
+    "service/gallery_catalog.py": "8b89ddf02fb960b9178495eba3e28e2bf2348094187a42f77b874daaec99d62d",
+    "service/history.py": "3d9b738e38bcd9eb46ac74ff4338830cb40245f24342d3accaa6864061a4f20f",
+    "service/maintenance.py": "dcdc049bdfae38047df6e29945a60385b0c9305fdd82001af56f892cf2c9a77f",
+    "service/paths.py": "6078f9d90760417e8734ebba0f68761ff36f0ed45873fbeba8db1a34f007ef63",
+    "service/playmats.py": "6620fd3134b602bfc7a294925e94d6985db63c15ab5cec5d3d17e99678b32949",
+    "service/precons.py": "9c08656d10fa368c164030427b599548efd31246aef378872db05b0089701faa",
+    "service/processes.py": "5c23b803e637b0ad69f06b9ba32cd5e6ed43fdb9b502ed425f42c231bf017542",
+    "service/profiles.py": "20938ed34c561f780d1d5ab7196d9cc866ac3f5c177f7352d394b0784eb1abd9",
+    "service/replays.py": "833f0ff2970192e8dbbfd4ac29388405d02a0cbbe15999887ae6ad0090df6598",
+    "service/rooms.py": "c4107150ebb113ddb4dbf31f8c10d8066e301ecfefa76a56708e2063e662311c",
+    "service/search_text.py": "9206f42b4c161d83e9afe0d7e3836d00059d2d06dd621fa60608150969ffdb3d",
+    "service/server.py": "f93432b5ac6bd935c0fae5befc55f07e4000a1120253af22f1b290302a461e4e",
+    "service/storage.py": "d2cb9c1ca2f5b2ce1f99f941d27214f859072f67943c238e1aaf60bdc170aab0",
+    "service/storage_locations.py": "ddcf19475efa0103b563e87acf3ece30218f1861b7c617124f4605852c950697",
+    "service/storage_schema.py": "bc956a548f76d8d97ff92663d41aa64739e13b9f7465178cbfbf0bda2de49850",
+    "service/tokens.py": "a7f225732e28fcb6f6d710b35f5fe9b812cabe1459e4bc39c8818cec35dde25b",
+    "service/validation.py": "512c1d4071afbaca2aefb4088e099b13a354e5edbceac5a56cfb72fe130f1688"
+  }
+}

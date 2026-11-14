@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import argparse
 from contextlib import contextmanager
-import fcntl
 import gzip
 from http.client import HTTPException
 import json
@@ -28,6 +27,7 @@ PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT / 'service'))
 from storage import Storage
 from paths import default_data_dir, default_cache_dir
+import filelocks as fcntl
 
 MAX_IMAGE = 3 * 1024 * 1024
 MAX_RECORD = 2 * 1024 * 1024

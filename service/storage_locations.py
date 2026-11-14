@@ -1,7 +1,7 @@
 """Explicit restart-bound relocation with separate durable image-cache SQLite."""
 from contextlib import contextmanager
 from copy import deepcopy
-import fcntl
+import filelocks as fcntl
 import hashlib
 import json
 import os
@@ -17,6 +17,7 @@ import uuid
 
 from paths import config_file, read_config, explicit_override
 from replays import ConflictError, now
+from processes import process_alive, process_started_ms as _process_started_ms
 
 RESERVE = 64 * 1024 * 1024
 ART_SCHEMA = "CREATE TABLE art_cache(cache_key TEXT PRIMARY KEY,content BLOB NOT NULL,mime TEXT NOT NULL,metadata TEXT NOT NULL,updated_at INTEGER NOT NULL)"
@@ -44,9 +45,10 @@ def _atomic_json(path, value):
             json.dump(value, stream, ensure_ascii=False, separators=(',', ':'))
             stream.flush();os.fsync(stream.fileno())
         os.replace(temporary, path)
-        directory = os.open(path.parent, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
-        try:os.fsync(directory)
-        finally:os.close(directory)
+        if os.name != 'nt':
+            directory = os.open(path.parent, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
+            try:os.fsync(directory)
+            finally:os.close(directory)
     finally:
         if os.path.exists(temporary):os.unlink(temporary)
 
@@ -96,15 +98,6 @@ def _backup(source_path, destination_path, check=None, update=None):
     finally:source.close();destination.close()
 
 
-def _process_started_ms(pid):
-    """Linux process birth time; proof checks tolerate coarse boot-time seconds."""
-    try:
-        fields=Path('/proc/'+str(pid)+'/stat').read_text().rsplit(')',1)[1].split()
-        ticks=int(fields[19]);boot=next(int(line.split()[1])for line in Path('/proc/stat').read_text().splitlines()if line.startswith('btime '))
-        return round(boot*1000+ticks*1000/os.sysconf('SC_CLK_TCK'))
-    except (OSError,ValueError,IndexError,StopIteration):return None
-
-
 def _assert_cooperative_owners(path,connection=None):
     if not Path(path).exists():return
     if connection is None:
@@ -115,9 +108,7 @@ def _assert_cooperative_owners(path,connection=None):
     for row in connection.execute('SELECT DISTINCT owner_pid FROM replay_outbox'):
         pid=row[0]
         if not isinstance(pid,int)or pid<=0:continue
-        try:os.kill(pid,0)
-        except ProcessLookupError:continue
-        except PermissionError:pass
+        if not process_alive(pid):continue
         try:stamp=int(controls.get('owner_started:'+str(pid),'0'))
         except ValueError:stamp=0
         actual=_process_started_ms(pid)

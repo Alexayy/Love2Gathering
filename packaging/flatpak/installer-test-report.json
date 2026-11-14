@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "tests": 16,
+  "durationSeconds": 2.835,
+  "scope": "Temporary helper registration/update/uninstall tests with fake Flatpak command ledger; actual desktop-file-validate and gio launch through the generated wrapper. No real Flatpak installation, native gameplay, network download or user storage changes claimed by this report. Native sandbox acceptance is separate.",
+  "selectedPathCharacters": [
+    "spaces",
+    "percent",
+    "double-quotes",
+    "dollar",
+    "backticks",
+    "equals",
+    "backslash"
+  ],
+  "guards": [
+    "Foreign helpers inside existing Flatpak repository are preserved",
+    "Dangling command and desktop symlinks cannot be overwritten or followed",
+    "Selected installation and ownership marker cannot redirect to another prefix",
+    "Owned missing wrapper repairs its own dangling command link",
+    "Changed helper blocks update and survives uninstall",
+    "Uninstall preserves saved data, repository and changed/foreign shortcuts",
+    "Failed Flatpak command preserves existing registration",
+    "Folder picker cancellation runs no Flatpak command",
+    "Late foreign shortcut is preserved",
+    "Partial registration rolls back earlier owned writes",
+    "Exact legacy checksums permit upgrade to hashed ownership",
+    "Installer lock excludes parallel helpers",
+    "Native verified bundle import checks exact application ID and commit",
+    "Existing application updates without uninstall through its exclusive auto-created local origin",
+    "Shared Flathub/other-app origins and externally changed URLs are preserved",
+    "File repository URI encodes percent, spaces and special path characters",
+    "Deployment commit is verified so a native no-op cannot claim an update"
+  ],
+  "sourceSha256": {
+    "packaging/flatpak/install-flatpak.py": "71a77e17ac1de04f1e2ffc72a37488e5cb834ce03c5ecca8283b7bcc11892e86",
+    "packaging/flatpak/test_installer.py": "1cd43e1002b5e8113f5a38554b2d61a14462ccc86c35b8abdbb3c7cc87986d31",
+    "packaging/flatpak/README.md": "1f42d50df22dc585e604d1bb614ce12cf4d405ac4142216d708c26aa1fc6c9fb"
+  },
+  "references": [
+    "https://specifications.freedesktop.org/desktop-entry/latest/exec-variables.html",
+    "https://specifications.freedesktop.org/basedir/latest/",
+    "https://docs.flatpak.org/en/latest/flatpak-command-reference.html#environment"
+  ]
+}

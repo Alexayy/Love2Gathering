@@ -2,7 +2,7 @@
 from contextlib import contextmanager
 from copy import deepcopy
 import errno
-import fcntl
+import filelocks as fcntl
 import json
 import os
 from pathlib import Path

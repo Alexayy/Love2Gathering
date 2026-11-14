@@ -2,6 +2,10 @@
 
 A LÖVE desktop client with Slab controls, a 2D Magic table and a fanned hand. **XMage runs the game**: legal actions, mana, combat, targets, stack resolution, triggers and the computer opponent. The client displays that state and sends your choices back to the engine.
 
+## Installers
+
+Release builds include DEB, relocatable RPM, Flatpak, a Windows setup executable and a Linux installer with a folder picker. See [installation and build instructions](packaging/README.md) for custom locations such as `/mnt/Games/Love2Gathering`, menu shortcuts, dependencies and uninstall behavior. Saves and image caches remain separate from the application folder.
+
 ## Start
 
 XMage is a Git submodule pinned to the engine revision used by this client. Clone this repository with `git clone --recurse-submodules https://github.com/Alexayy/Love2Gathering.git`. For an existing clone, initialize it from the project root:
@@ -18,7 +22,7 @@ Install **Java 21, Python 3 and LÖVE 11.5**, then run (the launcher can also us
 
 The launcher starts the local card catalog, XMage, room-code gateway and the desktop window. The first build downloads Java dependencies; if Maven is unavailable, the script downloads a local copy using `curl` and `tar`. The supplied large `assets/all-cards*.jsonl` source is indexed locally into `service/data/catalog.sqlite`. Indexing progress appears in the client; set `LOVE2GATHERING_CATALOG_SOURCE` to select a particular snapshot.
 
-Build and service logs are in `.runtime/engine-build.log`, `.runtime/engine.log`, `.runtime/catalog.log` and `.runtime/rooms.log`. The launcher reuses a catalog with **API 9 or newer** and matching database/cache/source, and starts a separate engine and gateway for each desktop instance, so opening another client preserves an existing match. It selects available local ports and stops only services it started.
+Build and service logs are in `.runtime/engine-build.log`, `.runtime/engine.log`, `.runtime/catalog.log` and `.runtime/rooms.log`. The launcher reuses a catalog with **API 10 or newer** and matching database/cache/source, and starts a separate engine and gateway for each desktop instance, so opening another client preserves an existing match. It selects available local ports and stops only services it started.
 
 The splash opens while the launcher checks dependencies, storage, local version, catalog, XMage build, bridge and gateway. It decodes the curated graphics/audio and prepares fonts before opening the client. Card illustrations stream from the local cache as needed. Failures remain visible with the relevant stage; missing metadata offers an explicit saved-library fallback. The version check reads the installed revision; it does not download an application update.
 
@@ -120,7 +124,7 @@ The supplied **Beleren** font is used throughout the client, lobby and table. Un
 
 Presentation offers **Midnight, Amethyst, Ocean, Ember and Obsidian** palettes, with editable player/opponent accents. Panel opacity defaults to **65%** and is adjustable independently of the playmat and skybox. Smaller, adjustable Kenney pointers cover clickable, dragging, panning, resizing and text-editing states; unsupported cursor backends retain a native fallback.
 
-Presentation offers five supplied Kenney **space backgrounds**, **Off**, background brightness and playmat opacity. Backgrounds and playmats fill their areas with aspect-preserving cropping. **Counter display → Dice / Text** keeps the exact native value and counter name: dice 1–6 use pips, larger values remain exact numbers. **Explain keywords** adds short reminders for recognized abilities in card details. Accessibility offers **Pointer style → System / Kenney** and pointer size. Graphics offers Standard/High font raster quality and four supplied card backs. Kenney slider tracks/handles support dragging and double-click numeric entry. The Audio page controls the selected Kenney interface/card/shuffle/impact/dice sounds, music and volumes.
+Presentation offers five supplied Kenney **space backgrounds**, **Off**, background brightness and playmat opacity. Backgrounds and playmats fill their areas with aspect-preserving cropping. **Counter display → Dice / Text** keeps the exact native value and counter name: dice 1–6 use pips, larger values remain exact numbers. **Explain keywords** adds short reminders for recognized abilities in card details. Accessibility offers **Pointer style → System / Kenney** and pointer size. Graphics offers Standard/High font raster quality and six card backs: four Kenney styles plus the supplied Classic Magic and Mystic Eye images, displayed with their original colors and proportions. Kenney slider tracks/handles support dragging and double-click numeric entry. The Audio page controls the selected Kenney interface/card/shuffle/impact/dice sounds, music and volumes.
 
 Practice offers a chosen first player or animated **2d6** by default. Room games always use the server's dice result, rerolling tied highest scores. A resolved commander or spell with native mana value greater than five gives the terrain and individual cards a brief, eased shake; paid X comes from XMage. Motion/intensity settings control it. Target/attack lines have separate colors with their owner's outline. Bots choose a commander illustration or an in-identity full-art basic-land playmat, using exact cached art when available.
 

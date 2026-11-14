@@ -1,6 +1,15 @@
--- Licensed Kenney originals, loaded only when a surface is actually used.
+-- Curated Kenney surfaces and separately attributed user-supplied card backs.
 local manifest=require('assets.kenney.runtime.manifest')
 local Surfaces={};Surfaces.__index=Surfaces
+local suppliedBacks={
+    ['Classic Magic']={path='assets/card-backs/classic-magic.jpg',fit=true},
+    ['Mystic Eye']={path='assets/card-backs/mystic-eye.png',fit=true},
+}
+Surfaces.cardBackNames={'Arcane','Azure','Verdant','Crimson','Classic Magic','Mystic Eye'}
+function Surfaces.cardBackSpec(style)
+    local specs=manifest.cardBacks or{}
+    return suppliedBacks[style]or specs[style or'Arcane']or specs.Arcane
+end
 function Surfaces.new()return setmetatable({images={},quads={},stats={}},Surfaces)end
 function Surfaces:load(spec)
     if not spec then return end
@@ -55,10 +64,13 @@ function Surfaces:slider(x,y,w,h,value,colors)
     love.graphics.pop();self.stats.slider=(self.stats.slider or 0)+1;return true
 end
 function Surfaces:cardBack(x,y,w,h,style,colors)
-    local specs=manifest.cardBacks or{};local spec=specs[style or'Arcane']or specs.Arcane;local img=self:load(spec)
+    local spec=Surfaces.cardBackSpec(style);local img=self:load(spec)
     if not img then return false end
     love.graphics.push('all');love.graphics.setColor(style=='Arcane'and .40 or 1,style=='Arcane'and .46 or 1,style=='Arcane'and .70 or 1,1)
-    love.graphics.draw(img,x,y,0,w/img:getWidth(),h/img:getHeight())
+    if spec.fit then
+        local scale=math.min(w/img:getWidth(),h/img:getHeight())
+        love.graphics.draw(img,x+(w-img:getWidth()*scale)/2,y+(h-img:getHeight()*scale)/2,0,scale,scale)
+    else love.graphics.draw(img,x,y,0,w/img:getWidth(),h/img:getHeight())end
     if not style or style=='Arcane'then
         self:mask('hex-pattern',x+w*.09,y+h*.07,w*.82,h*.86,{.62,.68,.93,.18})
         self:mask('spotlight',x+w*.13,y+h*.24,w*.74,h*.52,{.18,.56,.63,.28})

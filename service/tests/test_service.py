@@ -150,7 +150,7 @@ class ServiceTest(unittest.TestCase):
             self.assertEqual(response.headers['Content-Type'],'image/jpeg')
             self.assertEqual(response.read(),data)
         health=self.request('/health')[1]
-        self.assertEqual(health['apiVersion'],9)
+        self.assertEqual(health['apiVersion'],10)
         self.assertEqual(health['catalogSource'],str(self.source.resolve()))
         self.assertEqual(health['userStore']['database'],'app.sqlite')
         self.assertEqual(health['storage']['dataDirectory'],str(self.storage.root.resolve()))

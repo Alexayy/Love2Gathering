@@ -14,7 +14,7 @@ class VisualPreferenceTests(unittest.TestCase):
             defaults=storage.settings()
             self.assertEqual(defaults['fontQuality'],'High');self.assertEqual(defaults['cursorScale'],.55);self.assertEqual(defaults['cardBackStyle'],'Arcane')
             for quality in('Standard','High'):
-                for style in('Arcane','Azure','Verdant','Crimson'):
+                for style in('Arcane','Azure','Verdant','Crimson','Classic Magic','Mystic Eye'):
                     storage.save_settings({'fontQuality':quality,'cardBackStyle':style,'cursorScale':.4,'boardImpactIntensity':0})
                     reopened=Storage(root/'saves',root/'bundled').settings()
                     self.assertEqual((reopened['fontQuality'],reopened['cardBackStyle'],reopened['cursorScale']),(quality,style,.4))
