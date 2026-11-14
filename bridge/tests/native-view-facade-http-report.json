@@ -1,0 +1,3790 @@
+{
+  "passed": true,
+  "scope": "Native choice HTTP checks against the explicit test-only NativeViewServer.\n\nInitial zones are deterministic fixtures. Answers use the production Session\naction implementation; this is not production deck-start or GUI evidence.\n",
+  "checks": {
+    "nativeAngel5WithPrinted2AndCounter": true,
+    "unsupportedAutotappingAndClockAreTruthful": true,
+    "scryNativeSelectionAcknowledged": true,
+    "scryNativeOrderingMetadata": true,
+    "scryNativeZonesAndOrderCorrect": true,
+    "scryOnlyAcceptedDistinctNativeInputsRecorded": true,
+    "surveilNativeSelectionAcknowledged": true,
+    "surveilNativeOrderingMetadata": true,
+    "surveilNativeZonesAndOrderCorrect": true,
+    "surveilOnlyAcceptedDistinctNativeInputsRecorded": true,
+    "nativeWoeStriderCancelRestoresUncommittedAction": true,
+    "nativeFlyingLandwalkUnblockableAndMenaceHints": true,
+    "nativeBlockAssignmentRelationships": true,
+    "nativeMenaceRejectsLoneBlockerAndReasks": true,
+    "nativeLookAtRetainedAfterTransientCallbackClears": true,
+    "nativeLookAtHasDismissalIdentityWithoutGameAnswer": true,
+    "nativeLookAtDoesNotExposeOtherHandContents": true
+  },
+  "cases": [
+    {
+      "scenario": "angel",
+      "nativeResult": {
+        "done": true,
+        "power": "5",
+        "toughness": "5",
+        "printedPower": "2",
+        "counters": {
+          "+1/+1": 1
+        }
+      },
+      "acceptedActions": [],
+      "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+    },
+    {
+      "scenario": "scry",
+      "nativeResult": {
+        "done": true,
+        "libraryTopToBottom": [
+          {
+            "id": "0f4e5199-cd7d-4155-bf91-e46009f64860",
+            "name": "Forest",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Forest\n{T}: Add {G}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "AFR",
+            "number": "278",
+            "counters": {},
+            "printing": {
+              "name": "Forest",
+              "power": "0",
+              "toughness": "0",
+              "set": "AFR",
+              "number": "278",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Forest",
+              "subtypes": [
+                "Forest"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Forest]"
+          },
+          {
+            "id": "a6eee3d0-65c6-483a-b888-6e67ccd9dd09",
+            "name": "Island",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Island\n{T}: Add {U}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "AFR",
+            "number": "266",
+            "counters": {},
+            "printing": {
+              "name": "Island",
+              "power": "0",
+              "toughness": "0",
+              "set": "AFR",
+              "number": "266",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Island",
+              "subtypes": [
+                "Island"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Island]"
+          },
+          {
+            "id": "7fd015b9-e2de-4e93-8646-baca18e98bf7",
+            "name": "Mountain",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Mountain\n{T}: Add {R}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "AFR",
+            "number": "274",
+            "counters": {},
+            "printing": {
+              "name": "Mountain",
+              "power": "0",
+              "toughness": "0",
+              "set": "AFR",
+              "number": "274",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Mountain",
+              "subtypes": [
+                "Mountain"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Mountain]"
+          },
+          {
+            "id": "0255d290-05a5-4157-b41c-eb11681fdcb5",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "239d194f-b97b-4667-913c-4c6204cf4185",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "72a1ed7b-53fd-4878-aa75-83ea0f5d2f0d",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "a2ab0eab-ee85-4511-849e-c1b65995543d",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "bcf3073e-078b-4b2b-a2c4-e984fd6ec310",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "131892ea-429c-411c-a368-f8fec2de57cc",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "3fde51c9-624d-481b-90dc-4fc9627d7bf1",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "33106efb-55a3-40f4-8375-4e8ed4290c78",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "c08f8d18-8211-4b69-8da1-50a470f90b0d",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "970b71bf-80f3-49bc-bd2a-8f3187cbb334",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "356676f0-a0a1-4977-94c6-ac89daff9ac2",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "103fc239-46a0-4c05-b7b3-97a32e278c65",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "012e9c2e-842d-4cb3-a434-be8348718b6f",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "ad2a7675-5a69-4a28-9075-f12485c30770",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "ba18d338-4647-4d3e-b22b-b11862c36791",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "97532fb4-c88f-435a-94f5-e238dcd725a8",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "5f42094a-ec70-4f3d-9a4f-e8589d13cfdb",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "51aab3e3-7094-4392-b044-47a9785a221b",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "d6bae4c5-8970-4bd7-872a-2fa815fd0fd6",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "335757a5-44e0-4eae-b6e7-b05076c357ce",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "31d554b5-c591-4d92-bae0-17b1f6a71d6b",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "a7a3f4e2-46da-4c38-96ce-231b0a349b6c",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "12805646-2ada-443a-a532-b598cc18d7ce",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "bc80d232-11e6-4e21-9bc5-1877d38bb3e8",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "de6602e9-813a-403e-9f6b-0462a234cdae",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "ef1e0df3-8879-43b8-ad20-29a3b75158c2",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "dd4db800-ab0c-4005-8174-3d0ca0d59fb1",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "a2f0e846-6912-430b-83fa-561757337217",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "bb6ec192-7ecc-4815-9c24-a9a5da7bc2b6",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "75a62ac3-aa41-4923-bd07-7b3f9a2dd102",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "d5fe8df4-dd08-4d49-a3a8-4fe0654073ca",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "5aae752d-1da6-4b8a-84e1-65d41b1da6ac",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "9c56a760-9857-4693-8413-db1d887018be",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "8071648e-e756-45e5-b0d6-b0c28a0b2d60",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "fda7c413-2561-4235-bc73-9085d41b9e92",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "7e4dbb5d-4684-4bbb-af85-10222d1e738a",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "4694a0b7-bf51-4ba9-9a77-23edeb125ac5",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "ca889782-cbfc-4328-836a-8697ee0c42a6",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "03f8f202-a280-4a9d-adfb-449d695d7feb",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "d39dff76-b5c8-4f53-a1e8-ef29061f31c5",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "97adb047-4f0e-4327-91a5-7535a0db78b1",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "bdc34e3c-dcec-41e4-9ab1-67567d0f6677",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "4469db75-81b8-4061-ada0-e03da3b4530b",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "70eb5988-0363-4276-8c87-b3726da58c35",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "acda2810-66fa-4cd5-8e74-ba11a4a20668",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "cd4f09e1-d7c1-406f-bb4b-42379ccc171e",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "affb9e13-0f97-4628-9b01-591f5f67f77d",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "d9f9c32a-d878-4e60-aca6-2e9b97a1f8ca",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "2bd480bd-856c-4ec2-a268-73272f692bb3",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "fbd1902b-2fd3-4aa9-81b3-b0f1e9a09137",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "de0738fd-6422-446c-80ae-7fd242a454d5",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "a0ae681d-7532-4ce8-baf4-3364edd9e251",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "339543af-b2b7-4845-9426-20cdcac6c280",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "265ddb0a-d702-463c-b1f5-6329bf1efc99",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "853acf28-c83d-46ec-bbe0-d76c76eddd43",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "9662acd0-1970-44d0-97bd-a85b325c1ffd",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "35051bd7-24b9-410c-a2f3-add9e9c7a6f7",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "81160e67-d2cc-4254-b06f-a4cf3ccae4c1",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "ba1585c2-df44-470c-8b25-6ded86e7ec15",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "8eba6a3a-c992-49ab-9c39-2bbf95aa9aca",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "fcb4b8f0-c99c-4f4d-8fba-1b212ac183f6",
+            "name": "Swamp",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Swamp\n{T}: Add {B}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "AFR",
+            "number": "270",
+            "counters": {},
+            "printing": {
+              "name": "Swamp",
+              "power": "0",
+              "toughness": "0",
+              "set": "AFR",
+              "number": "270",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Swamp",
+              "subtypes": [
+                "Swamp"
+              ]
+            },
+            "ownerId": "bef14983-5fc5-41cb-afa1-8102bbaa03e5",
+            "colors": [],
+            "subtypes": "[Swamp]"
+          }
+        ],
+        "graveyard": []
+      },
+      "acceptedActions": [
+        {
+          "promptId": 3,
+          "type": "uuid",
+          "value": "fcb4b8f0-c99c-4f4d-8fba-1b212ac183f6"
+        },
+        {
+          "promptId": 5,
+          "type": "boolean",
+          "value": false
+        },
+        {
+          "promptId": 8,
+          "type": "uuid",
+          "value": "a6eee3d0-65c6-483a-b888-6e67ccd9dd09"
+        }
+      ],
+      "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+    },
+    {
+      "scenario": "surveil",
+      "nativeResult": {
+        "done": true,
+        "libraryTopToBottom": [
+          {
+            "id": "cadf423f-d2a0-42ea-bcf7-1d157c1e5297",
+            "name": "Forest",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Forest\n{T}: Add {G}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "AFR",
+            "number": "278",
+            "counters": {},
+            "printing": {
+              "name": "Forest",
+              "power": "0",
+              "toughness": "0",
+              "set": "AFR",
+              "number": "278",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Forest",
+              "subtypes": [
+                "Forest"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Forest]"
+          },
+          {
+            "id": "a737595b-9818-4cf9-9d0e-2425e16e8da2",
+            "name": "Island",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Island\n{T}: Add {U}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "AFR",
+            "number": "266",
+            "counters": {},
+            "printing": {
+              "name": "Island",
+              "power": "0",
+              "toughness": "0",
+              "set": "AFR",
+              "number": "266",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Island",
+              "subtypes": [
+                "Island"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Island]"
+          },
+          {
+            "id": "90998fcd-659a-4e96-b0be-0ad143e915e6",
+            "name": "Mountain",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Mountain\n{T}: Add {R}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "AFR",
+            "number": "274",
+            "counters": {},
+            "printing": {
+              "name": "Mountain",
+              "power": "0",
+              "toughness": "0",
+              "set": "AFR",
+              "number": "274",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Mountain",
+              "subtypes": [
+                "Mountain"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Mountain]"
+          },
+          {
+            "id": "44a2b431-18b9-4054-b80e-0487dea3fecc",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "90ebe3ba-fa21-466d-81f4-6ef1ed8a9863",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "06173ce1-6482-456d-92eb-e6682575839b",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "108c1e8c-1a63-44ca-b189-1a9bd209859b",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "108de5f0-250d-474a-9fb6-70a4cb55ca3b",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "1665ce80-4adc-4463-bab2-87ea4ce9300e",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "b6cb6585-7495-4020-aaa3-1fb127dfac9c",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "223aaf7f-0b80-49b0-b423-d9c4ee713f5c",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "90e8ca58-8ebe-42fa-9494-35f40a9cd9fb",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "8164159e-e36e-4ccd-9007-08e215d96325",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "8eb1aa55-692b-46cd-a910-0701ea9d136a",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "15a59e65-9d03-4a5f-9c50-32951a76af5b",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "61125c22-a2ec-43cc-bc3d-80b7dc6bbda1",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "cd09f92f-d8c9-4483-a85d-a56d41e2817c",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "cfe42e7e-edc6-4af6-84a6-3ea05b403376",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "04f527df-af60-4b73-9ba9-6870d3d50f1f",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "f449c029-0f96-46bb-85ba-79e3d310c3c3",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "1946abfb-fd23-4ff4-a1ef-f6a180bc06c4",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "8d1c025f-b8f6-49f0-9cda-79be81e8fcfb",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "4f335aa2-4a73-4361-9e78-ea8253ecb042",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "4cab335d-c448-469d-85b4-8597413dd0d5",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "7424465e-eb03-444c-a0d9-a4056ad6931a",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "4b07a594-0fd3-4fef-93be-656118985388",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "2ad08b7f-08d1-4c0e-a049-cd902401c556",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "c25a853a-fc74-4922-bddf-dd5a80ef9b64",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "0391e737-4e7f-4676-9fee-7826b807e8ca",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "9831ab7b-f976-4194-bb2b-d6088d3a0366",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "feabc764-a628-4c63-ba0f-8ba56086c347",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "6b3461ea-0002-45d5-94b3-e56aeb255ba6",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "b12d39b8-2aa5-4685-8ed0-acde694d13ed",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "25ca2ae9-13e0-4626-a467-40c8d853c187",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "ce58bbb2-077a-41ef-9f20-a97e42cba953",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "2661b37a-e6d4-4a82-bde7-22fc48d058f3",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "55417483-69ad-4c83-8284-9b54e0e69cb9",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "72e9fba3-a523-4b07-aca0-892f670c69bd",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "c86a20f1-3f67-47b5-a4ba-3241dbd0e01f",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "48ec9cce-c4d8-4097-b9ca-0ad20267ab66",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "0a98abb2-8f69-48b7-9d58-ded96f551ad9",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "6103ecb3-5b25-4110-ba65-c3d989f9921f",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "9d7bab6a-cbed-4cdd-b9dd-388cacbb379b",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "3bc9f8ce-d333-4e89-bafa-1d7827c4a013",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "ca5adde9-5ce2-4d42-8d5c-03c99a29c585",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "86732887-324f-45a0-a50f-44c008e426b8",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "55d64c2b-07e4-4409-98c2-85c80866569a",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "abe17fa3-6ff7-4a9d-9853-811037840c27",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "bba8c266-b276-4bdf-9592-c16792312b86",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "7117ad7f-5cf9-4d81-a821-92f22560855c",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "37ba0b18-969e-44ad-8351-1b88a5494aec",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "7919d6e1-ae12-464a-9685-0d915fd32d38",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "0998dcbd-3cdd-4147-a883-fc43cda79231",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "0185ae73-0265-4f47-bec3-ef767d5dcf16",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "813f8967-6beb-4da8-bd71-8e2fc642b017",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "7dcecf94-bca9-42fa-b25c-3e6af9035d9e",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "c173dbc6-8ae7-459c-ba43-24bb605b7ee8",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "dff05380-7965-40db-8519-b43c7c559fc7",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "a962fbae-be58-4de3-ae91-d854322bc5b2",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "5fdb6f1d-d8eb-4b75-b95d-261493c33019",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "a10f0386-df46-4f3c-83c5-ba2108bce0e4",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "39ef38a6-934d-4b80-86a2-e49b90728894",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          },
+          {
+            "id": "b5e342f3-4fdd-4310-b6ce-63fd1a8bfe2c",
+            "name": "Plains",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Plains\n{T}: Add {W}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "KTK",
+            "number": "250",
+            "counters": {},
+            "printing": {
+              "name": "Plains",
+              "power": "0",
+              "toughness": "0",
+              "set": "KTK",
+              "number": "250",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Plains",
+              "subtypes": [
+                "Plains"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Plains]"
+          }
+        ],
+        "graveyard": [
+          {
+            "id": "c18b8e75-3047-4d4a-bf4d-20d07a404bc4",
+            "name": "Swamp",
+            "manaCost": "",
+            "type": "[Land]",
+            "rules": "Play Swamp\n{T}: Add {B}.",
+            "power": "0",
+            "toughness": "0",
+            "set": "AFR",
+            "number": "270",
+            "counters": {},
+            "printing": {
+              "name": "Swamp",
+              "power": "0",
+              "toughness": "0",
+              "set": "AFR",
+              "number": "270",
+              "colors": [],
+              "type": "Land",
+              "type_line": "Land \u2014 Swamp",
+              "subtypes": [
+                "Swamp"
+              ]
+            },
+            "ownerId": "b5e57b5e-f118-45dd-8f8c-3b7ed4d0b06f",
+            "colors": [],
+            "subtypes": "[Swamp]"
+          }
+        ]
+      },
+      "acceptedActions": [
+        {
+          "promptId": 3,
+          "type": "uuid",
+          "value": "c18b8e75-3047-4d4a-bf4d-20d07a404bc4"
+        },
+        {
+          "promptId": 5,
+          "type": "boolean",
+          "value": false
+        },
+        {
+          "promptId": 8,
+          "type": "uuid",
+          "value": "a737595b-9818-4cf9-9d0e-2425e16e8da2"
+        }
+      ],
+      "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+    },
+    {
+      "scenario": "cancel",
+      "nativeResult": {
+        "done": true,
+        "activationAccepted": false,
+        "sacrificeStillPresent": true,
+        "striderStillPresent": true,
+        "stackSize": 0
+      },
+      "acceptedActions": [
+        {
+          "promptId": 11,
+          "type": "boolean",
+          "value": false
+        }
+      ],
+      "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+    },
+    {
+      "scenario": "combat",
+      "nativeResult": {
+        "done": true,
+        "combat": {
+          "step": "DECLARE_BLOCKERS",
+          "groups": [
+            {
+              "attackerId": "95533d64-f033-483b-ad09-698296fc1712",
+              "attackerIds": [
+                "95533d64-f033-483b-ad09-698296fc1712"
+              ],
+              "defenderId": "e8a69e0b-51b3-4e5a-ab1d-8e8b12c37df2",
+              "defendingPlayerId": "e8a69e0b-51b3-4e5a-ab1d-8e8b12c37df2",
+              "blockerIds": [],
+              "blocked": false,
+              "minBlockers": 1,
+              "maxBlockers": 0
+            },
+            {
+              "attackerId": "f18a6085-ae2b-4e8e-a508-0416f83507da",
+              "attackerIds": [
+                "f18a6085-ae2b-4e8e-a508-0416f83507da"
+              ],
+              "defenderId": "e8a69e0b-51b3-4e5a-ab1d-8e8b12c37df2",
+              "defendingPlayerId": "e8a69e0b-51b3-4e5a-ab1d-8e8b12c37df2",
+              "blockerIds": [],
+              "blocked": false,
+              "minBlockers": 1,
+              "maxBlockers": 0
+            },
+            {
+              "attackerId": "d1a25fa9-6314-4a74-92d4-8921fd2aa35c",
+              "attackerIds": [
+                "d1a25fa9-6314-4a74-92d4-8921fd2aa35c"
+              ],
+              "defenderId": "e8a69e0b-51b3-4e5a-ab1d-8e8b12c37df2",
+              "defendingPlayerId": "e8a69e0b-51b3-4e5a-ab1d-8e8b12c37df2",
+              "blockerIds": [],
+              "blocked": false,
+              "minBlockers": 2,
+              "maxBlockers": 0
+            },
+            {
+              "attackerId": "d23de3f7-5008-4e69-b123-a48a64edd886",
+              "attackerIds": [
+                "d23de3f7-5008-4e69-b123-a48a64edd886"
+              ],
+              "defenderId": "e8a69e0b-51b3-4e5a-ab1d-8e8b12c37df2",
+              "defendingPlayerId": "e8a69e0b-51b3-4e5a-ab1d-8e8b12c37df2",
+              "blockerIds": [],
+              "blocked": false,
+              "minBlockers": 1,
+              "maxBlockers": 0
+            }
+          ],
+          "attackerIds": [
+            "d1a25fa9-6314-4a74-92d4-8921fd2aa35c",
+            "d23de3f7-5008-4e69-b123-a48a64edd886",
+            "95533d64-f033-483b-ad09-698296fc1712",
+            "f18a6085-ae2b-4e8e-a508-0416f83507da"
+          ],
+          "blockerIds": []
+        }
+      },
+      "acceptedActions": [
+        {
+          "promptId": 1,
+          "type": "uuid",
+          "value": "e3de4fd0-6232-42ad-b8ae-ff2bee8f067c"
+        },
+        {
+          "promptId": 3,
+          "type": "boolean",
+          "value": true
+        },
+        {
+          "promptId": 6,
+          "type": "boolean",
+          "value": true
+        }
+      ],
+      "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+    },
+    {
+      "scenario": "look",
+      "nativeResult": {
+        "done": true,
+        "lookedAtCardId": "d2df2aec-de18-42ce-a836-7b17be9048ce",
+        "nativeTransientListCleared": true
+      },
+      "acceptedActions": [],
+      "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+    }
+  ]
+}

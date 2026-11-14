@@ -1,0 +1,101 @@
+{
+  "passed": true,
+  "scope": "Real native Modern room games with two humans through the desktop gateway: native opening choices/private hands, opposite native concessions, host rematch with the same connections/seats/decks, authorization/stale-game fences, and actual completed host win/loss history from SQLite recordings. No fixture game state, direct native access, or coordinator credentials.",
+  "checks": [
+    "Isolated gateway serves the current room transport",
+    "Two distinct human connections join by invitation code",
+    "Both native-valid constructed decks are selected and ready",
+    "First real two-human native game reaches main with private seven-card hands and full decks",
+    "Running native game cannot be rematched",
+    "Guest cannot request a host rematch",
+    "Nonactive human concession produces an authoritative winner and enables host rematch",
+    "Completed native game still grants rematch only to the host",
+    "Host win history preserves both native participant names and their exact deck summaries",
+    "Rematch retains both original human connections and stable seat identities",
+    "Old native game action is rejected before it can concede the rematch",
+    "Rematch loads the same submitted native decks and preserves separate hidden hands",
+    "Rematch uses new native player instances in a new native game",
+    "A running rematch cannot be started again prematurely",
+    "Second real native game completes independently and remains eligible for a later host rematch",
+    "Opposite native concession produces a distinct host-loss history entry with correct winner flags",
+    "Both completed recordings remain distinct in genuine match history"
+  ],
+  "games": [
+    "9e504676-c284-43df-9d36-b674f1f388c6",
+    "98f9438f-8b2c-4e4a-8597-035895dc69be"
+  ],
+  "history": [
+    {
+      "id": "game-9e504676-c284-43df-9d36-b674f1f388c6-7ea4edab-9733-4f5b-bd57-0a3cd4ac8324",
+      "format": "Modern",
+      "status": "completed",
+      "outcome": "win",
+      "completed": true,
+      "players": [
+        {
+          "id": "b9e8e475-24f9-4a7d-9ed9-1b0f538af76d",
+          "seatId": "7ea4edab-9733-4f5b-bd57-0a3cd4ac8324",
+          "name": "Rematch Host",
+          "deck": {
+            "format": "Modern",
+            "id": "modern-boros-burn",
+            "name": "Boros Burn"
+          },
+          "won": true,
+          "lost": false,
+          "local": true
+        },
+        {
+          "id": "04fb1a47-b2ec-461a-a1d4-4cc103f06c8a",
+          "seatId": "9d560d38-6b4e-407a-a32b-8ecf817ff9fe",
+          "name": "Rematch Guest",
+          "deck": {
+            "format": "Modern",
+            "id": "modern-merfolk",
+            "name": "Merfolk"
+          },
+          "won": false,
+          "lost": true,
+          "local": false
+        }
+      ]
+    },
+    {
+      "id": "game-98f9438f-8b2c-4e4a-8597-035895dc69be-7ea4edab-9733-4f5b-bd57-0a3cd4ac8324",
+      "format": "Modern",
+      "status": "completed",
+      "outcome": "loss",
+      "completed": true,
+      "players": [
+        {
+          "id": "3df20914-e9c6-415e-aeef-3949995de631",
+          "seatId": "7ea4edab-9733-4f5b-bd57-0a3cd4ac8324",
+          "name": "Rematch Host",
+          "deck": {
+            "format": "Modern",
+            "id": "modern-boros-burn",
+            "name": "Boros Burn"
+          },
+          "won": false,
+          "lost": true,
+          "local": true
+        },
+        {
+          "id": "e39136cc-c3c4-4567-ae36-48f98f3da2de",
+          "seatId": "9d560d38-6b4e-407a-a32b-8ecf817ff9fe",
+          "name": "Rematch Guest",
+          "deck": {
+            "format": "Modern",
+            "id": "modern-merfolk",
+            "name": "Merfolk"
+          },
+          "won": true,
+          "lost": false,
+          "local": false
+        }
+      ]
+    }
+  ],
+  "allCreatedConnectionsClosed": true,
+  "seconds": 0.844
+}

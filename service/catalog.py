@@ -2,18 +2,21 @@
 from __future__ import annotations
 
 import json
+import gzip
 import os
 from pathlib import Path
 import re
 import sqlite3
 import threading
 import time
+from gallery_catalog import GalleryCatalog
+from tokens import TokenCatalog
 
-SCHEMA_VERSION = "5"
+SCHEMA_VERSION = "7"
 FORMATS = {"modern", "standard", "pioneer", "commander"}
 
 
-class Catalog:
+class Catalog(GalleryCatalog,TokenCatalog):
     def __init__(self, source: Path, database: Path):
         self.source = Path(source)
         self.database = Path(database)
@@ -65,7 +68,8 @@ class Catalog:
             return None
         fields = ("name", "mana_cost", "cmc", "type_line", "oracle_text", "colors",
                   "color_identity", "legalities", "image_uris", "set", "collector_number",
-                  "power", "toughness", "loyalty", "defense", "layout", "released_at", "set_name")
+                  "power", "toughness", "loyalty", "defense", "layout", "released_at", "set_name",
+                  "artist", "artist_ids", "frame_effects", "border_color", "illustration_id", "lang", "scryfall_uri", "all_parts")
         card = {key: raw.get(key) for key in fields}
         card.update(id=raw.get("oracle_id") or raw.get("id"),
                     printing_id=raw.get("id"), card_faces=faces)
@@ -98,11 +102,13 @@ class Catalog:
                     rank INTEGER NOT NULL, payload TEXT NOT NULL);
                 CREATE INDEX cards_name ON cards(name COLLATE NOCASE);
                 CREATE TABLE card_sets(card_id TEXT, set_code TEXT, set_name TEXT,
-                    printing_id TEXT PRIMARY KEY, collector_number TEXT, image_url TEXT, face_images TEXT);
+                    printing_id TEXT PRIMARY KEY, collector_number TEXT, image_url TEXT, face_images TEXT,payload TEXT);
                 CREATE INDEX card_sets_card ON card_sets(card_id);
                 CREATE INDEX card_sets_set ON card_sets(set_code, card_id);
                 CREATE TABLE aliases(name TEXT PRIMARY KEY COLLATE NOCASE, card_id TEXT, face INTEGER);
             """)
+            self.create_gallery(connection)
+            self.create_tokens(connection)
             statement = """INSERT INTO cards VALUES (?,?,?,?,?,?,?,?,?,?,?)
                 ON CONFLICT(name) DO UPDATE SET
                     id=excluded.id, search=excluded.search, type_line=excluded.type_line,
@@ -110,7 +116,7 @@ class Catalog:
                     pioneer=excluded.pioneer, commander=excluded.commander,
                     rank=excluded.rank, payload=excluded.payload WHERE excluded.rank > cards.rank"""
             lines = 0
-            with self.source.open("r", encoding="utf-8") as stream:
+            with (gzip.open(self.source, "rt", encoding="utf-8") if self.source.suffix == ".gz" else self.source.open("r", encoding="utf-8")) as stream:
                 for lines, line in enumerate(stream, 1):
                     if not line.strip():
                         continue
@@ -118,6 +124,8 @@ class Catalog:
                         raw = json.loads(line)
                     except json.JSONDecodeError as exc:
                         raise ValueError(f"Invalid JSONL at line {lines}: {exc.msg}") from exc
+                    self.index_gallery(connection, raw)
+                    self.index_tokens(connection, raw)
                     # This local bulk file includes translations and printings. Keep one
                     # English oracle entry, preferring paper cards with usable card art.
                     if raw.get("lang", "en") != "en":
@@ -133,10 +141,11 @@ class Catalog:
                         (card["type_line"] or "").casefold(), "".join(card["color_identity"]),
                         *(legalities.get(fmt, "not_legal") for fmt in ("modern", "standard", "pioneer", "commander")),
                         rank, json.dumps(card, ensure_ascii=False, separators=(",", ":"))))
-                    connection.execute("INSERT OR IGNORE INTO card_sets VALUES (?,?,?,?,?,?,?)", (
+                    connection.execute("INSERT OR IGNORE INTO card_sets VALUES (?,?,?,?,?,?,?,?)", (
                         card["id"], card["set"], raw.get("set_name", card["set"]), card["printing_id"],
-                        card["collector_number"], json.dumps({key: value for key, value in card["image_uris"].items() if key in ("normal", "art_crop")}),
-                        json.dumps([{key: value for key, value in f.get("image_uris", {}).items() if key in ("normal", "art_crop")} for f in card["card_faces"]])))
+                        card["collector_number"], json.dumps({key: value for key, value in card["image_uris"].items() if key in ("normal", "large", "art_crop")}),
+                        json.dumps([{key: value for key, value in f.get("image_uris", {}).items() if key in ("normal", "large", "art_crop")} for f in card["card_faces"]]),
+                        json.dumps(card, ensure_ascii=False, separators=(",", ":"))))
                     for face, data in enumerate(card["card_faces"]):
                         if data.get("name"):
                             connection.execute("INSERT OR IGNORE INTO aliases VALUES (?,?,?)", (data["name"], card["id"], face))
@@ -204,6 +213,10 @@ class Catalog:
     def _printing(card, printing):
         if not printing:
             return card
+        if printing["payload"]:
+            requested = card.get("requested_face")
+            card.update(json.loads(printing["payload"]))
+            if requested is not None: card["requested_face"] = requested
         card.update(set=printing["set_code"], set_name=printing["set_name"], printing_id=printing["printing_id"], collector_number=printing["collector_number"])
         if printing["image_url"]:
             card["image_uris"] = json.loads(printing["image_url"])
@@ -220,6 +233,14 @@ class Catalog:
             rows = connection.execute("SELECT s.set_code AS code, s.set_name AS name, count(DISTINCT s.card_id) AS count FROM card_sets s JOIN cards ON cards.id=s.card_id" + where + " GROUP BY s.set_code ORDER BY s.set_name COLLATE NOCASE")
             return [dict(row) for row in rows]
 
+    def deck_colors(self, deck):
+        names = list({entry['name'] for zone in ('main', 'commander') for entry in deck.get(zone, [])})
+        if not names: return []
+        with self.connect() as connection:
+            rows = connection.execute('SELECT payload FROM cards WHERE name COLLATE NOCASE IN (' + ','.join('?' for _ in names) + ')', names)
+            colors = {color for row in rows for color in (json.loads(row[0]).get('color_identity') or [])}
+        return [color for color in 'WUBRG' if color in colors]
+
     def get(self, identifier=None, name=None, printing_id=None):
         with self.connect() as connection:
             row = connection.execute("SELECT payload FROM cards WHERE " + ("name = ? COLLATE NOCASE" if name is not None else "id = ?"),
@@ -231,7 +252,13 @@ class Catalog:
                     row = connection.execute("SELECT payload FROM cards WHERE id=?", (alias["card_id"],)).fetchone()
                     face = alias["face"]
             if not row:
-                return None
+                # Token printings and names shared by different oracle objects
+                # still have exact per-printing records even when not selected
+                # as the builder's representative name row.
+                printing = connection.execute('SELECT * FROM card_sets WHERE printing_id=? OR (card_id=? AND printing_id=?) LIMIT 1', (identifier, identifier, printing_id)).fetchone() if identifier else None
+                if not printing: return None
+                card = json.loads(printing['payload'])
+                return self._printing(card, printing)
             card = json.loads(row[0])
             if face is not None:
                 card["requested_face"] = face

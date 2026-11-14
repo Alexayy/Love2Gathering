@@ -6,11 +6,17 @@ import re
 import sqlite3
 import threading
 import time
+import uuid
 from replays import ReplayStore, ConflictError, encode, now
 from storage_schema import StorageSchema, DEFAULT_SETTINGS, FORMATS
+from artwork import ArtworkStore
+from tokens import TokenPreferences
+from history import HistoryStore
+from precons import PreconStore
+from profiles import ProfileStore
 USER_SCHEMA_VERSION=1
 
-class Storage(StorageSchema,ReplayStore):
+class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistoryStore,PreconStore,ProfileStore):
     def __init__(self,data_dir,bundled_decks):
         self.root=Path(data_dir);self.bundled=Path(bundled_decks)
         self.root.mkdir(parents=True,exist_ok=True)
@@ -36,13 +42,15 @@ class Storage(StorageSchema,ReplayStore):
                 CREATE TABLE IF NOT EXISTS ui_layout(key TEXT PRIMARY KEY,value TEXT NOT NULL);
                 CREATE TABLE IF NOT EXISTS migration_issues(source TEXT PRIMARY KEY,error TEXT NOT NULL);
                 CREATE TABLE IF NOT EXISTS art_cache(cache_key TEXT PRIMARY KEY,content BLOB NOT NULL,mime TEXT NOT NULL,metadata TEXT NOT NULL,updated_at INTEGER NOT NULL);
+                CREATE INDEX IF NOT EXISTS art_oracle_face_kind ON art_cache(json_extract(metadata,'$.oracleId'),CAST(json_extract(metadata,'$.face') AS INTEGER),json_extract(metadata,'$.kind'));
+                CREATE TABLE IF NOT EXISTS token_preferences(deck_id TEXT PRIMARY KEY,payload TEXT NOT NULL,updated_at INTEGER NOT NULL);
                 CREATE TABLE IF NOT EXISTS replays(id TEXT PRIMARY KEY,payload TEXT NOT NULL,status TEXT NOT NULL,created_at INTEGER NOT NULL,updated_at INTEGER NOT NULL,finished_at INTEGER);
                 CREATE TABLE IF NOT EXISTS replay_events(replay_id TEXT NOT NULL REFERENCES replays(id) ON DELETE CASCADE,sequence INTEGER NOT NULL,type TEXT NOT NULL,timestamp TEXT,payload TEXT NOT NULL,digest TEXT NOT NULL,PRIMARY KEY(replay_id,sequence));
                 CREATE INDEX IF NOT EXISTS replays_created ON replays(created_at DESC);
                 CREATE INDEX IF NOT EXISTS replay_frames ON replay_events(replay_id,type,sequence);
                 INSERT OR IGNORE INTO meta VALUES('schema_version','1');COMMIT;''')
         finally:c.close()
-        self._migrate_legacy();self._migrate_legacy_art();self._seed_bundled()
+        self._migrate_legacy();self._migrate_legacy_art();self._seed_bundled();self._init_precons();self._init_profile_storage()
 
     @contextmanager
     def connection(self,write=False):
@@ -133,25 +141,73 @@ class Storage(StorageSchema,ReplayStore):
         with self.connection() as c:issues=[dict(r) for r in c.execute('SELECT source,error FROM migration_issues ORDER BY source')]
         return {'database':'app.sqlite','dataDirectory':str(self.root.resolve()),'schemaVersion':USER_SCHEMA_VERSION,'journalMode':'wal','legacyFilesPreserved':True,'migrationIssues':issues}
 
-    def list_decks(self):
+    def list_decks(self,origin=None):
         self._seed_bundled()
+        if origin not in (None,'','all','user','starter','bundled'):raise ValueError('Deck origin must be user, starter or all')
         with self.connection() as c:
-            rows=c.execute("SELECT d.payload,d.origin FROM decks d WHERE NOT EXISTS(SELECT 1 FROM hidden_decks h WHERE h.id=d.id) AND (d.origin='user' OR NOT EXISTS(SELECT 1 FROM decks u WHERE u.id=d.id AND u.origin='user'))")
+            if origin in ('starter','bundled'):
+                rows=c.execute("SELECT payload,origin FROM decks WHERE origin='bundled'")
+            elif origin=='user':
+                rows=c.execute("SELECT payload,origin FROM decks WHERE origin='user' AND NOT EXISTS(SELECT 1 FROM hidden_decks h WHERE h.id=decks.id)")
+            else:
+                rows=c.execute("SELECT d.payload,d.origin FROM decks d WHERE NOT EXISTS(SELECT 1 FROM hidden_decks h WHERE h.id=d.id) AND (d.origin='user' OR NOT EXISTS(SELECT 1 FROM decks u WHERE u.id=d.id AND u.origin='user'))")
             decks=[dict(json.loads(r['payload']),origin=r['origin']) for r in rows]
+        for deck in decks:
+            deck['collection']='mine' if deck['origin']=='user' else 'starter'
+            if origin in ('starter','bundled'):
+                deck['sourceId']=deck['id'];deck['id']='starter-'+deck['id'];deck['readOnly']=True
         return sorted(decks,key=lambda d:(d['format'],d['name'].casefold()))
 
     def get_deck(self,identifier):
         self.check_id(identifier)
+        if identifier.startswith('starter-'):
+            self._seed_bundled()
+            with self.connection() as c:
+                # Preserve a pre-existing owned identifier if it predates these
+                # aliases; normal new templates never write into this namespace.
+                user=c.execute("SELECT payload FROM decks WHERE id=? AND origin='user'",(identifier,)).fetchone()
+                if user:return dict(json.loads(user[0]),origin='user',collection='mine')
+                row=c.execute("SELECT payload FROM decks WHERE id=? AND origin='bundled'",(identifier[len('starter-'):],)).fetchone()
+            if row:
+                deck=json.loads(row[0]);return dict(deck,id=identifier,sourceId=deck['id'],origin='bundled',collection='starter',readOnly=True)
+        if identifier.startswith('precon-'):
+            with self.connection() as c: user=c.execute("SELECT payload FROM decks WHERE id=? AND origin='user'",(identifier,)).fetchone()
+            if user:return dict(json.loads(user[0]),origin='user',collection='mine')
+            return self.get_precon(identifier)
         return next((d for d in self.list_decks() if d['id']==identifier),None)
 
+    def copy_deck(self,identifier,name=None,format_name=None):
+        source=self.get_deck(identifier)
+        if source is None:raise KeyError('Deck not found')
+        value=dict(source)
+        value['id']='deck-'+uuid.uuid4().hex[:16]
+        if name is not None:value['name']=name
+        if format_name is not None:value['format']=format_name
+        if str(value.get('format','')).lower() not in FORMATS:raise ValueError('Choose Commander, Modern, Standard or Pioneer for the editable copy; the original product is an unvalidated archive')
+        value['sourceDeck']={'id':source['id'],'name':source['name'],'origin':source.get('origin','user')}
+        return self.validate_deck(value)
+
+    def _owned_save(self,value,identifier=None):
+        requested=identifier or value.get('id')
+        if requested:
+            self.check_id(requested)
+            with self.connection() as c:
+                owned=c.execute("SELECT 1 FROM decks WHERE id=? AND origin='user'",(requested,)).fetchone()
+                bundled=c.execute("SELECT 1 FROM decks WHERE id=? AND origin='bundled'",(requested,)).fetchone()
+            template=None if owned else self.get_deck(requested) if bundled or requested.startswith(('starter-','precon-')) else None
+            if template and template.get('origin')!='user':
+                copied=dict(value,id='deck-'+uuid.uuid4().hex[:16],sourceDeck={'id':template['id'],'name':template['name'],'origin':template['origin']})
+                return self.validate_deck(copied)
+        return self.validate_deck(value,identifier)
+
     def save_deck(self,value,identifier=None,validation=None):
-        deck=self.validate_deck(value,identifier)
+        deck=self._owned_save(value,identifier)
         if validation is not None:deck['draft']=bool(validation['draft'])
         elif isinstance(value.get('draft'),bool):deck['draft']=value['draft']
         with self.connection(write=True) as c:
             c.execute("INSERT INTO decks VALUES (?,'user',?,?) ON CONFLICT(id,origin) DO UPDATE SET payload=excluded.payload,updated_at=excluded.updated_at",(deck['id'],encode(deck),now()))
             c.execute('DELETE FROM hidden_decks WHERE id=?',(deck['id'],))
-        result=dict(deck,origin='user')
+        result=dict(deck,origin='user',collection='mine')
         if validation is not None:result['validation']=validation
         return result
 

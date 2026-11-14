@@ -6,6 +6,16 @@ if [[ "${1:-}" == '--help' ]]; then
   printf 'Usage: ./run.sh [--services-only | LÖVE arguments]\nStarts the catalog, XMage and the desktop client. First launch builds XMage.\n'
   exit 0
 fi
+# Also use a JDK already installed by local development/build setup.
+if ! command -v java >/dev/null 2>&1; then
+  for task_java in "$PROJECT_ROOT"/.tools/jdk-*/bin/java; do
+    if [[ -x "$task_java" ]]; then
+      export JAVA_HOME="${task_java%/bin/java}"
+      export PATH="$JAVA_HOME/bin:$PATH"
+      break
+    fi
+  done
+fi
 for executable in java python3 love; do
   if ! command -v "$executable" >/dev/null 2>&1; then printf 'Please install %s before starting.\n' "$executable" >&2; exit 1; fi
 done
@@ -38,14 +48,17 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 healthy() {
   python3 - "$1" "${2:-any}" "$USER_DATA_DIR" <<'PY'
-import json, sys, urllib.request
+import json, os, pathlib, sys, urllib.request
 try:
     with urllib.request.urlopen('http://127.0.0.1:'+sys.argv[1]+'/health', timeout=1) as response:
         data=json.load(response)
     assert data.get('status')=='ok' or data.get('engine')=='XMage'
     if sys.argv[2]=='catalog':
-        assert data.get('apiVersion',0)>=3
+        assert data.get('apiVersion',0)>=6
         assert data.get('storage',{}).get('dataDirectory')==sys.argv[3]
+        source=os.environ.get('LOVE2GATHERING_CATALOG_SOURCE')
+        if source:
+            assert data.get('catalogSource')==str(pathlib.Path(source).resolve())
 except Exception:
     raise SystemExit(1)
 PY
@@ -73,8 +86,15 @@ fi
 # Every desktop instance owns its game engine. Opening a new client cannot
 # replace another client's active match, including an older running version.
 ENGINE_PORT=$(free_port "${LOVE2GATHERING_ENGINE_PORT:-17371}" "$CATALOG_PORT")
+ROOM_PORT=$(free_port "${LOVE2GATHERING_ROOM_PORT:-17380}" "$ENGINE_PORT")
+while [[ "$ROOM_PORT" == "$CATALOG_PORT" ]]; do ROOM_PORT=$(free_port "$((ROOM_PORT+1))" "$ENGINE_PORT"); done
 export LOVE2GATHERING_CATALOG_PORT="$CATALOG_PORT"
 export LOVE2GATHERING_ENGINE_PORT="$ENGINE_PORT"
+export LOVE2GATHERING_ROOM_PORT="$ROOM_PORT"
+if [[ -z "${LOVE2GATHERING_COORDINATOR_TOKEN:-}" ]]; then
+  LOVE2GATHERING_COORDINATOR_TOKEN=$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')
+  export LOVE2GATHERING_COORDINATOR_TOKEN
+fi
 if [[ ! -f bridge/target/xmage-bridge-1.0.0.jar ]] || [[ -n "$(find bridge engine/mage -type d \( -name target -o -name .git \) -prune -o -type f \( -name '*.java' -o -name pom.xml -o -name build_card_map.py \) -newer bridge/target/xmage-bridge-1.0.0.jar -print -quit 2>/dev/null)" ]]; then
     printf 'Building XMage and the local bridge. The first build downloads dependencies.\n'
     setsid scripts/build-engine.sh >.runtime/engine-build.log 2>&1 &
@@ -96,9 +116,16 @@ for attempt in $(seq 1 30); do
   if [[ "$attempt" == 30 ]]; then printf 'Services could not start. Check .runtime/catalog.log and .runtime/engine.log.\n' >&2;exit 1;fi
   sleep 1
 done
+python3 service/rooms.py --port "$ROOM_PORT" --engine-port "$ENGINE_PORT" --catalog-port "$CATALOG_PORT" >.runtime/rooms.log 2>&1 &
+OWNED_PIDS+=("$!")
+for attempt in $(seq 1 20); do
+  if healthy "$ROOM_PORT"; then break; fi
+  if [[ "$attempt" == 20 ]]; then printf 'The room gateway could not start. Check .runtime/rooms.log.\n' >&2;exit 1;fi
+  sleep .2
+done
 if [[ "${1:-}" == '--services-only' ]]; then
-  printf 'Catalog %s; XMage %s. Keep this terminal open.\n' "$CATALOG_PORT" "$ENGINE_PORT"
-  printf 'Connect with: LOVE2GATHERING_CATALOG_PORT=%s LOVE2GATHERING_ENGINE_PORT=%s love .\n' "$CATALOG_PORT" "$ENGINE_PORT"
+  printf 'Catalog %s; XMage %s; room codes %s. Keep this terminal open.\n' "$CATALOG_PORT" "$ENGINE_PORT" "$ROOM_PORT"
+  printf 'Connect with: LOVE2GATHERING_CATALOG_PORT=%s LOVE2GATHERING_ENGINE_PORT=%s LOVE2GATHERING_ROOM_PORT=%s love .\n' "$CATALOG_PORT" "$ENGINE_PORT" "$ROOM_PORT"
   while true; do sleep 1; done
 else
   love "$PROJECT_ROOT" "$@"

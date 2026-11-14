@@ -14,6 +14,8 @@ from urllib.error import URLError
 from catalog import Catalog, SCHEMA_VERSION
 from storage import Storage, ConflictError
 from validation import validate
+from artwork import prefer_cached_card
+from deck_import import preview as import_preview
 
 PROJECT = Path(__file__).resolve().parent.parent
 
@@ -75,8 +77,9 @@ def make_handler(catalog, storage):
                 progress = catalog.status()
                 storage_status = storage.health()
                 self.respond(200, {"status": "ok", "ready": progress["state"] == "ready",
-                                   "index": progress, "source": catalog.source.name, "version": 3,
-                                   "apiVersion": 3, "schemaVersion": int(SCHEMA_VERSION),
+                                   "index": progress, "source": catalog.source.name,
+                                   "catalogSource": str(catalog.source.resolve()), "version": 3,
+                                   "apiVersion": 6, "schemaVersion": int(SCHEMA_VERSION),
                                    "storage": storage_status, "userStore": storage_status})
                 return
             if path == "/ui-layout":
@@ -89,6 +92,9 @@ def make_handler(catalog, storage):
                     self.respond(200, storage.list_replays(min(200, max(1, int(param("limit", "50")))), max(0, int(param("offset", "0")))))
                 elif method == "POST": self.respond(201, storage.create_replay(self.read_json()))
                 else: self.respond(405, {"error": "Method not allowed"})
+                return
+            if path == '/history' and method == 'GET':
+                self.respond(200, storage.history(min(60, max(1, int(param('limit', '30')))), max(0, int(param('offset', '0')))))
                 return
             if path.startswith("/replays/"):
                 parts = path.split("/")
@@ -115,10 +121,46 @@ def make_handler(catalog, storage):
                 elif method == "PUT": self.respond(200, storage.save_settings(self.read_json()))
                 else: self.respond(405, {"error": "Method not allowed"})
                 return
+            if path == '/profile':
+                if method == 'GET':self.respond(200,storage.profile())
+                elif method == 'PUT':self.respond(200,storage.save_profile(self.read_json(),catalog))
+                else:self.respond(405,{'error':'Method not allowed'})
+                return
+            if path == '/precons/stats' and method == 'GET':
+                self.respond(200,storage.precon_stats());return
+            if path == '/precons' and method == 'GET':
+                self.respond(200,storage.precons(param('q'),param('format'),param('set'),param('type'),param('category','deck'),min(60,max(1,int(param('limit','24')))),max(0,int(param('offset','0')))));return
+            if path.startswith('/precons/') and method == 'GET':
+                deck=storage.get_precon(path[len('/precons/'):]);self.respond(200 if deck else 404,deck or {'error':'Preconstructed deck not found'});return
             if path == "/decks":
-                if method == "GET": self.respond(200, {"decks": storage.list_decks()})
+                if method == "GET":
+                    decks = storage.list_decks(param('origin') or None)
+                    if catalog.status()['state'] == 'ready':
+                        for deck in decks: deck['colorIdentity'] = catalog.deck_colors(deck)
+                    self.respond(200, {"decks": decks})
                 elif method == "POST": self.save_deck(self.read_json(), status=201)
                 else: self.respond(405, {"error": "Method not allowed"})
+                return
+            if path.startswith('/decks/') and path.endswith('/fork') and method == 'POST':
+                if catalog.status()['state']!='ready':self.respond(503,{'error':'Card index is not ready'});return
+                identifier=path[len('/decks/'):-len('/fork')];body=self.read_json()
+                if not isinstance(body,dict):raise ValueError('Deck copy options must be an object')
+                deck=storage.copy_deck(identifier,body.get('name'),body.get('format'))
+                result=validate(deck,catalog)
+                if not result['saveAllowed']:
+                    self.respond(422,{'error':result['errors'][0]['message'],'deck':deck,'validation':result,'saved':False});return
+                self.respond(201,{'deck':storage.save_deck(deck,validation=result),'validation':result,'saved':True});return
+            if path == '/imports/preview' and method == 'POST':
+                if catalog.status()['state'] != 'ready':
+                    self.respond(503, {'error': 'Card index is not ready'});return
+                self.respond(200, import_preview(self.read_json(), catalog, storage))
+                return
+            if path.startswith('/decks/') and path.endswith('/token-art'):
+                identifier = path[len('/decks/'):-len('/token-art')]
+                if not storage.get_deck(identifier): raise KeyError('Deck not found')
+                if method == 'GET': self.respond(200, storage.token_preferences(identifier))
+                elif method == 'PUT': self.respond(200, storage.save_token_preferences(identifier, self.read_json(), catalog))
+                else: self.respond(405, {'error': 'Method not allowed'})
                 return
             if path == "/decks/validate" and method == "POST":
                 if catalog.status()["state"] != "ready":
@@ -139,7 +181,7 @@ def make_handler(catalog, storage):
                     self.respond(200 if deleted else 404, {"deleted": deleted})
                 else: self.respond(405, {"error": "Method not allowed"})
                 return
-            if path.startswith(("/cards", "/art", "/sets")) and catalog.status()["state"] != "ready":
+            if path.startswith(("/cards", "/art", "/sets", "/gallery/art", "/tokens")) and catalog.status()["state"] != "ready":
                 self.respond(503, {"error": "Card index is not ready", "index": catalog.status()})
                 return
             if method == "GET" and path == "/cards":
@@ -152,42 +194,66 @@ def make_handler(catalog, storage):
                 return
             if method == "GET" and path.startswith("/cards/"):
                 card = catalog.get(name=param("name"), printing_id=param("printing") or None) if path == "/cards/by-name" else catalog.get(identifier=path[len("/cards/"):], printing_id=param("printing") or None)
+                if card and not param('printing'): card = prefer_cached_card(catalog, storage, card)
                 self.respond(200 if card else 404, card or {"error": "Card not found"})
                 return
-            if method == "GET" and path.startswith("/art/"):
-                identifier = path[len("/art/"):]
-                card = catalog.get(identifier=identifier, printing_id=param("printing") or None)
+            if path == '/tokens' and method == 'GET':
+                deck = storage.get_deck(param('deckId')) if param('deckId') else None
+                if param('deckId') and not deck: raise KeyError('Deck not found')
+                result = catalog.tokens(param('q'), deck, min(60, max(1, int(param('limit', '24')))), max(0, int(param('offset', '0'))))
+                result['preferences'] = storage.token_preferences(param('deckId')) if deck else {'mode': 'default', 'selected': []}
+                self.respond(200, result);return
+            if path == '/tokens/resolve' and method == 'POST':
+                body = self.read_json();deck_id = body.get('deckId');deck = storage.get_deck(deck_id) if deck_id else None
+                preferences = storage.token_preferences(deck_id) if deck else {'mode': 'default', 'selected': []}
+                card = catalog.resolve_token(body.get('token'), preferences, body.get('seed', ''), deck)
+                self.respond(200, {'card': card, 'mode': preferences['mode']});return
+            if method == "GET" and path == "/gallery":
+                if catalog.status()["state"] != "ready":
+                    self.respond(503, {"error": "Artwork index is not ready. Configure a local JSONL source or explicitly download Scryfall bulk metadata.", "index": catalog.status()})
+                    return
+                self.respond(200, catalog.gallery(param("q"), param("artist"), param("set"), param("variant", "all"), param("lang", "en"), min(60, max(1, int(param("limit", "24")))), max(0, int(param("offset", "0")))))
+                return
+            if method == "GET" and (path.startswith("/art/") or path.startswith("/gallery/art/")):
+                gallery = path.startswith("/gallery/art/")
+                identifier = path[len("/gallery/art/"):] if gallery else path[len("/art/"):]
+                face = int(param("face", "0"))
+                if not 0 <= face <= 9: raise ValueError("Face must be 0 to 9")
+                card = catalog.gallery_item(identifier, face) if gallery else catalog.get(identifier=identifier, printing_id=param("printing") or None)
                 if not card:
                     self.respond(404, {"error": "Card not found"})
                     return
-                face = int(param("face", "0"))
-                if not 0 <= face <= 1:
-                    raise ValueError("Face must be 0 or 1")
                 images = card["image_uris"]
-                if face:
+                if face and not gallery:
                     faces = card.get("card_faces", [])
                     face_images = faces[face].get("image_uris", {}) if len(faces) > face else {}
                     images = face_images or (images if card.get("layout") in ("adventure", "split", "flip") else {})
                 kind = param("kind", "normal")
-                if kind not in ("normal", "art_crop"):
-                    raise ValueError("Image kind must be normal or art_crop")
+                if kind not in ("normal", "large", "art_crop"):
+                    raise ValueError("Image kind must be normal, large or art_crop")
                 art_url = images.get(kind)
-                if not art_url or urlsplit(art_url).hostname != "cards.scryfall.io":
-                    self.respond(404, {"error": "No card image"})
-                    return
                 cache_key = card["printing_id"] + f"-{face}-{kind}.jpg"
-                legacy_keys = (card["printing_id"] + f"-{face}.jpg", card["id"] + f"-{face}.jpg") if kind == "normal" else ()
+                legacy_keys = (card["printing_id"] + f"-{face}.jpg", (card.get("oracle_id") or card["id"]) + f"-{face}.jpg") if kind == "normal" else ()
                 with art_guard:
                     lock = art_locks.setdefault(cache_key, threading.Lock())
                 with lock:
-                    data = storage.get_art(cache_key, legacy_keys)
+                    local = storage.local_art(card['printing_id'], card.get('oracle_id') or card['id'], face, kind, aliases=not gallery and param('exact') != '1')
+                    data = local[0] if local else None
                     if data is None:
+                        allow_network = param('network') == '1' or (param('network') != '0' and storage.settings().get('localArtworkOnly') is False)
+                        if not allow_network:
+                            self.respond(404, {'error': 'Artwork is not cached locally. The background image downloader can fill this cache.', 'cachedMiss': True})
+                            return
+                        if not art_url or urlsplit(art_url).hostname != "cards.scryfall.io":
+                            self.respond(404, {"error": "No card image"})
+                            return
                         data = self.download_art(art_url)
-                        storage.save_art(cache_key, data, {"oracleId": card["id"], "printingId": card["printing_id"], "face": face, "kind": kind, "source": art_url})
+                        storage.save_art(cache_key, data, {"oracleId": card.get("oracle_id") or card["id"], "printingId": card["printing_id"], "face": face, "kind": kind, "source": art_url})
                 self.send_response(200)
                 self.send_header("Content-Type", "image/jpeg")
                 self.send_header("Content-Length", str(len(data)))
                 self.send_header("Cache-Control", "public, max-age=31536000, immutable")
+                if local: self.send_header('X-Love2Gathering-Art-Key', local[1])
                 self.end_headers()
                 self.wfile.write(data)
                 return
@@ -197,6 +263,8 @@ def make_handler(catalog, storage):
             try:
                 request = Request(art_url, headers={"User-Agent": "Love2Gathering/1.0 (local personal MTG client)", "Accept": "image/jpeg"})
                 with urlopen(request, timeout=6) as response:
+                    if urlsplit(response.geturl()).hostname != "cards.scryfall.io":
+                        raise ValueError("Card image redirected outside Scryfall")
                     data = response.read(3 * 1024 * 1024 + 1)
                     if len(data) > 3 * 1024 * 1024 or not data.startswith(b"\xff\xd8"):
                         raise ValueError("Invalid card image response")
@@ -222,7 +290,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=17370)
     parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--source", type=Path, default=next((PROJECT / "assets").glob("all-cards*.jsonl"), PROJECT / "assets" / "all-cards.jsonl"))
+    parser.add_argument("--source", type=Path, default=Path(os.environ["LOVE2GATHERING_CATALOG_SOURCE"]) if os.environ.get("LOVE2GATHERING_CATALOG_SOURCE") else next((PROJECT / "assets").glob("all-cards*.jsonl"), PROJECT / "assets" / "all-cards.jsonl"))
     parser.add_argument("--database", type=Path, default=PROJECT / "service" / "data" / "catalog.sqlite")
     parser.add_argument("--data-dir", type=Path, default=Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share"))) / "love2gathering")
     parser.add_argument("--build-only", action="store_true")

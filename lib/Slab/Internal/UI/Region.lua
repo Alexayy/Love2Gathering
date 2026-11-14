@@ -427,6 +427,19 @@ function Region.Transform(id, x, y)
 	return x, y
 end
 
+-- Controls are drawn through every enclosing region in their window. Include
+-- nested list scrolling when calculating screen-space clips and popup anchors.
+-- Stop at the owning window: a popup has its own absolute-coordinate batch.
+function Region.TransformToWindow(id, x, y)
+	for _, instance in ipairs(Stack) do
+		x, y = instance.Transform:transformPoint(x, y)
+		if instance.Id == id then
+			break
+		end
+	end
+	return x, y
+end
+
 function Region.InverseTransform(id, x, y)
 	local instance = GetInstance(id)
 	if instance ~= nil then

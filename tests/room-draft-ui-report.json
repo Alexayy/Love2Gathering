@@ -1,0 +1,485 @@
+{
+  "calls": [
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/capabilities"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/capabilities"
+    },
+    {
+      "body": {
+        "draft": {
+          "cubeId": "CubeTwo",
+          "mode": "random",
+          "pairing": "swiss",
+          "profile": "Limited",
+          "randomSets": [
+            "two"
+          ],
+          "sets": [
+            "one",
+            "two",
+            "one"
+          ],
+          "timing": "REGULAR"
+        },
+        "format": "Commander",
+        "kind": "draft",
+        "maxPlayers": 4,
+        "name": "Friends table",
+        "playerName": "Host",
+        "priority": {
+          "autoPass": true,
+          "stops": {
+            "opponent": [],
+            "own": []
+          }
+        },
+        "settings": {
+          "animations": false,
+          "autoMana": true,
+          "colorblindMode": "Off",
+          "fontFamily": "Built-in DejaVu Sans",
+          "frameLimit": 0,
+          "highContrast": false,
+          "manualTriggers": false,
+          "masterVolume": 0.7,
+          "msaa": 0,
+          "musicEnabled": false,
+          "musicVolume": 0.25,
+          "particles": false,
+          "reducedMotion": false,
+          "renderScale": 1,
+          "resolution": "1440x900",
+          "sfxEnabled": false,
+          "sfxVolume": 0.45,
+          "showCardArt": false,
+          "showTooltips": true,
+          "textureFilter": "linear",
+          "uiScale": 1,
+          "vsync": false,
+          "windowMode": "Windowed"
+        }
+      },
+      "client": "Host",
+      "method": "POST",
+      "path": "/client/rooms"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "body": {
+        "code": "L2G-INVITE-ONLY",
+        "name": "Guest",
+        "priority": {
+          "autoPass": true,
+          "stops": {
+            "opponent": [],
+            "own": []
+          }
+        },
+        "settings": {
+          "animations": false,
+          "autoMana": true,
+          "colorblindMode": "Off",
+          "fontFamily": "Built-in DejaVu Sans",
+          "frameLimit": 0,
+          "highContrast": false,
+          "manualTriggers": false,
+          "masterVolume": 0.7,
+          "msaa": 0,
+          "musicEnabled": false,
+          "musicVolume": 0.25,
+          "particles": false,
+          "reducedMotion": false,
+          "renderScale": 1,
+          "resolution": "1440x900",
+          "sfxEnabled": false,
+          "sfxVolume": 0.45,
+          "showCardArt": false,
+          "showTooltips": true,
+          "textureFilter": "linear",
+          "uiScale": 1,
+          "vsync": false,
+          "windowMode": "Windowed"
+        }
+      },
+      "client": "Guest",
+      "method": "POST",
+      "path": "/client/join"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "body": {
+        "ready": true
+      },
+      "client": "Guest",
+      "method": "POST",
+      "path": "/client/rooms/Guest-connection/ready"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "body": {
+        "count": 1
+      },
+      "client": "Host",
+      "method": "POST",
+      "path": "/client/rooms/Host-connection/bots"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "body": {
+        "count": 2
+      },
+      "client": "Host",
+      "method": "POST",
+      "path": "/client/rooms/Host-connection/bots"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "body": {
+        "ready": true
+      },
+      "client": "Host",
+      "method": "POST",
+      "path": "/client/rooms/Host-connection/ready"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "body": {},
+      "client": "Host",
+      "method": "POST",
+      "path": "/client/rooms/Host-connection/start"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "body": {
+        "cardId": "Host-offered",
+        "pickToken": "Host-pick-token"
+      },
+      "client": "Host",
+      "method": "POST",
+      "path": "/client/rooms/Host-connection/draft/pick"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "body": {
+        "cardId": "Guest-offered",
+        "pickToken": "Guest-pick-token"
+      },
+      "client": "Guest",
+      "method": "POST",
+      "path": "/client/rooms/Guest-connection/draft/pick"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "body": {
+        "basics": {
+          "Plains": 39
+        },
+        "main": [
+          "Host-offered"
+        ]
+      },
+      "client": "Host",
+      "method": "POST",
+      "path": "/client/rooms/Host-connection/draft/deck"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "body": {
+        "basics": {
+          "Plains": 40
+        },
+        "main": [
+          "Host-offered"
+        ]
+      },
+      "client": "Host",
+      "method": "POST",
+      "path": "/client/rooms/Host-connection/draft/deck"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "body": {
+        "basics": {
+          "Plains": 39
+        },
+        "main": [
+          "Host-offered"
+        ]
+      },
+      "client": "Host",
+      "method": "POST",
+      "path": "/client/rooms/Host-connection/draft/deck"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "body": {
+        "basics": {
+          "Plains": 39
+        },
+        "main": [
+          "Guest-offered"
+        ]
+      },
+      "client": "Guest",
+      "method": "POST",
+      "path": "/client/rooms/Guest-connection/draft/deck"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "body": {
+        "basics": {
+          "Plains": 40
+        },
+        "main": [
+          "Guest-offered"
+        ]
+      },
+      "client": "Guest",
+      "method": "POST",
+      "path": "/client/rooms/Guest-connection/draft/deck"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "body": {
+        "basics": {
+          "Plains": 39
+        },
+        "main": [
+          "Guest-offered"
+        ]
+      },
+      "client": "Guest",
+      "method": "POST",
+      "path": "/client/rooms/Guest-connection/draft/deck"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "body": {},
+      "client": "Host",
+      "method": "POST",
+      "path": "/client/rooms/Host-connection/start"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "client": "Host",
+      "method": "GET",
+      "path": "/client/rooms/Host-connection"
+    },
+    {
+      "body": {},
+      "client": "Host",
+      "method": "POST",
+      "path": "/client/rooms/Host-connection/leave"
+    },
+    {
+      "client": "Guest",
+      "method": "GET",
+      "path": "/client/rooms/Guest-connection"
+    },
+    {
+      "body": {},
+      "client": "Guest",
+      "method": "POST",
+      "path": "/client/rooms/Guest-connection/leave"
+    }
+  ],
+  "checks": [
+    "Actual draft mode button selects a native draft table",
+    "Native random draft is available through the mode picker",
+    "Random draft initially permits all supported booster sets",
+    "Actual search, native set picker and Add select the eligible random pool",
+    "An already selected set cannot be added twice",
+    "Multiple eligible native sets retain their explicit selection order",
+    "Actual remove controls restore the all-supported booster pool",
+    "Native cube picker preserves the selected cube ID",
+    "Actual per-pack set picker preserves the second booster choice",
+    "Actual mode changes preserve independent traditional packs and random eligible sets",
+    "Actual create button receives the host membership",
+    "Actual room creation submits the explicit random booster pool",
+    "Copy button copies only the shared invitation code",
+    "Second frontend pastes the invitation into one code field",
+    "Actual join button creates a separate guest membership",
+    "Host adds two optional bot seats through actual controls",
+    "Host sees its own personalized pack",
+    "Second client sees a different private pack",
+    "Actual pool card click adds one owned instance \u00b7 Host",
+    "Actual basic-land numeric input builds a forty-card local list \u00b7 Host",
+    "Submitted deck retains the exact selected pool instance \u00b7 Host",
+    "Ready native-profile decks remain editable before the first round \u00b7 Host",
+    "Actual ready-deck re-submit preserves the intended final quantities \u00b7 Host",
+    "Actual pool card click adds one owned instance \u00b7 Guest",
+    "Actual basic-land numeric input builds a forty-card local list \u00b7 Guest",
+    "Submitted deck retains the exact selected pool instance \u00b7 Guest",
+    "Ready native-profile decks remain editable before the first round \u00b7 Guest",
+    "Actual ready-deck re-submit preserves the intended final quantities \u00b7 Guest",
+    "Host gameplay uses its authenticated room connection",
+    "Guest projection hides the hand of Host",
+    "Guest projection hides the hand of XMage Bot 1",
+    "Guest projection hides the hand of XMage Bot 2",
+    "Closing a room removes stale guest gameplay and authentication routing",
+    "Create/join controls remain reachable in the smallest supported window",
+    "Random pool search and Add controls remain visible after scrolling the smallest window",
+    "Random pool search, native choice and Add remain interactive in the smallest supported window",
+    "Two-client workflow never requests a public room browser"
+  ],
+  "logical": [
+    1120,
+    720
+  ],
+  "passed": true,
+  "physical": [
+    1120,
+    720
+  ],
+  "scope": "Two independent frontend models; actual L\u00d6VE/Slab input; synthetic room gateway and private native projections; no native/network drafting claim"
+}

@@ -1,0 +1,79 @@
+{
+  "passed": true,
+  "kind": "Real native production room games and separate authenticated human projections; ordinary validated decks, no injected zones, UI or remote-network claim",
+  "checks": {
+    "coordinatorAuthenticationRequired": true,
+    "actualNativeLimits": true,
+    "startRetryReturnsSameNativeGame": true,
+    "startRetryDifferentBodyRejected": true,
+    "2humans_2seats_Limited_nativeRound": true,
+    "2humans_2seats_Limited_privateHands": true,
+    "2humans_2seats_Limited_distinctPrompts": true,
+    "perHumanStops": true,
+    "ordinaryPracticeUnchanged": true,
+    "botCannotReadHumanPerspective": true,
+    "guestReplaySaveRejected": true,
+    "designatedReplayPrivacy": true,
+    "parallelNativeGamesIndependent": true,
+    "keyOnlyCleanupStopsAcceptedStart": true,
+    "closedStartKeyCannotRecreate": true,
+    "nonactiveHumanConcedeEndsNativeDuel": true,
+    "stoppedGameCleanupRetryAccepted": true,
+    "stoppedStartKeyCleanupRetryAccepted": true,
+    "4humans_4seats_Limited_nativeRound": true,
+    "4humans_4seats_Limited_privateHands": true,
+    "4humans_4seats_Limited_distinctPrompts": true,
+    "4humans_4seats_Commander_nativeRound": true,
+    "4humans_4seats_Commander_privateHands": true,
+    "4humans_4seats_Commander_distinctPrompts": true,
+    "2humans_4seats_Commander_nativeRound": true,
+    "2humans_4seats_Commander_privateHands": true,
+    "2humans_4seats_Commander_distinctPrompts": true,
+    "closeBeforeStartBlocksLateRequest": true,
+    "botOnlyNativePairingCompletes": true,
+    "publicResultHasNoPrivateCards": true
+  },
+  "failure": null,
+  "games": [
+    {
+      "humanPlayers": 2,
+      "totalPlayers": 2,
+      "format": "Limited",
+      "nativeAnswers": 7,
+      "privacyProjectionsChecked": 146,
+      "replayFramesChecked": 80,
+      "turn": 3,
+      "replayId": "game-7e7e8c7d-e414-4a43-91ee-0921ca7c10e7-seat-0"
+    },
+    {
+      "humanPlayers": 4,
+      "totalPlayers": 4,
+      "format": "Limited",
+      "nativeAnswers": 11,
+      "privacyProjectionsChecked": 536,
+      "replayFramesChecked": 160,
+      "turn": 5,
+      "replayId": "game-107da80f-867f-4fa6-a433-8072c869a07e-seat-0"
+    },
+    {
+      "humanPlayers": 4,
+      "totalPlayers": 4,
+      "format": "Commander",
+      "nativeAnswers": 11,
+      "privacyProjectionsChecked": 568,
+      "replayFramesChecked": 160,
+      "turn": 5,
+      "replayId": "game-6b7711d6-6db9-431c-a5ea-9252869dafb0-seat-0"
+    },
+    {
+      "humanPlayers": 2,
+      "totalPlayers": 4,
+      "format": "Commander",
+      "nativeAnswers": 7,
+      "privacyProjectionsChecked": 344,
+      "replayFramesChecked": 230,
+      "turn": 5,
+      "replayId": "game-d88948c3-6d2c-48fb-91f1-c55290126b70-seat-0"
+    }
+  ]
+}

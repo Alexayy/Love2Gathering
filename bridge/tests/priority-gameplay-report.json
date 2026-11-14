@@ -1,0 +1,438 @@
+{
+  "passed": true,
+  "engine": {
+    "ok": true,
+    "engine": "XMage",
+    "version": "1.4.63",
+    "implementedCards": 32950,
+    "recordingError": null
+  },
+  "evidence": {
+    "humanPlayedLand": true,
+    "botPlayedLand": true,
+    "humanCastSpell": true,
+    "botCastSpell": true,
+    "humanSpellResolved": true,
+    "botSpellResolved": true,
+    "lifeChanged": true,
+    "completedGame": true
+  },
+  "failure": null,
+  "turns": 7,
+  "actionCount": 35,
+  "observedFrameCount": 58,
+  "replayId": null,
+  "replayStatus": null,
+  "recordingError": null,
+  "finalPlayers": [
+    {
+      "name": "Smoke Human",
+      "life": 5,
+      "won": true,
+      "lost": false,
+      "handCount": 2,
+      "libraryCount": 49
+    },
+    {
+      "name": "XMage Smoke Bot",
+      "life": 0,
+      "won": false,
+      "lost": true,
+      "handCount": 0,
+      "libraryCount": 0
+    }
+  ],
+  "log": [
+    "Game has started",
+    "Smoke Human 's library is shuffled",
+    "XMage Smoke Bot 's library is shuffled",
+    "Smoke Human chooses that they take the first turn",
+    "Smoke Human draws a card",
+    "Smoke Human draws seven cards",
+    "XMage Smoke Bot draws a card",
+    "XMage Smoke Bot draws seven cards",
+    "Smoke Human keeps hand",
+    "XMage Smoke Bot decides to take mulligan",
+    "XMage Smoke Bot mulligans down to 6 cards",
+    "XMage Smoke Bot puts a card from hand to the bottom of their library",
+    "XMage Smoke Bot keeps hand",
+    "TURN 1 for Smoke Human (20 - 20)",
+    "Smoke Human skips Draw step",
+    "Smoke Human puts Mountain [303] from hand onto the Battlefield",
+    "Smoke Human plays Mountain",
+    "Smoke Human plays Mountain [303]",
+    "Smoke Human — Mountain: HAND → BATTLEFIELD",
+    "Smoke Human — Lava Spike: HAND → STACK",
+    "Smoke Human resolving Mountain",
+    "Smoke Human adds {R}",
+    "Smoke Human casts Lava Spike",
+    "Smoke Human casts Lava Spike [7c6] targeting XMage Smoke Bot from hand",
+    "Smoke Human resolving Lava Spike",
+    "XMage Smoke Bot loses 3 life from Lava Spike [7c6]",
+    "XMage Smoke Bot loses 3 life",
+    "Smoke Human — Lava Spike deals 3 damage to XMage Smoke Bot",
+    "Smoke Human puts Lava Spike [7c6] from stack into their graveyard",
+    "Smoke Human — Lava Spike: STACK → GRAVEYARD",
+    "Smoke Human skips attack",
+    "TURN 2 for XMage Smoke Bot (20 - 17)",
+    "XMage Smoke Bot — a card: LIBRARY → HAND",
+    "XMage Smoke Bot puts Mountain [888] from hand onto the Battlefield",
+    "XMage Smoke Bot plays Mountain",
+    "XMage Smoke Bot plays Mountain [888]",
+    "XMage Smoke Bot — Mountain: HAND → BATTLEFIELD",
+    "XMage Smoke Bot — Goblin Guide: HAND → STACK",
+    "XMage Smoke Bot resolving Mountain",
+    "XMage Smoke Bot adds {R}",
+    "XMage Smoke Bot casts Goblin Guide",
+    "XMage Smoke Bot casts Goblin Guide [6eb] from hand",
+    "XMage Smoke Bot puts Goblin Guide [6eb] from stack onto the Battlefield",
+    "XMage Smoke Bot — Goblin Guide: STACK → BATTLEFIELD",
+    "XMage Smoke Bot attacks Smoke Human with 1 creature",
+    "XMage Smoke Bot attacks Smoke Human with Goblin Guide",
+    "XMage Smoke Bot - Ability triggers: Goblin Guide [6eb] - Whenever Goblin Guide [6eb] attacks, defending player reveals the top card of their library. If it's a land card, that player puts it into their hand.",
+    "XMage Smoke Bot — Goblin Guide triggers",
+    "XMage Smoke Bot resolving Goblin Guide",
+    "Smoke Human reveals Monastery Swiftspear",
+    "Attacker: Goblin Guide [6eb] (2/2) unblocked",
+    "Smoke Human loses 2 life at combat from Goblin Guide [6eb]",
+    "Smoke Human loses 2 life",
+    "XMage Smoke Bot — Goblin Guide deals 2 damage to Smoke Human",
+    "TURN 3 for Smoke Human (18 - 17)",
+    "Smoke Human — Monastery Swiftspear: LIBRARY → HAND",
+    "Smoke Human puts Mountain [a26] from hand onto the Battlefield",
+    "Smoke Human plays Mountain [a26]",
+    "Smoke Human — Lightning Bolt: HAND → STACK",
+    "Smoke Human casts Lightning Bolt",
+    "Smoke Human casts Lightning Bolt [7b9] targeting XMage Smoke Bot from hand",
+    "Smoke Human resolving Lightning Bolt",
+    "XMage Smoke Bot loses 3 life from Lightning Bolt [7b9]",
+    "Smoke Human — Lightning Bolt deals 3 damage to XMage Smoke Bot",
+    "Smoke Human puts Lightning Bolt [7b9] from stack into their graveyard",
+    "Smoke Human — Lightning Bolt: STACK → GRAVEYARD",
+    "Smoke Human — Monastery Swiftspear: HAND → STACK",
+    "Smoke Human casts Monastery Swiftspear",
+    "Smoke Human casts Monastery Swiftspear [144] from hand",
+    "Smoke Human puts Monastery Swiftspear [144] from stack onto the Battlefield",
+    "Smoke Human — Monastery Swiftspear: STACK → BATTLEFIELD",
+    "Smoke Human attacks XMage Smoke Bot with 1 creature",
+    "Smoke Human attacks XMage Smoke Bot with Monastery Swiftspear",
+    "Attacker: Monastery Swiftspear [144] (1/2) unblocked",
+    "XMage Smoke Bot loses 1 life at combat from Monastery Swiftspear [144]",
+    "XMage Smoke Bot loses 1 life",
+    "Smoke Human — Monastery Swiftspear deals 1 damage to XMage Smoke Bot",
+    "TURN 4 for XMage Smoke Bot (18 - 13)",
+    "XMage Smoke Bot — Lightning Bolt: HAND → STACK",
+    "XMage Smoke Bot casts Lightning Bolt",
+    "XMage Smoke Bot casts Lightning Bolt [e5e] targeting Smoke Human from hand",
+    "XMage Smoke Bot resolving Lightning Bolt",
+    "Smoke Human loses 3 life from Lightning Bolt [e5e]",
+    "Smoke Human loses 3 life",
+    "XMage Smoke Bot — Lightning Bolt deals 3 damage to Smoke Human",
+    "XMage Smoke Bot puts Lightning Bolt [e5e] from stack into their graveyard",
+    "XMage Smoke Bot — Lightning Bolt: STACK → GRAVEYARD",
+    "XMage Smoke Bot puts Mountain [80c] from hand onto the Battlefield",
+    "XMage Smoke Bot plays Mountain [80c]",
+    "XMage Smoke Bot casts Lightning Bolt [5be] targeting Smoke Human from hand",
+    "Smoke Human loses 3 life from Lightning Bolt [5be]",
+    "XMage Smoke Bot puts Lightning Bolt [5be] from stack into their graveyard",
+    "Smoke Human reveals Shock",
+    "TURN 5 for Smoke Human (10 - 13)",
+    "Smoke Human — Shock: LIBRARY → HAND",
+    "Smoke Human casts Monastery Swiftspear [c19] from hand",
+    "Smoke Human puts Monastery Swiftspear [c19] from stack onto the Battlefield",
+    "Smoke Human — Shock: HAND → STACK",
+    "Smoke Human casts Shock",
+    "Smoke Human casts Shock [80d] targeting XMage Smoke Bot from hand",
+    "Smoke Human - Ability triggers: Monastery Swiftspear [144] - Prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)",
+    "Smoke Human — Monastery Swiftspear triggers",
+    "Smoke Human - Ability triggers: Monastery Swiftspear [c19] - Prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)",
+    "Smoke Human resolving Monastery Swiftspear",
+    "Smoke Human resolving Shock",
+    "XMage Smoke Bot loses 2 life from Shock [80d]",
+    "XMage Smoke Bot loses 2 life",
+    "Smoke Human — Shock deals 2 damage to XMage Smoke Bot",
+    "Smoke Human puts Shock [80d] from stack into their graveyard",
+    "Smoke Human — Shock: STACK → GRAVEYARD",
+    "Smoke Human attacks XMage Smoke Bot with 2 creatures",
+    "Attacker: Monastery Swiftspear [144] (2/3) unblocked",
+    "Attacker: Monastery Swiftspear [c19] (2/3) unblocked",
+    "XMage Smoke Bot loses 2 life at combat from Monastery Swiftspear [144]",
+    "Smoke Human — Monastery Swiftspear deals 2 damage to XMage Smoke Bot",
+    "XMage Smoke Bot loses 2 life at combat from Monastery Swiftspear [c19]",
+    "TURN 6 for XMage Smoke Bot (10 - 7)",
+    "XMage Smoke Bot puts Mountain [d09] from hand onto the Battlefield",
+    "XMage Smoke Bot plays Mountain [d09]",
+    "XMage Smoke Bot — Searing Spear: HAND → STACK",
+    "XMage Smoke Bot casts Searing Spear",
+    "XMage Smoke Bot casts Searing Spear [b28] targeting Smoke Human from hand",
+    "XMage Smoke Bot resolving Searing Spear",
+    "Smoke Human loses 3 life from Searing Spear [b28]",
+    "XMage Smoke Bot — Searing Spear deals 3 damage to Smoke Human",
+    "XMage Smoke Bot puts Searing Spear [b28] from stack into their graveyard",
+    "XMage Smoke Bot — Searing Spear: STACK → GRAVEYARD",
+    "Smoke Human reveals Mountain",
+    "Smoke Human puts a card from library into their hand",
+    "Smoke Human — Mountain: LIBRARY → HAND",
+    "TURN 7 for Smoke Human (5 - 7)",
+    "Smoke Human puts Mountain [2a8] from hand onto the Battlefield",
+    "Smoke Human plays Mountain [2a8]",
+    "Smoke Human — Lightning Strike: HAND → STACK",
+    "Smoke Human casts Lightning Strike",
+    "Smoke Human casts Lightning Strike [3a8] targeting XMage Smoke Bot from hand",
+    "Smoke Human resolving Lightning Strike",
+    "XMage Smoke Bot loses 3 life from Lightning Strike [3a8]",
+    "Smoke Human — Lightning Strike deals 3 damage to XMage Smoke Bot",
+    "Smoke Human puts Lightning Strike [3a8] from stack into their graveyard",
+    "Smoke Human — Lightning Strike: STACK → GRAVEYARD",
+    "XMage Smoke Bot has lost the game",
+    "Smoke Human has won the game",
+    "XMage Smoke Bot lost the game due to having 0 or less life"
+  ],
+  "actions": [
+    {
+      "turn": 1,
+      "step": "null",
+      "message": "Select a starting player",
+      "choice": "Smoke Human",
+      "type": "uuid"
+    },
+    {
+      "turn": 1,
+      "step": "null",
+      "message": "Mulligan  down to 6 cards ?",
+      "choice": "Keep",
+      "type": "boolean"
+    },
+    {
+      "turn": 1,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 1,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Lava Spike",
+      "type": "uuid"
+    },
+    {
+      "turn": 1,
+      "step": "Precombat Main",
+      "message": "Select a player or planeswalker",
+      "choice": "XMage Smoke Bot",
+      "type": "uuid"
+    },
+    {
+      "turn": 1,
+      "step": "Precombat Main",
+      "message": "Pay {R}  Lava Spike  [7c6]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Upkeep",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 3,
+      "step": "Draw",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Lightning Bolt",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Select any target",
+      "choice": "XMage Smoke Bot",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Pay {R}  Lightning Bolt  [7b9]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Monastery Swiftspear",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Precombat Main",
+      "message": "Pay {R}  Monastery Swiftspear  [144]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 3,
+      "step": "Declare Attackers",
+      "message": "Select attackers",
+      "choice": "All attack",
+      "type": "string"
+    },
+    {
+      "turn": 3,
+      "step": "Declare Attackers",
+      "message": "Select attackers",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 5,
+      "step": "Upkeep",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 5,
+      "step": "Draw",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Monastery Swiftspear",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Pay {R}  Monastery Swiftspear  [c19]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Shock",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Select any target",
+      "choice": "XMage Smoke Bot",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Precombat Main",
+      "message": "Pay {R}  Shock  [80d]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 5,
+      "step": "Declare Attackers",
+      "message": "Select attackers",
+      "choice": "All attack",
+      "type": "string"
+    },
+    {
+      "turn": 5,
+      "step": "Declare Attackers",
+      "message": "Select attackers",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 7,
+      "step": "Upkeep",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 7,
+      "step": "Draw",
+      "message": "Play instants and activated abilities",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Play spells and abilities",
+      "choice": "Lightning Strike",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Select any target",
+      "choice": "XMage Smoke Bot",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Pay {1}{R}  Lightning Strike  [3a8]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Precombat Main",
+      "message": "Pay {1}  Lightning Strike  [3a8]",
+      "choice": "Mountain",
+      "type": "uuid"
+    },
+    {
+      "turn": 7,
+      "step": "Declare Attackers",
+      "message": "Select attackers",
+      "choice": "All attack",
+      "type": "string"
+    },
+    {
+      "turn": 7,
+      "step": "Declare Attackers",
+      "message": "Select attackers",
+      "choice": "Pass / Done",
+      "type": "boolean"
+    }
+  ]
+}

@@ -5,12 +5,14 @@ import uuid
 
 FORMATS = {"modern", "standard", "pioneer", "commander"}
 ID = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$")
-DEFAULT_SETTINGS = {"manualTriggers": False, "autoMana": True, "showCardArt": True,
+DEFAULT_SETTINGS = {"manualTriggers": False, "autoMana": True, "showCardArt": True, "localArtworkOnly": True,
     "resolution": "1440x900", "windowMode": "Windowed", "vsync": True, "msaa": 0,
     "renderScale": 1.0, "textureFilter": "linear", "frameLimit": 0, "uiScale": 1.0,
     "animations": True, "particles": True, "musicEnabled": False, "musicVolume": 0.25,
     "sfxEnabled": True, "sfxVolume": 0.45, "masterVolume": 0.7, "reducedMotion": False,
-    "highContrast": False, "colorblindMode": "Off", "showTooltips": True}
+    "highContrast": False, "colorblindMode": "Off", "showTooltips": True,
+    "fontFamily": "Built-in DejaVu Sans", "titleFontFamily":"Beleren", "skybox":"Galaxy", "skyboxBrightness":0.32,
+    "playmatOpacity":0.88,"counterStyle":"Dice","cursorStyle":"System","keywordReminders":True}
 
 class StorageSchema:
     @staticmethod
@@ -56,6 +58,28 @@ class StorageSchema:
                 if not legacy and merged[name] > 250:
                     raise ValueError("At most 250 copies per card entry can be stored by this client")
             deck[zone] = [{"name": name, "count": count} for name, count in merged.items()]
+        if 'printingSelections' in value:
+            selections = value['printingSelections']
+            if not isinstance(selections, list) or len(selections) > 900: raise ValueError('Invalid printing selections')
+            prepared = []
+            for selection in selections:
+                if not isinstance(selection, dict) or selection.get('zone') not in ('main', 'sideboard', 'commander'): raise ValueError('Invalid printing selection zone')
+                name, count = selection.get('name'), selection.get('count')
+                if not isinstance(name, str) or not 1 <= len(name) <= 300 or isinstance(count, bool) or not isinstance(count, int) or not 1 <= count <= 250: raise ValueError('Invalid printing selection')
+                result = {'name': name, 'count': count, 'zone': selection['zone']}
+                for key, length in (('set', 12), ('collectorNumber', 40), ('printingId', 100)):
+                    if key in selection:
+                        item = selection[key]
+                        if not isinstance(item, str) or not 1 <= len(item) <= length or any(ord(c) < 32 for c in item): raise ValueError('Invalid printing selection ' + key)
+                        result[key] = item
+                prepared.append(result)
+            deck['printingSelections'] = prepared
+        if 'sourceDeck' in value:
+            source=value['sourceDeck']
+            if not isinstance(source,dict) or source.get('origin') not in ('user','bundled','preconstructed'):raise ValueError('Invalid source deck provenance')
+            StorageSchema.check_id(source.get('id'))
+            if not isinstance(source.get('name'),str) or not 1<=len(source['name'])<=300:raise ValueError('Invalid source deck name')
+            deck['sourceDeck']={key:source[key] for key in ('id','name','origin')}
         return deck
 
 
@@ -65,8 +89,9 @@ class StorageSchema:
             raise ValueError("Invalid settings object")
         enums = {"windowMode": {"Windowed", "Borderless", "Fullscreen"}, "msaa": {0, 2, 4, 8},
                  "textureFilter": {"linear", "nearest"}, "frameLimit": {0, 30, 60, 120, 144},
-                 "colorblindMode": {"Off", "Deuteranopia", "Protanopia", "Tritanopia"}}
-        ranges = {"renderScale": (0.5, 1.5), "uiScale": (0.85, 1.75), "musicVolume": (0, 1), "sfxVolume": (0, 1), "masterVolume": (0, 1)}
+                 "colorblindMode": {"Off", "Deuteranopia", "Protanopia", "Tritanopia"}, "titleFontFamily":{"Beleren","Application font"},
+                 "skybox":{"Galaxy","Nebula","Band","Dark","Day","Off"},"counterStyle":{"Dice","Text"},"cursorStyle":{"System","Kenney"}}
+        ranges = {"renderScale": (0.5, 1.5), "uiScale": (0.85, 1.75), "musicVolume": (0, 1), "sfxVolume": (0, 1), "masterVolume": (0, 1),"skyboxBrightness":(0,1),"playmatOpacity":(0,1)}
         for key, item in value.items():
             if key not in DEFAULT_SETTINGS:
                 raise ValueError("Unknown setting: " + key)
@@ -77,6 +102,9 @@ class StorageSchema:
                 low, high = ranges[key]
                 if isinstance(item, bool) or not isinstance(item, (int, float)) or not low <= item <= high:
                     raise ValueError("Invalid setting: " + key)
+            elif key == "fontFamily":
+                if not isinstance(item, str) or not 1 <= len(item) <= 160 or any(ord(char) < 32 or ord(char) == 127 for char in item):
+                    raise ValueError("Font family must contain 1 to 160 printable characters")
             elif key == "resolution":
                 if not isinstance(item, str) or not re.fullmatch(r"\d{3,5}x\d{3,5}", item):
                     raise ValueError("Resolution must be WIDTHxHEIGHT")

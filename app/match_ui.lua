@@ -1,10 +1,14 @@
 local Layout=require('app.layout')
 local RichText=require('app.richtext')
 local Log=require('app.log')
+local Window=require('lib.Slab.Internal.UI.Window')
+local CardChoices=require('app.card_choices')
+local json=require('lib.json')
 local UI={}
-local function iconButton(v,label,icon,action,active,disabled)
+local function iconButton(v,label,icon,action,active,disabled,size)
     local S=v.S
-    if S.Button(label,{Image={Image=v.r.assets:iconImage(icon,30)},W=38,H=38,Tooltip=label,Active=active,Disabled=disabled}) then action() end
+    size=size or 38
+    if S.Button(label,{Image={Image=v.r.assets:iconImage(icon,size-8)},W=size,H=size,Tooltip=label,Active=active,Disabled=disabled}) then action() end
 end
 local function option(v,choice,width)
     local label=v.r:fit(tostring(choice.label or choice.id),width-20,16,3)
@@ -15,46 +19,64 @@ local function option(v,choice,width)
 end
 function UI.toolbar(v,w,h)
     local S,m=v.S,v.m
-    v:window('match-toolbar',w-354,16,338,44)
+    v:window('match-toolbar',w-278,10,262,34)
     local buttons={
-        {'Lobby','home',function() m.page='lobby' end},
+        {m.roomConnectionId and 'Room' or 'Lobby','home',function() if m.roomConnectionId then m:showRooms() else m.page='lobby' end end},
         {'Settings','settings',function() m.settingsOpen=not m.settingsOpen end},
         {'Show / hide log','log',function() m.logOpen=not (m.logOpen~=false);m:setUIOption('logOpen',m.logOpen) end,m.logOpen~=false},
         {'Show / hide stack','stack',function() m.stackOpen=not (m.stackOpen~=false);m:setUIOption('stackOpen',m.stackOpen) end,m.stackOpen~=false},
-        {'Save replay','save',function() m:saveReplay() end},
+        {'Save replay','save',function() m:saveReplay() end,nil,m.roomGameActive and m.game and m.game.replayAvailable==false},
         {'Replay library','replay',function() m:showReplays() end},
         {m.replay and 'Close replay' or 'Concede match',m.replay and 'close' or 'concede',function() if m.replay then m:closeReplay() else m.confirmConcede=true end end},
     }
-    for i,item in ipairs(buttons) do if i>1 then S.SameLine() end;iconButton(v,item[1],item[2],item[3],item[4],false) end
+    for i,item in ipairs(buttons) do if i>1 then S.SameLine() end;iconButton(v,item[1],item[2],item[3],item[4],item[5],28) end
     S.EndWindow()
 end
+function UI.priority(v,w,h)
+    local m,S=v.m,v.S;if m.replay or not m.game or m.game.running==false then return end
+    local state=m.game.priority or {};local options=m:priorityOptions()
+    v:window('priority-mode',w-320,10,34,34)
+    iconButton(v,options.autoPass and 'Automatic priority · click for full control' or 'Full control · click for automatic priority',options.autoPass and 'play' or 'pause',function() m:toggleAutoPass() end,not options.autoPass,m.priorityBusy,28)
+    S.EndWindow()
+    if state.yielding then
+        v:window('cancel-yield',w-258,h-112,238,42)
+        if S.Button('Cancel End Turn',{Image={Image=v.r.assets:buttonImage('pause','Cancel End Turn',210,30)},W=210,H=30,Disabled=m.priorityBusy}) then m:cancelYield() end
+        S.EndWindow()
+    end
+end
 function UI.log(v,w,h)
-    local m,S=v.m,v.S;local L=Layout.table(w,h)
+    local m,S=v.m,v.S;local L=Layout.table(w,h);m.logHover=nil
     if m.logOpen==false then return end
     v:window('floating-log',L.log.x,L.log.y,L.log.w,L.log.h,'Match log')
-    S.Text('You',{Color={.32,.91,.73}});S.SameLine();S.Text('Bot',{Color={.74,.59,1}});S.SameLine();S.Text('Actions',{Color={.48,.77,1}});S.Separator()
+    S.Text('You',{Color={.32,.91,.73}});S.SameLine();S.Text(v.m.roomGameActive and 'Opponents' or 'Bot',{Color={.74,.59,1}});S.SameLine();S.Text('Actions',{Color={.48,.77,1}});S.SameLine()
+    local verbose=((m.uiLayout or {}).matchPrefs or {}).logVerbose==true
+    if S.CheckBox(verbose,'Verbose',{Tooltip='Include stack triggers and resolutions. Hover an entry for its full text.'})then m:setUIOption('logVerbose',not verbose)end
+    S.Separator()
     local log=m.game and m.game.log or {}
     local width=select(1,S.GetWindowSize())-32
-    for i=#log,math.max(1,#log-79),-1 do
-        local entry=Log.present(log[i],m.game and m.game.players)
-        S.PushID('log-'..i)
+    for _,entry in ipairs(Log.entries(log,m.game and m.game.players,verbose))do
+        S.PushID('log-'..entry.index)
         S.Rectangle({W=4,H=19,Color=entry.actorColor,Rounding=2});S.SameLine()
-        S.Image('log-icon',{Image=v.r.assets:iconImage(entry.icon,18),W=18,H=18});S.SameLine()
-        RichText.slab(v,'log-text',entry.text,width-38,{size=14,color=entry.color})
+        local source=Log.source(entry,m.game);local data=source and(m:cardData(source)or source);local art=data and(m:getArt(data,true)or CardChoices.cardImage(v,source,64,90))
+        S.Image('log-icon',{Image=art or v.r.assets:iconImage(entry.icon,18),W=art and 13 or 18,H=18,Tooltip=source and source.name or entry.category})
+        if source and S.IsControlHovered()then m.logHover={card=source}end
+        S.SameLine()
+        local text,height=RichText.canvas(v.r,entry.text,width-38,{size=14,color=entry.color,maxLines=2})
+        S.Image('log-text',{Image=text,W=width-38,H=height,Tooltip=entry.fullText})
         S.PopID()
     end
     S.EndWindow()
 end
 function UI.stack(v,w,h)
-    local S,m=v.S,v.m;local stack=m.game and m.game.stack or {}
+    local S,m=v.S,v.m;local stack=m.game and m.game.stack or {};m.stackHits={};m.stackHover=nil
     if #stack==0 or m.stackOpen==false then return end
     local prompt=m:prompt();if prompt and prompt.type=='order' then return end
     local panelH=m.replay and math.min(360,math.max(100,h-520)) or math.min(430,h-365)
     v:window('floating-stack',w-536,340,386,panelH,'Stack · '..#stack)
     local width=select(1,S.GetWindowSize())-32
     for i,object in ipairs(stack) do
-        local source=object.sourceCard or {name=object.artName or object.sourceName or object.name}
-        local data=m:cardData(source) or source;local art=m:getArt(data,true)
+        local source=type(object.sourceCard)=='table'and object.sourceCard.name and object.sourceCard or {name=object.artName or object.sourceName or object.name}
+        local data=m:cardData(source) or source;local art=m:getArt(data,true)or CardChoices.cardImage(v,source,76,106)
         local x,y=S.GetCursorPos({Absolute=true});local cardW=76;local cardH=106
         S.PushID('stack-'..tostring(object.id or i))
         if art then
@@ -70,13 +92,18 @@ function UI.stack(v,w,h)
         RichText.slab(v,'stack-rules',rules,width-cardW-18,{size=14,color=v.r.colors.muted})
         local _,bottom=S.GetCursorPos({Absolute=true})
         S.Unindent(cardW+12)
+        local sx,sy=Window.TransformPoint(x,y);local wx,wy=S.GetWindowPosition();local ww,wh=S.GetWindowSize()
+        local hit={x=sx,y=sy,w=width,h=math.max(cardH,bottom-y),clip={x=wx,y=wy+(S.GetStyle().WindowTitleH or 20),w=ww,h=wh},id=object.id,sourceId=object.sourceId,sourceCard=source,targets=object.targets or {}}
+        m.stackHits[#m.stackHits+1]=hit
+        local mx,my=Layout.mouse()
+        if not Window.IsObstructedAtMouse()and mx>=hit.x and mx<=hit.x+hit.w and my>=math.max(hit.y,hit.clip.y)and my<=math.min(hit.y+hit.h,hit.clip.y+hit.clip.h)then m.stackHover=hit end
         S.SetCursorPos(x,math.max(y+cardH,bottom)+10,{Absolute=true});S.Separator()
         S.PopID()
     end
     S.EndWindow()
 end
 function UI.prompt(v,w,h)
-    local S,m=v.S,v.m;local p=m:prompt();if not p then return end
+    local S,m=v.S,v.m;local p=m:prompt();if CardChoices.build(v,w,h,p)then return end;if not p then return end
     if p.mulligan then
         local L=Layout.table(w,h);local mw=math.min(520,L.board.w-70);local x=L.board.x+(L.board.w-mw)/2
         v:window('mulligan',x,h/2-99,mw,198,'Opening hand')
@@ -91,13 +118,18 @@ function UI.prompt(v,w,h)
     if p.type=='select' then
         local controls={}
         for _,choice in ipairs(p.choices or {}) do if choice.responseType~='uuid' then controls[#controls+1]=choice end end
-        local bw=math.min(364,150*math.max(1,#controls));local x=w-bw-16
+        local endTurn=p.priority==true
+        local bw=math.min(430,150*math.max(1,#controls)+(endTurn and 152 or 0));local x=w-bw-16
         v:window('priority-controls',x,h-62,bw,49)
         for i,choice in ipairs(controls) do
             if i>1 then S.SameLine() end
             S.PushID('control-'..i)
-            if S.Button(choice.label or 'Pass',{W=(bw-32)/math.max(1,#controls)-4,H=32,Disabled=m.actionBusy}) then m:answerChoice(choice) end
+            if S.Button(choice.label or 'Pass',{W=(bw-32-(endTurn and 152 or 0))/math.max(1,#controls)-4,H=32,Disabled=m.actionBusy or m.priorityBusy}) then m:answerChoice(choice) end
             S.PopID()
+        end
+        if endTurn then
+            if #controls>0 then S.SameLine() end
+            if S.Button('End Turn',{Image={Image=v.r.assets:buttonImage('next','End Turn',144,32)},W=144,H=32,Disabled=m.actionBusy or m.priorityBusy}) then m:endTurn() end
         end
         S.EndWindow();return
     end
@@ -152,9 +184,27 @@ function UI.replayControls(v,w,h)
     end)
     S.EndWindow()
 end
+function UI.endMatch(v,w,h)
+    local m,S=v.m,v.S;local game=m.game
+    if m.replay or not game or game.running~=false then return end
+    local title='Match complete'
+    for _,player in ipairs(game.players or {})do if player.human or player.isLocal then
+        if player.won then title='Victory'elseif player.lost then title='Defeat'end;break
+    end end
+    local pw=math.min(500,w-70);v:window('match-complete',(w-pw)/2,math.max(120,h/2-100),pw,200,title)
+    if game.error and game.error~=json.null then S.Textf(tostring(game.error),{W=pw-34,Color=v.r.colors.gold});S.NewLine()end
+    local width=pw-34;local allowed=m.canRematch and m:canRematch()or false
+    if m.roomConnectionId and not allowed then
+        if S.Button('Return to room',{W=width,H=38})then m:showRooms()end
+    elseif S.Button('Rematch',{W=width,H=38,Disabled=not allowed or m.gameBusy})then m:rematch()end
+    S.NewLine()
+    if S.Button('Main menu',{W=width,H=38,Disabled=m.gameBusy})then if m.goMain then m:goMain()end end
+    S.EndWindow()
+end
 function UI.build(v,w,h)
-    UI.toolbar(v,w,h);UI.log(v,w,h);UI.stack(v,w,h)
-    if v.m.replay then UI.replayControls(v,w,h) else UI.prompt(v,w,h) end
+    UI.toolbar(v,w,h);UI.priority(v,w,h);UI.log(v,w,h);UI.stack(v,w,h)
+    if v.m.replay then CardChoices.build(v,w,h,nil);UI.replayControls(v,w,h) else UI.prompt(v,w,h) end
+    UI.endMatch(v,w,h)
     if v.m.confirmConcede then
         v:window('concede-confirm',w/2-205,h/2-75,410,150,'Concede match')
         v.S.Text('Concede this match?');v.S.NewLine()

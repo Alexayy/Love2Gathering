@@ -110,8 +110,12 @@ function Builder.build(v,w,h)
     end
     local total=Model.count(deck,'main')+Model.count(deck,'commander')
     S.Text(total..(deck.format=='Commander' and '/100 cards' or ' main / 60 minimum')..' · '..Model.count(deck,'sideboard')..' sideboard',{Color=C.muted})
-    if iconButton(v,'Validate','check',(dw-8)/2,32)then m:validateDeck()end;S.SameLine()
-    if iconButton(v,'Preview card','search',(dw-8)/2,32)then m.inspectCard=m.previewCard or m.cards[1] end
+    local validateW=math.floor((dw-48)*.46);local previewW=dw-48-validateW
+    if iconButton(v,'Validate','check',validateW,32)then m:validateDeck()end;S.SameLine()
+    if S.Button('Preview card',{W=previewW,H=32,Image={Image=v.r.assets:buttonImage('search','Preview',previewW,32)},Tooltip='Inspect preview card'})then m.inspectCard=m.previewCard or m.cards[1]end;S.SameLine()
+    if S.Button('Token artwork',{W=32,H=32,Image={Image=v.r.assets:iconImage('creature',21)},Tooltip='Token artwork choices'})then
+        if m.dirty then m:toast('Save this deck before choosing token artwork',true)else m:showTokenSettings(deck.id)end
+    end
     S.EndWindow()
     local list=l.list
     v:window('builder-deck-list',list.x,list.y,list.w,list.h)

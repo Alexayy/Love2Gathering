@@ -1,12 +1,59 @@
 local Layout=require('app.layout')
+local Fonts=require('app.fonts')
 local Preferences={};Preferences.__index=Preferences
 local defaults={resolution='1440x900',windowMode='Windowed',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,
-    animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,
-    reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true}
+    animations=true,particles=true,localArtworkOnly=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,
+    reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,fontFamily=Fonts.default,titleFontFamily='Beleren',
+    skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='System',keywordReminders=true}
 Preferences.defaults=defaults
-function Preferences.new(model,S)
+function Preferences.new(model,S,renderer)
     for k,v in pairs(defaults) do if model.settings[k]==nil then model.settings[k]=v end end
-    return setmetatable({m=model,S=S},Preferences)
+    if renderer and renderer.assets then renderer.assets.settings=model.settings end
+    return setmetatable({m=model,S=S,r=renderer},Preferences)
+end
+function Preferences:applyFont()
+    local family=self.m.settings.fontFamily or Fonts.default
+    if not self.r then return end
+    self.r.assets.titleSettings=self.m.settings
+    self.r.assets.settings=self.m.settings
+    local titles=self.m.settings.titleFontFamily or Fonts.titleDefault
+    if self.titleSignature~=titles then self.titleSignature=titles;require('app.assets').invalidateRasterCaches() end
+    if family==self.fontSignature then return end
+    self.fontSignature=family
+    local sizes={};for size in pairs(self.r.fonts) do sizes[#sizes+1]=size end;table.sort(sizes)
+    local fonts,bold,problem,effective=Fonts.createSet(family,sizes)
+    self.r.fonts,self.r.bold=fonts,bold
+    self.S.GetStyle().Font=fonts[16]
+    self.r.assets.textFonts=fonts
+    require('app.assets').invalidateRasterCaches()
+    self.appliedFontFamily=effective
+    if problem then self.m:toast(problem,true) end
+end
+function Preferences:applyCursor()
+    if not love.mouse or not love.mouse.getCursor or not love.mouse.setCursor then return end
+    local enabled=self.m.settings.cursorStyle=='Kenney'
+    if not enabled then
+        if self.customCursorActive then
+            pcall(function()love.mouse.setCursor(love.mouse.getSystemCursor(self.cursorType or 'arrow'))end)
+            self.customCursorActive=false
+        end
+        return
+    end
+    local ok,current=pcall(love.mouse.getCursor);if not ok then return end
+    local kind=current and current:getType()or 'arrow'
+    if kind=='image' then kind=self.cursorType or 'arrow' end
+    if kind~='arrow'and kind~='hand' then self.customCursorActive=false;return end
+    self.cursorType=kind;self.cursors=self.cursors or {}
+    if self.cursors[kind]==nil then
+        local success,cursor=pcall(function()
+            local spec=require('assets.kenney.runtime.manifest').cursors[kind]
+            return love.mouse.newCursor(spec.path,spec.hotspot[1],spec.hotspot[2])
+        end)
+        self.cursors[kind]=success and cursor or false
+    end
+    if self.cursors[kind] then
+        local success=pcall(love.mouse.setCursor,self.cursors[kind]);self.customCursorActive=success
+    end
 end
 function Preferences:apply(force)
     local s=self.m.settings
@@ -25,8 +72,12 @@ function Preferences:apply(force)
         end
     end
     love.graphics.setDefaultFilter(s.textureFilter,s.textureFilter)
-    for _,entry in pairs(self.m.art or {}) do if entry.image then entry.image:setFilter(s.textureFilter,s.textureFilter) end end
+    for _,cache in ipairs({self.m.art or{},self.m.profileImages or{},self.m.galleryArt or{}})do
+        for _,entry in pairs(cache)do if entry.image then entry.image:setFilter(s.textureFilter,s.textureFilter)end end
+    end
     self.S.SetScale(Layout.setScale(s.uiScale))
+    self:applyFont()
+    self:applyCursor()
     if love.audio then love.audio.setVolume(s.masterVolume) end
     self:updateMusic()
 end
@@ -68,10 +119,15 @@ function Preferences:endScene()
     end
     Layout.renderScale=1
 end
-function Preferences:endFrame() end
+-- Slab may select a system hand/text/resize cursor during Draw. Replace only
+-- its arrow/hand afterwards, preserving all native text and resize feedback.
+function Preferences:endFrame()self:applyCursor()end
 function Preferences:limitFrame(start)
     local cap=self.m.settings.frameLimit or 0
     if cap>0 then local remaining=1/cap-(love.timer.getTime()-start);if remaining>0 then love.timer.sleep(remaining) end end
 end
-function Preferences:quit() if self.music then self.music:stop() end end
+function Preferences:quit()
+    if self.music then self.music:stop() end
+    if self.customCursorActive and love.mouse then pcall(love.mouse.setCursor)end
+end
 return Preferences

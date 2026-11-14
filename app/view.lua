@@ -20,11 +20,12 @@ function View.new(S,model,renderer)
     style.ComboBoxDropDownHoveredColor={.16,.34,.33,1};style.InputEditBgColor={.055,.10,.15,1};style.CheckBoxSelectedColor=C.accent
     style.ScrollBarColor={.17,.28,.32,1};style.ScrollBarHoveredColor={.23,.46,.45,1};style.TextHoverBgColor={.10,.26,.27,1}
     style.WindowRounding=10;style.ButtonRounding=5;style.WindowBorder=12
+    require('app.theme').install(S,renderer.assets)
     return self
 end
 function View:window(id,x,y,w,h,title)
     local movable=title~=nil;local resizable=id=='floating-log' or id=='floating-stack'
-    local border=id=='match-toolbar' and 6 or 14
+    local border=(id=='match-toolbar' or id=='priority-mode') and 6 or 14
     local geometryId=id=='floating-stack' and self.m.replay and 'floating-stack-replay' or id
     local vw,vh=Layout.dimensions();self.floatBases=self.floatBases or {};self.floatReset=self.floatReset or {}
     local base=self.floatBases[id];local revision=self.m.uiLayoutVersion or 0
@@ -63,64 +64,70 @@ function View:combo(id,selected,items,width,changed)
         S.EndComboBox()
     end
 end
-function View:decks(w,h)
-    local m,S=self.m,self.S;local d=m:findDeck(m.selectedDeck);if not d then return end
-    local x=w-326
-    self:window('deck-actions',x,math.max(438,h-258),286,231)
-    S.Text('DECK MANAGER',{Color=C.accent});S.Separator()
-    if S.Button('Edit deck',{W=258,H=32}) then m:openDeck(d) end
-    if S.Button('Use in lobby',{W=258,H=32}) then m:lobbyDeck(d) end
-    if S.Button('Duplicate',{W=124,H=29}) then m:duplicateDeck(d) end
-    S.SameLine()
-    if S.Button('Delete',{W=124,H=29}) then m.deleteConfirm=d end
-    S.Text((d.origin=='user' and 'Saved in your collection' or 'Included with Love2Gathering'),{Color=C.muted})
-    S.EndWindow()
-end
+function View:decks(w,h)require('app.collection_ui').build(self,w,h)end
 function View:builder(w,h) require('app.builder').build(self,w,h) end
 function View:deckPicker(id,deckId,format,width,changed)
-    local S,m=self.S,self.m;local deck=m:findDeck(deckId)
-    if S.BeginComboBox(id,{Selected=deck and deck.name or 'Choose deck',W=width}) then
-        for _,d in ipairs(m.decks) do
-            if d.format:lower()==format:lower() and S.TextSelectable(d.name,{Selected=deckId==d.id}) then changed(d.id) end
-        end
-        S.EndComboBox()
-    end
+    require('app.deck_picker').button(self,id,deckId,format,width,changed)
 end
 function View:lobby(w,h)
-    local S,m=self.S,self.m
-    self:window('lobby',28,202,math.min(515,w*.44),h-226)
-    local width=math.min(515,w*.44)-25
-    S.Text('MATCH SETUP',{Color=C.accent});S.Separator();S.Text('Format')
-    self:combo('format',m.format,formats,width,function(v)
-        m.format=v;local matching={};for _,d in ipairs(m.decks) do if d.format==v then matching[#matching+1]=d.id end end
-        m.playerDeckId=matching[1];m.botDeckId=matching[2] or matching[1]
-    end)
-    S.NewLine();S.Text('Your name')
-    if S.Input('playerName',{Text=m.playerName,W=width,H=28,Align='left'}) then m.playerName=S.GetInputText() end
-    S.NewLine();S.Text('YOUR DECK',{Color=C.accent})
-    self:deckPicker('yourDeck',m.playerDeckId,m.format,width,function(id) m.playerDeckId=id end)
+    local S,m=self.S,self.m;local height=h-226
+    self:window('lobby',28,202,math.min(515,w*.44),height)
+    local width=math.min(515,w*.44)-25;local count=m:lobbyPlayerCount()
+    local function label(text,icon,color)
+        S.Image('lobby-label-'..text,{Image=self.r.assets:iconImage(icon,19,color),W=19,H=19});S.SameLine();S.Text(text,{Color=color or C.text})
+    end
+    local function button(text,icon,bw,bh,options)
+        options=options or {};options.W=bw;options.H=bh
+        options.Image={Image=self.r.assets:buttonImage(icon,text,bw,bh,{font=self.r.fonts[16],iconSize=18})}
+        return S.Button(text,options)
+    end
+    label('MATCH SETUP',m.format=='Commander' and 'commander' or 'library',C.accent);S.Separator()
+    -- Keep the launch controls visible while additional seats scroll at small sizes.
+    S.BeginListBox('lobby-setup',{W=width,H=math.max(200,height-160)})
+    local content=width-14
+    label('Format','library')
+    self:combo('format',m.format,formats,content,function(v)m:setLobbyFormat(v)end)
+    if m.format=='Commander' then
+        S.NewLine();label('Players','players',C.accent)
+        local choices={2,4,5,6};local bw=(content-24)/4
+        for i,players in ipairs(choices) do
+            if i>1 then S.SameLine() end
+            if button(tostring(players),'players',bw,31,{Color=count==players and {.13,.37,.34,1} or nil,Tooltip=players..' players: you and '..(players-1)..' XMage bot'..(players>2 and 's' or '')}) then m:setLobbyPlayers(players);count=players end
+        end
+    end
+    S.NewLine();label('Your name','player',C.accent)
+    if S.Input('playerName',{Text=m.playerName,W=content,H=28,Align='left'}) then m.playerName=S.GetInputText() end
+    S.NewLine();label('YOUR DECK','library',C.accent)
+    self:deckPicker('yourDeck',m.playerDeckId,m.format,content,function(id) m.playerDeckId=id end)
     local deck=m:findDeck(m.playerDeckId)
-    if deck then S.Textf(deck.description or '',{W=width,Color=C.muted}) end
-    S.NewLine();S.Text('XMAGE BOT DECK',{Color=C.purple})
-    self:deckPicker('botDeck',m.botDeckId,m.format,width,function(id) m.botDeckId=id end)
-    local bot=m:findDeck(m.botDeckId)
-    if bot then S.Textf(bot.description or '',{W=width,Color=C.muted}) end
-    S.NewLine();S.Separator()
-    S.Text('1 human • 1 XMage computer player',{Color=C.text})
-    S.Text(m.format=='Commander' and 'Commander • 40 life • command zone' or 'Constructed • 20 life • single game',{Color=C.muted})
+    if deck then S.Textf(deck.description or '',{W=content,Color=C.muted}) end
+    for index=1,count-1 do
+        S.NewLine();label(count==2 and 'XMAGE BOT DECK' or 'XMAGE BOT '..index,'bot',C.purple)
+        self:deckPicker(index==1 and 'botDeck' or 'botDeck'..index,index==1 and m.botDeckId or m.botDeckIds[index],m.format,content,function(id)m:setBotDeck(index,id)end)
+        if count==2 then
+            local bot=m:findDeck(m.botDeckId);if bot then S.Textf(bot.description or '',{W=content,Color=C.muted}) end
+        end
+    end
+    S.NewLine();label(m.format=='Commander' and '40 life · one free mulligan' or '20 life · single game',m.format=='Commander' and 'commander' or 'library',C.muted)
     S.Text(m.settings.manualTriggers and 'Trigger order: manual, left → right' or 'Trigger order: automatic',{Color=C.muted})
-    S.NewLine()
+    S.EndListBox();S.NewLine()
+    label('1 human · '..(count-1)..' XMage bot'..(count>2 and 's' or ''),'players',C.text)
     local connected=m.engineHealth.ok or m.engineHealth.status=='ok' or m.engineHealth.ready
-    if S.Button(m.gameBusy and 'Starting engine match…' or 'Start match',{W=width,H=44,Disabled=m.gameBusy or not connected}) then m:startGame() end
+    if button(m.gameBusy and 'Starting engine match…' or 'Start match','play',width,40,{Disabled=m.gameBusy or not connected}) then m:startGame() end
     if not connected then S.Textf('The XMage bridge is starting. First launch compiles the engine; see the launcher log for progress.',{W=width,Color=C.gold}) end
-    if m.game then if S.Button('Return to current match',{W=width,H=28}) then m.page='table' end end
+    if m.game then if button('Return to current match','back',width,28) then m.page='table' end end
     S.EndWindow()
 end
 function View:table(w,h) require('app.match_ui').build(self,w,h) end
 function View:replays(w,h) require('app.replay_ui').build(self,w,h) end
+function View:gallery(w,h) require('app.gallery').build(self,w,h) end
+function View:rooms(w,h) require('app.room_ui').build(self,w,h) end
+function View:draft(w,h) require('app.draft_ui').build(self,w,h) end
 function View:settings(w,h) require('app.settings').build(self,w,h) end
 function View:modals(w,h)
     local S,m=self.S,self.m
+    require('app.deck_picker').popup(self,w,h)
+    require('app.collection_ui').modals(self,w,h)
     if m.deleteConfirm then
         self:window('delete-deck',w/2-230,h/2-85,460,170,'Delete deck')
         S.Textf('Remove '..m.deleteConfirm.name..' from your collection?',{W=432});S.NewLine()
@@ -148,9 +155,15 @@ function View:modals(w,h)
         else
             local card=m:cardData(m.inspectCard) or m.inspectCard;local art=m:getArt(card)
             if art then S.Image('inspected-art',{Image=art,W=285,H=399}) end
-            S.Textf(plain(card.name),{W=340,Color=C.accent});RichText.slab(self,'inspected-cost',card.mana_cost or card.manaCost or '',340,{size=20,color=C.gold})
+            S.PushFont(self.r.assets:titleFont(22,m.settings));S.Textf(plain(card.name),{W=340,Color=C.accent});S.PopFont()
+            RichText.slab(self,'inspected-cost',card.mana_cost or card.manaCost or '',340,{size=20,color=C.gold})
             S.Textf(plain(card.type_line or card.type),{W=340,Color=C.muted});S.Separator()
-            RichText.slab(self,'inspected-rules',card.oracle_text or card.rules or '',340,{size=16,color=C.text})
+            RichText.slab(self,'inspected-rules',require('app.keywords').annotate(card.oracle_text or card.rules or'',m.settings.keywordReminders),340,{size=16,color=C.text})
+            if m.inspectCard.power and m.inspectCard.toughness then S.Text('Current '..m.inspectCard.power..'/'..m.inspectCard.toughness,{Color=C.gold})end
+            local attached=(self.r.boardAttached or{})[m.inspectCard.id]or{}
+            if #attached>0 then S.Separator();S.Text('Attached cards',{Color=C.gold})end
+            for _,entry in ipairs(attached)do if S.TextSelectable(entry.name)then m.inspectCard=entry end end
+            for _,entry in ipairs(m.inspectCard.linkedExile or{})do if S.TextSelectable('Exiled here · '..(entry.name or'Face down'))and not entry.hidden then m.inspectCard=entry end end
         end
         S.EndWindow()
     end
@@ -164,6 +177,13 @@ function View:build()
     elseif self.m.page=='lobby' then self:lobby(w,h)
     elseif self.m.page=='table' then self:table(w,h)
     elseif self.m.page=='replays' then self:replays(w,h) end
+    if self.m.page=='gallery' then self:gallery(w,h) end
+    if self.m.page=='rooms' then self:rooms(w,h) end
+    if self.m.page=='draft' then self:draft(w,h) end
+    if self.m.page=='import' then require('app.library_ui').import(self,w,h)end
+    if self.m.page=='history' then require('app.library_ui').history(self,w,h)end
+    if self.m.page=='tokens' then require('app.library_ui').tokens(self,w,h)end
+    if self.m.page=='profile'then require('app.profile_ui').build(self,w,h)end
     self:modals(w,h)
     self.S.PopFont()
 end

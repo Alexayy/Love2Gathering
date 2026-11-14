@@ -1013,7 +1013,7 @@ end
 
 function Window.TransformPoint(x, y)
 	if ActiveInstance ~= nil then
-		return Region.Transform(ActiveInstance.Id, x, y)
+		return Region.TransformToWindow(ActiveInstance.Id, x, y)
 	end
 	return 0, 0
 end

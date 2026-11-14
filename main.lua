@@ -16,13 +16,14 @@ function love.load(args)
     if not pcall(love.mouse.getSystemCursor,'arrow') then slabArgs[#slabArgs+1]='nocursor' end
     Slab.Initialize(slabArgs,true)
     model=Model.new();renderer=Renderer.new(model);view=View.new(Slab,model,renderer)
-    preferences=Preferences.new(model,Slab);view.preferences=preferences;preferences:apply()
+    preferences=Preferences.new(model,Slab,renderer);view.preferences=preferences;preferences:apply()
     love.window.setTitle('Love: 2 Gathering')
     love.window.setIcon(love.image.newImageData(renderer.assets:icon()))
     if smoke then model.settings.showCardArt=false end
 end
 function love.update(dt)
     model:update(dt);preferences:update();Slab.Update(dt);renderer:update(dt);view:build()
+    renderer.uiHovered=not Slab.IsVoidHovered()
     renderer:mousemoved(Layout.mouse())
     if smoke then
         smokeTime=smokeTime+dt
@@ -58,27 +59,42 @@ end
 function love.draw()
     local started=love.timer.getTime()
     preferences:beginFrame();renderer:draw();preferences:endScene();Slab.Draw()
-    love.graphics.push();love.graphics.scale(Layout.scale);renderer:drawForeground();renderer:drawToasts(Layout.dimensions());love.graphics.pop()
+    love.graphics.push();love.graphics.scale(Layout.scale)
+    renderer:drawForeground();local choices=package.loaded['app.card_choices'];if choices then choices.draw(view)end
+    renderer:drawToasts(Layout.dimensions());love.graphics.pop()
     preferences:endFrame()
     love.graphics.setColor(1,1,1,1)
     preferences:limitFrame(started)
 end
 function love.mousepressed(x,y,button,touch,clicks)
     Slab.OnMousePressed(x,y,button,touch,clicks)
+    local lx,ly=Layout.toLogical(x,y)
+    local choices=package.loaded['app.card_choices']
+    if choices and not model.settingsOpen and not model.inspectCard and not model.zoneView and choices.press(view,lx,ly,button)then return end
     if not model.settingsOpen and not model.zoneView and not model.deleteConfirm and not model.inspectCard and Slab.IsVoidHovered() then
-        local lx,ly=Layout.toLogical(x,y);renderer:mousepressed(lx,ly,button,clicks)
+        renderer:mousepressed(lx,ly,button,clicks)
     end
 end
 function love.mousereleased(x,y,button,touch,clicks)
-    Slab.OnMouseReleased(x,y,button,touch,clicks);local lx,ly=Layout.toLogical(x,y);renderer:mousereleased(lx,ly,button)
+    Slab.OnMouseReleased(x,y,button,touch,clicks);local lx,ly=Layout.toLogical(x,y)
+    local choices=package.loaded['app.card_choices'];if choices and choices.release(view,lx,ly,button)then return end
+    renderer:mousereleased(lx,ly,button)
 end
-function love.mousemoved(x,y,dx,dy,touch) Slab.OnMouseMoved(x,y,dx,dy,touch);renderer:mousemoved(Layout.toLogical(x,y)) end
-function love.wheelmoved(...) Slab.OnWheelMoved(...);renderer:wheelmoved(...) end
+function love.mousemoved(x,y,dx,dy,touch)
+    Slab.OnMouseMoved(x,y,dx,dy,touch);local lx,ly=Layout.toLogical(x,y)
+    local choices=package.loaded['app.card_choices'];if choices then choices.move(view,lx,ly)end
+    renderer:mousemoved(lx,ly)
+end
+function love.wheelmoved(...)
+    local empty=Slab.IsVoidHovered();Slab.OnWheelMoved(...)
+    renderer.uiHovered=not empty
+    if empty then renderer:wheelmoved(...)end
+end
 function love.textinput(...) Slab.OnTextInput(...) end
 function love.keypressed(key,scancode,isrepeat)
     Slab.OnKeyPressed(key,scancode,isrepeat)
     if not Slab.IsAnyInputFocused() then
-        if key=='escape' then model.settingsOpen=false;model.zoneView=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.confirmConcede=false
+        if key=='escape' then model.settingsOpen=false;model.zoneView=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.galleryInspect=nil;model.confirmConcede=false
         elseif key=='space' and model.page=='table' then
             if model.replay then model:toggleReplay()
             else
@@ -91,5 +107,6 @@ function love.keypressed(key,scancode,isrepeat)
     end
 end
 function love.keyreleased(...) Slab.OnKeyReleased(...) end
+function love.filedropped(file)if model.importDeckFile then model:importDeckFile(file)end end
 function love.resize() if preferences then preferences:update() end end
 function love.quit() if preferences then preferences:quit() end;if model then model:quit() end;Slab.OnQuit() end

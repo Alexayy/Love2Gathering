@@ -1,7 +1,7 @@
 local API=require('app.api')
 local json=require('lib.json')
 local Model={};Model.__index=Model
-local defaults={manualTriggers=false,autoMana=true,showCardArt=true,resolution='1440x900',windowMode='Windowed',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true}
+local defaults={manualTriggers=false,autoMana=true,showCardArt=true,localArtworkOnly=true,resolution='1440x900',windowMode='Windowed',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,titleFontFamily='Beleren',skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='System',keywordReminders=true}
 local function copy(t) return json.decode(json.encode(t)) end
 local function errorText(body,err,code)
     if err then return err end
@@ -10,7 +10,7 @@ end
 function Model.new()
     local self=setmetatable({api=API.new(),page='decks',decks={},format='Modern',selectedDeck=nil,search='',searchFormat='All',searchColor='All',searchType='',cards={},total=0,offset=0,searchTimer=0.1,
         settings=copy(defaults),catalogHealth={},engineHealth={},healthTimer=0,pollTimer=0,searchSort='Name',searchSet='All',sets={},searchLimit=12,deckSort='Name',validation=nil,
-        art={},byName={},lookupPending={},artPending=0,toasts={},botDeckId=nil,playerDeckId=nil,playerName='Planeswalker',game=nil,gameBusy=false,selectedSection='main',promptOrder={},orderPrompt=nil},Model)
+        art={},byName={},lookupPending={},artPending=0,toasts={},botDeckId=nil,botDeckIds={},commanderPlayers=4,playerDeckId=nil,playerName='Planeswalker',game=nil,gameBusy=false,selectedSection='main',promptOrder={},orderPrompt=nil},Model)
     return self
 end
 function Model:toast(message,bad)
@@ -25,18 +25,17 @@ function Model:request(service,method,path,body,callback,quiet)
     end)
 end
 function Model:refreshDecks()
+    local version=(self.deckRefreshVersion or 0)+1;self.deckRefreshVersion=version
     self:request('catalog','GET','/decks',nil,function(data)
-        if not data then return end
+        if not data or version~=self.deckRefreshVersion then return end
         self.decks=data.decks or data
         for _,deck in ipairs(self.decks) do for _,zone in ipairs({'main','sideboard','commander'}) do deck[zone]=json.array(deck[zone] or {}) end end
-        local matching={};for _,d in ipairs(self.decks) do if d.format:lower()==self.format:lower() then matching[#matching+1]=d.id end end
-        if not self:findDeck(self.playerDeckId) then self.playerDeckId=matching[1] end
-        if not self:findDeck(self.botDeckId) then self.botDeckId=matching[2] or matching[1] end
+        self:syncLobbyDecks()
     end,true)
 end
 function Model:update(dt)
     self.api:update()
-    self:updateReplays(dt);self:updateUILayout(dt)
+    self:updateReplays(dt);self:updateUILayout(dt);self:updateGallery(dt);self:updateRooms(dt);self:updateLibrary(dt);self:updateCollection(dt);self:updateProfile(dt)
     if self.validationTimer then self.validationTimer=self.validationTimer-dt;if self.validationTimer<=0 then self.validationTimer=nil;self:validateDeck() end end
     for i=#self.toasts,1,-1 do self.toasts[i].ttl=self.toasts[i].ttl-dt;if self.toasts[i].ttl<=0 then table.remove(self.toasts,i) end end
     self.healthTimer=self.healthTimer-dt
@@ -46,7 +45,7 @@ function Model:update(dt)
             local wasReady=self.catalogHealth.ready
             self.catalogHealth=data or {error=err}
             if data and not self.loaded then
-                self.loaded=true;self:refreshDecks()
+                self.loaded=true;self:refreshDecks();self:loadProfile()
                 self:request('catalog','GET','/settings',nil,function(settings) if settings then for k,v in pairs(settings) do self.settings[k]=v end;self.settingsLoaded=true end end,true)
                 self:request('catalog','GET','/ui-layout',nil,function(data)
                     if data then
@@ -63,7 +62,7 @@ function Model:update(dt)
         self.searchTimer=self.searchTimer-dt
         if self.searchTimer<=0 then self.searchTimer=nil;if self.catalogHealth.ready then self:searchCards() end end
     end
-    if self.game and not self.replay then
+    if self.game and not self.replay and (not self.roomGameActive or (self.room and self.room.phase=='playing')) then
         self.pollTimer=self.pollTimer-dt
         if self.pollTimer<=0 and not self.polling then
             self.pollTimer=.22;self.polling=true
@@ -99,7 +98,15 @@ function Model:cardData(card)
     if card.oracle_text or card.image_uris then return card end
     local name=card.name or card.displayName
     if not name then return card end
-    if self.byName[name] then return self.byName[name] end
+    if self.byName[name] then
+        local data=copy(self.byName[name])
+        -- Catalog IDs select images; native IDs select game objects. Keep both.
+        data.objectId=card.id
+        for _,key in ipairs({'power','toughness','damage','counters','printing','permanent','ownerId','controllerId','token','isToken','colors','subtypes','tokenSourceId','tokenSourceName','attachedToId','attachedToPlayerId','attachmentIds','linkedExile','attacking','blocking'})do
+            if card[key]~=nil then data[key]=card[key]end
+        end
+        return data
+    end
     if (not self.lookupPending[name] or self.lookupPending[name]<love.timer.getTime()) and self.catalogHealth.ready then
         self.lookupPending[name]=love.timer.getTime()+30
         self:request('catalog','GET','/cards/by-name?name='..API.escape(name),nil,function(data)
@@ -123,6 +130,7 @@ function Model:getArt(card,force,kind)
     if self.artPending<(force and 6 or 2) then
         self.art[cacheKey]={pending=true,used=love.timer.getTime()};self.artPending=self.artPending+1
         local path='/art/'..API.escape(id)..'?face='..face..'&kind='..API.escape(kind)
+        path=path..'&network='..(self.settings.localArtworkOnly~=false and'0'or'1')
         if data.printing_id then path=path..'&printing='..API.escape(data.printing_id) end
         self.api:request('art','GET',path,nil,function(body,err,code)
             self.artPending=self.artPending-1
@@ -146,6 +154,32 @@ function Model:getArt(card,force,kind)
     end
 end
 function Model:findDeck(id) for _,d in ipairs(self.decks) do if d.id==id then return d end end end
+function Model:lobbyPlayerCount()
+    return self.format:lower()=='commander' and self.commanderPlayers or 2
+end
+function Model:setLobbyPlayers(count)
+    if count==2 or count==4 or count==5 or count==6 then self.commanderPlayers=count;self:syncLobbyDecks() end
+end
+function Model:syncLobbyDecks()
+    local matching={};local format=self.format:lower()
+    for _,deck in ipairs(self.decks) do if deck.format:lower()==format then matching[#matching+1]=deck.id end end
+    local function matches(id)local deck=self:findDeck(id);return deck and deck.format:lower()==format end
+    if not matches(self.playerDeckId) then self.playerDeckId=matching[1] end
+    self.botDeckIds=self.botDeckIds or {}
+    -- Keep the existing first-opponent selection compatible with duel callers.
+    if matches(self.botDeckId) then self.botDeckIds[1]=self.botDeckId end
+    for i=1,5 do
+        if not matches(self.botDeckIds[i]) then self.botDeckIds[i]=matching[i+1] or matching[i%math.max(1,#matching)+1] end
+    end
+    self.botDeckId=self.botDeckIds[1]
+end
+function Model:setLobbyFormat(format)
+    self.format=format;self:syncLobbyDecks()
+end
+function Model:setBotDeck(index,id)
+    if index<1 or index>5 then return end
+    self.botDeckIds[index]=id;if index==1 then self.botDeckId=id end
+end
 function Model:openDeck(deck)
     self.editGeneration=(self.editGeneration or 0)+1;self.deckRevision=0;self.mutationQueue={};self.mutationBusy=false;self.saveAfterMutations=false;self.lastBuilderError=nil
     self.editDeck=copy(deck)
@@ -227,9 +261,18 @@ end
 function Model:saveDeck()
     if self.mutationBusy or (self.mutationQueue and #self.mutationQueue>0) then self.saveAfterMutations=true;self:toast('Waiting for card validation…');return end
     local deck=copy(self.editDeck);deck.origin=nil
+    local generation,revision,identifier=self.editGeneration or 0,self.deckRevision or 0,self.editDeck.id
+    local function unchanged()
+        return self.editDeck and revision==(self.deckRevision or 0)and self.editDeck.name==deck.name and self.editDeck.coverCard==deck.coverCard and self.editDeck.description==deck.description and self.editDeck.format==deck.format
+    end
     self:request('catalog','POST','/decks',deck,function(data,err,failed)
-        if data then self.dirty=false;self.editDeck.draft=data.draft;self.validation=data.validation;self:refreshDecks();self:toast((data.draft and 'Draft saved: ' or 'Deck saved: ')..deck.name)
-        elseif failed and failed.validation then self.validation=failed.validation end
+        if data then
+            local saved=data.deck or data
+            self:refreshDecks();self:toast((saved.draft and'Draft saved: 'or'Deck saved: ')..deck.name)
+            if generation~=(self.editGeneration or 0)or not self.editDeck or self.editDeck.id~=identifier then return end
+            self.editDeck.id=saved.id or self.editDeck.id;self.editDeck.origin='user';self.selectedDeck=self.editDeck.id
+            if unchanged()then self.dirty=false;self.editDeck.draft=saved.draft;self.validation=data.validation end
+        elseif failed and failed.validation and generation==(self.editGeneration or 0)and unchanged()then self.validation=failed.validation end
     end)
 end
 function Model:duplicateDeck(deck)
@@ -243,28 +286,60 @@ function Model:saveSettings()
     self:request('catalog','PUT','/settings',self.settings,function(data) if data then self:toast('Settings saved') end end)
 end
 function Model:startGame()
+    if self.roomConnectionId then self:toast('Leave your multiplayer room before starting a practice match',true);return end
+    if self.gameBusy then return end
+    local deck=self:findDeck(self.playerDeckId)
+    if not deck then self:toast('Choose your deck first',true);return end
+    local bots=json.array();local count=self:lobbyPlayerCount()-1
+    for i=1,count do
+        local bot=self:findDeck(i==1 and self.botDeckId or self.botDeckIds[i])
+        if not bot then self:toast('Choose a deck for bot '..i,true);return end
+        if deck.format:lower()~=bot.format:lower() then self:toast('Bot '..i..' must use the same format as your deck',true);return end
+        bots[#bots+1]={name=count==1 and 'XMage Bot' or 'XMage Bot '..i,deck=bot}
+    end
+    if deck.format:lower()~=self.format:lower() then self:toast('Your deck must use the selected format',true);return end
     if self.replay then self:closeReplay() end
-    local deck,bot=self:findDeck(self.playerDeckId),self:findDeck(self.botDeckId)
-    if not deck or not bot then self:toast('Choose both decks first',true);return end
-    if deck.format~=bot.format then self:toast('Both decks must use the same format',true);return end
     self.gameBusy=true;self.answeredPrompt=nil;self.orderPrompt=nil;self.promptOrder={};self.actionBusy=false
-    self:request('engine','POST','/session/start',{format=deck.format,playerName=self.playerName,deck=deck,botDeck=bot,settings=self.settings,recordingPort=self.api.catalogPort or tonumber(os.getenv('LOVE2GATHERING_CATALOG_PORT')) or 17370},function(data)
+    local body={format=deck.format,playerName=self.playerName,deck=deck,settings=self.settings,priority=self:priorityOptions(),recordingPort=self.api.catalogPort or tonumber(os.getenv('LOVE2GATHERING_CATALOG_PORT')) or 17370}
+    body.profile=self:profileOptions();body.profile.name=body.playerName
+    if count==1 then body.botDeck=bots[1].deck else body.bots=bots end
+    self:request('engine','POST','/session/start',body,function(data)
         self.gameBusy=false
-        if data then self:setGame(data);self.page='table';self:toast('XMage match started') end
+        if data then
+            self.lastMatchRequest=copy(body);self.lastMatchDeckId=deck.id;self.activeDeckId=deck.id
+            self:setGame(data);self.page='table';self:toast('XMage match started')
+        end
     end)
+end
+function Model:canRematch()
+    if self.replay or not self.game or self.game.running~=false or self.gameBusy then return false end
+    if self.roomConnectionId then
+        return self.room and self.room.phase=='playing' and self.room.hostId==self.roomParticipantId and self.room.config.kind=='constructed' and self.room.canRematch==true
+    end
+    return self.lastMatchRequest~=nil
+end
+function Model:rematch()
+    if not self:canRematch()then return false end
+    if self.roomConnectionId then return self:roomMutation('/rematch',{})end
+    self.gameBusy=true
+    self:request('engine','POST','/session/start',copy(self.lastMatchRequest),function(data)
+        self.gameBusy=false;if data then self:setGame(data);self.page='table'end
+    end)
+    return true
+end
+function Model:goMain()
+    if self.replay then self:closeReplay()end
+    self.page='decks';self:refreshDecks()
 end
 function Model:lobbyDeck(deck)
     self.playerDeckId=deck.id;self.format=deck.format;self.page='lobby'
-    local bot=self:findDeck(self.botDeckId)
-    if not bot or bot.format~=deck.format then
-        for _,d in ipairs(self.decks) do if d.format==deck.format and d.id~=deck.id then self.botDeckId=d.id;return end end
-        self.botDeckId=deck.id
-    end
+    self:syncLobbyDecks()
 end
 function Model:setGame(data)
     if self.game and data.gameId==self.game.gameId and data.revision and self.game.revision and data.revision<self.game.revision then return end
     if self.game and data.gameId and self.game.gameId and data.gameId~=self.game.gameId then
         self.answeredPrompt=nil;self.orderPrompt=nil;self.promptOrder={};self.actionBusy=false
+        self.priorityBusy=false;self.priorityRequest=(self.priorityRequest or 0)+1
     end
     self.game=data;self.gameConnectionError=nil
     local prompt=data.prompt
@@ -280,10 +355,13 @@ end
 function Model:prompt()
     if self.replay then return nil end
     local p=self.game and self.game.prompt
+    -- A control command can be acknowledged before the GAME thread replaces
+    -- its old projection. That priority ID must not be submitted a second time.
+    if type(p)=='table' and p.priority and self.game.priority and (self.game.priority.pending or self.game.priority.canEndTurn==false) then return nil end
     return type(p)=='table' and p~=json.null and p.id and p.id~=self.answeredPrompt and p or nil
 end
 function Model:answer(kind,value)
-    local p=self:prompt();if not p or self.actionBusy then return end
+    local p=self:prompt();if not p or self.actionBusy or self.priorityBusy then return end
     self.actionBusy=true;self.answeredPrompt=p.id
     self:request('engine','POST','/session/action',{promptId=p.id,type=kind,value=value},function(data)
         self.actionBusy=false;if data then self:setGame(data) else self.answeredPrompt=nil end;self.pollTimer=0
@@ -305,6 +383,11 @@ function Model:canSelect(id)
 end
 function Model:selectCard(card)
     if self:canSelect(card.id) then self:answer('uuid',card.id);return true end
+    local p=self:prompt()
+    if p and p.combat then
+        self:toast('Choose a highlighted legal blocker or attacker. '..(p.combat.message or''),true)
+        self.toasts[#self.toasts].ttl=3
+    end
     return false
 end
 function Model:submitOrder()
@@ -319,4 +402,10 @@ function Model:quit()
     self.api:quit()
 end
 require('app.replays').install(Model)
+require('app.priority').install(Model)
+require('app.gallery').install(Model)
+require('app.rooms').install(Model)
+require('app.library').install(Model)
+require('app.collection').install(Model)
+require('app.profile').install(Model)
 return Model

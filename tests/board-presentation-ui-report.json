@@ -1,0 +1,101 @@
+{
+  "checks": [
+    "Supplied native Angel projection contains actual 5/5 and +1/+1 counter",
+    "Native live power/toughness overrides static card metadata without mutating the catalog",
+    "Native battlefield permanent retains the enlarged duel card dimensions",
+    "Both battlefield and hover renderer present the native live 5/5 badge",
+    "Actual supplied dice badge shows the native count separately from its counter type and live power/toughness",
+    "Player names render through the bold text path",
+    "Actual layered draws expose attached Aura, player Curse and linked exile hit regions",
+    "Graveyard and library piles retain enlarged clickable geometry",
+    "Priority badge displays elapsed time from the projected native start timestamp",
+    "Actual hand hover expands the card to readable size",
+    "Cast effect anchors to its actual source card rather than the table center",
+    "Actual stack-target links draw from the visible stack item to its board target",
+    "Stack target line endpoints match the actual stack and permanent centers",
+    "Snapshot life changes produce distinct gain and loss effects",
+    "Foreground renders signed life-change labels after the Slab batch",
+    "A combat damage step name without native-style damage events invents no motion",
+    "Only the explicitly supplied first-phase damage source lunges; its normal blocker does not retaliate",
+    "Combat blocker line endpoints follow their actual moving card geometry",
+    "The normal damage step label also waits for actual supplied damage sources",
+    "Separate normal-phase source events start their own delayed motions after first-phase presentation",
+    "Motion checks restore the disabled-animation preference for the rest of the UI acceptance",
+    "Same-snapshot damage and death shatter at the previous battlefield location instead of the graveyard pile",
+    "A dying source can retain native-style motion without displacing its graveyard representation",
+    "Actual stack-source hover preview ignores the dead permanent\u2019s still-active motion",
+    "The graveyard pile stays fixed while the same native ID is inspected in a hover preview",
+    "Actual main-style wheel routing scrolls Slab log without zooming the battlefield",
+    "Actual Slab log content transform changes under the wheel",
+    "Wheel over unobstructed terrain still zooms the camera",
+    "Empty lobby selection opens the real deck tile popup without choosing a default",
+    "Deck popup displays only the selected format",
+    "Unchanged deck tile reuses its artwork raster cache",
+    "Deck tiles draw supplied Mana symbols from catalog color identities",
+    "Actual deck search filters the popup grid",
+    "Dragging off a tile does not accidentally select a deck",
+    "Actual deck tile click applies the selected deck"
+  ],
+  "logical": [
+    1120,
+    720
+  ],
+  "nativeAngel": {
+    "power": "5",
+    "toughness": "5"
+  },
+  "nativeGameId": "f1fbf6e6-1a9e-4251-af28-e6ce67a3bebc",
+  "passed": true,
+  "physical": [
+    1120,
+    720
+  ],
+  "scope": "Actual L\u00d6VE/Slab presentation and input. Unmodified native Angel projection proves live 5/5/counter display; labeled attachment/target/life/native-style combat-damage events/extra-seat fixtures exercise presentation only, not card first/double-strike rules. Genuine cached JPEGs copied from isolated catalog. Wheel/hover callback follows main.lua routing.",
+  "wheelLedger": [
+    {
+      "void": false,
+      "zoom": 1
+    },
+    {
+      "void": true,
+      "zoom": 1
+    }
+  ],
+  "frontendSourcesSha256": {
+    "app/api.lua": "34cc4595b7e3c274f25bf8b9658828e233c876f5b60d4afbd9c9ff5bb4aa7624",
+    "app/profile_ui.lua": "0f45275a567b3b63b7014e5a9b2ef3d816ed057eac877113628a8f9b5eac2874",
+    "app/view.lua": "cb274bd497b6e8d3aa502720fb80ede5364347e9887667c629f177fe73027fb4",
+    "app/priority.lua": "2863453f58860aaf2786598d27867305e9ec3f9eaf05824420330619572cb23c",
+    "app/table_camera.lua": "938781d8c973757506b84c788781fac928a86964ab1187ee1dadd958566eb5c8",
+    "app/room_ui.lua": "111c02aaaa3f613344a8a668a1c0dda1d13f0a9e25c9cc351cd238c639997732",
+    "app/library_ui.lua": "ce004c784fe9c6f4c851b9c233acaf4c6d8ccfac376925fdbac9d48a186de36a",
+    "app/deck_picker.lua": "11473e13a15da51edc9b0dc2692ecac25b6aa8d61216409f6871e1ceba65d8bc",
+    "app/layout.lua": "04c931827af601e03d90b27cfef7bc55111d14fda41a161cf489ad328a96adf9",
+    "app/draft_ui.lua": "a8dfd797a98552cc23edf680e16e499cf5a7dfb649721264ba6da63eaf189873",
+    "app/assets.lua": "d2fc04509e6e1105bc3b7c923ead830448036dd93714f9b48c46d4bc55337a68",
+    "app/keywords.lua": "bcd747e1cab36a0b5b93d8716777545631dac05ef9b27d03d9d2f18e87a1a4d8",
+    "app/log.lua": "6268679d0a6036078af1dc6447a92778434880dc0a0c740b01f0667bce4c6e9f",
+    "app/multiplayer_table.lua": "5dc455b94b622c32243022ecae19686ee86a5bda554fe9d4936c2204db651b30",
+    "app/http_worker.lua": "a737947013a6794b80631f12d68fca9cd470728e506dd0abc2c19eebb032a23e",
+    "app/collection_ui.lua": "1d5c76463cf8aec24fbd52552602e0b93300b10db866adec29bb4ea0a68fac5c",
+    "app/board_fx.lua": "55a9bc1500d0ee21fea34bb15d70c9b8c43b1e747ec5f0919ecd52a4d2cdba63",
+    "app/builder.lua": "44639f919131a6883a81a97dfaecce640e5742733b80476db5a55509f04630dc",
+    "app/replays.lua": "af324028fa633364d797d9c215a0b1ad886fe58bae23ce408902752d5a5b6138",
+    "app/collection.lua": "4f46e58218720f152520efc5eb682653d6a4db4e0136b2cf1c58199187b63d47",
+    "app/preferences.lua": "07235d9c4c68dace06de74ba82d82128a945b00d7cc6e8872b12ece8f9288c46",
+    "app/richtext.lua": "7c937b06bfbeb18da5d8865c2dd61545c150fb5891fcce7f3a710786d03c22cd",
+    "app/profile.lua": "07bbc8d3b41cc14f2686f39fd210cd34e0be3a9e38e2b553016ec85c30efb118",
+    "app/settings.lua": "e6f5556a8acdb95b7dda0bee381032bb023ef52dfeda1ec227e33ef135463749",
+    "app/replay_ui.lua": "ac6fda9141e946cc6d5ebb85aedc0bb18e9ee22c19574695cab3a383edb4e125",
+    "app/fonts.lua": "90348844f04fb2c064111e52f70911efcab2ceea684b13dcd26eb88edc6084fc",
+    "app/renderer.lua": "821476ad863913b596ac4b31bb3d07949b6affcaf5f406e59a9a6efbb083bd9c",
+    "app/card_choices.lua": "a5731f8961aad88cd6f20297a64f16d3c832c5f374cb883ae0e4dca6ab8febff",
+    "app/rooms.lua": "f46e59b7249d76c4624685aeb549ed884c54d75f8338b4c5ddbc7ac6332c6856",
+    "app/gallery.lua": "8980dad00a78848f1ba0b483d84a0baf55a3b40f2eca79f7f6db6d67cc88aca9",
+    "app/table.lua": "9617351327ef81144be622d23e197201253a63385c98aeb0f3ce37f049f3890b",
+    "app/library.lua": "412a7cf4e580ab3e16cbcb1fb3079d38d7b12b0abf07d8de3bc1f4334674ae9f",
+    "app/model.lua": "ea7da13668b913fef22d4fd365e5389988bc7371fdb7fa0f146fc4f59a93c447",
+    "app/match_ui.lua": "6ee2d583e77106afd2df55b4824fdb9bd96a5b118b14959390e2d441cdcd8ef8",
+    "app/theme.lua": "069df4e83b8fcfc737bea9cf7452b8e6ed64400826680a9a81e370a2ee54a48a"
+  }
+}

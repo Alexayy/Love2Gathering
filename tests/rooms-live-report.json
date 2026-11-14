@@ -1,0 +1,59 @@
+{
+  "scope": "Real two desktop gateways, code-only human joins, native constructed game, four private native draft seats, 180 picks, native Limited decks and paired games, native concession/scoring/Swiss advancement, and deliberate draft departure. Only public/client HTTP routes; no injected game state or coordinator token.",
+  "gateways": [
+    "http://127.0.0.1:17420",
+    "http://127.0.0.1:17421"
+  ],
+  "passed": true,
+  "forfeitHumanPicks": 136,
+  "acceptedHumanPicks": 180,
+  "nativeFirstRoundGames": [
+    {
+      "pairingId": "e3f49ec7-ee59-48cb-bf92-accce4ae6d95",
+      "gameId": "18f28d5c-8e40-42ad-b0d7-870d60214308",
+      "winnerSeatId": "06a9eff1-ff0b-4338-a8b2-a6a090131124"
+    },
+    {
+      "pairingId": "4bacf49a-689f-4cb2-96ce-ed4cda895d6e",
+      "gameId": "677ffabe-a8e3-4ffa-afba-4cfa9a9ac88b",
+      "winnerSeatId": "e0f37fbc-8028-4cef-aa9f-c4625ed4f184"
+    }
+  ],
+  "secondRound": 2,
+  "constructedGameIds": [
+    "443cac3f-c638-416f-afd5-32fcd6ac122e"
+  ],
+  "checks": [
+    "Independent isolated room gateway answers its health endpoint",
+    "Independent isolated room gateway answers its health endpoint",
+    "Public room discovery is unavailable on both gateways",
+    "Desktop capabilities preserve native draft procedures and seat bounds",
+    "Two independent gateways join one constructed room using only its invitation code",
+    "A host connection credential is not a local guest connection",
+    "Real two-human constructed game reaches main with each private opening hand through its own gateway",
+    "Guest cannot export the host-perspective native recording",
+    "Constructed room releases both created connections and closes only its own native game",
+    "Four human seats span two independent local gateways",
+    "Gateway draft exposes only own cards and rejects repeated native pick tokens",
+    "Four human gateway connections complete all 180 native picks",
+    "Every active pool builds a native-valid 40-card deck and restores exact selected instance IDs",
+    "Public clients cannot forge a tournament winner or native result",
+    "Rejected public result leaves native standings unchanged",
+    "Host starts two actual native Limited games from first-round Swiss pairings",
+    "Paired native Limited game reaches main with exact 40-card decks and private seven-card hands",
+    "Authenticated loser concession ignores forged seat identity and records the authoritative native winner",
+    "Completed native game awards the correct native Swiss points through the gateway",
+    "Paired native Limited game reaches main with exact 40-card decks and private seven-card hands",
+    "Authenticated loser concession ignores forged seat identity and records the authoritative native winner",
+    "Completed native game awards the correct native Swiss points through the gateway",
+    "Host can advance only after every native paired game has finished",
+    "Host next-round starts the second native Swiss round through the public gateway",
+    "A queued action from the old native round cannot affect the new match",
+    "Draft room departure closes only created connections and its own paired native games",
+    "Gateway draft exposes only own cards and rejects repeated native pick tokens",
+    "Explicit guest departure removes its local connection while native auto-picking continues",
+    "Every active pool builds a native-valid 40-card deck and restores exact selected instance IDs",
+    "Departed seat retains its complete native pool and receives a valid native bot deck"
+  ],
+  "closedCreatedConnections": true
+}

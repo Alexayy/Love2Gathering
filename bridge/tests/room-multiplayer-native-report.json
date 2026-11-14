@@ -1,0 +1,1 @@
+{"passed":true,"kind":"Real native four-human XMage targets, damage, privacy and separate priority controls; only initial resources/turn position are fixtures","checks":{"passed":true,"realHumanMatchPlayers":4,"separateNativePrompts":true,"foreignAnswersRejected":true,"nativeTargetAndDamage":true,"privateHandsAndLooks":true,"publicReveals":true,"perHumanStopsAndYield":true}}

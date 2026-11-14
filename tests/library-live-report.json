@@ -1,0 +1,76 @@
+{
+  "passed": true,
+  "scope": "Actual full local metadata and HTTP import/token/history APIs, real public Archidekt JSON, two genuine token JPEG kinds, then network-disabled HTTP reads from a separate SQLite cache. Native history consumes completed engine recordings; no synthetic winner submission.",
+  "metadataLines": 120134,
+  "metadataOracleCards": 38840,
+  "tokenPrinting": "062043de-a199-408d-8d77-09531ad38b16",
+  "tokenFace": 0,
+  "imageBytes": {
+    "normal": 178736,
+    "art_crop": 126772
+  },
+  "nativeHistory": [
+    {
+      "id": "game-47a5fa1e-2fee-4274-8590-64bdcb099e1d-seat-0",
+      "outcome": "win",
+      "format": "Limited"
+    },
+    {
+      "id": "game-3de75c0d-991e-465f-ac9e-96768c8972da",
+      "outcome": "loss",
+      "format": "Modern"
+    }
+  ],
+  "archidekt": {
+    "provider": "Archidekt",
+    "url": "https://archidekt.com/decks/27859380"
+  },
+  "checks": [
+    "Full streaming metadata index and new library API are ready in isolated storage",
+    "Actual metadata validates a 60-card text preview without saving",
+    "Text preview preserves requested set and collector metadata",
+    "Official public Archidekt deck JSON imports all 100 cards and commander zones",
+    "Actual public export preserves individual set/collector selections",
+    "Own temporary deck save preserves bundled deck composition",
+    "Deck all_parts relationships return real local Goblin token printings",
+    "Per-deck token selection persists through its own validated preference route",
+    "Runtime token resolution returns exactly the selected real printing and face",
+    "Real normal token JPEG loads through the catalog and authoritative SQLite cache",
+    "Real art_crop token JPEG loads through the catalog and authoritative SQLite cache",
+    "Network-disabled HTTP returns identical cached normal bytes",
+    "Network-disabled HTTP returns identical cached art_crop bytes",
+    "History derives outcomes from actual completed native recordings",
+    "Actual native history retains truthful per-seat deck names"
+  ],
+  "finalOfflineProof": {
+    "passed": true,
+    "checkedAt": "2026-11-14T15:33:59.105155+00:00",
+    "apiVersion": 5,
+    "scope": "Final running isolated17460 cached art and default miss, plus a separate instrumented ephemeral HTTP server with all foreground image downloads disabled; UI-layout change restored. No remote imports repeated, no existing service stopped.",
+    "cachedPrinting": "062043de-a199-408d-8d77-09531ad38b16",
+    "face": 0,
+    "cachedImageSha256": {
+      "normal": "3c4f91b83cd40df3c8c5f543e7577664ca3b002f7bd1568bc0787e29c3a38c0d",
+      "art_crop": "01dfecbeb288a2d8af19774fa8dce2008529a12241617074b5d00e0396a42938"
+    },
+    "uncachedExactPrinting": "0000579f-7b35-4ed3-b44c-db2a538066fe",
+    "uncachedFace": 0,
+    "foregroundDownloadCalls": 0,
+    "uiLayoutRestored": true,
+    "checks": [
+      "Final API5 catalog defaults to localArtworkOnly=true",
+      "Final running catalog serves cached normal JPEG with no download opt-in",
+      "Explicit offline request serves identical cached normal bytes",
+      "Final running catalog serves cached art_crop JPEG with no download opt-in",
+      "Explicit offline request serves identical cached art_crop bytes",
+      "Final running catalog reports an exact uncached printing as cachedMiss before network",
+      "Instrumented separate HTTP server reuses normal BLOB while download method is disabled",
+      "Instrumented separate HTTP server reuses art_crop BLOB while download method is disabled",
+      "Instrumented default cache miss returns404 without attempting a download",
+      "Cached hits and default miss make zero foreground download calls",
+      "Actual UI-layout PUT/GET persists matchPrefs.logVerbose with other fields retained",
+      "Verbose log preference is durably present in authoritative SQLite",
+      "Previous isolated verbose-log preference is restored after persistence verification"
+    ]
+  }
+}

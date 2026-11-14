@@ -1,0 +1,239 @@
+-- Presentation of authoritative projections only. No legality or combat rules.
+local Board={}
+local palette={{.70,.53,1},{.34,.69,1},{1,.64,.30},{1,.43,.64},{.67,.83,.34},{.45,.82,.88},{.88,.65,.91},{.84,.76,.48},{.55,.73,.98}}
+local function list(value)return type(value)=='table'and value or{}end
+local function id(value)return type(value)=='table'and(value.id or value.targetId or value.playerId)or value end
+local function point(box)return box and{x=box.x+box.w/2,y=box.y+box.h/2}end
+local function tint(c,a)love.graphics.setColor(c[1],c[2],c[3],a or 1)end
+function Board.color(r,player)
+    if type(player)~='table'then player=(r.boardPlayers or{})[player]end
+    if player and player.human then return r.colors.accent end
+    return player and palette[(tonumber(player.seat)or 0)%#palette+1]or r.colors.purple
+end
+function Board.index(game)
+    local cards,players,attached,curses={},{},{},{}
+    for _,p in ipairs(list(game and game.players))do
+        players[p.id]=p
+        for _,zone in ipairs({'battlefield','hand','command','graveyard','exile'})do
+            for _,card in ipairs(list(p[zone]))do
+                if card.id then cards[card.id]=card end
+                if zone=='battlefield'then
+                    local target=id(card.attachedToId or card.attachedTo)
+                    if type(target)=='string'then attached[target]=attached[target]or{};table.insert(attached[target],card)end
+                    local targetPlayer=id(card.attachedToPlayerId)
+                    if type(targetPlayer)=='string'then curses[targetPlayer]=curses[targetPlayer]or{};table.insert(curses[targetPlayer],card)end
+                end
+            end
+        end
+    end
+    return cards,players,attached,curses
+end
+function Board.prepare(r)
+    r.boardCards,r.boardPlayers,r.boardAttached,r.boardCurses=Board.index(r.model.game)
+    r.playerRects={};r.boardLinks={}
+end
+function Board.priority(r,p,x,y,w,height)
+    local game=r.model.game or{};local holder=game.priorityPlayerId
+    if type(holder)=='table'then holder=holder.id end
+    local c=Board.color(r,p)
+    if holder==p.id and game.running~=false then
+        height=height or 28
+        tint(c,.95);love.graphics.setLineWidth(2);love.graphics.rectangle('line',x-4,y-4,w+8,height+8,5,5)
+        local stamp=game.priorityStartedAt or game.decisionStartedAt
+        r.priorityObserved=r.priorityObserved or{}
+        if r.priorityObserved.holder~=holder then r.priorityObserved={holder=holder,started=love.timer.getTime()}end
+        local replay=r.model.replay
+        local frame=replay and(replay.frames or{})[replay.index or 1]
+        local now=replay and(tonumber(frame and frame.timestamp)or tonumber(stamp)or 0)/1000 or os.time()
+        local elapsed=tonumber(stamp)and math.max(0,now-tonumber(stamp)/1000)or(replay and 0 or math.max(0,love.timer.getTime()-(r.priorityObserved.started or love.timer.getTime())))
+        local label=string.format('%d:%02d',math.floor(elapsed/60),math.floor(elapsed%60))
+        local ropeW=math.max(24,w-64)
+        tint(c,.35);love.graphics.setLineWidth(3);love.graphics.line(x,y+height+6,x+ropeW,y+height+6)
+        -- An elapsed indicator, not a fabricated deadline or penalty.
+        local still=r.model.settings.reducedMotion or r.model.settings.animations==false
+        local ember=x+(still and 1 or elapsed*.12%1)*ropeW;tint(r.colors.gold);love.graphics.circle('fill',ember,y+height+6,3)
+        r:text(label,x+ropeW+6,y+height-2,12,c,54,'right')
+    end
+end
+function Board.layers(r,card,x,y,w,h,options)
+    local attachments=(r.boardAttached or{})[card.id]or{}
+    for i=#attachments,1,-1 do
+        local a=attachments[i]
+        r:drawCard(a,x-12*i,y+18*i,w,h,{kind='attachment',animate=options and options.animate})
+    end
+    for i,exiled in ipairs(list(card.linkedExile))do
+        if i<=5 then
+            r:drawCard(exiled,x+w*.55+(i-1)*17,y+h*.40,w*.65,h*.65,{kind='linked-exile',angle=math.pi/2,back=exiled.hidden or exiled.faceDown})
+        end
+    end
+    r:drawCard(card,x,y,w,h,options)
+end
+function Board.playerAuras(r,player,x,y)
+    for i,card in ipairs((r.boardCurses or{})[player.id]or{})do
+        r:drawCard(card,x+(i-1)*32,y,66,92,{kind='attachment'})
+    end
+end
+function Board.anchor(r,key)
+    key=id(key)
+    if type(key)~='string'then return nil end
+    local current=(r.cardRects or{})[key];local previous=(r.previousCardRects or{})[key]
+    -- A death event belongs to the last battlefield position, not its new pile.
+    if current and current.kind=='pile'and previous and(previous.kind=='permanent'or previous.kind=='attachment')then return previous end
+    local box=current or(r.playerRects or{})[key]or previous or(r.previousPlayerRects or{})[key]
+    if box then return box end
+    for _,hit in ipairs(r.model.stackHits or{})do if hit.id==key or hit.sourceId==key then return hit end end
+end
+local function add(r,e)r.pendingBoardFX=r.pendingBoardFX or{};r.pendingBoardFX[#r.pendingBoardFX+1]=e end
+local function particles(r,e)
+    if r.sound then
+        local sound=e.kind=='cast'and'cast'or(e.kind=='resolve'or e.kind=='life_gain')and'resolve'or'impact'
+        r.boardSoundTimes=r.boardSoundTimes or{};local previous=r.boardSoundTimes[sound]
+        if not previous or(r.fxClock or 0)-previous>.08 then r:sound(sound);r.boardSoundTimes[sound]=r.fxClock or 0 end
+    end
+    if not r.model.settings.reducedMotion and r.model.settings.animations~=false then
+        local kind=e.kind=='cast'and'cast'or e.kind=='resolve'and'resolve'or e.kind=='life_gain'and'resolve'or'impact'
+        r:burst(kind,e.x,e.y,e.kind=='death'and 26 or 12)
+        if(e.kind=='clash'or e.kind=='strike')and e.from and e.target then
+            r.cardMotions[e.sourceId]={dx=(e.target.x-e.from.x)*.28,dy=(e.target.y-e.from.y)*.28,age=0,duration=.52}
+        end
+    end
+    e.spawned=true
+end
+function Board.update(r,dt)
+    r.boardEffects=r.boardEffects or{};r.cardMotions=r.cardMotions or{}
+    if r.model.settings.reducedMotion or r.model.settings.animations==false then r.cardMotions={}end
+    r.seenVisualEvents=r.seenVisualEvents or{}
+    r.fxClock=(r.fxClock or 0)+dt
+    for key,e in pairs(r.cardMotions)do e.age=e.age+dt;if e.age>e.duration then r.cardMotions[key]=nil end end
+    for i=#r.boardEffects,1,-1 do local e=r.boardEffects[i];e.age=e.age+dt;if e.age>=0 and not e.spawned then particles(r,e)end;if e.age>e.duration then table.remove(r.boardEffects,i)end end
+    local game=r.model.game;if not game then return end
+    local identity=r.model.replay or game.gameId
+    local seeking=r.model.replay and r.fxReplayIndex and r.model.replay.index~=r.fxReplayIndex and r.model.replay.index~=r.fxReplayIndex+1
+    if r.fxIdentity~=identity or seeking then
+        r.fxIdentity=identity;r.fxRevision=nil;r.oldBoardLife=nil;r.oldBoardCards=nil;r.oldCombatKey=nil;r.seenVisualEvents={};r.boardEffects={};r.cardMotions={};r.pendingBoardFX={}
+        r.combatAnimationStep=nil;r.combatAnimationStart=nil;r.combatAnimationUntil=nil
+        r.visualStepEpoch=nil
+    end
+    r.fxReplayIndex=r.model.replay and r.model.replay.index
+    if r.fxRevision==game.revision and not r.model.replay then return end
+    local cards,players=Board.index(game)
+    local deathTargets={}
+    if r.oldBoardLife then
+        for key,p in pairs(players)do
+            local old=r.oldBoardLife[key]
+            if old and p.life and p.life~=old then add(r,{kind=p.life>old and'life_gain'or'life_loss',targetId=key,amount=p.life-old})end
+        end
+        local grave={};for _,p in pairs(players)do for _,card in ipairs(list(p.graveyard))do grave[card.id]=true end end
+        for key,old in pairs(r.oldBoardCards or{})do if grave[key]and not(r.oldBoardGrave or{})[key]then add(r,{kind='death',targetId=key,card=old});deathTargets[key]=true end end
+        local before=r.oldStackIds or{}
+        for _,stack in ipairs(list(game.stack))do if not before[stack.id]then add(r,{kind='cast',sourceId=stack.sourceId or stack.id,ownerId=stack.controllerId,card=stack.sourceCard})end end
+        local current={};for _,stack in ipairs(list(game.stack))do current[stack.id]=true end
+        for key,old in pairs(before)do if not current[key]then add(r,{kind='resolve',sourceId=old.sourceId or old.id,ownerId=old.controllerId})end end
+    end
+    local retainedEvents={}
+    for _,event in ipairs(list(game.animationEvents))do
+        local key=event.id or event.sequence
+        if key then retainedEvents[key]=true end
+        if key and not r.seenVisualEvents[key]then
+            if event.type=='step'then r.visualStepEpoch=key end
+            if r.oldBoardLife and event.type=='zone'and event.fromZone=='BATTLEFIELD'and event.toZone=='GRAVEYARD'and type(event.targetId)=='string'and not deathTargets[event.targetId]then
+                add(r,{kind='death',targetId=event.targetId,card=(r.oldBoardCards or{})[event.targetId]or cards[event.targetId]});deathTargets[event.targetId]=true
+            end
+            if r.oldBoardLife and(event.type=='damage'or event.type=='dies'or event.type=='destroy')then
+                add(r,{kind=event.type=='damage'and'damage'or'death',sourceId=event.sourceId,targetId=event.targetId,amount=event.amount,card=cards[event.targetId]})
+                if event.type=='damage'and event.combat==true and(tonumber(event.amount)or 0)>0 then
+                    -- XMage selects first/double-strike participants and actual damage.
+                    -- Only a source that dealt damage lunges; no inferred retaliation.
+                    local phase=tostring(game.turn)..':'..tostring(event.step)..':'..tostring(r.visualStepEpoch)
+                    if r.combatAnimationStep~=phase then
+                        r.combatAnimationStep=phase
+                        r.combatAnimationStart=math.max(r.fxClock,r.combatAnimationUntil or 0)
+                        r.combatAnimationUntil=r.combatAnimationStart+.58
+                    end
+                    add(r,{kind=players[event.targetId]and'strike'or'clash',sourceId=event.sourceId,targetId=event.targetId,amount=event.amount,step=event.step,delay=math.max(0,(r.combatAnimationStart or r.fxClock)-r.fxClock)})
+                end
+            end
+        end
+    end
+    r.seenVisualEvents=retainedEvents
+    r.oldBoardLife={};r.oldBoardGrave={};r.oldStackIds={};r.oldBoardCards={}
+    for key,p in pairs(players)do
+        r.oldBoardLife[key]=p.life
+        for _,card in ipairs(list(p.graveyard))do r.oldBoardGrave[card.id]=true end
+        for _,card in ipairs(list(p.battlefield))do r.oldBoardCards[card.id]=card end
+    end
+    for _,stack in ipairs(list(game.stack))do r.oldStackIds[stack.id]=stack end
+    r.fxRevision=game.revision
+end
+function Board.offset(r,card)
+    local motion=r.cardMotions and r.cardMotions[card.id]
+    if not motion or motion.age<0 or r.model.settings.animations==false or r.model.settings.reducedMotion then return 0,0 end
+    local scale=r.worldTransform and r.worldTransform.scale or 1
+    local progress=math.sin(math.pi*math.min(1,motion.age/motion.duration))
+    return motion.dx*progress/scale,motion.dy*progress/scale
+end
+function Board.flush(r)
+    for _,e in ipairs(r.pendingBoardFX or{})do
+        local from=point(Board.anchor(r,e.sourceId))or point(Board.anchor(r,e.ownerId))
+        local target=point(Board.anchor(r,e.targetId))
+        local at=target or from
+        if at then
+            e.age=-(e.delay or 0);e.duration=(e.kind=='life_gain'or e.kind=='life_loss')and 1.7 or .65;e.x=at.x;e.y=at.y;e.from=from;e.target=target
+            r.boardEffects[#r.boardEffects+1]=e
+            if e.age>=0 then particles(r,e)end
+        end
+    end
+    r.pendingBoardFX={}
+end
+local function line(r,a,b,c,dashed)
+    if not a or not b then return end
+    local dx,dy=b.x-a.x,b.y-a.y;local length=math.sqrt(dx*dx+dy*dy);if length<1 then return end
+    local ux,uy=dx/length,dy/length
+    tint(c,.85);love.graphics.setLineWidth(2.5)
+    if dashed then for distance=0,length,16 do local finish=math.min(length,distance+9);love.graphics.line(a.x+ux*distance,a.y+uy*distance,a.x+ux*finish,a.y+uy*finish)end
+    else love.graphics.line(a.x,a.y,b.x,b.y)end
+    local tipX,tipY=b.x-ux*10,b.y-uy*10
+    love.graphics.polygon('fill',b.x,b.y,tipX-uy*5,tipY+ux*5,tipX+uy*5,tipY-ux*5)
+    r.assets:iconSymbol('focus',b.x-9,b.y-9,18,c)
+end
+function Board.links(r)
+    if r.model.page~='table'then return end
+    local game=r.model.game or{}
+    for _,group in ipairs(list((game.combat or{}).groups))do
+        local a=point(Board.anchor(r,group.attackerId));local b=point(Board.anchor(r,group.defenderId))
+        line(r,a,b,r.colors.red,true)
+        for _,blocker in ipairs(list(group.blockerIds))do line(r,point(Board.anchor(r,blocker)),a,r.colors.gold,false)end
+    end
+    local stackHits={};for _,hit in ipairs(r.model.stackHits or{})do stackHits[hit.id]=hit end
+    local hovered=r.model.stackHover
+    for _,item in ipairs(list(game.stack))do
+        local start=point(stackHits[item.id])or point(Board.anchor(r,item.sourceId))
+        local targets=item.targetIds or item.targets or{}
+        for _,target in ipairs(list(targets))do
+            local box=Board.anchor(r,id(target))
+            if not hovered or hovered.id==item.id then line(r,start,point(box),Board.color(r,item.controllerId),false)end
+        end
+    end
+end
+function Board.foreground(r)
+    Board.flush(r)
+    local moving=r.model.settings.animations~=false and not r.model.settings.reducedMotion
+    for _,e in ipairs(r.boardEffects or{})do
+        if e.age>=0 then
+        local alpha=math.max(0,1-e.age/e.duration);local t=e.age/e.duration
+        if e.kind=='life_gain'or e.kind=='life_loss'then
+            local c=e.kind=='life_gain'and r.colors.accent or r.colors.red
+            tint(c,alpha);r:strong((e.amount>0 and'+'or'')..tostring(e.amount),e.x-45,e.y-25-(moving and t*48 or 0),28,{c[1],c[2],c[3],alpha},90,'center')
+        elseif e.kind=='damage'then
+            line(r,e.from,e.target or{x=e.x,y=e.y},r.colors.red,false)
+        elseif e.kind=='death'then
+            tint(r.colors.red,alpha);love.graphics.setLineWidth(2)
+            for i=1,7 do local a=i*math.pi*2/7;local d=8+(moving and t*42 or 0);love.graphics.rectangle('line',e.x+math.cos(a)*d,e.y+math.sin(a)*d,9*(1-t),13*(1-t),2,2)end
+        elseif e.kind=='clash'or e.kind=='strike'then
+            local at=e.from and e.target and{x=(e.from.x+e.target.x)/2,y=(e.from.y+e.target.y)/2}or{x=e.x,y=e.y}
+            tint(r.colors.gold,alpha);love.graphics.setLineWidth(3);love.graphics.circle('line',at.x,at.y,7+t*34)
+        end
+        end
+    end
+end
+return Board

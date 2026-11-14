@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "scope": "Real SQLite profile and two-human-plus-bot native room propagation.\n\nRequires explicitly isolated catalog/gateway services. Uses public client room\nroutes, restores its temporary saved profile, closes only its created room, and\nnever reads a coordinator token or writes to default user storage.\n",
+  "replayId": "game-49686196-e9dd-4264-ab80-0e8b6470463a-c41c52d4-4541-4351-879f-42622f16bd0f",
+  "profileIdentity": {
+    "avatar": {
+      "oracleId": "635fe908-6f58-4c9e-ac55-0775a7c6f278",
+      "printingId": "25bf7d90-74f4-4a69-8783-699fa3a1b0e2",
+      "face": 0,
+      "name": "Angel of Vitality"
+    },
+    "playmat": {
+      "oracleId": "79a63064-f25b-4c34-867e-a9d32da97b14",
+      "printingId": "0edcda2a-071b-40c5-9fb3-8a4ff87ca00e",
+      "face": 0,
+      "name": "Krenko's Buzzcrusher"
+    }
+  },
+  "checks": [
+    "Exact real catalog avatar/playmat identities persist through actual SQLite HTTP",
+    "Profile cannot override native HP",
+    "Code-only room join preserves public per-seat profile names",
+    "Native human perspective sees both exact public avatar/playmat references",
+    "Native Commander owns all three40-life totals",
+    "Public profile does not reveal another human/bot hand",
+    "Native human perspective sees both exact public avatar/playmat references",
+    "Native Commander owns all three40-life totals",
+    "Public profile does not reveal another human/bot hand",
+    "Bot portrait uses its native commander without a hidden card instance ID",
+    "Completed authoritative recording preserves public profiles of both human participants",
+    "Native completion remains authoritative with presentation profiles"
+  ],
+  "cleanupErrors": []
+}

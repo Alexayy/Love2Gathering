@@ -23,6 +23,7 @@ function love.conf(t)
     t.modules.audio=false;t.modules.physics=false;t.modules.joystick=false;t.console=true
 end
 EOF
+cp "$project_dir/assets/fonts/Beleren2016-Bold.ttf" "$test_dir/assets/fonts/"
 LOVE2GATHERING_CATALOG_PORT=${LOVE2GATHERING_CATALOG_PORT:-17380} LOVE2GATHERING_ENGINE_PORT=17490 love "$test_dir"
 LOVE2GATHERING_CATALOG_PORT=${LOVE2GATHERING_CATALOG_PORT:-17380} python3 - <<'PY'
 import json,os,urllib.request
