@@ -11,6 +11,37 @@ function Log.present(entry,players)
         end
     end
     local actorColor=actor=='human' and {.32,.91,.73} or actor=='bot' and {.74,.59,1} or {.58,.67,.76}
-    return {text=text,actor=actor,category=category,actorColor=actorColor,color=categories[category] or actorColor,icon=icons[category] or 'info'}
+    return {text=text,fullText=text,actor=actor,category=category,actorColor=actorColor,color=categories[category] or actorColor,icon=icons[category] or 'info',
+        sourceId=type(entry)=='table'and entry.sourceId,sourceCard=type(entry)=='table'and entry.sourceCard,raw=entry}
+end
+function Log.isStack(entry)
+    return type(entry)=='table'and(entry.category=='trigger'or entry.category=='resolve'or entry.origin=='stack'or(entry.stackEvent==true and entry.category~='cast'))
+end
+function Log.entries(log,players,verbose,limit)
+    local out={}
+    for index=#(log or {}),1,-1 do
+        local raw=log[index]
+        if verbose or not Log.isStack(raw)then
+            local entry=Log.present(raw,players);entry.index=index
+            if type(raw)=='table'and type(raw.summary)=='string'then entry.text=raw.summary end
+            out[#out+1]=entry
+            if #out>=(limit or 80)then break end
+        end
+    end
+    return out
+end
+function Log.source(entry,game)
+    local card=entry.sourceCard
+    if type(card)=='table'and(card.id or card.name)and not card.hidden and not card.faceDown then return card end
+    if not entry.sourceId then return nil end
+    -- Resolve only against this entitled projection, never a catalog name guess.
+    for _,player in ipairs(game and game.players or {})do
+        for _,zone in ipairs({'battlefield','hand','graveyard','exile','command'})do
+            for _,candidate in ipairs(player[zone]or {})do
+                if tostring(candidate.id)==tostring(entry.sourceId)and not candidate.hidden and not candidate.faceDown then return candidate end
+            end
+        end
+    end
+    return nil
 end
 return Log

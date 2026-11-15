@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Love: 2 Gathering
+Comment=XMage card game client
+Exec=love2gathering
+Icon=io.github.Alexayy.Love2Gathering
+Terminal=false
+Categories=Game;CardGame;
+StartupNotify=true

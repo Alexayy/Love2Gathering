@@ -141,6 +141,9 @@ function ListBox.Begin(id, options)
 		region.ResetContent = Window.HasResized()
 		region.IsObstructed = isObstructed
 		region.Rounding = rounding
+		region.ForceShowY = options.AlwaysShowScrollBarY
+		region.AlwaysShowY = options.AlwaysShowScrollBarY
+		region.ScrollStep = options.ScrollStep
 		Region.Begin(instance.Id, region)
 	end
 

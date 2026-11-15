@@ -1,0 +1,5490 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    {
+      "id": "adv-mutate-top",
+      "purpose": "Put Gemrazer over Bears",
+      "mechanics": [
+        "mutate"
+      ],
+      "combined": false,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Gemrazer",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Put Gemrazer over Bears"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "One object remains, Gemrazer4/4 plus original Bears identity in merge",
+      "successCriteria": [
+        "One object remains, Gemrazer4/4 plus original Bears identity in merge",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-top",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-under",
+      "purpose": "Put Gemrazer under Bears",
+      "mechanics": [
+        "mutate"
+      ],
+      "combined": false,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Gemrazer",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Put Gemrazer under Bears"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Bears2/2 gains native reach and trample; same object",
+      "successCriteria": [
+        "Bears2/2 gains native reach and trample; same object",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-under",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-counters-damage",
+      "purpose": "Start Bears with two +1/+1 counters, tapped and1damage; merge over",
+      "mechanics": [
+        "mutate"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Gemrazer",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1,
+            "counters": {
+              "+1/+1": 2
+            },
+            "tapped": true,
+            "damage": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Start Bears with two +1/+1 counters, tapped and1damage; merge over"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Native6/6 retains2counters/tap/1damage; projection agrees",
+      "successCriteria": [
+        "Native6/6 retains2counters/tap/1damage; projection agrees",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-counters-damage",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-no-etb",
+      "purpose": "Merge with Soul Warden present, then resolve actual pending triggers",
+      "mechanics": [
+        "mutate"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Soul Warden",
+          "count": 1
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Gemrazer",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Soul Warden",
+            "count": 1
+          },
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Merge with Soul Warden present, then resolve actual pending triggers"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "No life gain: merging did not enter a new permanent",
+      "successCriteria": [
+        "No life gain: merging did not enter a new permanent",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-no-etb",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-repeat",
+      "purpose": "Merge Gemrazer over, Octopus under",
+      "mechanics": [
+        "mutate"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Gemrazer",
+          "count": 1
+        },
+        {
+          "name": "Sea-Dasher Octopus",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          },
+          {
+            "name": "Sea-Dasher Octopus",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Merge Gemrazer over, Octopus under"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Mutate count2; three components;4/4 with granted draw trigger",
+      "successCriteria": [
+        "Mutate count2; three components;4/4 with granted draw trigger",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-repeat",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-bounce",
+      "purpose": "Merge over; native move to owner hand",
+      "mechanics": [
+        "mutate"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Gemrazer",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Merge over; native move to owner hand"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Two separate physical cards in hand, no merged battlefield object",
+      "successCriteria": [
+        "Two separate physical cards in hand, no merged battlefield object",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-bounce",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-blink",
+      "purpose": "Merge over; resolve targeted Cloudshift",
+      "mechanics": [
+        "mutate"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Gemrazer",
+          "count": 1
+        },
+        {
+          "name": "Cloudshift",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          },
+          {
+            "name": "Cloudshift",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Merge over; resolve targeted Cloudshift"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Both cards return independently with mutate count0",
+      "successCriteria": [
+        "Both cards return independently with mutate count0",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-blink",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-control",
+      "purpose": "Native control-changing spell on merged permanent followed by zone change",
+      "mechanics": [
+        "mutate"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Gemrazer",
+          "count": 1
+        },
+        {
+          "name": "Act of Treason",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [
+          {
+            "name": "Act of Treason",
+            "count": 1,
+            "controller": "opponent",
+            "target": "merged Bears/Gemrazer after mutation"
+          }
+        ],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Merge Gemrazer over Bears via actual native mutating spell resolution",
+        "Resolve native Act of Treason from opponent-controlled fixture stack",
+        "Assert owner/controller separately, then native move to owner hand"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Both components return to original owner, not changed controller",
+      "successCriteria": [
+        "Both components return to original owner, not changed controller",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-control",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-token-top",
+      "purpose": "Create Bear token; merge Gemrazer over",
+      "mechanics": [
+        "mutate"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Gemrazer",
+          "count": 1
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "role": "outside source-only identity for native Token creation API"
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "token": "Bear",
+            "count": 1,
+            "nativeTemplate": "mage.game.permanent.token.BearToken"
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "outside": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1,
+            "sourceOnly": true
+          }
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Create Bear token; merge Gemrazer over"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Same native ID,4/4 and nontoken status follows card on top",
+      "successCriteria": [
+        "Same native ID,4/4 and nontoken status follows card on top",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-token-top",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-token-under",
+      "purpose": "Create Bear token; merge Gemrazer under",
+      "mechanics": [
+        "mutate"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Gemrazer",
+          "count": 1
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "role": "outside source-only identity for native Token creation API"
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "token": "Bear",
+            "count": 1,
+            "nativeTemplate": "mage.game.permanent.token.BearToken"
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "outside": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1,
+            "sourceOnly": true
+          }
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Create Bear token; merge Gemrazer under"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Same native ID,2/2 and token status follows token on top",
+      "successCriteria": [
+        "Same native ID,2/2 and token status follows token on top",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-token-under",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-token-copy",
+      "purpose": "Mutate Gemrazer over Bear token; copy merged object",
+      "mechanics": [
+        "copy"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Gemrazer",
+          "count": 1
+        },
+        {
+          "name": "Rite of Replication",
+          "count": 1
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "role": "outside source-only identity for native Token creation API"
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "token": "Bear",
+            "count": 1,
+            "nativeTemplate": "mage.game.permanent.token.BearToken"
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          },
+          {
+            "name": "Rite of Replication",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "outside": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1,
+            "sourceOnly": true
+          }
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Mutate Gemrazer over Bear token; copy merged object"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Independent4/4Gemrazer token; original merged host stays intact",
+      "successCriteria": [
+        "Independent4/4Gemrazer token; original merged host stays intact",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-token-copy",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-illegal-target",
+      "purpose": "Inject native mutating spell targeting Bears; bounce target before resolve",
+      "mechanics": [
+        "mutate"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Soul Warden",
+          "count": 1
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Gemrazer",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Soul Warden",
+            "count": 1
+          },
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Inject native mutating spell targeting Bears; bounce target before resolve"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Gemrazer resolves unmerged, enters normally, Soul Warden gains1life",
+      "successCriteria": [
+        "Gemrazer resolves unmerged, enters normally, Soul Warden gains1life",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-illegal-target",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-copy-counters-not-copiable",
+      "purpose": "Bears gets3counters/tap/1damage; resolve token copy spell",
+      "mechanics": [
+        "copy"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Rite of Replication",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Rite of Replication",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Bears gets3counters/tap/1damage; resolve token copy spell"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Copy2/2 has no counters/damage/tapped state; original remains5/5",
+      "successCriteria": [
+        "Copy2/2 has no counters/damage/tapped state; original remains5/5",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-copy-counters-not-copiable",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-copy-mutate-derived",
+      "purpose": "Merge3components; add2counters; copy merged creature",
+      "mechanics": [
+        "copy"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Gemrazer",
+          "count": 1
+        },
+        {
+          "name": "Sea-Dasher Octopus",
+          "count": 1
+        },
+        {
+          "name": "Rite of Replication",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          },
+          {
+            "name": "Sea-Dasher Octopus",
+            "count": 1
+          },
+          {
+            "name": "Rite of Replication",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Merge3components; add2counters; copy merged creature"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Copy4/4has Octopus ability but no counters; original components independent",
+      "successCriteria": [
+        "Copy4/4has Octopus ability but no counters; original components independent",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-copy-mutate-derived",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-copy-spell",
+      "purpose": "Prepare native targeted Bolt; native stack copy retains target; resolve both",
+      "mechanics": [
+        "copy"
+      ],
+      "combined": false,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Lightning Bolt",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Lightning Bolt",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Prepare native targeted Bolt; native stack copy retains target; resolve both"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Distinct copy identity; opponent takes6native damage",
+      "successCriteria": [
+        "Distinct copy identity; opponent takes6native damage",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-copy-spell",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-copy-retarget",
+      "purpose": "Native copy Bolt then accept offered new-target choice for own player",
+      "mechanics": [
+        "copy"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Lightning Bolt",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Lightning Bolt",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Native copy Bolt then accept offered new-target choice for own player"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Original deals3to opponent; copied spell deals3to newly chosen player",
+      "successCriteria": [
+        "Original deals3to opponent; copied spell deals3to newly chosen player",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-copy-retarget",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-copy-triggered",
+      "purpose": "Cause actual ETB trigger; native stack copy; resolve both",
+      "mechanics": [
+        "copy"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 2
+        },
+        {
+          "name": "Soul Warden",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          },
+          {
+            "name": "Soul Warden",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "outside": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1,
+            "enterDuringAction": true
+          }
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Cause actual ETB trigger; native stack copy; resolve both"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Two independent trigger objects; gain2life",
+      "successCriteria": [
+        "Two independent trigger objects; gain2life",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-copy-triggered",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-copy-activated",
+      "purpose": "Pay native tap-damage ability then copy that stack ability",
+      "mechanics": [
+        "copy"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        },
+        {
+          "name": "Prodigal Pyromancer",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          },
+          {
+            "name": "Prodigal Pyromancer",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Pay native tap-damage ability then copy that stack ability"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Source tapped once; original/copy each deal1damage",
+      "successCriteria": [
+        "Source tapped once; original/copy each deal1damage",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-copy-activated",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-replace-tokens-single",
+      "purpose": "Native BearToken.create1 with Parallel Lives",
+      "mechanics": [
+        "replacement"
+      ],
+      "combined": false,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Parallel Lives",
+          "count": 1
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Parallel Lives",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "outside": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1,
+            "sourceOnly": true
+          }
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Native BearToken.create1 with Parallel Lives"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Exactly2native tokens",
+      "successCriteria": [
+        "Exactly2native tokens",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 1,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-replace-tokens-single",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-replace-tokens-stacked",
+      "purpose": "Native create1with two token doublers; choose offered replacement order",
+      "mechanics": [
+        "replacement"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Parallel Lives",
+          "count": 1
+        },
+        {
+          "name": "Doubling Season",
+          "count": 1
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Parallel Lives",
+            "count": 1
+          },
+          {
+            "name": "Doubling Season",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "outside": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1,
+            "sourceOnly": true
+          }
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Native create1with two token doublers; choose offered replacement order"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Exactly4native tokens, no recursive reapplication",
+      "successCriteria": [
+        "Exactly4native tokens, no recursive reapplication",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 1,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-replace-tokens-stacked",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-replace-manufactor",
+      "purpose": "Native create1Treasure with both replacement effects",
+      "mechanics": [
+        "replacement"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Parallel Lives",
+          "count": 1
+        },
+        {
+          "name": "Academy Manufactor",
+          "count": 1
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Parallel Lives",
+            "count": 1
+          },
+          {
+            "name": "Academy Manufactor",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "outside": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1,
+            "sourceOnly": true
+          }
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Native create1Treasure with both replacement effects"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Exactly2Clue/2Food/2Treasure,6distinct objects",
+      "successCriteria": [
+        "Exactly2Clue/2Food/2Treasure,6distinct objects",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 1,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-replace-manufactor",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-replace-counters-stacked",
+      "purpose": "Native effect adds1counter with both replacements",
+      "mechanics": [
+        "replacement"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Doubling Season",
+          "count": 1
+        },
+        {
+          "name": "Branching Evolution",
+          "count": 1
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Doubling Season",
+            "count": 1
+          },
+          {
+            "name": "Branching Evolution",
+            "count": 1
+          },
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Native effect adds1counter with both replacements"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Exactly4+1/+1counters; native6/6",
+      "successCriteria": [
+        "Exactly4+1/+1counters; native6/6",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 1,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-replace-counters-stacked",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-prevent-nine-lives",
+      "purpose": "Resolve native Bolt targeting own player",
+      "mechanics": [
+        "prevention"
+      ],
+      "combined": false,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Nine Lives",
+          "count": 1
+        },
+        {
+          "name": "Lightning Bolt",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Nine Lives",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Lightning Bolt",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Resolve native Bolt targeting own player"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Damage prevented;1incarnation counter",
+      "successCriteria": [
+        "Damage prevented;1incarnation counter",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 1,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-prevent-nine-lives",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-lock-solemnity-nine-lives",
+      "purpose": "Resolve3separate Bolts with Nine Lives/Solemnity",
+      "mechanics": [
+        "lock"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Nine Lives",
+          "count": 1
+        },
+        {
+          "name": "Solemnity",
+          "count": 1
+        },
+        {
+          "name": "Lightning Bolt",
+          "count": 3
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Nine Lives",
+            "count": 1
+          },
+          {
+            "name": "Solemnity",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Lightning Bolt",
+            "count": 3
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Resolve3separate Bolts with Nine Lives/Solemnity"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Life unchanged;0prohibitedcounters; game remains live with empty stack",
+      "successCriteria": [
+        "Life unchanged;0prohibitedcounters; game remains live with empty stack",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 1,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-lock-solemnity-nine-lives",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-prevent-vigor",
+      "purpose": "Native deal3damage to Bears",
+      "mechanics": [
+        "prevention"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Vigor",
+          "count": 1
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Vigor",
+            "count": 1
+          },
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Native deal3damage to Bears"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Damage0;3counters; native5/5",
+      "successCriteria": [
+        "Damage0;3counters; native5/5",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 1,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-prevent-vigor",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-replace-solemnity-vigor",
+      "purpose": "Native deal3damage while counters prohibited",
+      "mechanics": [
+        "prevention"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Vigor",
+          "count": 1
+        },
+        {
+          "name": "Solemnity",
+          "count": 1
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Vigor",
+            "count": 1
+          },
+          {
+            "name": "Solemnity",
+            "count": 1
+          },
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Native deal3damage while counters prohibited"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Prevention works;0counters; native2/2",
+      "successCriteria": [
+        "Prevention works;0counters; native2/2",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 1,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-replace-solemnity-vigor",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-finite-scute-chain",
+      "purpose": "Start oneScute+5Forests; enter land6, resolve; land7, resolve",
+      "mechanics": [
+        "finite"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Scute Swarm",
+          "count": 1
+        },
+        {
+          "name": "Forest",
+          "count": 7
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Scute Swarm",
+            "count": 1
+          },
+          {
+            "name": "Forest",
+            "count": 5
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Forest",
+            "count": 2
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Start oneScute+5Forests; enter land6, resolve; land7, resolve"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Scute1\u21922\u21924; native stack empties after finite sequence",
+      "successCriteria": [
+        "Scute1\u21922\u21924; native stack empties after finite sequence",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 1,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-finite-scute-chain",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-loop-mandatory-sporemound",
+      "purpose": "Enter Forest; resolve mandatory landfall sequence under24resolution test budget",
+      "mechanics": [
+        "mandatory_growing_loop"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Sporemound",
+          "count": 1
+        },
+        {
+          "name": "Life and Limb",
+          "count": 1
+        },
+        {
+          "name": "Forest",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Sporemound",
+            "count": 1
+          },
+          {
+            "name": "Life and Limb",
+            "count": 1
+          },
+          {
+            "name": "Forest",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Enter Forest; resolve mandatory landfall sequence under24resolution test budget",
+        "Use actual protected GameImpl.resolve via reflection, preserving its native infinite-loop detector; answer only offered loop confirmation Yes"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence",
+        "Native infinite-loop draw confirmation, if emitted; actual engine/AI responses determine outcome"
+      ],
+      "expected": "Native token/land objects grow; preserve checkpoint, no watchdog-created draw; if native loop detector offers confirmation and all players accept, preserve actual native draw",
+      "successCriteria": [
+        "Native token/land objects grow; preserve checkpoint, no watchdog-created draw",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 24,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "native_draw_or_budget_exceeded",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-loop-mandatory-sporemound",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-loop-mandatory-polyraptor",
+      "purpose": "Enter Polyraptor; resolve mandatory damage/enrage sequence under24resolution budget",
+      "mechanics": [
+        "mandatory_growing_loop"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Marauding Raptor",
+          "count": 1
+        },
+        {
+          "name": "Polyraptor",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Marauding Raptor",
+            "count": 1
+          },
+          {
+            "name": "Polyraptor",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Enter Polyraptor; resolve mandatory damage/enrage sequence under24resolution budget",
+        "Use actual protected GameImpl.resolve via reflection, preserving its native infinite-loop detector; answer only offered loop confirmation Yes"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence",
+        "Native infinite-loop draw confirmation, if emitted; actual engine/AI responses determine outcome"
+      ],
+      "expected": "Native object/trigger sequence grows; preserve checkpoint, no invented draw; if native loop detector offers confirmation and all players accept, preserve actual native draw",
+      "successCriteria": [
+        "Native object/trigger sequence grows; preserve checkpoint, no invented draw",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 24,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "native_draw_or_budget_exceeded",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-loop-mandatory-polyraptor",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-loop-optional-renewal",
+      "purpose": "Three native sacrifice/return/cast0cycles then offered priority Pass",
+      "mechanics": [
+        "optional_no_win_loop"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Enduring Renewal",
+          "count": 1
+        },
+        {
+          "name": "Ashnod's Altar",
+          "count": 1
+        },
+        {
+          "name": "Ornithopter",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Enduring Renewal",
+            "count": 1
+          },
+          {
+            "name": "Ashnod's Altar",
+            "count": 1
+          },
+          {
+            "name": "Ornithopter",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Three native sacrifice/return/cast0cycles then offered priority Pass"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Ornithopter remains;6colorlessmana; native Pass exits without terminal result",
+      "successCriteria": [
+        "Ornithopter remains;6colorlessmana; native Pass exits without terminal result",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-loop-optional-renewal",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-loop-optional-kiki-impact",
+      "purpose": "Three explicit copy/untap cycles then offered priority Pass",
+      "mechanics": [
+        "optional_win_capable_loop"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Kiki-Jiki, Mirror Breaker",
+          "count": 1
+        },
+        {
+          "name": "Zealous Conscripts",
+          "count": 1
+        },
+        {
+          "name": "Impact Tremors",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [
+          {
+            "name": "Kiki-Jiki, Mirror Breaker",
+            "count": 1
+          },
+          {
+            "name": "Zealous Conscripts",
+            "count": 1
+          },
+          {
+            "name": "Impact Tremors",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells."
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Three explicit copy/untap cycles then offered priority Pass"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "3copytokens/3native damage; no automatic continuation; native Pass exits",
+      "successCriteria": [
+        "3copytokens/3native damage; no automatic continuation; native Pass exits",
+        "No unreaped owned GAME executor; trace/projection saved"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-loop-optional-kiki-impact",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-loop-mandatory-feedback",
+      "purpose": "Mandatory Stuffy Doll/Pariah Shield damage feedback with no life/object-count progress",
+      "mechanics": [
+        "mandatory_feedback_loop"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Pariah's Shield",
+          "count": 1
+        },
+        {
+          "name": "Stuffy Doll",
+          "count": 1
+        },
+        {
+          "name": "Lightning Bolt",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "battlefield": [
+          {
+            "name": "Pariah's Shield",
+            "count": 1
+          },
+          {
+            "name": "Stuffy Doll",
+            "count": 1,
+            "chosenPlayer": "human",
+            "attachments": [
+              "Pariah's Shield"
+            ]
+          }
+        ],
+        "stack": [
+          {
+            "name": "Lightning Bolt",
+            "count": 1,
+            "target": "Stuffy Doll"
+          }
+        ],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Choose own player through native Stuffy Doll as-enters prompt",
+        "Prepare native legal attachment; resolve Bolt then repeated native GameImpl.resolve wrapper, including native infinite-loop checker",
+        "Accept only the native offered infinite-loop draw confirmation",
+        "Use actual protected GameImpl.resolve via reflection, preserving its native infinite-loop detector; answer only offered loop confirmation Yes"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence",
+        "Native infinite-loop draw confirmation, if emitted; actual engine/AI responses determine outcome"
+      ],
+      "expected": "Life and object quantities remain stable; marked damage separately grows; only native draw outcome is terminal, else explicit test budget checkpoint; if native loop detector offers confirmation and all players accept, preserve actual native draw",
+      "successCriteria": [
+        "Life and object quantities remain stable; marked damage separately grows; only native draw outcome is terminal, else explicit test budget checkpoint",
+        "No unreaped GAME executor"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 24,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "native_draw_or_budget_exceeded",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-loop-mandatory-feedback",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-prevent-unpreventable-banefire",
+      "purpose": "Nine Lives additional counter effect under Banefire unpreventable damage",
+      "mechanics": [
+        "prevention",
+        "unpreventable_damage",
+        "X"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Nine Lives",
+          "count": 1
+        },
+        {
+          "name": "Banefire",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "battlefield": [
+          {
+            "name": "Nine Lives",
+            "count": 1
+          }
+        ],
+        "stack": [
+          {
+            "name": "Banefire",
+            "count": 1,
+            "target": "human",
+            "paidX": 5
+          }
+        ],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Resolve native Banefire using actual engine effect",
+        "Inspect native damage and Nine Lives incarnation counters"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Damage is dealt but Nine Lives still receives one incarnation counter, as the official M21 release ruling requires",
+      "successCriteria": [
+        "Damage is dealt but Nine Lives still receives one incarnation counter, as the official M21 release ruling requires"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-prevent-unpreventable-banefire",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "unpreventable-observed.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/news/feature/core-set-2021-and-jumpstart-release-notes-2020-06-20"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-prevent-unpreventable-skullcrack",
+      "purpose": "Nine Lives additional counter effect under Skullcrack unpreventable damage",
+      "mechanics": [
+        "prevention",
+        "unpreventable_damage",
+        "continuous_rule_modifier"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Nine Lives",
+          "count": 1
+        },
+        {
+          "name": "Skullcrack",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "battlefield": [
+          {
+            "name": "Nine Lives",
+            "count": 1
+          }
+        ],
+        "stack": [
+          {
+            "name": "Skullcrack",
+            "count": 1,
+            "target": "human"
+          }
+        ],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Resolve native Skullcrack using actual engine effect",
+        "Inspect native damage and Nine Lives incarnation counters"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Damage is dealt but Nine Lives still receives one incarnation counter, as the official M21 release ruling requires",
+      "successCriteria": [
+        "Damage is dealt but Nine Lives still receives one incarnation counter, as the official M21 release ruling requires"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-prevent-unpreventable-skullcrack",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "unpreventable-observed.json",
+        "native-structured-log.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/news/feature/core-set-2021-and-jumpstart-release-notes-2020-06-20"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-projection-token",
+      "purpose": "Two-human merged-token/copy artwork provenance, copied-token top component, original template and face-down entitlement boundaries",
+      "mechanics": [
+        "mutate",
+        "token_copy",
+        "projection",
+        "privacy"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Gemrazer",
+          "count": 1
+        },
+        {
+          "name": "Sea-Dasher Octopus",
+          "count": 2
+        },
+        {
+          "name": "Rite of Replication",
+          "count": 2
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 2,
+          "role": "one outside native token-operation source and one ordinary entering copy-provenance control"
+        }
+      ],
+      "initial": {
+        "battlefield": [
+          {
+            "token": "Bear",
+            "count": 1
+          }
+        ],
+        "stack": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "peer-human",
+            "life": 20
+          }
+        ],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "peer-human",
+            "name": "Plains",
+            "count": 60
+          }
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Resolve Gemrazer-over and Octopus-under native mutating spells on a Bear token",
+        "Assert projection against ordered native component IDs/top ID/original token template",
+        "Copy merged creature via native Rite of Replication and prove copied object is not merged",
+        "Enter an ordinary Grizzly Bears and create a second native Rite copy; compare exact copySourceCard ID/name and absent merged components",
+        "Resolve a second Sea-Dasher Octopus under the ordinary copied Grizzly Bears token; compare its native host/top/under UUIDs and exact Token.getCopySourceCard against host-template and component metadata, without creating an independent permanent target",
+        "Check public peer inspection, hidden opponent library and face-down merged-card redaction"
+      ],
+      "expectedPrompts": [
+        "Only actual offered Under/Over, replacement-order, UUID target or explicit Pass choices used by this scenario; unknown prompt fails with evidence"
+      ],
+      "expected": "Native component/template/copySourceCard identities project exactly; original live top is Gemrazer, ordinary copied-token top remains Grizzly Bears after Octopus-under, merged-copy provenance stays unavailable, and hidden details remain absent",
+      "successCriteria": [
+        "Native component/template/copySourceCard identities project exactly; original live top is Gemrazer, ordinary copied-token top remains Grizzly Bears after Octopus-under, merged-copy provenance stays unavailable, and hidden details remain absent"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/mechanics/run.py --mode full --scenario adv-mutate-projection-token",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "visible-merged-card.json",
+        "copied-merged-characteristics.json",
+        "hidden-merged-card.json",
+        "native-structured-log.json",
+        "visible-merged-frame.json",
+        "merged-copy-provenance.json",
+        "ordinary-card-copy-provenance.json",
+        "copied-token-top-card.json",
+        "copied-token-top-frame.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "requiresBridgeFeature": "card.mutate, tokenTemplate and native Token copySourceCard",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "peer-human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-copy-legend",
+      "purpose": "Native legendary token-copy SBA choice keeps the offered copy and preserves source provenance",
+      "mechanics": [
+        "permanent_copy",
+        "legend_rule",
+        "state_based_actions",
+        "token_provenance"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Isamaru, Hound of Konda",
+          "count": 1
+        },
+        {
+          "name": "Rite of Replication",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "outside": []
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested"
+      ],
+      "actions": [
+        "Enter original Isamaru through native zone transition",
+        "Resolve an injected native Rite of Replication targeting original Isamaru",
+        "Answer actual native legendary-rule keep choice with the newly created token copy UUID",
+        "Assert original physical card in owner graveyard, exactly one owned2/2 copy and exact source-card provenance"
+      ],
+      "expectedPrompts": [
+        "Actual native legendary-rule keep UUID for the new Isamaru copy; any unknown prompt fails"
+      ],
+      "expected": "Actual native legend SBA keeps selected token, puts original in owner graveyard and preserves exact source Card UUID/name without merged components",
+      "successCriteria": [
+        "Actual native legend SBA keeps selected token, puts original in owner graveyard and preserves exact source Card UUID/name without merged components",
+        "No owned GAME executor remains alive; exact offered choice/action and projection evidence retained"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/test-mechanics.py --mode full --scenario adv-copy-legend",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json",
+        "final-frame.json",
+        "legend-before-copy-frame.json",
+        "legend-copy-state.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    },
+    {
+      "id": "adv-mutate-token-attachments",
+      "purpose": "Actual mutate alternative-cost payment plus token attachment/counter/damage/tap continuity",
+      "mechanics": [
+        "mutate",
+        "alternative_cost_payment",
+        "attachments",
+        "counters",
+        "continuous_effects",
+        "token_provenance"
+      ],
+      "combined": true,
+      "evidenceKind": "deterministic_native",
+      "fixtureClass": "love2gathering.AdvancedMechanicsFixture",
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "role": "outside source-only native token operation"
+        },
+        {
+          "name": "Bonesplitter",
+          "count": 1
+        },
+        {
+          "name": "Rancor",
+          "count": 1
+        },
+        {
+          "name": "Gemrazer",
+          "count": 1
+        }
+      ],
+      "initial": {
+        "owner": "human",
+        "battlefield": [],
+        "stack": [],
+        "library": [
+          {
+            "owner": "human",
+            "name": "Plains",
+            "count": 60
+          },
+          {
+            "owner": "opponent-bot",
+            "name": "Plains",
+            "count": 60
+          }
+        ],
+        "hand": [
+          {
+            "name": "Gemrazer",
+            "count": 1
+          }
+        ],
+        "graveyard": [],
+        "exile": [],
+        "players": [
+          {
+            "seat": "human",
+            "life": 20
+          },
+          {
+            "seat": "opponent",
+            "life": 20
+          }
+        ],
+        "preparationSchedule": "Battlefield rows are the first controlled position; named spells/extra creatures are loaded into their stated action zone immediately before the manifest action. Casting costs are outside scope for injected stack spells.",
+        "outside": [
+          {
+            "name": "Grizzly Bears",
+            "count": 1
+          }
+        ],
+        "preparedNativeManaBeforeCast": {
+          "G": 3
+        }
+      },
+      "preconditions": [
+        "Fresh isolated native Session, GAME-named executor; initial zones prepared only through native test helper",
+        "Current source cards exist in exact pinned card-map; engine remains read-only",
+        "Injected native stack spell/copy operations cover resolution and identity, not production casting or cost validation",
+        "Listed future hand/stack resources are introduced immediately before their deterministic step; initial-zone helper is never used to generate the later ETB being tested",
+        "Bonesplitter attachment is explicit native fixture preparation, not a paid equip claim; Rancor resolves as an injected pre-paid native Aura. Gemrazer alone uses actual native alternate-cost casting/payment."
+      ],
+      "actions": [
+        "Create a native2/2 Bear token; enter Bonesplitter and establish its legal native attachment as fixture preparation",
+        "Resolve native Rancor Aura spell onto Bear; add two native+1/+1 counters, one marked damage and tapped state",
+        "Prepare Gemrazer in native hand with exactly3green fixture mana; cast its actual native MutateAbility using offered Bear target and spend all3mana for1GG alternative cost",
+        "Resolve actual paid mutating spell using offered Over choice",
+        "Assert native10/6 current values, original2/2 Bear template, unchanged host and Equipment/Aura attachment IDs/attachedTo, two counters, damage1, tap, reach/trample"
+      ],
+      "expectedPrompts": [
+        "Actual native offered Bear target UUID when casting MutateAbility, then offered Over response during resolution; any unknown payment/choice prompt fails"
+      ],
+      "expected": "Native MutateAbility casting pays3mana instead of printed4; Gemrazer-over yields live10/6 while original2/2 token identity, both attachment links and counters/damage/tap survive",
+      "successCriteria": [
+        "Native MutateAbility casting pays3mana instead of printed4; Gemrazer-over yields live10/6 while original2/2 token identity, both attachment links and counters/damage/tap survive",
+        "No owned GAME executor remains alive; exact offered choice/action and projection evidence retained"
+      ],
+      "budgets": {
+        "wallSeconds": 24,
+        "stepSeconds": 12,
+        "rssBytes": 1610612736,
+        "heapMb": 512,
+        "acceptedActions": 100,
+        "nativeResolutions": 80,
+        "logBytes": 8388608,
+        "nativeEvents": 10000
+      },
+      "repeats": 3,
+      "expectedStatus": "pass",
+      "repro": "python3 scripts/test-mechanics.py --mode full --scenario adv-mutate-token-attachments",
+      "evidence": [
+        "result.json",
+        "action-trace.json",
+        "last-prompt.json",
+        "last-frame.json",
+        "process.log",
+        "resource-samples.json",
+        "native-events.json",
+        "native-structured-log.json",
+        "final-frame.json",
+        "attachments-before-mutate-frame.json",
+        "alternative-cost-payment.json",
+        "mutate-attachment-state.json"
+      ],
+      "rulesSources": [
+        "https://magic.wizards.com/en/rules",
+        "https://magic.wizards.com/en/news/feature/ikoria-lair-behemoths-and-commander-2020-edition-release-notes-2020-04-10"
+      ],
+      "jvmArgs": [
+        "-Xmx512m",
+        "-XX:ActiveProcessorCount=2"
+      ],
+      "nativeResolution": "Actual GameImpl.resolve wrapper (test-only reflection), including native infinite-loop checker, rather than only GameStack.resolve",
+      "decks": {
+        "format": "Modern",
+        "seats": [
+          {
+            "id": "human",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          },
+          {
+            "id": "opponent-bot",
+            "main": [
+              {
+                "name": "Plains",
+                "count": 60
+              }
+            ]
+          }
+        ]
+      },
+      "eventEvidence": {
+        "native-events.json": "Actual fired GameEvent count/per-type/last event summary, not a raw unlimited event trace",
+        "native-structured-log.json": "Separate retained structured native log; nativeStructuredLogCount is its monotonic generated sequence count",
+        "excludes": [
+          "simulation games",
+          "playable-action calculation",
+          "Session constructor before watcher registration"
+        ]
+      }
+    }
+  ]
+}

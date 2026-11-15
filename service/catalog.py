@@ -2,23 +2,41 @@
 from __future__ import annotations
 
 import json
+import gzip
+import filelocks
 import os
 from pathlib import Path
 import re
 import sqlite3
 import threading
 import time
+from gallery_catalog import GalleryCatalog
+from tokens import TokenCatalog
+from query_cache import QueryCache, cached_query
+from formats import FORMATS, INDEXED_FORMATS, profile as format_profile, clause as format_clause
 
-SCHEMA_VERSION = "5"
-FORMATS = {"modern", "standard", "pioneer", "commander"}
+SCHEMA_VERSION = "7"
 
 
-class Catalog:
+class CatalogConnection(sqlite3.Connection):
+    """Read scopes own their connection, including failed queries.
+
+    sqlite3's ordinary context manager only finishes a transaction. Leaving
+    metadata connections open also retains their page caches/file descriptors
+    until cyclic garbage collection runs during an active image download.
+    """
+    def __exit__(self,*args):
+        try:return super().__exit__(*args)
+        finally:self.close()
+
+
+class Catalog(GalleryCatalog,TokenCatalog):
     def __init__(self, source: Path, database: Path):
         self.source = Path(source)
         self.database = Path(database)
         self.lock = threading.Lock()
         self.progress = {"state": "pending", "lines": 0, "cards": 0, "error": None}
+        self.query_cache = QueryCache(self.database)
 
     def status(self):
         with self.lock:
@@ -29,7 +47,7 @@ class Catalog:
             self.progress.update(fields)
 
     def connect(self):
-        connection = sqlite3.connect(f"file:{self.database}?mode=ro", uri=True, timeout=20)
+        connection = sqlite3.connect(f"file:{self.database}?mode=ro", uri=True, timeout=20, factory=CatalogConnection)
         connection.row_factory = sqlite3.Row
         return connection
 
@@ -48,12 +66,19 @@ class Catalog:
 
     def ensure(self):
         try:
-            if self.current():
-                with self.connect() as connection:
-                    count = connection.execute("SELECT count(*) FROM cards").fetchone()[0]
-                self._status(state="ready", cards=count)
-                return
-            self.build()
+            self.database.parent.mkdir(parents=True, exist_ok=True)
+            # Installed desktop instances can share an index while owning
+            # separate services. Serialize its temporary build across processes,
+            # then recheck the complete index before doing expensive work.
+            with (self.database.parent / (self.database.name + '.build.lock')).open('a+b') as lock:
+                self._status(state='waiting', error=None)
+                filelocks.flock(lock, filelocks.LOCK_EX)
+                if self.current():
+                    with self.connect() as connection:
+                        count = connection.execute("SELECT count(*) FROM cards").fetchone()[0]
+                    self._status(state="ready", cards=count)
+                    return
+                self.build()
         except Exception as exc:
             self._status(state="error", error=str(exc))
 
@@ -65,7 +90,8 @@ class Catalog:
             return None
         fields = ("name", "mana_cost", "cmc", "type_line", "oracle_text", "colors",
                   "color_identity", "legalities", "image_uris", "set", "collector_number",
-                  "power", "toughness", "loyalty", "defense", "layout", "released_at", "set_name")
+                  "power", "toughness", "loyalty", "defense", "layout", "released_at", "set_name",
+                  "artist", "artist_ids", "frame_effects", "border_color", "illustration_id", "lang", "scryfall_uri", "all_parts")
         card = {key: raw.get(key) for key in fields}
         card.update(id=raw.get("oracle_id") or raw.get("id"),
                     printing_id=raw.get("id"), card_faces=faces)
@@ -98,11 +124,13 @@ class Catalog:
                     rank INTEGER NOT NULL, payload TEXT NOT NULL);
                 CREATE INDEX cards_name ON cards(name COLLATE NOCASE);
                 CREATE TABLE card_sets(card_id TEXT, set_code TEXT, set_name TEXT,
-                    printing_id TEXT PRIMARY KEY, collector_number TEXT, image_url TEXT, face_images TEXT);
+                    printing_id TEXT PRIMARY KEY, collector_number TEXT, image_url TEXT, face_images TEXT,payload TEXT);
                 CREATE INDEX card_sets_card ON card_sets(card_id);
                 CREATE INDEX card_sets_set ON card_sets(set_code, card_id);
                 CREATE TABLE aliases(name TEXT PRIMARY KEY COLLATE NOCASE, card_id TEXT, face INTEGER);
             """)
+            self.create_gallery(connection)
+            self.create_tokens(connection)
             statement = """INSERT INTO cards VALUES (?,?,?,?,?,?,?,?,?,?,?)
                 ON CONFLICT(name) DO UPDATE SET
                     id=excluded.id, search=excluded.search, type_line=excluded.type_line,
@@ -110,7 +138,7 @@ class Catalog:
                     pioneer=excluded.pioneer, commander=excluded.commander,
                     rank=excluded.rank, payload=excluded.payload WHERE excluded.rank > cards.rank"""
             lines = 0
-            with self.source.open("r", encoding="utf-8") as stream:
+            with (gzip.open(self.source, "rt", encoding="utf-8") if self.source.suffix == ".gz" else self.source.open("r", encoding="utf-8")) as stream:
                 for lines, line in enumerate(stream, 1):
                     if not line.strip():
                         continue
@@ -118,6 +146,8 @@ class Catalog:
                         raw = json.loads(line)
                     except json.JSONDecodeError as exc:
                         raise ValueError(f"Invalid JSONL at line {lines}: {exc.msg}") from exc
+                    self.index_gallery(connection, raw)
+                    self.index_tokens(connection, raw)
                     # This local bulk file includes translations and printings. Keep one
                     # English oracle entry, preferring paper cards with usable card art.
                     if raw.get("lang", "en") != "en":
@@ -133,10 +163,11 @@ class Catalog:
                         (card["type_line"] or "").casefold(), "".join(card["color_identity"]),
                         *(legalities.get(fmt, "not_legal") for fmt in ("modern", "standard", "pioneer", "commander")),
                         rank, json.dumps(card, ensure_ascii=False, separators=(",", ":"))))
-                    connection.execute("INSERT OR IGNORE INTO card_sets VALUES (?,?,?,?,?,?,?)", (
+                    connection.execute("INSERT OR IGNORE INTO card_sets VALUES (?,?,?,?,?,?,?,?)", (
                         card["id"], card["set"], raw.get("set_name", card["set"]), card["printing_id"],
-                        card["collector_number"], json.dumps({key: value for key, value in card["image_uris"].items() if key in ("normal", "art_crop")}),
-                        json.dumps([{key: value for key, value in f.get("image_uris", {}).items() if key in ("normal", "art_crop")} for f in card["card_faces"]])))
+                        card["collector_number"], json.dumps({key: value for key, value in card["image_uris"].items() if key in ("normal", "large", "art_crop")}),
+                        json.dumps([{key: value for key, value in f.get("image_uris", {}).items() if key in ("normal", "large", "art_crop")} for f in card["card_faces"]]),
+                        json.dumps(card, ensure_ascii=False, separators=(",", ":"))))
                     for face, data in enumerate(card["card_faces"]):
                         if data.get("name"):
                             connection.execute("INSERT OR IGNORE INTO aliases VALUES (?,?,?)", (data["name"], card["id"], face))
@@ -148,7 +179,7 @@ class Catalog:
             metadata = {"schema": SCHEMA_VERSION, "source_size": str(stat.st_size),
                         "source_mtime": str(stat.st_mtime_ns), "source_name": self.source.name}
             connection.executemany("INSERT INTO metadata VALUES (?,?)", metadata.items())
-            for fmt in FORMATS:
+            for fmt in INDEXED_FORMATS:
                 connection.execute(f"CREATE INDEX cards_{fmt} ON cards({fmt})")
             connection.commit()
             count = connection.execute("SELECT count(*) FROM cards").fetchone()[0]
@@ -160,24 +191,41 @@ class Catalog:
             temporary.unlink(missing_ok=True)
             raise
 
-    def search(self, query="", format_name="", color="", type_name="", limit=50, offset=0, sort="name", set_code=""):
+    @cached_query
+    def search(self, query="", format_name="", color="", type_name="", limit=50, offset=0, sort="name", set_code="", color_mode="legacy"):
         clauses, params = [], []
         for token in query.casefold().split():
             clauses.append("search LIKE ? ESCAPE '\\'")
             params.append("%" + token.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%")
         if format_name:
-            if format_name not in FORMATS:
-                raise ValueError("Unsupported format")
-            clauses.append(f"{format_name} IN ('legal','restricted')")
+            condition=format_clause(format_name)
+            if condition:clauses.append(condition)
+        if color_mode not in ("legacy", "any", "exact"):
+            raise ValueError("Color mode must be legacy, any or exact")
         if color:
             if not re.fullmatch("[WUBRGCwubrgc]+", color):
                 raise ValueError("Colors must be W, U, B, R, G or C")
-            for value in color.upper():
-                if value == "C":
+            selected = set(color.upper())
+            if color_mode != "legacy" and "C" in selected and len(selected) > 1:
+                raise ValueError("Colorless identity cannot be combined with colored identities")
+            if color_mode == "any":
+                if selected == {"C"}:
                     clauses.append("colors = ''")
                 else:
-                    clauses.append("colors LIKE ?")
-                    params.append("%" + value + "%")
+                    clauses.append("(" + " OR ".join("instr(colors, ?) > 0" for _ in selected) + ")")
+                    params.extend(sorted(selected))
+            else:
+                if color_mode == "exact":
+                    # The indexed colors field stores identity, including mana
+                    # symbols in rules/lands. Do not depend on snapshot order.
+                    clauses.append("length(colors) = ?")
+                    params.append(0 if selected == {"C"} else len(selected))
+                for value in sorted(selected):
+                    if value == "C":
+                        clauses.append("colors = ''")
+                    else:
+                        clauses.append("instr(colors, ?) > 0")
+                        params.append(value)
         if type_name:
             clauses.append("instr(type_line, ?) > 0")
             params.append(type_name.casefold())
@@ -191,19 +239,33 @@ class Catalog:
         where = " WHERE " + " AND ".join(clauses) if clauses else ""
         with self.connect() as connection:
             total = connection.execute("SELECT count(*) FROM cards" + where, params).fetchone()[0]
-            rows = connection.execute("SELECT payload FROM cards" + where + " ORDER BY " + orders[sort] + " LIMIT ? OFFSET ?",
-                                      (*params, limit, offset))
-            cards = [json.loads(row[0]) for row in rows]
+            # A broad opening page can stop after a few name-index entries.
+            # A filtered page must retain SQLite's selective legality/index
+            # plan: forcing alphabetical random row reads can inspect thousands
+            # of cold payload pages before finding twenty matching cards.
+            # Sort only identities/names, then fetch JSON for the chosen page.
+            broad = not (query.strip() or color or type_name or set_code)
+            source = "cards INDEXED BY cards_name" if sort == "name" and total > limit and broad else "cards"
+            ids = [row[0] for row in connection.execute("SELECT id FROM " + source + where + " ORDER BY " + orders[sort] + " LIMIT ? OFFSET ?", (*params, limit, offset))] if total > offset else []
+            payloads = {row[0]:row[1] for row in connection.execute("SELECT id,payload FROM cards WHERE id IN (" + ','.join('?' for _ in ids) + ")", ids)} if ids else {}
+            cards = [json.loads(payloads[identifier]) for identifier in ids]
             if set_code:
                 for card in cards:
                     printing = connection.execute("SELECT * FROM card_sets WHERE card_id=? AND set_code=? ORDER BY collector_number LIMIT 1", (card["id"], set_code.casefold())).fetchone()
                     self._printing(card, printing)
-        return {"cards": cards, "total": total, "limit": limit, "offset": offset}
+        result={"cards": cards, "total": total, "limit": limit, "offset": offset}
+        if format_name:
+            selected=format_profile(format_name);result.update(formatId=selected['id'],snapshotLegalityChecked=selected['snapshotKey']is not None,snapshotFilterAvailable=selected['snapshotKey']is not None,nativeValidationRequired=True)
+        return result
 
     @staticmethod
     def _printing(card, printing):
         if not printing:
             return card
+        if printing["payload"]:
+            requested = card.get("requested_face")
+            card.update(json.loads(printing["payload"]))
+            if requested is not None: card["requested_face"] = requested
         card.update(set=printing["set_code"], set_name=printing["set_name"], printing_id=printing["printing_id"], collector_number=printing["collector_number"])
         if printing["image_url"]:
             card["image_uris"] = json.loads(printing["image_url"])
@@ -212,14 +274,27 @@ class Catalog:
                 card["card_faces"][face]["image_uris"] = images
         return card
 
+    @cached_query
     def sets(self, format_name=""):
-        if format_name and format_name not in FORMATS:
-            raise ValueError("Unsupported format")
-        where = f" WHERE cards.{format_name} IN ('legal','restricted')" if format_name else ""
+        condition=format_clause(format_name,'cards.')if format_name else None
+        where = ' WHERE '+condition if condition else ''
         with self.connect() as connection:
             rows = connection.execute("SELECT s.set_code AS code, s.set_name AS name, count(DISTINCT s.card_id) AS count FROM card_sets s JOIN cards ON cards.id=s.card_id" + where + " GROUP BY s.set_code ORDER BY s.set_name COLLATE NOCASE")
             return [dict(row) for row in rows]
 
+    def deck_colors(self, deck):
+        names = sorted({entry['name'] for zone in ('main', 'commander') for entry in deck.get(zone, [])})
+        return self._deck_colors(names)
+
+    @cached_query
+    def _deck_colors(self, names):
+        if not names: return []
+        with self.connect() as connection:
+            rows = connection.execute('SELECT payload FROM cards WHERE name COLLATE NOCASE IN (' + ','.join('?' for _ in names) + ')', names)
+            colors = {color for row in rows for color in (json.loads(row[0]).get('color_identity') or [])}
+        return [color for color in 'WUBRG' if color in colors]
+
+    @cached_query
     def get(self, identifier=None, name=None, printing_id=None):
         with self.connect() as connection:
             row = connection.execute("SELECT payload FROM cards WHERE " + ("name = ? COLLATE NOCASE" if name is not None else "id = ?"),
@@ -231,7 +306,13 @@ class Catalog:
                     row = connection.execute("SELECT payload FROM cards WHERE id=?", (alias["card_id"],)).fetchone()
                     face = alias["face"]
             if not row:
-                return None
+                # Token printings and names shared by different oracle objects
+                # still have exact per-printing records even when not selected
+                # as the builder's representative name row.
+                printing = connection.execute('SELECT * FROM card_sets WHERE printing_id=? OR (card_id=? AND printing_id=?) LIMIT 1', (identifier, identifier, printing_id)).fetchone() if identifier else None
+                if not printing: return None
+                card = json.loads(printing['payload'])
+                return self._printing(card, printing)
             card = json.loads(row[0])
             if face is not None:
                 card["requested_face"] = face
@@ -241,3 +322,11 @@ class Catalog:
                     raise ValueError("Printing does not belong to this card")
                 self._printing(card, printing)
             return card
+
+    @cached_query
+    def gallery(self, *args, **kwargs):
+        return super().gallery(*args, **kwargs)
+
+    @cached_query
+    def gallery_item(self, *args, **kwargs):
+        return super().gallery_item(*args, **kwargs)

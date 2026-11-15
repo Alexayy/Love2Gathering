@@ -1,0 +1,46 @@
+package.path='./?.lua;'..package.path
+local Choices=require('app.card_choices');local Combat=require('app.combat_choices');local Zones=require('app.zone_ui');local json=require('lib.json')
+local count=0;local function check(ok,label)assert(ok,label);count=count+1;print('CHOICE PANELS PASS '..label)end
+local cards={{id='spell',name='Spell',type='Sorcery'},{id='dual',name='Dual',type='Land — Forest Plains'},{id='forest',name='Forest',type='Basic Land — Forest'},{id='swamp',name='Swamp',type='Basic Snow Land — Swamp'},{id='hidden',name='Private secret',type='Basic Land',hidden=true},{id='face',name='Unknown private face',faceDown=true}}
+local panel={zone='LIBRARY',stage='select',cards=cards};local visible=Choices.displayCards(panel)
+check(#visible==4 and visible[1].id=='forest'and visible[2].id=='swamp'and visible[3].id=='spell'and visible[4].id=='dual','Native-visible library candidates put basic lands first with stable remaining order')
+check(cards[1].id=='spell'and cards[3].id=='forest','Presentation sorting never mutates the native candidate list')
+check(Choices.displayCards({zone='LIBRARY',cards={{id='nonbasic',type='[Land]',printing={type_line='Land — Forest'}},{id='native-basic',type='[Land]',printing={type_line='Basic Land — Forest'}}}})[1].id=='native-basic','Native abbreviated card types use the supplied original printing to identify display-only basic lands')
+check(Choices.displayCards({zone='LIBRARY',cards={{id='forest-nonbasic',name='Forest',type='[Land]',supertypes={}},{id='native-basic',name='Unrelated name',type='[Land]',supertypes={'Basic'}}}})[1].id=='native-basic','Only an explicit native Basic supertype influences sorting when native type text is abbreviated')
+panel.zone='GRAVEYARD';check(Choices.displayCards(panel)[1].id=='spell','Non-library native candidate order is retained')
+panel.zone='LIBRARY';panel.stage='order';check(Choices.displayCards(panel)[1].id=='spell','An explicit native order is never replaced by basic-land sorting')
+check(#Choices.displayCards(panel,'PRIVATE')==0 and#Choices.displayCards(panel,'FoReSt')==1,'Choice search is case-insensitive and cannot find unentitled hidden names')
+check(not Choices.selectable({},cards[3],{actionable={}}),'An explicitly empty native actionable array disables every candidate')
+check(Choices.selectable({},cards[3],{actionable={'forest'}})and not Choices.selectable({},cards[1],{actionable={'forest'}}),'Only native actionable IDs make visible UUID candidates selectable')
+check(not Choices.selectable({},{id='forest',selectable=false},{actionable={'forest'}}),'Native per-choice refusal remains disabled even when its object is actionable elsewhere')
+check(Choices.selectable({},{id='display',choiceId='ability-choice',responseType='string',value='native ability'},{actionable={}}),'Non-UUID offered responses retain their explicit native response type')
+local concealed=Zones.entries({cards=cards},'private');check(#concealed==0,'Zone search never matches concealed names or concealed IDs')
+check(#Zones.entries({cards=cards},'Face-down card')==2,'Concealed zone entries expose generic backs rather than invented artwork')
+check(Zones.details({name='Secret',hidden=true})=='Face-down card'and Zones.details({name='Creature',power='3',toughness='3',damage=1,tapped=true,counters={Shield=2}}):find('Shield 2',1,true),'Zone image tooltips retain native statistics, marked damage, tapped state and counters without hidden identities')
+local peek={id='authorized',name='Face down',faceDown=true,power='2',toughness='2',choiceId='native-peek-choice',responseType='uuid',value='authorized',faceDownIdentity={id='authorized',name='Explicit entitled creature',type='Creature'}}
+local shown=Choices.displayCards({cards={peek}})[1];check(shown.name=='Explicit entitled creature'and shown.choiceId=='native-peek-choice'and shown.value=='authorized'and Zones.entries({cards={peek}})[1].card.faceDownContext.nativePT=='2/2','Only an explicit same-UUID native peek exposes a face-down identity and preserves the original response routing')
+local p={id=11,type='multi_amount',min=5,max=5,amountMessages={{nativeIndex=1,message='First blocker',min=0,max=5,defaultValue=2},{nativeIndex=2,message='Second blocker',min=0,max=5,defaultValue=3}}}
+local m={page='table',game={gameId='game-a'}};function m:prompt()return self.current end;m.current=p
+local state=Combat.state(m,p);local response=Combat.values(state,p)
+check(response[1]==2 and response[2]==3,'Distributed amounts initialize from the native defaults')
+check(Combat.reorder(state,2,1)and state.rows[1].nativeIndex==2,'Dragging rearranges only presentation rows')
+state.values[1]='4';state.values[2]='1';response=Combat.values(state,p)
+check(response[1]==4 and response[2]==1,'Reordered inputs still submit the original native target-index order')
+state.values[2]='2';local result,problem,total=Combat.values(state,p);check(not result and problem and total==6,'Only the explicit native total bound rejects an over-assigned distribution')
+state.values[2]='-1';check(not Combat.values(state,p),'Negative amounts cannot masquerade as native whole-number responses')
+local signed={id=12,type='multi_amount',min=-3,max=0,amountMessages={{min=-3,max=0,defaultValue=-2}}};check(Combat.values(Combat.state(m,signed),signed)[1]==-2,'A generic native distribution may use a negative amount when its actual supplied bounds allow it')
+state.values[2]='1.5';check(not Combat.values(state,p),'Fractional amounts remain invalid instead of being silently rounded')
+state.values[2]='1';state.values[1]='6';check(not Combat.values(state,p),'Per-target native bounds are enforced before confirmation')
+state.values[1]='4';state.submitting=true;check(not Combat.reorder(state,1,2),'Submitted distributed amounts cannot be rearranged while waiting for acknowledgment')
+state.submitting=false;local v={m=m,combatChoiceState=state,combatChoiceHits={{x=10,y=10,w=80,h=100,position=1,nativeIndex=2,identity=state.identity}},combatChoiceDrops={{x=100,y=10,w=80,h=100,position=2}}}
+check(Combat.press(v,30,30,1)and v.combatChoiceDrag,'A current native amount card begins a staging-only drag')
+Combat.move(v,120,40);m.game.gameId='game-b';check(Combat.release(v,120,40,1)and state.rows[1].nativeIndex==2,'A late drag from another game is consumed without changing a current staged order')
+m.game.gameId='game-a';Combat.press(v,30,30,1);Combat.move(v,120,40);m.zoneView={};check(Combat.release(v,120,40,1)and state.rows[1].nativeIndex==2,'Opening a zone modal during the drag blocks its late release')
+m.zoneView=nil;check(Choices.currentModal(v,p)==Combat.window,'The distributed amount decision declares an exact Slab/background-input lock')
+m.replay={};check(Choices.currentModal(v,p)==nil and not Combat.press(v,30,30,1),'Replay remains read-only even when its recorded frame contains an amount prompt')
+m.replay=nil;m.actionBusy=false;m.game.lookedAt={{id='look-group',cards={{id='visible-a',name='Visible A'}}}}
+local firstKey=Choices.modalKey(v,nil);local sameKey=Choices.modalKey(v,{id=77,type='select',choices={}})
+check(firstKey==sameKey and firstKey:find('look-group',1,true),'A retained look modal keeps its actual group/card identity across unrelated priority prompts')
+m.game.lookedAt[1].cards={{id='visible-b',name='Visible B'}};check(Choices.modalKey(v,nil)~=firstKey,'Changing the retained look cards creates a new modal opening even with the same window and group name')
+local beforeGame=Choices.modalKey(v,nil);m.game.gameId='new-look-game';check(Choices.modalKey(v,nil)~=beforeGame,'Modal focus keys include the native game identity')
+print('Choice panel checks: '..count)

@@ -1,0 +1,10 @@
+{
+  "source": "https://raw.githubusercontent.com/andrewgioia/keyrune/v3.19.0/css/keyrune.css",
+  "release": "https://github.com/andrewgioia/keyrune/releases/tag/v3.19.0",
+  "cssSha256": "9ec792c1357a4724e246e2c1648d0fbc9838476fe45638ac25df8720f46d696d",
+  "suppliedFontSha256": "028fc985da90ecd42e05c2238a7a5f5446f81b4b240bd779a049ccad96f78b65",
+  "fontComparedByteIdentical": true,
+  "entries": 425,
+  "license": "LICENSE-keyrune.md; OFL.txt",
+  "method": "Extract single-layer .ss-CODE:before content codepoints; retain supplied font unchanged; unknown codes have no mapping."
+}

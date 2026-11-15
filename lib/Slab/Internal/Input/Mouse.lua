@@ -59,6 +59,7 @@ local eventPool = TablePool()
 -- allow developers to set an empty image to hide the cursor for specific states, such as mouse resize.
 -- For more information, refer to the SetCustomCursor/ClearCustomCursor functions.
 local CustomCursors = {}
+local CursorProvider = nil
 
 local function ScaleMouseXY(X, Y)
 	local scale = Scale.GetScale()
@@ -272,7 +273,10 @@ function Mouse.UpdateCursor()
 		else
 			love.mouse.setVisible(true)
 			local Type = CurrentCursor
-			if Type == 'arrow' then
+            local Override = CursorProvider and CursorProvider(Type)
+            if Override then
+                love.mouse.setCursor(Override)
+			elseif Type == 'arrow' then
 				love.mouse.setCursor(Cursors.Arrow)
 			elseif Type == 'sizewe' then
 				love.mouse.setCursor(Cursors.SizeWE)
@@ -290,6 +294,17 @@ function Mouse.UpdateCursor()
 		end
 	end
 end
+
+-- Resolve application hardware cursors in the same state transition as Slab.
+-- This prevents a transient system pointer before the application's Draw ends.
+function Mouse.SetCursorProvider(Provider)
+    assert(Provider == nil or type(Provider) == 'function')
+    if CursorProvider == Provider then return end
+    CursorProvider = Provider
+    PendingCursor = CurrentCursor
+    CurrentCursor = ''
+end
+function Mouse.GetCursorType()return CurrentCursor ~= '' and CurrentCursor or PendingCursor end
 
 function Mouse.SetCustomCursor(Type, Image, Quad)
 	-- If no image is supplied, then create a 1x1 image with no alpha. This is a way to disable certain system cursors.

@@ -1,0 +1,130 @@
+{
+  "answers": [
+    {
+      "promptId": 1,
+      "type": "uuid",
+      "value": "c"
+    },
+    {
+      "promptId": 2,
+      "type": "boolean",
+      "value": false
+    },
+    {
+      "promptId": 3,
+      "type": "uuid",
+      "value": "a"
+    },
+    {
+      "promptId": 4,
+      "type": "uuid",
+      "value": "b"
+    },
+    {
+      "promptId": 5,
+      "type": "uuid",
+      "value": "a"
+    },
+    {
+      "promptId": 6,
+      "type": "boolean",
+      "value": false
+    },
+    {
+      "promptId": 7,
+      "type": "uuid",
+      "value": "c"
+    },
+    {
+      "promptId": 8,
+      "type": "uuid",
+      "value": "b"
+    },
+    {
+      "promptId": 9,
+      "type": "boolean",
+      "value": false
+    },
+    {
+      "promptId": 9,
+      "type": "boolean",
+      "value": false
+    },
+    {
+      "promptId": 10,
+      "type": "uuid",
+      "value": "c"
+    },
+    {
+      "promptId": 11,
+      "type": "uuid",
+      "value": "b"
+    },
+    {
+      "promptId": 12,
+      "type": "uuid",
+      "value": "a"
+    },
+    {
+      "promptId": 900,
+      "type": "uuid",
+      "value": "actual-native-response"
+    },
+    {
+      "promptId": 901,
+      "type": "boolean",
+      "value": false
+    },
+    {
+      "promptId": 902,
+      "type": "string",
+      "value": "native-mode"
+    },
+    {
+      "promptId": 1000,
+      "type": "boolean",
+      "value": false
+    },
+    {
+      "promptId": 1001,
+      "type": "boolean",
+      "value": true
+    }
+  ],
+  "checks": [
+    "Card-panel press owns the drag before board input",
+    "Scry drag stages Bottom without answering the native prompt",
+    "Card-panel press owns the drag before board input",
+    "Scry drag changes the desired top-card order",
+    "Scry Confirm sends native Bottom, Done and reverse Top ordering exactly once",
+    "Card-panel press owns the drag before board input",
+    "Surveil exposes Graveyard staging without a fake Bottom action",
+    "Surveil confirmation forwards the offered UUID and real native Done response",
+    "A rejected native response preserves the plan and requires explicit retry instead of looping",
+    "Explicit retry resumes exact native responses without losing the staged order",
+    "Private-zone card image click forwards its actual native choice value",
+    "Both image piles keep visible card bounds inside their separate clipped columns",
+    "Image pile controls preserve the offered native second-pile false response",
+    "Unsupported native prompts retain the existing generic response path",
+    "Look-at card supports inspection through actual right-click input",
+    "Closing a look-at popup sends no engine action",
+    "Dismissed looked-at groups stay closed during repeated snapshots",
+    "Sacrifice selection keeps legal cards on the board with only the actual native cancel control",
+    "Cancel forwards the native pre-commit false response without undoing a stack object",
+    "Native blocker stage displays one short-lived instruction toast",
+    "Repeated blocker snapshots do not repeat the same instruction toast",
+    "Stack rows register exact native source and target IDs with their visible geometry",
+    "Hovering a visible stack source exposes preview/link metadata",
+    "Stack hover clears outside the stack region",
+    "Actual Verbose checkbox persists optional stack entries without changing window geometry",
+    "Verbose can return to the compact default log",
+    "Native ended-match state exposes Rematch and Main menu controls",
+    "Actual Rematch button calls the model authority hook",
+    "Actual Main menu button calls the model navigation hook",
+    "Card-panel press owns the drag before board input",
+    "Scry drag uses the same logical coordinates at UI scale 1.25",
+    "Read-only playback hides live card-choice controls and sends no staged responses"
+  ],
+  "passed": true,
+  "scope": "Actual L\u00d6VE/Slab input, native-shaped synthetic prompts and deterministic response adapter; no real-engine scry/surveil/gameplay claim"
+}

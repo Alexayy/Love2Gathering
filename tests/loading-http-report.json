@@ -1,0 +1,413 @@
+{
+  "baselineLatencyReproduced": null,
+  "currentOnly": true,
+  "fixtureSourceHashes": {
+    "tests/loading_http.lua": "6042906ea1be03a1b87b8e7da10104c0001c99d2958ae181637e636fb5c273da",
+    "tests/loading_http.py": "3838469f372fa400a6f698e2d480658c9c70364b3ac1eb96b78a2dfbedbedfb8"
+  },
+  "output": "/tmp/love2gathering-mechanics-loading-http-0denx1le",
+  "results": [
+    {
+      "activeDownload": {
+        "downloaded": 0,
+        "processed": 1,
+        "state": "downloading"
+      },
+      "backendSourceHashes": {
+        "service/artwork.py": "7ef92990d2643dc11ed3bd43f966475527703f29bebd6bc350e9ea0413f1cbf8",
+        "service/catalog.py": "7e04992c1dc73b000b9fa2b0988aac99c50787d5ba7e93420908e0655467894e",
+        "service/downloads.py": "d691d1ffe15e84ee6fb1c067b313721fc059ef394e4f4e681e11aa4ee9ccd079",
+        "service/server.py": "89f092ade99475ae9c5e2eaaefcddbb8cb164775610dac24843a4a197bb3f1b0",
+        "service/storage.py": "ad9ef476c97b42d043fd8b5af2c2365ed01f99d53c8a2732fc9f2d35a134ee0c"
+      },
+      "baselineRevision": null,
+      "cachedDeckFetchesVerified": true,
+      "checks": [
+        {
+          "message": "settings responds successfully from the real local service",
+          "passed": true
+        },
+        {
+          "message": "settings is not queued behind either 1.4-second request",
+          "passed": true
+        },
+        {
+          "message": "profile responds successfully from the real local service",
+          "passed": true
+        },
+        {
+          "message": "profile is not queued behind either 1.4-second request",
+          "passed": true
+        },
+        {
+          "message": "cards responds successfully from the real local service",
+          "passed": true
+        },
+        {
+          "message": "cards is not queued behind either 1.4-second request",
+          "passed": true
+        },
+        {
+          "message": "decks responds successfully from the real local service",
+          "passed": true
+        },
+        {
+          "message": "decks is not queued behind either 1.4-second request",
+          "passed": true
+        },
+        {
+          "message": "cachedImage responds successfully from the real local service",
+          "passed": true
+        },
+        {
+          "message": "cachedImage is not queued behind either 1.4-second request",
+          "passed": true
+        },
+        {
+          "message": "Saved theme and color arrive without default substitution",
+          "passed": true
+        },
+        {
+          "message": "Saved profile name survives active image writes",
+          "passed": true
+        },
+        {
+          "message": "Real catalog search returns the requested card",
+          "passed": true
+        },
+        {
+          "message": "Saved deck remains available while its cached image is requested",
+          "passed": true
+        },
+        {
+          "message": "Cached binary response is a genuinely decoded 32\u00d732 JPEG fixture",
+          "passed": true
+        },
+        {
+          "message": "Managed download remains active while foreground artwork takes priority",
+          "passed": true
+        },
+        {
+          "message": "Already-cached deck printing is never fetched by the managed downloader",
+          "passed": true
+        },
+        {
+          "message": "Managed download resumes real committed progress after foreground artwork completes",
+          "passed": true
+        },
+        {
+          "message": "A retryable 503 GET is retried once and receives 200",
+          "passed": true
+        },
+        {
+          "message": "A POST 503 is returned to its caller without a guessed success",
+          "passed": true
+        },
+        {
+          "message": "Identical pending GETs share one request",
+          "passed": true
+        },
+        {
+          "message": "Coalesced callback bodies remain independent",
+          "passed": true
+        },
+        {
+          "message": "Both queued real SQLite settings saves succeed",
+          "passed": true
+        },
+        {
+          "message": "A save callback refresh observes final B theme",
+          "passed": true
+        },
+        {
+          "message": "B save callback refresh observes final B theme",
+          "passed": true
+        },
+        {
+          "message": "GET 503 request count is exactly two",
+          "passed": true
+        },
+        {
+          "message": "POST 503 request count is exactly one; no mutation replay",
+          "passed": true
+        },
+        {
+          "message": "Coalesced duplicate GET reaches HTTP exactly once",
+          "passed": true
+        },
+        {
+          "message": "Cached deck printing was not downloaded later either",
+          "passed": true
+        },
+        {
+          "message": "Two requested settings mutations reach HTTP exactly once each",
+          "passed": true
+        },
+        {
+          "message": "Callback refreshes coalesce only after the final queued mutation commits",
+          "passed": true
+        }
+      ],
+      "cleanup": {
+        "cachedDeckFetches": 0,
+        "downloadWorkerTerminated": true,
+        "fetchedImages": 11,
+        "serverThreadTerminated": true,
+        "state": {
+          "artPurgeGeneration": 0,
+          "bytesDownloaded": 7084,
+          "cacheDirectory": "/tmp/love2gathering-mechanics-loading-http-0denx1le/current/service/data",
+          "cached": 1,
+          "canResume": true,
+          "canStart": true,
+          "checkedImages": 81,
+          "dataDirectory": "/tmp/love2gathering-mechanics-loading-http-0denx1le/current/service/data",
+          "databaseFreeBytes": 21474836480,
+          "downloaded": 10,
+          "error": null,
+          "failed": 0,
+          "freeBytes": 21474836480,
+          "imagesAdded": 10,
+          "imported": 0,
+          "jobId": "fbde2922-37f8-4bba-bb0c-43015f1a4e42",
+          "maintenanceBusy": false,
+          "networkRequests": 11,
+          "options": {
+            "fullSize": "large",
+            "kinds": [
+              "large"
+            ],
+            "mirrors": false
+          },
+          "phase": "download",
+          "prioritizedCards": 1,
+          "prioritizedPrintings": 1,
+          "priorityImages": 1,
+          "priorityTruncated": false,
+          "processed": 11,
+          "progress": 0.13580246913580246,
+          "rateBytesPerSecond": 0,
+          "reserveBytes": 3221225472,
+          "scan": {
+            "byKind": {
+              "large": {
+                "cached": 1,
+                "estimatedBytes": 51520,
+                "meanBytes": 644,
+                "mirrorCandidates": 0,
+                "mirrorExports": 81,
+                "missing": 80,
+                "sampleCount": 1,
+                "total": 81
+              }
+            },
+            "cached": 1,
+            "estimateBasis": "large: sample mean of 1 SQL images (at most 512). Size is an estimate, not remote Content-Length; mirrors are validated when imported.",
+            "estimatedDownloadBytes": 51520,
+            "estimatedMaxBytes": 90160,
+            "estimatedMinBytes": 25760,
+            "estimatedMirrorBytes": 0,
+            "estimatedSqliteBytes": 51520,
+            "estimatedStorageBytes": 51520,
+            "fullSize": "large",
+            "kinds": [
+              "large"
+            ],
+            "mirrorCandidates": 0,
+            "mirrors": false,
+            "missing": 80,
+            "networkRequests": 80,
+            "reusableSqliteBytes": 0,
+            "total": 81,
+            "uniqueUrls": 81
+          },
+          "scanComplete": true,
+          "scanInvalidReason": null,
+          "scanValid": true,
+          "scannedRecords": 81,
+          "sourceFingerprint": {
+            "bytes": 54594,
+            "mtimeNs": 1794757354659511526,
+            "path": "/tmp/love2gathering-mechanics-loading-http-0denx1le/current/service/metadata.jsonl"
+          },
+          "state": "paused",
+          "updatedAt": 1794757357533
+        }
+      },
+      "disabledMutationReadBarrier": false,
+      "durationSeconds": 2.48314098,
+      "evidenceDirectory": "/tmp/love2gathering-mechanics-loading-http-0denx1le/current",
+      "failures": [],
+      "jpegBytes": 644,
+      "jpegSha256": "199bfd2f0b6e6df146a3c618749edafebe2b6893c760eb938ec308bc4d2996ab",
+      "nativeGame": false,
+      "orderedWriteRefreshes": {
+        "A": "Ember",
+        "B": "Ember",
+        "snapshots": [
+          "Ember"
+        ]
+      },
+      "requestCounts": {
+        "cachedDeckFetches": 0,
+        "coalescedGets": 1,
+        "mutationPosts": 1,
+        "retryGets": 2,
+        "settingsPuts": 2,
+        "settingsRefreshGets": 1
+      },
+      "resumedDownload": {
+        "artPurgeGeneration": 0,
+        "bytesDownloaded": 644,
+        "cacheDirectory": "/tmp/love2gathering-mechanics-loading-http-0denx1le/current/service/data",
+        "cached": 1,
+        "canResume": false,
+        "canStart": false,
+        "checkedImages": 81,
+        "dataDirectory": "/tmp/love2gathering-mechanics-loading-http-0denx1le/current/service/data",
+        "databaseFreeBytes": 21474836480,
+        "downloaded": 1,
+        "failed": 0,
+        "freeBytes": 21474836480,
+        "imagesAdded": 1,
+        "imported": 0,
+        "jobId": "fbde2922-37f8-4bba-bb0c-43015f1a4e42",
+        "maintenanceBusy": false,
+        "networkRequests": 1,
+        "options": {
+          "fullSize": "large",
+          "kinds": [
+            "large"
+          ],
+          "mirrors": false
+        },
+        "phase": "download",
+        "prioritizedCards": 1,
+        "prioritizedPrintings": 1,
+        "priorityImages": 1,
+        "priorityTruncated": false,
+        "processed": 2,
+        "progress": 0.024691358024691,
+        "rateBytesPerSecond": 443,
+        "reserveBytes": 3221225472,
+        "scan": {
+          "byKind": {
+            "large": {
+              "cached": 1,
+              "estimatedBytes": 51520,
+              "meanBytes": 644,
+              "mirrorCandidates": 0,
+              "mirrorExports": 81,
+              "missing": 80,
+              "sampleCount": 1,
+              "total": 81
+            }
+          },
+          "cached": 1,
+          "estimateBasis": "large: sample mean of 1 SQL images (at most 512). Size is an estimate, not remote Content-Length; mirrors are validated when imported.",
+          "estimatedDownloadBytes": 51520,
+          "estimatedMaxBytes": 90160,
+          "estimatedMinBytes": 25760,
+          "estimatedMirrorBytes": 0,
+          "estimatedSqliteBytes": 51520,
+          "estimatedStorageBytes": 51520,
+          "fullSize": "large",
+          "kinds": [
+            "large"
+          ],
+          "mirrorCandidates": 0,
+          "mirrors": false,
+          "missing": 80,
+          "networkRequests": 80,
+          "reusableSqliteBytes": 0,
+          "total": 81,
+          "uniqueUrls": 81
+        },
+        "scanComplete": true,
+        "scanValid": true,
+        "scannedRecords": 81,
+        "sourceFingerprint": {
+          "bytes": 54594,
+          "mtimeNs": 1.7947573546595e+18,
+          "path": "/tmp/love2gathering-mechanics-loading-http-0denx1le/current/service/metadata.jsonl"
+        },
+        "state": "downloading",
+        "updatedAt": 1794757356343
+      },
+      "savedSettingsPreserved": true,
+      "scope": "Actual headless L\u00d6VE LuaSocket workers and real isolated SQLite/catalog/download manager; generated JPEG fixture, synthetic HTTP latency/status faults; no native game or external image acquisition",
+      "sourceHashes": {
+        "app/api.lua": "20f13b4bd97a5b859eda70aa278170da097ee002ad3301d20860e67edace906e",
+        "app/http_worker.lua": "0f325c84a1688cd1ccdeacb4b0d9991cb22990c3d7eac6e79cb60e277bb216e8",
+        "app/image_decode.lua": "5c8b422d03b40931338e45798ad28b71ebb1c484c1559af4fb34b6d42632186b",
+        "lib/json.lua": "522e1b89f66c9eec49e5edc9c680dbb4132c2e252f5da54397b2a77bbcc7fddd"
+      },
+      "status": "pass",
+      "timing": {
+        "cachedImage": {
+          "code": 200,
+          "seconds": 0.006683787,
+          "slowImageCompleted": false,
+          "slowMaintenanceCompleted": false
+        },
+        "cards": {
+          "code": 200,
+          "seconds": 0.006724584,
+          "slowImageCompleted": false,
+          "slowMaintenanceCompleted": false
+        },
+        "decks": {
+          "code": 200,
+          "seconds": 0.006732809,
+          "slowImageCompleted": false,
+          "slowMaintenanceCompleted": false
+        },
+        "profile": {
+          "code": 200,
+          "seconds": 0.006711469,
+          "slowImageCompleted": false,
+          "slowMaintenanceCompleted": false
+        },
+        "settings": {
+          "code": 200,
+          "seconds": 0.006704757,
+          "slowImageCompleted": false,
+          "slowMaintenanceCompleted": false
+        }
+      },
+      "variant": "current",
+      "watchdog": {
+        "cpuSeconds": 0.09,
+        "diskBytes": 486,
+        "exitCode": 0,
+        "log": "/tmp/love2gathering-mechanics-loading-http-0denx1le/current/runner/process.log",
+        "ownedProcessIdentities": [
+          {
+            "birthTicks": 5459785,
+            "cpuTicks": 9,
+            "pid": 293441,
+            "ppid": 293431,
+            "processGroup": 293441,
+            "rssBytes": 18317312,
+            "state": "S",
+            "threads": 11
+          }
+        ],
+        "ownedProcessTerminated": true,
+        "peakRssBytes": 18513920,
+        "recovery": null,
+        "sharedServiceDiskBytes": 0,
+        "status": "pass",
+        "threadDumps": [],
+        "wallSeconds": 2.631,
+        "watchdogReason": null
+      }
+    }
+  ],
+  "runId": "love2gathering-mechanics-loading-http-0denx1le",
+  "schema": 1,
+  "scope": "Actual headless L\u00d6VE HTTP workers + actual isolated SQLite/catalog/background image job; generated JPEGs and explicit synthetic HTTP delay/status routes; baseline replaces API/worker only, another copy disables only the mutation-read barrier, backend is shared current code; no native game, external downloads or user data",
+  "sourceRevision": "81da08182e042049ad0e7107c9230ba89dbe1c64",
+  "staleCallbackRefreshReproduced": null,
+  "status": "pass"
+}

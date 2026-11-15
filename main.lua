@@ -4,8 +4,11 @@ local Renderer=require('app.renderer')
 local View=require('app.view')
 local Layout=require('app.layout')
 local Preferences=require('app.preferences')
-local model,renderer,view,preferences
+local Storage=require('app.storage')
+local Startup=require('app.startup')
+local model,renderer,view,preferences,startup
 local smoke,smokeMatch,smokeTime,smokeStage=false,false,0,0
+local startupCaptured=false
 function love.load(args)
     love.graphics.setDefaultFilter('linear','linear')
     Slab.SetINIStatePath(nil)
@@ -16,13 +19,16 @@ function love.load(args)
     if not pcall(love.mouse.getSystemCursor,'arrow') then slabArgs[#slabArgs+1]='nocursor' end
     Slab.Initialize(slabArgs,true)
     model=Model.new();renderer=Renderer.new(model);view=View.new(Slab,model,renderer)
-    preferences=Preferences.new(model,Slab);view.preferences=preferences;preferences:apply()
+    preferences=Preferences.new(model,Slab,renderer);view.preferences=preferences;preferences:apply()
     love.window.setTitle('Love: 2 Gathering')
     love.window.setIcon(love.image.newImageData(renderer.assets:icon()))
     if smoke then model.settings.showCardArt=false end
+    startup=Startup.new(model,renderer,preferences)
 end
 function love.update(dt)
+    if startup and not startup.ready then startup:update(dt);if not startup.ready then return end end
     model:update(dt);preferences:update();Slab.Update(dt);renderer:update(dt);view:build()
+    renderer.uiHovered=not Slab.IsVoidHovered()
     renderer:mousemoved(Layout.mouse())
     if smoke then
         smokeTime=smokeTime+dt
@@ -56,30 +62,66 @@ function love.update(dt)
     end
 end
 function love.draw()
+    if startup and not startup.ready then startup:draw();preferences:endFrame();if smoke and not startupCaptured then love.graphics.captureScreenshot('smoke-startup.png');startupCaptured=true end;love.timer.sleep(.012);return end
     local started=love.timer.getTime()
-    preferences:beginFrame();renderer:draw();preferences:endScene();Slab.Draw()
-    love.graphics.push();love.graphics.scale(Layout.scale);renderer:drawForeground();renderer:drawToasts(Layout.dimensions());love.graphics.pop()
+    preferences:beginFrame();renderer:draw();preferences:endScene();Slab.Draw({DeferOverlays=true})
+    love.graphics.push();love.graphics.scale(Layout.scale)
+    renderer:drawForeground();local choices=package.loaded['app.card_choices'];if choices then choices.draw(view)end
+    renderer:drawToasts(Layout.dimensions());love.graphics.pop()
+    Slab.DrawOverlays()
     preferences:endFrame()
     love.graphics.setColor(1,1,1,1)
     preferences:limitFrame(started)
 end
 function love.mousepressed(x,y,button,touch,clicks)
+    if startup and not startup.ready then startup:press(x,y,button);return end
+    if button==2 then local lx,ly=Layout.toLogical(x,y);if require('app.drag_cancel').cancel(renderer,view,lx,ly)then return end end
     Slab.OnMousePressed(x,y,button,touch,clicks)
-    if not model.settingsOpen and not model.zoneView and not model.deleteConfirm and not model.inspectCard and Slab.IsVoidHovered() then
-        local lx,ly=Layout.toLogical(x,y);renderer:mousepressed(lx,ly,button,clicks)
+    local lx,ly=Layout.toLogical(x,y)
+    local choices=package.loaded['app.card_choices']
+    if choices and choices.press(view,lx,ly,button)then return end
+    if not renderer:inputBlocked()and Storage.press(renderer,lx,ly,button)then return end
+    if not renderer:inputBlocked()and Slab.IsVoidHovered() then
+        renderer:mousepressed(lx,ly,button,clicks)
     end
 end
 function love.mousereleased(x,y,button,touch,clicks)
-    Slab.OnMouseReleased(x,y,button,touch,clicks);local lx,ly=Layout.toLogical(x,y);renderer:mousereleased(lx,ly,button)
+    if startup and not startup.ready then return end
+    if button==2 and renderer.dragCancelRight then renderer.dragCancelRight=nil;return end
+    Slab.OnMouseReleased(x,y,button,touch,clicks);local lx,ly=Layout.toLogical(x,y)
+    local choices=package.loaded['app.card_choices'];if choices and choices.release(view,lx,ly,button)then return end
+    renderer:mousereleased(lx,ly,button)
 end
-function love.mousemoved(x,y,dx,dy,touch) Slab.OnMouseMoved(x,y,dx,dy,touch);renderer:mousemoved(Layout.toLogical(x,y)) end
-function love.wheelmoved(...) Slab.OnWheelMoved(...);renderer:wheelmoved(...) end
-function love.textinput(...) Slab.OnTextInput(...) end
+function love.mousemoved(x,y,dx,dy,touch)
+    if startup and not startup.ready then return end
+    Slab.OnMouseMoved(x,y,dx,dy,touch);local lx,ly=Layout.toLogical(x,y)
+    local choices=package.loaded['app.card_choices'];if choices then choices.move(view,lx,ly)end
+    renderer:mousemoved(lx,ly)
+end
+function love.wheelmoved(...)
+    if startup and not startup.ready then return end
+    local empty=Slab.IsVoidHovered();Slab.OnWheelMoved(...)
+    renderer.uiHovered=not empty
+    if empty then renderer:wheelmoved(...)end
+end
+function love.textinput(...) if startup and not startup.ready then return end;Slab.OnTextInput(...) end
 function love.keypressed(key,scancode,isrepeat)
+    if startup and not startup.ready then if key=='escape'then love.event.quit()end;return end
     Slab.OnKeyPressed(key,scancode,isrepeat)
-    if not Slab.IsAnyInputFocused() then
-        if key=='escape' then model.settingsOpen=false;model.zoneView=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.confirmConcede=false
-        elseif key=='space' and model.page=='table' then
+    if key=='escape'then
+        if require('app.drag_cancel').cancel(renderer,view,Layout.mouse())then renderer.dragCancelRight=nil;return end
+        local choices=package.loaded['app.card_choices'];if choices and choices.escape and choices.escape(view)then return end
+        if view.setPicker then require('app.set_picker').close(view);return end
+        if model.imagePackFileDialog then model.imagePackCancelRequested=true;return end
+        if model.cardPrintingPicker then model:closeCardPrintings();return end
+        if model.tokenPicker then model:closeTokenPicker();return end
+        if view.brandMenu then view.brandMenu=nil;return end
+        model:closeSettings();model.zoneView=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.galleryInspect=nil;model.confirmConcede=false;model.archiveCopy=nil;model.storagePurgePreview=nil;model.storageLocationConfirm=nil;model.storageFolderDialog=nil;model.imagePackFileDialog=nil
+        view.builderPopup=nil;view.builderFiltersOpen=nil;view.themeColorEdit=nil;view.combatStopsOpen=false;require('app.deck_picker').close(view)
+        return
+    end
+    if not Slab.IsAnyInputFocused()and not renderer:inputBlocked()then
+        if key=='space' and model.page=='table' then
             if model.replay then model:toggleReplay()
             else
                 local p=model:prompt()
@@ -90,6 +132,7 @@ function love.keypressed(key,scancode,isrepeat)
         end
     end
 end
-function love.keyreleased(...) Slab.OnKeyReleased(...) end
+function love.keyreleased(...) if startup and not startup.ready then return end;Slab.OnKeyReleased(...) end
+function love.filedropped(file)if startup and not startup.ready then return end;if model.dropImagePack and model:dropImagePack(file)then return end;if model.importDeckFile then model:importDeckFile(file)end end
 function love.resize() if preferences then preferences:update() end end
 function love.quit() if preferences then preferences:quit() end;if model then model:quit() end;Slab.OnQuit() end

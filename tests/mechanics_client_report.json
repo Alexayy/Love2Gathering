@@ -1,0 +1,1815 @@
+{
+  "schema": 2,
+  "status": "budget_exceeded",
+  "scope": "Client-only evidence. Latest full stress has14pass+1frame-budget finding; actual native1000 UI passes12. Native1000 recording pipeline remains budget_exceeded separately. Baseline/harness failures are historical and retained, not counted as latest functional failures. No synthetic rendering level counts as a distinct native directed mechanic scenario.",
+  "runs": {
+    "latestStress": {
+      "status": "budget_exceeded",
+      "runId": "20261115T040932Z-92da19daf54b",
+      "report": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json",
+      "sourceRevision": "63798e89b8257781e6fc961c38194793151a3ecb",
+      "baselineReproduction": false,
+      "componentOverrides": {},
+      "scope": "Client/model/transport/synthetic rendering only; native rules require separate native scenario results",
+      "caseCounts": {
+        "pass": 14,
+        "budget_exceeded": 1
+      },
+      "cases": [
+        {
+          "scenarioId": "client-watchdog-owned-process",
+          "status": "pass",
+          "evidenceType": "harness_selftest",
+          "watchdog": {
+            "pid": 129623,
+            "ownedProcessGroup": 129623,
+            "returnCode": -15,
+            "durationSeconds": 0.2035355560001335,
+            "status": "budget_exceeded",
+            "watchdogReason": "wall_time_budget",
+            "terminationConfirmed": true,
+            "peakRssBytes": 9359360,
+            "diskBytesObserved": 0,
+            "budgets": {
+              "wallSeconds": 0.2,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "following": {
+            "pid": 129625,
+            "ownedProcessGroup": 129625,
+            "returnCode": 0,
+            "durationSeconds": 0.02567001799980062,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 90112,
+            "diskBytesObserved": 0,
+            "budgets": {
+              "wallSeconds": 2,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-model-session-and-response-contracts",
+          "status": "pass",
+          "evidenceType": "client_model_transport",
+          "scope": "Mocked transport; no native execution or rules inference",
+          "attempts": 8,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "process": {
+            "pid": 129627,
+            "ownedProcessGroup": 129627,
+            "returnCode": 0,
+            "durationSeconds": 0.07750626999950327,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 15060992,
+            "diskBytesObserved": 1128961,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 21,
+          "actionTraceCount": 8,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-http-delayed-state-and-seat-controls",
+          "status": "pass",
+          "evidenceType": "client_transport",
+          "scope": "Actual asynchronous L\u00d6VE LuaSocket workers and isolated synthetic HTTP faults; no native game",
+          "attempts": 10,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "controlLatencySeconds": 0.004261403,
+          "process": {
+            "pid": 129632,
+            "ownedProcessGroup": 129632,
+            "returnCode": 0,
+            "durationSeconds": 4.718089351001254,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 18296832,
+            "diskBytesObserved": 1135159,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 14,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-native-visual-artwork-routing",
+          "status": "pass",
+          "evidenceType": "client_artwork_transport_and_decode",
+          "scope": "Actual local artwork request identity, L\u00d6VE decode and image cache; controlled catalog metadata/generated pixels. Optional native snapshot supplies original merged/copied host metadata; no native rules or catalog downloads.",
+          "attempts": 12,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "capturedNativeObjects": 2,
+          "process": {
+            "pid": 129670,
+            "ownedProcessGroup": 129670,
+            "returnCode": 0,
+            "durationSeconds": 0.333851189001507,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 178106368,
+            "diskBytesObserved": 12246290,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 34,
+          "actionTraceCount": 12,
+          "capturesCount": 1,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-1-equal-stack0",
+          "status": "pass",
+          "evidenceType": "synthetic_rendering_fixture",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 1,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 0.10647999999991,
+              "meanMs": 0.045821957446808,
+              "p95Ms": 0.079528999999745,
+              "samples": 47
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 0.13984099999997,
+              "meanMs": 0.073069446808504,
+              "p95Ms": 0.13035500000003,
+              "samples": 47
+            },
+            "fixtureGenerationMs": 0.0092870000000245,
+            "frameCpu": {
+              "maxMs": 1.7816020000001,
+              "meanMs": 0.8902959148936,
+              "p95Ms": 1.5858950000001,
+              "samples": 47
+            },
+            "hitTestCpu": {
+              "maxMs": 0.017392599999999,
+              "meanMs": 0.0011111436170219,
+              "p95Ms": 0.0014336999999975,
+              "samples": 47
+            },
+            "jsonBytes": 1213,
+            "jsonDecodeMs": 0.63428900000007,
+            "jsonEncodeMs": 0.15046299999999,
+            "luaMemoryKiB": 7990.2607421875,
+            "objects": 1,
+            "stackObjects": 0,
+            "textureMemoryBytes": 6081280
+          },
+          "process": {
+            "pid": 129704,
+            "ownedProcessGroup": 129704,
+            "returnCode": 0,
+            "durationSeconds": 2.6843508330002805,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 223256576,
+            "diskBytesObserved": 12764974,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 8,
+          "actionTraceCount": 1,
+          "capturesCount": 3,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-10-equal-stack0",
+          "status": "pass",
+          "evidenceType": "synthetic_rendering_fixture",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 10,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 0.46985900000007,
+              "meanMs": 0.21412523404255,
+              "p95Ms": 0.39573199999987,
+              "samples": 47
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 0.52806999999999,
+              "meanMs": 0.23937651063829,
+              "p95Ms": 0.44163800000008,
+              "samples": 47
+            },
+            "fixtureGenerationMs": 0.061796000000003,
+            "frameCpu": {
+              "maxMs": 2.202641,
+              "meanMs": 0.98555806382979,
+              "p95Ms": 1.9683830000001,
+              "samples": 47
+            },
+            "hitTestCpu": {
+              "maxMs": 0.04066975,
+              "meanMs": 0.001749410638297,
+              "p95Ms": 0.0024956500000006,
+              "samples": 47
+            },
+            "jsonBytes": 5024,
+            "jsonDecodeMs": 1.1295690000001,
+            "jsonEncodeMs": 0.44512500000005,
+            "luaMemoryKiB": 6649.0078125,
+            "objects": 10,
+            "stackObjects": 0,
+            "textureMemoryBytes": 8302096
+          },
+          "process": {
+            "pid": 130182,
+            "ownedProcessGroup": 130182,
+            "returnCode": 0,
+            "durationSeconds": 7.4527163460006705,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 222318592,
+            "diskBytesObserved": 13217010,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 22,
+          "actionTraceCount": 10,
+          "capturesCount": 6,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-100-equal-stack0",
+          "status": "pass",
+          "evidenceType": "synthetic_rendering_fixture",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 1,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 3.460295999999,
+              "meanMs": 1.6764452926832,
+              "p95Ms": 2.7053990000007,
+              "samples": 41
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 4.0192300000002,
+              "meanMs": 1.7901413902439,
+              "p95Ms": 2.9856109999999,
+              "samples": 41
+            },
+            "fixtureGenerationMs": 0.25710200000006,
+            "frameCpu": {
+              "maxMs": 4.730594,
+              "meanMs": 2.4988727073171,
+              "p95Ms": 4.210578,
+              "samples": 41
+            },
+            "hitTestCpu": {
+              "maxMs": 0.019098350000002,
+              "meanMs": 0.0016433756097568,
+              "p95Ms": 0.0022592499999974,
+              "samples": 41
+            },
+            "jsonBytes": 43188,
+            "jsonDecodeMs": 3.715149,
+            "jsonEncodeMs": 3.1741540000001,
+            "luaMemoryKiB": 4440.5263671875,
+            "objects": 100,
+            "stackObjects": 0,
+            "textureMemoryBytes": 6081280
+          },
+          "process": {
+            "pid": 130278,
+            "ownedProcessGroup": 130278,
+            "returnCode": 0,
+            "durationSeconds": 2.5823447679995297,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 222609408,
+            "diskBytesObserved": 12797856,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 8,
+          "actionTraceCount": 1,
+          "capturesCount": 3,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-500-equal-stack0",
+          "status": "pass",
+          "evidenceType": "synthetic_rendering_fixture",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 1,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 12.126777,
+              "meanMs": 7.926900307692,
+              "p95Ms": 12.053727000001,
+              "samples": 26
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 13.983299,
+              "meanMs": 8.4558147692308,
+              "p95Ms": 13.098599,
+              "samples": 26
+            },
+            "fixtureGenerationMs": 0.85721799999994,
+            "frameCpu": {
+              "maxMs": 15.938918,
+              "meanMs": 9.3608029230769,
+              "p95Ms": 14.215736,
+              "samples": 26
+            },
+            "hitTestCpu": {
+              "maxMs": 0.016854600000005,
+              "meanMs": 0.0033333499999999,
+              "p95Ms": 0.0051265999999994,
+              "samples": 26
+            },
+            "jsonBytes": 213188,
+            "jsonDecodeMs": 13.381741,
+            "jsonEncodeMs": 13.243622,
+            "luaMemoryKiB": 10369.838867188,
+            "objects": 500,
+            "stackObjects": 0,
+            "textureMemoryBytes": 6081280
+          },
+          "process": {
+            "pid": 130353,
+            "ownedProcessGroup": 130353,
+            "returnCode": 0,
+            "durationSeconds": 2.6840604429999075,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 235130880,
+            "diskBytesObserved": 12774052,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 8,
+          "actionTraceCount": 1,
+          "capturesCount": 3,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-1000-equal-stack0",
+          "status": "pass",
+          "evidenceType": "synthetic_rendering_fixture",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 1,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 22.962324999997,
+              "meanMs": 14.925721631579,
+              "p95Ms": 22.962324999997,
+              "samples": 19
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 23.598595,
+              "meanMs": 15.452763631579,
+              "p95Ms": 23.598595,
+              "samples": 19
+            },
+            "fixtureGenerationMs": 1.704036,
+            "frameCpu": {
+              "maxMs": 25.049557,
+              "meanMs": 16.547384736842,
+              "p95Ms": 25.049557,
+              "samples": 19
+            },
+            "hitTestCpu": {
+              "maxMs": 0.020658750000002,
+              "meanMs": 0.0060571473684218,
+              "p95Ms": 0.020658750000002,
+              "samples": 19
+            },
+            "jsonBytes": 425692,
+            "jsonDecodeMs": 20.580584,
+            "jsonEncodeMs": 22.736819,
+            "luaMemoryKiB": 15690.549804688,
+            "objects": 1000,
+            "stackObjects": 0,
+            "textureMemoryBytes": 6081280
+          },
+          "process": {
+            "pid": 130435,
+            "ownedProcessGroup": 130435,
+            "returnCode": 0,
+            "durationSeconds": 2.731128047000311,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 253472768,
+            "diskBytesObserved": 12777318,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 8,
+          "actionTraceCount": 1,
+          "capturesCount": 3,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-1000-varied-stack0",
+          "status": "pass",
+          "evidenceType": "synthetic_rendering_fixture",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 1,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 27.073647999998,
+              "meanMs": 20.839058249999,
+              "p95Ms": 27.073647999998,
+              "samples": 16
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 28.89469,
+              "meanMs": 21.8667501875,
+              "p95Ms": 28.89469,
+              "samples": 16
+            },
+            "fixtureGenerationMs": 2.4544440000001,
+            "frameCpu": {
+              "maxMs": 29.709818,
+              "meanMs": 22.92208625,
+              "p95Ms": 29.709818,
+              "samples": 16
+            },
+            "hitTestCpu": {
+              "maxMs": 0.023843200000001,
+              "meanMs": 0.006515524999999,
+              "p95Ms": 0.023843200000001,
+              "samples": 16
+            },
+            "jsonBytes": 445161,
+            "jsonDecodeMs": 23.773524,
+            "jsonEncodeMs": 24.642453,
+            "luaMemoryKiB": 14223.741210938,
+            "objects": 1000,
+            "stackObjects": 0,
+            "textureMemoryBytes": 6130432
+          },
+          "process": {
+            "pid": 130469,
+            "ownedProcessGroup": 130469,
+            "returnCode": 0,
+            "durationSeconds": 2.9050069770000846,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 252149760,
+            "diskBytesObserved": 12650832,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 8,
+          "actionTraceCount": 1,
+          "capturesCount": 3,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-1000-churn-stack0",
+          "status": "pass",
+          "evidenceType": "synthetic_rendering_fixture",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 0,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 21.392315999999,
+              "meanMs": 16.622970777779,
+              "p95Ms": 21.392315999999,
+              "samples": 18
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 23.465214,
+              "meanMs": 17.574814888889,
+              "p95Ms": 23.465214,
+              "samples": 18
+            },
+            "fixtureGenerationMs": 2.890853,
+            "frameCpu": {
+              "maxMs": 24.674704,
+              "meanMs": 18.687687722222,
+              "p95Ms": 24.674704,
+              "samples": 18
+            },
+            "hitTestCpu": {
+              "maxMs": 0.017959700000003,
+              "meanMs": 0.0066452694444444,
+              "p95Ms": 0.017959700000003,
+              "samples": 18
+            },
+            "jsonBytes": 425692,
+            "jsonDecodeMs": 22.430494,
+            "jsonEncodeMs": 23.499018,
+            "luaMemoryKiB": 14458.377929688,
+            "maximumRetainedPoses": 1000,
+            "objects": 1000,
+            "poseCacheAfterClear": 0,
+            "poseCacheByWave": [
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000,
+              1000
+            ],
+            "stackObjects": 0,
+            "textureMemoryBytes": 6322688
+          },
+          "process": {
+            "pid": 130506,
+            "ownedProcessGroup": 130506,
+            "returnCode": 0,
+            "durationSeconds": 3.7457272480005486,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 259469312,
+            "diskBytesObserved": 12420425,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 5,
+          "capturesCount": 2,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-1000-varied-stack1000",
+          "status": "pass",
+          "evidenceType": "synthetic_rendering_fixture",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 4,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 28.543649,
+              "meanMs": 22.78123825,
+              "p95Ms": 28.543649,
+              "samples": 4
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 33.088165,
+              "meanMs": 25.2456295,
+              "p95Ms": 33.088165,
+              "samples": 4
+            },
+            "fixtureGenerationMs": 3.056182,
+            "frameCpu": {
+              "maxMs": 50.789579,
+              "meanMs": 44.07642425,
+              "p95Ms": 50.789579,
+              "samples": 4
+            },
+            "hitTestCpu": {
+              "maxMs": 0.032581650000002,
+              "meanMs": 0.0192678875,
+              "p95Ms": 0.032581650000002,
+              "samples": 4
+            },
+            "jsonBytes": 1179838,
+            "jsonDecodeMs": 57.500458,
+            "jsonEncodeMs": 67.04972,
+            "luaMemoryKiB": 34742.139648438,
+            "objects": 1000,
+            "stackObjects": 1000,
+            "textureMemoryBytes": 31493376
+          },
+          "process": {
+            "pid": 130597,
+            "ownedProcessGroup": 130597,
+            "returnCode": 0,
+            "durationSeconds": 1.8255012760000682,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 300892160,
+            "diskBytesObserved": 12258253,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 3,
+          "actionTraceCount": 4,
+          "capturesCount": 1,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-10-mutate-stack0",
+          "status": "pass",
+          "evidenceType": "synthetic_rendering_fixture",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 9,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 0.5674149999999,
+              "meanMs": 0.22423018750003,
+              "p95Ms": 0.35293200000042,
+              "samples": 48
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 0.69229900000023,
+              "meanMs": 0.25120131250001,
+              "p95Ms": 0.38917099999991,
+              "samples": 48
+            },
+            "fixtureGenerationMs": 0.026811000000015,
+            "frameCpu": {
+              "maxMs": 2.339308,
+              "meanMs": 0.93001064583333,
+              "p95Ms": 1.347297,
+              "samples": 48
+            },
+            "hitTestCpu": {
+              "maxMs": 0.0157776,
+              "meanMs": 0.00098863854166703,
+              "p95Ms": 0.0012288000000082,
+              "samples": 48
+            },
+            "jsonBytes": 5419,
+            "jsonDecodeMs": 1.115993,
+            "jsonEncodeMs": 0.71352899999999,
+            "luaMemoryKiB": 4260.357421875,
+            "objects": 10,
+            "stackObjects": 0,
+            "textureMemoryBytes": 8568720
+          },
+          "process": {
+            "pid": 130651,
+            "ownedProcessGroup": 130651,
+            "returnCode": 0,
+            "durationSeconds": 8.785207307000746,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 225120256,
+            "diskBytesObserved": 13600976,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 25,
+          "actionTraceCount": 9,
+          "capturesCount": 7,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-5000-equal-stack0",
+          "status": "budget_exceeded",
+          "evidenceType": "synthetic_rendering_fixture",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 1,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 114.51620700001,
+              "meanMs": 87.957410399998,
+              "p95Ms": 114.51620700001,
+              "samples": 5
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 123.486422,
+              "meanMs": 93.4507558,
+              "p95Ms": 123.486422,
+              "samples": 5
+            },
+            "fixtureGenerationMs": 5.823193,
+            "frameCpu": {
+              "maxMs": 126.12435,
+              "meanMs": 97.867811,
+              "p95Ms": 126.12435,
+              "samples": 5
+            },
+            "hitTestCpu": {
+              "maxMs": 0.064887250000001,
+              "meanMs": 0.047159960000001,
+              "p95Ms": 0.064887250000001,
+              "samples": 5
+            },
+            "jsonBytes": 2129692,
+            "jsonDecodeMs": 104.947577,
+            "jsonEncodeMs": 175.056665,
+            "luaMemoryKiB": 39530.866210938,
+            "objects": 5000,
+            "stackObjects": 0,
+            "textureMemoryBytes": 6081280
+          },
+          "process": {
+            "pid": 130759,
+            "ownedProcessGroup": 130759,
+            "returnCode": 0,
+            "durationSeconds": 3.8421593080001912,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 406499328,
+            "diskBytesObserved": 12783488,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 8,
+          "actionTraceCount": 1,
+          "capturesCount": 3,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        },
+        {
+          "scenarioId": "client-native-projection",
+          "status": "pass",
+          "evidenceType": "native_projection_client_render",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 0,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 0.40627200000021,
+              "meanMs": 0.15501608163272,
+              "p95Ms": 0.26474799999932,
+              "samples": 49
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 0.45921100000035,
+              "meanMs": 0.16811261224493,
+              "p95Ms": 0.28258999999986,
+              "samples": 49
+            },
+            "fixtureGenerationMs": 0.06598400000013,
+            "frameCpu": {
+              "maxMs": 2.0655440000001,
+              "meanMs": 0.71813867346942,
+              "p95Ms": 1.6231449999999,
+              "samples": 49
+            },
+            "hitTestCpu": {
+              "maxMs": 0.016592599999998,
+              "meanMs": 0.00092370102040778,
+              "p95Ms": 0.00091125000001302,
+              "samples": 49
+            },
+            "jsonBytes": 45130,
+            "jsonDecodeMs": 4.2343330000001,
+            "jsonEncodeMs": 4.4507979999999,
+            "luaMemoryKiB": 10267.168945313,
+            "objects": 4,
+            "stackObjects": 0,
+            "textureMemoryBytes": 10052736
+          },
+          "process": {
+            "pid": 130901,
+            "ownedProcessGroup": 130901,
+            "returnCode": 0,
+            "durationSeconds": 7.396998616999554,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 218628096,
+            "diskBytesObserved": 12903410,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 10,
+          "capturesCount": 3,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/report.json"
+        }
+      ],
+      "sourceHashes": {
+        "app/api.lua": "6a97a211a3164e421998399b638a0eea9c443d684030ac0a75ea0d46111aa6c3",
+        "app/model.lua": "5960c5ead4cb488b38b8748acd8f4b1f7aca485a4d69f8919249414893e205f2",
+        "app/library.lua": "cf58d69bb8c8d8fe990dd112f14606c5c9349aafa90eae3bb4de0be3a5fc0814",
+        "app/artwork.lua": "b4b3710e8b41002803697e930645f7c8d0d582043f925ed93b20181c4127e7d0",
+        "app/card_printings.lua": "4dd855e7084a5527e228efce1d30d43e89366a8a5ba54ec715578f1e43afb895",
+        "app/table.lua": "093277153cf18f2727469540a1c6d657b90d72041ec909781485577d4af85e20",
+        "app/view.lua": "e5142b216affa618729129b567c9320c2ba349e2431eb47fdfe9372d0e7be865",
+        "app/match_ui.lua": "bc5e190e50b31fbf9c9a02ea43b4c5f3a66786b7e63f4842ac57cb06f129ddbe",
+        "app/renderer.lua": "58d063bcc6ccb823cfce5ad65d95e040b16802df5be5124b02a35cfa0824aaf4",
+        "app/board_fx.lua": "a16ce699669ed8565336f38c9aa5babea80b78a2eb9e9ee144b98793b5709452",
+        "tests/mechanics_client_ui.lua": "23033b565b132a5daff98dba8a2d454861f066ef7a8ef05574f9c035a8ab2575",
+        "tests/mechanics_client_transport.lua": "108add83a751540abf9aacba28bfa55e06bba8d4563fa500ff8264138c10248e",
+        "tests/mechanics_client_model.lua": "b15fe69829f3e089053e67cb157691a9f19af10385e02b6ab79fa32663cebc1c",
+        "tests/mechanics_client_artwork.lua": "fb29750db149fd28ab4aa4c5d1a0144d71bbf4f10e08893f52053431e9fbadfc",
+        "tests/mechanics_client.py": "4e48760208029967680807d8d71cdef34315501d2e71f3d352b7f5efc45284e6"
+      }
+    },
+    "native1000": {
+      "status": "pass",
+      "runId": "20261115T041424Z-71d0fc67f763",
+      "report": "/tmp/love2gathering-client-native1000-final-20261115-g/report.json",
+      "sourceRevision": "63798e89b8257781e6fc961c38194793151a3ecb",
+      "baselineReproduction": false,
+      "componentOverrides": {},
+      "scope": "Client/model/transport/synthetic rendering only; native rules require separate native scenario results",
+      "caseCounts": {
+        "pass": 2
+      },
+      "cases": [
+        {
+          "scenarioId": "client-watchdog-owned-process",
+          "status": "pass",
+          "evidenceType": "harness_selftest",
+          "watchdog": {
+            "pid": 132792,
+            "ownedProcessGroup": 132792,
+            "returnCode": -15,
+            "durationSeconds": 0.20345227100006014,
+            "status": "budget_exceeded",
+            "watchdogReason": "wall_time_budget",
+            "terminationConfirmed": true,
+            "peakRssBytes": 9367552,
+            "diskBytesObserved": 0,
+            "budgets": {
+              "wallSeconds": 0.2,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "following": {
+            "pid": 132793,
+            "ownedProcessGroup": 132793,
+            "returnCode": 0,
+            "durationSeconds": 0.02564789299867698,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 131072,
+            "diskBytesObserved": 0,
+            "budgets": {
+              "wallSeconds": 2,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-client-native1000-final-20261115-g/report.json"
+        },
+        {
+          "scenarioId": "client-native-projection",
+          "status": "pass",
+          "evidenceType": "native_projection_client_render",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 1,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 23.908242999987,
+              "meanMs": 13.976940380951,
+              "p95Ms": 22.873553999999,
+              "samples": 21
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 24.419104,
+              "meanMs": 14.402959952381,
+              "p95Ms": 23.381329,
+              "samples": 21
+            },
+            "fixtureGenerationMs": 0.035035999999988,
+            "frameCpu": {
+              "maxMs": 25.068052,
+              "meanMs": 15.106031142857,
+              "p95Ms": 24.049361,
+              "samples": 21
+            },
+            "hitTestCpu": {
+              "maxMs": 0.022222650000003,
+              "meanMs": 0.0059453857142831,
+              "p95Ms": 0.0060979499999947,
+              "samples": 21
+            },
+            "jsonBytes": 1095920,
+            "jsonDecodeMs": 57.194854,
+            "jsonEncodeMs": 55.104483,
+            "luaMemoryKiB": 22641.251953125,
+            "nativeInstanceSelections": [
+              {
+                "battlefieldCount": 500,
+                "objectId": "bdeee499-e4f1-4544-985f-df7d90dc3ce0",
+                "playerId": "481062fb-9e78-49f1-aca1-4c60fd1a8e60"
+              },
+              {
+                "battlefieldCount": 500,
+                "objectId": "5536de08-7ea5-49f2-a98f-1eb285945da1",
+                "playerId": "61237d50-f287-45a9-8888-63f9f95b61df"
+              }
+            ],
+            "objects": 1000,
+            "stackObjects": 0,
+            "textureMemoryBytes": 6114048
+          },
+          "process": {
+            "pid": 132795,
+            "ownedProcessGroup": 132795,
+            "returnCode": 0,
+            "durationSeconds": 7.623952380999981,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 274612224,
+            "diskBytesObserved": 12986303,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 12,
+          "actionTraceCount": 1,
+          "capturesCount": 5,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-client-native1000-final-20261115-g/report.json"
+        }
+      ],
+      "sourceHashes": {
+        "app/api.lua": "6a97a211a3164e421998399b638a0eea9c443d684030ac0a75ea0d46111aa6c3",
+        "app/model.lua": "5960c5ead4cb488b38b8748acd8f4b1f7aca485a4d69f8919249414893e205f2",
+        "app/library.lua": "cf58d69bb8c8d8fe990dd112f14606c5c9349aafa90eae3bb4de0be3a5fc0814",
+        "app/artwork.lua": "b4b3710e8b41002803697e930645f7c8d0d582043f925ed93b20181c4127e7d0",
+        "app/card_printings.lua": "4dd855e7084a5527e228efce1d30d43e89366a8a5ba54ec715578f1e43afb895",
+        "app/table.lua": "093277153cf18f2727469540a1c6d657b90d72041ec909781485577d4af85e20",
+        "app/view.lua": "e5142b216affa618729129b567c9320c2ba349e2431eb47fdfe9372d0e7be865",
+        "app/match_ui.lua": "bc5e190e50b31fbf9c9a02ea43b4c5f3a66786b7e63f4842ac57cb06f129ddbe",
+        "app/renderer.lua": "58d063bcc6ccb823cfce5ad65d95e040b16802df5be5124b02a35cfa0824aaf4",
+        "app/board_fx.lua": "a16ce699669ed8565336f38c9aa5babea80b78a2eb9e9ee144b98793b5709452",
+        "tests/mechanics_client_ui.lua": "15b052770313ff5940837214c8de734726e420f68958e7851098699762f6067d",
+        "tests/mechanics_client_transport.lua": "108add83a751540abf9aacba28bfa55e06bba8d4563fa500ff8264138c10248e",
+        "tests/mechanics_client_model.lua": "b15fe69829f3e089053e67cb157691a9f19af10385e02b6ab79fa32663cebc1c",
+        "tests/mechanics_client_artwork.lua": "fb29750db149fd28ab4aa4c5d1a0144d71bbf4f10e08893f52053431e9fbadfc",
+        "tests/mechanics_client.py": "4e48760208029967680807d8d71cdef34315501d2e71f3d352b7f5efc45284e6"
+      }
+    },
+    "nativeMergedUi": {
+      "status": "pass",
+      "runId": "20261115T035841Z-79e89897dc5a",
+      "report": "/tmp/love2gathering-client-final-v5-merged-all-ui/report.json",
+      "sourceRevision": "63798e89b8257781e6fc961c38194793151a3ecb",
+      "baselineReproduction": false,
+      "componentOverrides": {},
+      "scope": "Client/model/transport/synthetic rendering only; native rules require separate native scenario results",
+      "caseCounts": {
+        "pass": 2
+      },
+      "cases": [
+        {
+          "scenarioId": "client-watchdog-owned-process",
+          "status": "pass",
+          "evidenceType": "harness_selftest",
+          "watchdog": {
+            "pid": 122923,
+            "ownedProcessGroup": 122923,
+            "returnCode": -15,
+            "durationSeconds": 0.20391032199950132,
+            "status": "budget_exceeded",
+            "watchdogReason": "wall_time_budget",
+            "terminationConfirmed": true,
+            "peakRssBytes": 9330688,
+            "diskBytesObserved": 0,
+            "budgets": {
+              "wallSeconds": 0.2,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "following": {
+            "pid": 122928,
+            "ownedProcessGroup": 122928,
+            "returnCode": 0,
+            "durationSeconds": 0.025831004999417928,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 204800,
+            "diskBytesObserved": 0,
+            "budgets": {
+              "wallSeconds": 2,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-client-final-v5-merged-all-ui/report.json"
+        },
+        {
+          "scenarioId": "client-native-projection",
+          "status": "pass",
+          "evidenceType": "native_projection_client_render",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 0,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 0.17997700000016,
+              "meanMs": 0.054536460000039,
+              "p95Ms": 0.082836000000253,
+              "samples": 50
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 0.21260900000009,
+              "meanMs": 0.065078419999978,
+              "p95Ms": 0.099886999999743,
+              "samples": 50
+            },
+            "fixtureGenerationMs": 0.023182999999927,
+            "frameCpu": {
+              "maxMs": 1.8510519999997,
+              "meanMs": 0.54806089999997,
+              "p95Ms": 1.3184530000001,
+              "samples": 50
+            },
+            "hitTestCpu": {
+              "maxMs": 0.021691199999996,
+              "meanMs": 0.0011540669999981,
+              "p95Ms": 0.0024696000000102,
+              "samples": 50
+            },
+            "jsonBytes": 10984,
+            "jsonDecodeMs": 1.367264,
+            "jsonEncodeMs": 0.84103800000013,
+            "luaMemoryKiB": 8306.5830078125,
+            "objects": 1,
+            "stackObjects": 0,
+            "textureMemoryBytes": 8774336
+          },
+          "process": {
+            "pid": 122932,
+            "ownedProcessGroup": 122932,
+            "returnCode": 0,
+            "durationSeconds": 6.036384106000696,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 223866880,
+            "diskBytesObserved": 12406149,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 7,
+          "capturesCount": 2,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-client-final-v5-merged-all-ui/report.json"
+        }
+      ],
+      "sourceHashes": {
+        "app/api.lua": "6a97a211a3164e421998399b638a0eea9c443d684030ac0a75ea0d46111aa6c3",
+        "app/model.lua": "5960c5ead4cb488b38b8748acd8f4b1f7aca485a4d69f8919249414893e205f2",
+        "app/library.lua": "cf58d69bb8c8d8fe990dd112f14606c5c9349aafa90eae3bb4de0be3a5fc0814",
+        "app/artwork.lua": "b4b3710e8b41002803697e930645f7c8d0d582043f925ed93b20181c4127e7d0",
+        "app/card_printings.lua": "4dd855e7084a5527e228efce1d30d43e89366a8a5ba54ec715578f1e43afb895",
+        "app/table.lua": "093277153cf18f2727469540a1c6d657b90d72041ec909781485577d4af85e20",
+        "app/view.lua": "e5142b216affa618729129b567c9320c2ba349e2431eb47fdfe9372d0e7be865",
+        "app/match_ui.lua": "bc5e190e50b31fbf9c9a02ea43b4c5f3a66786b7e63f4842ac57cb06f129ddbe",
+        "app/renderer.lua": "58d063bcc6ccb823cfce5ad65d95e040b16802df5be5124b02a35cfa0824aaf4",
+        "app/board_fx.lua": "a16ce699669ed8565336f38c9aa5babea80b78a2eb9e9ee144b98793b5709452",
+        "tests/mechanics_client_ui.lua": "23033b565b132a5daff98dba8a2d454861f066ef7a8ef05574f9c035a8ab2575",
+        "tests/mechanics_client_transport.lua": "108add83a751540abf9aacba28bfa55e06bba8d4563fa500ff8264138c10248e",
+        "tests/mechanics_client_model.lua": "b15fe69829f3e089053e67cb157691a9f19af10385e02b6ab79fa32663cebc1c",
+        "tests/mechanics_client_artwork.lua": "fb29750db149fd28ab4aa4c5d1a0144d71bbf4f10e08893f52053431e9fbadfc",
+        "tests/mechanics_client.py": "4e48760208029967680807d8d71cdef34315501d2e71f3d352b7f5efc45284e6"
+      }
+    },
+    "nativeCopiedTopUi": {
+      "status": "pass",
+      "runId": "20261115T035823Z-b09e36289d53",
+      "report": "/tmp/love2gathering-client-final-v5-copied-all-ui/report.json",
+      "sourceRevision": "63798e89b8257781e6fc961c38194793151a3ecb",
+      "baselineReproduction": false,
+      "componentOverrides": {},
+      "scope": "Client/model/transport/synthetic rendering only; native rules require separate native scenario results",
+      "caseCounts": {
+        "pass": 2
+      },
+      "cases": [
+        {
+          "scenarioId": "client-watchdog-owned-process",
+          "status": "pass",
+          "evidenceType": "harness_selftest",
+          "watchdog": {
+            "pid": 122550,
+            "ownedProcessGroup": 122550,
+            "returnCode": -15,
+            "durationSeconds": 0.20385545099998126,
+            "status": "budget_exceeded",
+            "watchdogReason": "wall_time_budget",
+            "terminationConfirmed": true,
+            "peakRssBytes": 9367552,
+            "diskBytesObserved": 0,
+            "budgets": {
+              "wallSeconds": 0.2,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "following": {
+            "pid": 122551,
+            "ownedProcessGroup": 122551,
+            "returnCode": 0,
+            "durationSeconds": 0.02573402500092925,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 90112,
+            "diskBytesObserved": 0,
+            "budgets": {
+              "wallSeconds": 2,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-client-final-v5-copied-all-ui/report.json"
+        },
+        {
+          "scenarioId": "client-native-projection",
+          "status": "pass",
+          "evidenceType": "native_projection_client_render",
+          "scope": "Actual L\u00d6VE/Slab input and rendering; synthetic native-shaped projections unless an explicit independently captured native frame is supplied. No native rules execute here; no network or user saves.",
+          "attempts": 0,
+          "acceptedNativeActions": 0,
+          "nativeEvents": 0,
+          "gameThreadStatus": "not_applicable_client_process",
+          "recordingOutbox": "not_applicable_client_fixture",
+          "metrics": {
+            "cardDrawCpu": {
+              "maxMs": 0.35154999999998,
+              "meanMs": 0.15094736734694,
+              "p95Ms": 0.27581599999937,
+              "samples": 49
+            },
+            "drawCalls": 0,
+            "fieldCpu": {
+              "maxMs": 0.40316700000043,
+              "meanMs": 0.1663657755102,
+              "p95Ms": 0.31065299999966,
+              "samples": 49
+            },
+            "fixtureGenerationMs": 0.020317999999908,
+            "frameCpu": {
+              "maxMs": 1.8101850000001,
+              "meanMs": 0.74800226530611,
+              "p95Ms": 1.5286969999999,
+              "samples": 49
+            },
+            "hitTestCpu": {
+              "maxMs": 0.013232849999989,
+              "meanMs": 0.00078848673469097,
+              "p95Ms": 0.00084909999999994,
+              "samples": 49
+            },
+            "jsonBytes": 45130,
+            "jsonDecodeMs": 3.0807290000001,
+            "jsonEncodeMs": 3.033681,
+            "luaMemoryKiB": 8370.7158203125,
+            "objects": 4,
+            "stackObjects": 0,
+            "textureMemoryBytes": 10052736
+          },
+          "process": {
+            "pid": 122553,
+            "ownedProcessGroup": 122553,
+            "returnCode": 0,
+            "durationSeconds": 7.3817493060014385,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 216612864,
+            "diskBytesObserved": 12903410,
+            "budgets": {
+              "wallSeconds": 60,
+              "cpuSeconds": 30,
+              "rssMiB": 768,
+              "diskMiB": 256
+            }
+          },
+          "checksCount": 10,
+          "capturesCount": 3,
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-client-final-v5-copied-all-ui/report.json"
+        }
+      ],
+      "sourceHashes": {
+        "app/api.lua": "6a97a211a3164e421998399b638a0eea9c443d684030ac0a75ea0d46111aa6c3",
+        "app/model.lua": "5960c5ead4cb488b38b8748acd8f4b1f7aca485a4d69f8919249414893e205f2",
+        "app/library.lua": "cf58d69bb8c8d8fe990dd112f14606c5c9349aafa90eae3bb4de0be3a5fc0814",
+        "app/artwork.lua": "b4b3710e8b41002803697e930645f7c8d0d582043f925ed93b20181c4127e7d0",
+        "app/card_printings.lua": "4dd855e7084a5527e228efce1d30d43e89366a8a5ba54ec715578f1e43afb895",
+        "app/table.lua": "093277153cf18f2727469540a1c6d657b90d72041ec909781485577d4af85e20",
+        "app/view.lua": "e5142b216affa618729129b567c9320c2ba349e2431eb47fdfe9372d0e7be865",
+        "app/match_ui.lua": "bc5e190e50b31fbf9c9a02ea43b4c5f3a66786b7e63f4842ac57cb06f129ddbe",
+        "app/renderer.lua": "58d063bcc6ccb823cfce5ad65d95e040b16802df5be5124b02a35cfa0824aaf4",
+        "app/board_fx.lua": "a16ce699669ed8565336f38c9aa5babea80b78a2eb9e9ee144b98793b5709452",
+        "tests/mechanics_client_ui.lua": "23033b565b132a5daff98dba8a2d454861f066ef7a8ef05574f9c035a8ab2575",
+        "tests/mechanics_client_transport.lua": "108add83a751540abf9aacba28bfa55e06bba8d4563fa500ff8264138c10248e",
+        "tests/mechanics_client_model.lua": "b15fe69829f3e089053e67cb157691a9f19af10385e02b6ab79fa32663cebc1c",
+        "tests/mechanics_client_artwork.lua": "fb29750db149fd28ab4aa4c5d1a0144d71bbf4f10e08893f52053431e9fbadfc",
+        "tests/mechanics_client.py": "4e48760208029967680807d8d71cdef34315501d2e71f3d352b7f5efc45284e6"
+      }
+    },
+    "baseline": {
+      "status": "fail",
+      "runId": "love2gathering-client-baseline-20261115-a",
+      "report": "/tmp/love2gathering-client-baseline-20261115-a/report.json",
+      "sourceRevision": "63798e8",
+      "baselineReproduction": true,
+      "componentOverrides": {},
+      "scope": "Client/model/transport/synthetic rendering only; native rules require separate native scenario results",
+      "caseCounts": {
+        "pass": 1,
+        "fail": 2
+      },
+      "cases": [
+        {
+          "scenarioId": "client-watchdog-owned-process",
+          "status": "pass",
+          "evidenceType": "harness_selftest",
+          "watchdog": {
+            "pid": 74937,
+            "ownedProcessGroup": 74937,
+            "returnCode": -15,
+            "durationSeconds": 0.20321946399963053,
+            "status": "budget_exceeded",
+            "watchdogReason": "wall_time_budget",
+            "terminationConfirmed": true,
+            "peakRssBytes": 9347072
+          },
+          "following": {
+            "pid": 74938,
+            "ownedProcessGroup": 74938,
+            "returnCode": 0,
+            "durationSeconds": 0.025663708000138286,
+            "status": "pass",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 20480
+          },
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-client-baseline-20261115-a/report.json"
+        },
+        {
+          "scenarioId": "client-model",
+          "status": "fail",
+          "evidenceType": "client_transport",
+          "error": "Child exited without a fresh result",
+          "process": {
+            "pid": 74942,
+            "ownedProcessGroup": 74942,
+            "returnCode": 1,
+            "durationSeconds": 0.076021746999686,
+            "status": "fail",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 15335424
+          },
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-client-baseline-20261115-a/report.json"
+        },
+        {
+          "scenarioId": "client-transport",
+          "status": "fail",
+          "evidenceType": "client_transport",
+          "error": "Child exited without a fresh result",
+          "process": {
+            "pid": 74949,
+            "ownedProcessGroup": 74949,
+            "returnCode": 1,
+            "durationSeconds": 1.5913004760004696,
+            "status": "fail",
+            "watchdogReason": null,
+            "terminationConfirmed": true,
+            "peakRssBytes": 17264640
+          },
+          "detailedAssertionsAndTrace": "/tmp/love2gathering-client-baseline-20261115-a/report.json"
+        }
+      ],
+      "sourceHashes": {
+        "app/api.lua": "b1a7fc1a111504ae9235746883d64d0a1b96d16ad11187c978c6c3c3db366ccd",
+        "app/model.lua": "077fb472a05026493b5bed482ee2cee56aa6456033533e2fa99514cbba2f4dfc",
+        "app/table.lua": "093277153cf18f2727469540a1c6d657b90d72041ec909781485577d4af85e20",
+        "app/view.lua": "66f925be29aca2f0dd36dcfed68d20bd3f3ec02098064e4248b10bffb772bf8a",
+        "app/match_ui.lua": "90e68e6af53d521fa9ed545adc58328fa7a0d8ced84edfdc1598a96ffe1ab357",
+        "tests/mechanics_client.py": "4f4194a370dec1f94afc5b9fa5d01d866bc7a0670789d1e79af23ee5cfa4e680"
+      }
+    }
+  },
+  "summaries": {
+    "latestStress": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/summary.json",
+    "native1000": "/tmp/love2gathering-client-native1000-final-20261115-g/summary.json",
+    "nativeMergedAndArtwork": "/tmp/love2gathering-client-final-v5-evidence.json"
+  },
+  "native1000Pipeline": {
+    "status": "budget_exceeded",
+    "nativeObjects": 1000,
+    "perControllerObjects": [
+      500,
+      500
+    ],
+    "nativeEvents": 3003,
+    "projectionBytes": 1095920,
+    "nativeCreationMs": 135478.032039,
+    "recordingFlushBudgetMs": 45000,
+    "durablePendingAtBudget": 706,
+    "nativeExecutorTerminated": true,
+    "evidence": "/tmp/love2gathering-mechanics-20261115T022333Z-0d97911c/heavy-final-v6/stress/tokens-split1000-r1/result.json",
+    "scope": "These native/recording results are independent of the captured-projection UI pass."
+  },
+  "baselineFindings": [
+    {
+      "kind": "application_regression",
+      "status": "reproduced_prior_source",
+      "case": "model",
+      "actualFirstFailure": "A replacement game clears old inspection and concession-confirmation context",
+      "scope": "This earlier assertion stopped the baseline model test; later callback assertions were not executed in that baseline run. Current model exercises them.",
+      "evidence": "/tmp/love2gathering-client-baseline-20261115-a/model/process.log"
+    },
+    {
+      "kind": "application_regression",
+      "status": "reproduced_prior_source",
+      "case": "transport",
+      "actualConcessionSeconds": 1.38068173,
+      "expectedMaxSeconds": 0.7,
+      "ordinaryStateCompletedFirst": true,
+      "evidence": "/tmp/love2gathering-client-baseline-20261115-a/transport/control-latency.json"
+    }
+  ],
+  "testHarnessFindings": [
+    {
+      "kind": "offscreen_control_click",
+      "status": "fixed_test_only",
+      "failedEvidence": "/tmp/love2gathering-client-final-v5-merged-ui/report.json",
+      "diagnostic": "/tmp/love2gathering-client-v5-click-diagnostic/click-diagnostic.json",
+      "actual": {
+        "selectedComponent": null,
+        "hostUnchanged": true,
+        "requestsBefore": 0,
+        "requestsAfter": 0
+      },
+      "correction": "Scroll the actual inspector until each native component row is visible; inspect every merged host and close through actual controls.",
+      "verifiedEvidence": "/tmp/love2gathering-client-final-v5-copied-all-ui/report.json"
+    },
+    {
+      "kind": "first_frame_capture_race",
+      "status": "fixed_test_only",
+      "failedCapture": "/tmp/love2gathering-client-art-final-20261115-b/artwork/native-artwork-routing.png",
+      "correction": "Capture after three drawn frames. Image request/decode assertions had already passed; blank capture was not visual acceptance.",
+      "verifiedCapture": "/tmp/love2gathering-client-art-final-20261115-c/artwork/native-artwork-routing.png"
+    }
+  ],
+  "inspectedCaptures": [
+    "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/artwork/native-artwork-routing.png",
+    "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/stack-1000/board-1000-varied-stack1000.png",
+    "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/tokens-5000/exact-token-5000-equal.png",
+    "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/client/native-projection/mutate-component-inspection-2.png",
+    "/tmp/love2gathering-client-native1000-final-20261115-g/native-projection/board-1000-equal-stack0.png",
+    "/tmp/love2gathering-client-native1000-final-20261115-g/native-projection/native-last-instance-1.png",
+    "/tmp/love2gathering-client-native1000-final-20261115-g/native-projection/native-last-instance-2.png",
+    "/tmp/love2gathering-client-native1000-final-20261115-g/native-projection/native-last-inspection-2.png"
+  ],
+  "historicalRuns": {
+    "focused": {
+      "status": "pass",
+      "report": "/tmp/love2gathering-client-final-confirmed-20261115/report.json",
+      "runId": "20261115T030903Z-a9dda13b6ba9",
+      "sourceHashes": {
+        "app/api.lua": "6a97a211a3164e421998399b638a0eea9c443d684030ac0a75ea0d46111aa6c3",
+        "app/model.lua": "2deaf66a50c39ea2c5d15b1300c8364a5dd554c30078f274436abbb4c1220faf",
+        "app/table.lua": "093277153cf18f2727469540a1c6d657b90d72041ec909781485577d4af85e20",
+        "app/view.lua": "e5142b216affa618729129b567c9320c2ba349e2431eb47fdfe9372d0e7be865",
+        "app/match_ui.lua": "bc5e190e50b31fbf9c9a02ea43b4c5f3a66786b7e63f4842ac57cb06f129ddbe",
+        "app/renderer.lua": "58d063bcc6ccb823cfce5ad65d95e040b16802df5be5124b02a35cfa0824aaf4",
+        "app/board_fx.lua": "a16ce699669ed8565336f38c9aa5babea80b78a2eb9e9ee144b98793b5709452",
+        "tests/mechanics_client_ui.lua": "e14df48180f2cb24a389b0cccec68c66d2fa8169dd84dfc325b8e5717d506513",
+        "tests/mechanics_client_transport.lua": "108add83a751540abf9aacba28bfa55e06bba8d4563fa500ff8264138c10248e",
+        "tests/mechanics_client_model.lua": "b15fe69829f3e089053e67cb157691a9f19af10385e02b6ab79fa32663cebc1c",
+        "tests/mechanics_client.py": "7d1b53727569c481ea152c8c0d56ed5a15e46a340e72e1448bffebf4a987197c"
+      },
+      "scope": "Client/model/transport/synthetic rendering only; native rules require separate native scenario results"
+    },
+    "stress": {
+      "status": "budget_exceeded",
+      "report": "/tmp/love2gathering-client-current-final-20261115/report.json",
+      "runId": "20261115T030142Z-3502a48d531b",
+      "sourceHashes": {
+        "app/api.lua": "ef35cf769a083ee9ce037d2d0bd8c73fd458f9f4ea8032b3ff9df48760614a77",
+        "app/model.lua": "99b7f464bd5f71ba129a310ca587e934c6b630d0db6271fa9622bfdc1cdeaba2",
+        "app/table.lua": "093277153cf18f2727469540a1c6d657b90d72041ec909781485577d4af85e20",
+        "app/view.lua": "e5142b216affa618729129b567c9320c2ba349e2431eb47fdfe9372d0e7be865",
+        "app/match_ui.lua": "bc5e190e50b31fbf9c9a02ea43b4c5f3a66786b7e63f4842ac57cb06f129ddbe",
+        "app/renderer.lua": "58d063bcc6ccb823cfce5ad65d95e040b16802df5be5124b02a35cfa0824aaf4",
+        "app/board_fx.lua": "a16ce699669ed8565336f38c9aa5babea80b78a2eb9e9ee144b98793b5709452",
+        "tests/mechanics_client_ui.lua": "e14df48180f2cb24a389b0cccec68c66d2fa8169dd84dfc325b8e5717d506513",
+        "tests/mechanics_client_transport.lua": "f17f5ed9f6642f81eb025378e7fad83e7561656e4b93f4951917f768afbb6996",
+        "tests/mechanics_client_model.lua": "d42ba4c143e461b4bb0abe43b2e4568e150e1b050883ad702ad457ad4e7398a5",
+        "tests/mechanics_client.py": "7d1b53727569c481ea152c8c0d56ed5a15e46a340e72e1448bffebf4a987197c"
+      },
+      "scope": "Client/model/transport/synthetic rendering only; native rules require separate native scenario results"
+    },
+    "nativeArtworkRouting": {
+      "status": "pass",
+      "report": "/tmp/love2gathering-client-native-artwork-20261115-a/report.json",
+      "runId": null,
+      "sourceHashes": {},
+      "scope": "Actual L\u00d6VE exact source illustration request/decode/cache with controlled local catalog metadata and generated pixels; actual captured native merged host; no image download or game execution."
+    }
+  },
+  "multiplayerUi": {
+    "status": "pass",
+    "checks": 293,
+    "evidenceType": "synthetic_rendering_fixture",
+    "detailedEvidence": "/tmp/love2gathering-client-multiplayer-regression-20261115/ui-report.json",
+    "scope": "Existing actual L\u00d6VE4/6playerinput/scaling/camera/edgehitregression; copied isolated harness changed only output paths."
+  },
+  "modelRegressions": [
+    {
+      "file": "tests/api_rooms.lua",
+      "status": "pass"
+    },
+    {
+      "file": "tests/frontend_model.lua",
+      "status": "pass"
+    },
+    {
+      "file": "tests/priority_model.lua",
+      "status": "pass"
+    },
+    {
+      "file": "tests/card_choices.lua",
+      "status": "pass"
+    },
+    {
+      "file": "tests/replay_model.lua",
+      "status": "pass"
+    },
+    {
+      "file": "tests/rooms_model.lua",
+      "status": "pass"
+    },
+    {
+      "file": "tests/modal_input.lua",
+      "status": "pass"
+    },
+    {
+      "file": "tests/board_fx.lua",
+      "status": "pass"
+    },
+    {
+      "file": "tests/card_printings_model.lua",
+      "status": "pass"
+    },
+    {
+      "file": "tests/library_model.lua",
+      "status": "pass"
+    }
+  ],
+  "artModelRegressions": {
+    "status": "pass",
+    "evidence": "/tmp/love2gathering-client-art-models-20261115.json",
+    "scope": "Lua5.4 model checks via embedded interpreter; actual L\u00d6VE LuaJIT model/transport/image decode coverage remains separate above.",
+    "files": [
+      {
+        "file": "tests/artwork_model.lua",
+        "checks": 11
+      },
+      {
+        "file": "tests/library_model.lua",
+        "checks": 42
+      },
+      {
+        "file": "tests/card_printings_model.lua",
+        "checks": 27
+      },
+      {
+        "file": "tests/mechanics_client_model.lua",
+        "checks": 21
+      },
+      {
+        "file": "tests/frontend_model.lua",
+        "checks": 17
+      }
+    ]
+  },
+  "outerWatchdog": {
+    "exitCode": 1,
+    "wallSeconds": 53.434,
+    "peakRssBytes": 426774528,
+    "status": "fail",
+    "cpuSeconds": 27.23,
+    "diskBytes": 21264152,
+    "sharedServiceDiskBytes": 0,
+    "watchdogReason": null,
+    "threadDumps": [],
+    "recovery": null,
+    "ownedProcessTerminated": true,
+    "ownedProcessIdentities": [
+      {
+        "pid": 129622,
+        "birthTicks": 1301500,
+        "state": "S",
+        "ppid": 129621,
+        "processGroup": 129622,
+        "cpuTicks": 103,
+        "rssBytes": 22429696,
+        "threads": 1
+      },
+      {
+        "pid": 129632,
+        "birthTicks": 1301538,
+        "state": "S",
+        "ppid": 129622,
+        "processGroup": 129632,
+        "cpuTicks": 7,
+        "rssBytes": 17121280,
+        "threads": 8
+      },
+      {
+        "pid": 129704,
+        "birthTicks": 1302064,
+        "state": "S",
+        "ppid": 129622,
+        "processGroup": 129704,
+        "cpuTicks": 94,
+        "rssBytes": 212541440,
+        "threads": 14
+      },
+      {
+        "pid": 130182,
+        "birthTicks": 1302336,
+        "state": "R",
+        "ppid": 129622,
+        "processGroup": 130182,
+        "cpuTicks": 180,
+        "rssBytes": 211103744,
+        "threads": 14
+      },
+      {
+        "pid": 130278,
+        "birthTicks": 1303084,
+        "state": "R",
+        "ppid": 129622,
+        "processGroup": 130278,
+        "cpuTicks": 112,
+        "rssBytes": 218796032,
+        "threads": 14
+      },
+      {
+        "pid": 130353,
+        "birthTicks": 1303345,
+        "state": "R",
+        "ppid": 129622,
+        "processGroup": 130353,
+        "cpuTicks": 165,
+        "rssBytes": 214196224,
+        "threads": 14
+      },
+      {
+        "pid": 130435,
+        "birthTicks": 1303617,
+        "state": "R",
+        "ppid": 129622,
+        "processGroup": 130435,
+        "cpuTicks": 242,
+        "rssBytes": 237359104,
+        "threads": 14
+      },
+      {
+        "pid": 130469,
+        "birthTicks": 1303893,
+        "state": "R",
+        "ppid": 129622,
+        "processGroup": 130469,
+        "cpuTicks": 242,
+        "rssBytes": 236441600,
+        "threads": 14
+      },
+      {
+        "pid": 130506,
+        "birthTicks": 1304189,
+        "state": "S",
+        "ppid": 129622,
+        "processGroup": 130506,
+        "cpuTicks": 315,
+        "rssBytes": 243154944,
+        "threads": 14
+      },
+      {
+        "pid": 130597,
+        "birthTicks": 1304567,
+        "state": "R",
+        "ppid": 129622,
+        "processGroup": 130597,
+        "cpuTicks": 127,
+        "rssBytes": 284946432,
+        "threads": 14
+      },
+      {
+        "pid": 130651,
+        "birthTicks": 1304752,
+        "state": "R",
+        "ppid": 129622,
+        "processGroup": 130651,
+        "cpuTicks": 214,
+        "rssBytes": 217108480,
+        "threads": 14
+      },
+      {
+        "pid": 130759,
+        "birthTicks": 1305633,
+        "state": "R",
+        "ppid": 129622,
+        "processGroup": 130759,
+        "cpuTicks": 511,
+        "rssBytes": 403664896,
+        "threads": 14
+      },
+      {
+        "pid": 130901,
+        "birthTicks": 1306025,
+        "state": "S",
+        "ppid": 129622,
+        "processGroup": 130901,
+        "cpuTicks": 156,
+        "rssBytes": 207761408,
+        "threads": 14
+      },
+      {
+        "pid": 131095,
+        "birthTicks": 1306825,
+        "state": "S",
+        "ppid": 129622,
+        "processGroup": 129622,
+        "cpuTicks": 3,
+        "rssBytes": 7393280,
+        "threads": 1
+      },
+      {
+        "pid": 131116,
+        "birthTicks": 1306825,
+        "state": "R",
+        "ppid": 131095,
+        "processGroup": 129622,
+        "cpuTicks": 11,
+        "rssBytes": 13975552,
+        "threads": 1
+      }
+    ],
+    "log": "/tmp/love2gathering-mechanics-client-stress-final-20261115-e/runner/process.log"
+  },
+  "outerWatchdogClassification": "The client runner intentionally exits1 for the sole5000-object frame_cpu_budget finding; raw outer status fail reflects exitCode1, not a watchdog timeout. Inner client report correctly classifies budget_exceeded; no fabricated game result.",
+  "productionSourceHashesMatchLatestFullStress": {
+    "app/api.lua": true,
+    "app/model.lua": true,
+    "app/library.lua": true,
+    "app/artwork.lua": true,
+    "app/card_printings.lua": true,
+    "app/table.lua": true,
+    "app/view.lua": true,
+    "app/match_ui.lua": true,
+    "app/renderer.lua": true,
+    "app/board_fx.lua": true
+  }
+}

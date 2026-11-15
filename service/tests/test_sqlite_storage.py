@@ -61,6 +61,15 @@ class SQLiteStorageTest(unittest.TestCase):
         self.assertEqual(self.store().get_art('printing-0-normal.jpg'),data);self.assertEqual((old/'oracle-0.jpg').read_bytes(),data)
         with self.assertRaises(ValueError):s.get_art('../escape.jpg')
 
+    def test_system_font_family_persists_and_rejects_malformed_preferences(self):
+        s=self.store()
+        self.assertEqual(s.settings()['fontFamily'],'Beleren')
+        s.save_settings({'fontFamily':'Liberation Sans'})
+        self.assertEqual(self.store().settings()['fontFamily'],'Liberation Sans')
+        for value in ('', 'a'*161, 'Font\nName', 'Font\x00Name', False, ['Font']):
+            with self.assertRaises(ValueError):s.save_settings({'fontFamily':value})
+        self.assertEqual(self.store().settings()['fontFamily'],'Liberation Sans')
+
     def test_all_legacy_jpegs_are_migrated_in_batches_and_originals_preserved(self):
         old=self.data/'art';old.mkdir(parents=True)
         data=b'\xff\xd8'+b'legacy-jpeg'*20

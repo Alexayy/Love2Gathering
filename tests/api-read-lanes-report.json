@@ -1,0 +1,269 @@
+{
+  "fixtureSourceHashes": {
+    "tests/api_read_lanes.lua": "ae66ac7b2de71d195cd7496d068f6dbbca24a8a98c192c05679b221bae9c3048",
+    "tests/api_read_lanes.py": "0494e419e8e7dd3008f9dbd9b87d6545663e08b0826fa5adb8cc5fb46dd7165a"
+  },
+  "output": "/tmp/love2gathering-mechanics-read-lanes-8o9n0vcz",
+  "result": {
+    "allWorkerThreadsTerminated": true,
+    "checks": [
+      {
+        "message": "State and health lanes are absent until first use",
+        "passed": true
+      },
+      {
+        "message": "native state responds through the actual HTTP worker",
+        "passed": true
+      },
+      {
+        "message": "native health responds through the actual HTTP worker",
+        "passed": true
+      },
+      {
+        "message": "native state completes before a held ordinary mutation",
+        "passed": true
+      },
+      {
+        "message": "native health completes before a held ordinary mutation",
+        "passed": true
+      },
+      {
+        "message": "native ordinary action and priority mutations retain FIFO order",
+        "passed": true
+      },
+      {
+        "message": "native ordered mutations preserve their exact game guard",
+        "passed": true
+      },
+      {
+        "message": "native routing never mutates the caller action table",
+        "passed": true
+      },
+      {
+        "message": "room state responds through the actual HTTP worker",
+        "passed": true
+      },
+      {
+        "message": "room health responds through the actual HTTP worker",
+        "passed": true
+      },
+      {
+        "message": "room state completes before a held ordinary mutation",
+        "passed": true
+      },
+      {
+        "message": "room health completes before a held ordinary mutation",
+        "passed": true
+      },
+      {
+        "message": "room ordinary action and priority mutations retain FIFO order",
+        "passed": true
+      },
+      {
+        "message": "room ordered mutations preserve their exact game guard",
+        "passed": true
+      },
+      {
+        "message": "room routing never mutates the caller action table",
+        "passed": true
+      },
+      {
+        "message": "A real delayed old native state is rejected after session replacement",
+        "passed": true
+      },
+      {
+        "message": "The new native session accepts only its own fresh state",
+        "passed": true
+      },
+      {
+        "message": "A real delayed old room state is rejected after connection replacement",
+        "passed": true
+      },
+      {
+        "message": "The new room seat accepts only its own routed state",
+        "passed": true
+      },
+      {
+        "message": "All four requested mutations reach HTTP once in the original per-service order",
+        "passed": true
+      },
+      {
+        "message": "Exact read counts show no hidden mutation replay or polling storm",
+        "passed": true
+      },
+      {
+        "message": "A second ordinary mutation never reaches the server before its predecessor finishes",
+        "passed": true
+      },
+      {
+        "message": "Every actual HTTP worker exits after its bounded queue is drained",
+        "passed": true
+      },
+      {
+        "message": "Read lanes are created lazily as distinct actual workers",
+        "passed": true
+      }
+    ],
+    "failures": [],
+    "httpLedger": {
+      "events": [
+        {
+          "event": "mutation-start",
+          "path": "/session/action",
+          "probe": "native-A",
+          "seconds": 0.062062
+        },
+        {
+          "actionStillHeld": true,
+          "event": "state",
+          "phase": "native",
+          "seconds": 0.124776
+        },
+        {
+          "actionStillHeld": true,
+          "event": "health",
+          "phase": "native",
+          "seconds": 0.125096
+        },
+        {
+          "event": "mutation-finish",
+          "probe": "native-A",
+          "readsArrived": true,
+          "seconds": 0.52529
+        },
+        {
+          "event": "mutation-start",
+          "path": "/session/priority",
+          "probe": "native-B",
+          "seconds": 0.525861
+        },
+        {
+          "event": "mutation-finish",
+          "firstMutationFinished": true,
+          "probe": "native-B",
+          "seconds": 0.525867
+        },
+        {
+          "event": "mutation-start",
+          "path": "/client/rooms/owned-live/game/action",
+          "probe": "room-A",
+          "seconds": 0.529749
+        },
+        {
+          "actionStillHeld": true,
+          "event": "health",
+          "phase": "room",
+          "seconds": 0.592431
+        },
+        {
+          "actionStillHeld": true,
+          "event": "state",
+          "phase": "room",
+          "seconds": 0.594091
+        },
+        {
+          "event": "mutation-finish",
+          "probe": "room-A",
+          "readsArrived": true,
+          "seconds": 0.994237
+        },
+        {
+          "event": "mutation-start",
+          "path": "/client/rooms/owned-live/game/priority",
+          "probe": "room-B",
+          "seconds": 0.994904
+        },
+        {
+          "event": "mutation-finish",
+          "firstMutationFinished": true,
+          "probe": "room-B",
+          "seconds": 0.994912
+        },
+        {
+          "event": "state-delayed",
+          "phase": "native",
+          "seconds": 0.999159
+        },
+        {
+          "event": "state-delayed",
+          "phase": "room",
+          "seconds": 1.255541
+        }
+      ],
+      "healthReads": 2,
+      "mutationOrder": [
+        "native-A",
+        "native-B",
+        "room-A",
+        "room-B"
+      ],
+      "nativeReads": 3,
+      "orderViolations": 0,
+      "roomReads": 3
+    },
+    "nativeGame": false,
+    "seconds": 1.463104325,
+    "status": "pass",
+    "timing": {
+      "native": {
+        "healthSeconds": 0.003356105,
+        "heldMutationSeconds": 0.466429851,
+        "secondMutationSeconds": 0.466435963,
+        "stateSeconds": 0.003362437
+      },
+      "room": {
+        "healthSeconds": 0.003297204,
+        "heldMutationSeconds": 0.466302833,
+        "secondMutationSeconds": 0.466307942,
+        "stateSeconds": 0.0033047190000001
+      }
+    },
+    "workers": [
+      "art",
+      "catalog",
+      "catalogRead1",
+      "engine",
+      "engineHealth",
+      "engineState",
+      "room",
+      "roomState"
+    ]
+  },
+  "schema": 1,
+  "scope": "Actual headless L\u00d6VE app/api and unmodified http_worker threads over real LuaSocket connections to an owned threaded HTTP fault fixture. Ordinary native/room mutations are held until state+health requests arrive; FIFO and generation guards are tested. Synthetic HTTP payloads, no graphics/GPU, native game, external network or user data.",
+  "serverTerminated": true,
+  "sourceHashes": {
+    "app/api.lua": "f991aaa506dbe9ec9a93b40662346515a857c26e20c1da29df4079428935b3fb",
+    "app/http_worker.lua": "0f325c84a1688cd1ccdeacb4b0d9991cb22990c3d7eac6e79cb60e277bb216e8",
+    "app/image_decode.lua": "5c8b422d03b40931338e45798ad28b71ebb1c484c1559af4fb34b6d42632186b",
+    "lib/json.lua": "522e1b89f66c9eec49e5edc9c680dbb4132c2e252f5da54397b2a77bbcc7fddd"
+  },
+  "sourceStillMatches": true,
+  "status": "pass",
+  "watchdog": {
+    "cpuSeconds": 0.08,
+    "diskBytes": 2243,
+    "exitCode": 0,
+    "log": "/tmp/love2gathering-mechanics-read-lanes-8o9n0vcz/runner/process.log",
+    "ownedProcessIdentities": [
+      {
+        "birthTicks": 7460632,
+        "cpuTicks": 7,
+        "pid": 535137,
+        "ppid": 535134,
+        "processGroup": 535137,
+        "rssBytes": 16949248,
+        "state": "S",
+        "threads": 9
+      }
+    ],
+    "ownedProcessTerminated": true,
+    "peakRssBytes": 17342464,
+    "recovery": null,
+    "sharedServiceDiskBytes": 0,
+    "status": "pass",
+    "threadDumps": [],
+    "wallSeconds": 1.612,
+    "watchdogReason": null
+  }
+}

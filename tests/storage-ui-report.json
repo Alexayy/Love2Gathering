@@ -1,0 +1,438 @@
+{
+  "captures": [
+    "/tmp/love2gathering-storage-overview-2560.png",
+    "/tmp/love2gathering-storage-purge-confirm-2560.png",
+    "/tmp/love2gathering-storage-compact-confirm.png",
+    "/tmp/love2gathering-storage-download-estimate-2560.png",
+    "/tmp/love2gathering-storage-download-progress-2560.png",
+    "/tmp/love2gathering-storage-settings-1120-scaled.png",
+    "/tmp/love2gathering-storage-table-progress-1120-scaled.png",
+    "/tmp/love2gathering-storage-table-storage-popup.png"
+  ],
+  "checks": [
+    "Storage opens as a real full Settings tab",
+    "Actual backend data-directory text is displayed",
+    "Settings save/close footer stays above the viewport bottom",
+    "Actual Purge click opens a scoped count/size confirmation",
+    "Purge confirmation blocks background custom input",
+    "Clicking behind a purge dialog cannot navigate or delete data",
+    "Keep data cancels without a destructive request",
+    "Confirm sends one exact duplicate-export purge and adopts completion",
+    "Completed full-card purge invalidates previously rendered image caches",
+    "Compaction has a separate explicit confirmation",
+    "Actual scan choice adopts counts and the cache-only size estimate",
+    "Ready scan corresponds to the actual selected options",
+    "Selecting an image size does not toggle the export checkbox underneath",
+    "Changing image size disables Start until a fresh scan",
+    "Floating download progress fits inside the existing navbar height",
+    "Active navbar renders the supplied spinning circle and a separate numeric percentage",
+    "Progress carries actual downloaded bytes and rate from the service",
+    "Paused progress keeps its circle still",
+    "Pause retains the already downloaded image count",
+    "Paused download remains discoverable outside Settings",
+    "Clicking the navbar ribbon returns to Storage controls",
+    "Scaled Storage keeps its footer reachable",
+    "In-match progress stays in the reserved header row and out of battlefield choices",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "Download progress never covers a native phase-stop control",
+    "In-match ribbon exposes its actual service progress tooltip",
+    "Settings popup keeps floating game panels underneath its readable controls",
+    "A running match opens Storage in the existing Settings popup",
+    "Cancel keeps cached images and stops further download progress",
+    "Cancelled job removes the navbar loading strip"
+  ],
+  "geometry": [
+    {
+      "logical": [
+        2560,
+        1008
+      ],
+      "physical": [
+        2560,
+        1008
+      ],
+      "requested": [
+        2560,
+        1080
+      ],
+      "scale": 1
+    },
+    {
+      "logical": [
+        1317.6470588235,
+        894.11764705882
+      ],
+      "physical": [
+        1120,
+        760
+      ],
+      "requested": [
+        1120,
+        760
+      ],
+      "scale": 0.85
+    }
+  ],
+  "passed": true,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/precons/stats",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/decks?origin=starter",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/precons?limit=24&offset=0&q=&category=deck&format=Modern",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "categories": [
+          "export_duplicates"
+        ]
+      },
+      "method": "POST",
+      "path": "/storage/purge",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "categories": [
+          "full_cards"
+        ]
+      },
+      "method": "POST",
+      "path": "/storage/purge",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/image-packs/status",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "fullSize": "normal",
+        "kinds": [
+          "normal",
+          "art_crop"
+        ],
+        "mirrors": false
+      },
+      "method": "POST",
+      "path": "/downloads/scan",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "fullSize": "large",
+        "kinds": [
+          "normal",
+          "art_crop"
+        ],
+        "mirrors": false
+      },
+      "method": "POST",
+      "path": "/downloads/scan",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "command": "start"
+      },
+      "method": "POST",
+      "path": "/downloads/control",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "command": "pause"
+      },
+      "method": "POST",
+      "path": "/downloads/control",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "command": "resume"
+      },
+      "method": "POST",
+      "path": "/downloads/control",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "command": "cancel"
+      },
+      "method": "POST",
+      "path": "/downloads/control",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/downloads/status",
+      "service": "catalog"
+    }
+  ],
+  "scope": "Actual L\u00d6VE/Slab Model/View/Renderer controls with an explicit synthetic asynchronous storage/download ledger; no file deletion, network image download or native gameplay assertion",
+  "sourceSha256": {
+    "app/api.lua": "972b25801d748fddf4cd6f69d86339b6144fc568c7bd2868823d6cb74d0da68d",
+    "app/profile_ui.lua": "0b00a43979f3702da503f2c3c765b7e5b0ad53b15affb231c8cb7e8c62e2bb01",
+    "app/view.lua": "8a6f04905d4a4c08676c49d2fb2d05d6c3ecc143cd5525095347245b6213fe03",
+    "app/priority.lua": "370c4b4a57eff66278d1b02948ce1f51d9e249aeae89cdebd19a824e87225bc1",
+    "app/playmats.lua": "3a20234b01c6a9b8870b608bc187e91f842dbdeaedc0bf39abb9217aa3c12726",
+    "app/table_camera.lua": "2e30fc54280c21bb7248a9c637965309ea84b27f2e8663c75075146bb713b448",
+    "app/room_ui.lua": "e43f835be81fce5756ca4406e84ef9de05a028f8debbd6669ad58a98038dd3b2",
+    "app/startup_art.lua": "3e234ff5db6731cece310b1ac271659e08c869ef2b2d7a3c1038197bb0842926",
+    "app/library_ui.lua": "2b51f658393043f51d65816677e4b4093e87f1207e1c6762d819359df06c5d34",
+    "app/deck_picker.lua": "2776b7358a459ac60898b7479ba8ba93b276d181e788f2a20251fdce5837b9f6",
+    "app/layout.lua": "04c931827af601e03d90b27cfef7bc55111d14fda41a161cf489ad328a96adf9",
+    "app/draft_ui.lua": "a8dfd797a98552cc23edf680e16e499cf5a7dfb649721264ba6da63eaf189873",
+    "app/assets.lua": "f93c5337b13b1f7d487ae39e603f1a5ba0cf18c5c18435baedac6245bfcb182c",
+    "app/artwork.lua": "9a6169fc276fdc51fe8d29d26bd0d27509daf86cc28212b7f8998464a241212b",
+    "app/keywords.lua": "bcd747e1cab36a0b5b93d8716777545631dac05ef9b27d03d9d2f18e87a1a4d8",
+    "app/log.lua": "6268679d0a6036078af1dc6447a92778434880dc0a0c740b01f0667bce4c6e9f",
+    "app/lobby_ui.lua": "63ef9a9e8fbc1e5f3ff43ad445058c674578ba03151e5fffda4da8ef16719943",
+    "app/builder_simplified.lua": "f47713113bc85e4e5d1a8faf47ad00d5e270960432ccfabb23c1c778d44ec6d0",
+    "app/startup.lua": "245a498834f4fe0d4d29cf03dd0c80ff97493bb3575d3a915959cb2f5a4ecdd5",
+    "app/storage.lua": "fbf1c0cd3c28766c7a8d972f8b7f5b840536101a1e1e186965e8f513a9bdb30e",
+    "app/image_packs.lua": "c4ae8bc4c10ff72a7df07ac1b95d936289f718a5c4b99d431f9bba394ea5e4f5",
+    "app/multiplayer_table.lua": "78a0f3d9697d6d070ed3a676b27389e8eaf621dd1907fb38e40cc035508f2995",
+    "app/navigation.lua": "e4760887df199fc06bc0816529a2f5855c349818e3ef3b17ddc470215b1ad739",
+    "app/storage_locations.lua": "8e94c27c56bb40c752592b5dd830d6d6775737e0a6b1570dfc9609fc5caa8836",
+    "app/http_worker.lua": "ecb801dc34320ae5af829a5953eb66a446c9748e51b8f10b10e60f56110358c3",
+    "app/card_traits.lua": "fc4b8a891547b2877330ebfd1189c80bc38f867c74db55e112a8ec87817b162d",
+    "app/collection_ui.lua": "82918bd6b17d7ae59564f2636901a3e88f64f1a3dea447fa7872bb44896ca0b9",
+    "app/image_decode.lua": "5c8b422d03b40931338e45798ad28b71ebb1c484c1559af4fb34b6d42632186b",
+    "app/board_fx.lua": "a16ce699669ed8565336f38c9aa5babea80b78a2eb9e9ee144b98793b5709452",
+    "app/builder.lua": "f39295776564125c4907d073e0032e9752845491f938e0fc264466364d8425d8",
+    "app/replays.lua": "af324028fa633364d797d9c215a0b1ad886fe58bae23ce408902752d5a5b6138",
+    "app/collection.lua": "156602baf908bd682d285129cb70dff568e21bad388f3d9eafc390d97e51e069",
+    "app/preferences.lua": "2f5b2b690bb7bbc3e5b2d87f286b478ca80a9571d18804a6c30ac2aca6d358eb",
+    "app/richtext.lua": "058cfed6e901873fea48b892b292492b5fce3e7659580f764c2f511d7d1d203f",
+    "app/profile.lua": "949656022d351cd06257e4c7878b4ed779c7702360513ddbaa352a369692cd06",
+    "app/card_printings_ui.lua": "4b49a5b1b688494575b87317b0f8f738514101b6d394035fcd12c9bf442d8329",
+    "app/settings.lua": "9e9b69a5a222b1680b154e8f8839ff49dbcfaf714f9f7e81b60ea7d618555443",
+    "app/token_art_ui.lua": "53765ddb851e77512e6487893f8be81175f863e954eb0c2a65227a42255f5e70",
+    "app/replay_ui.lua": "62547cac56f7df88f05aa81be533a86493061661e3e5b5154b90eed268a1a6f6",
+    "app/fonts.lua": "083d06c769ef3d6b3189084542693e83bbb624389c17112bda9b21c5567ce675",
+    "app/renderer.lua": "185ce9ef57e567c2f3454cb61e89cf9e5de030c67b55a03473ed293a322805d3",
+    "app/card_choices.lua": "a5731f8961aad88cd6f20297a64f16d3c832c5f374cb883ae0e4dca6ab8febff",
+    "app/rooms.lua": "bb88dde3cc7c405c1c7cf89e3cd4742d8d8495307b5735325bac0d234fc4925f",
+    "app/gallery.lua": "adadc8eeae72778405019adbaeb4f7077709f88ddd6060c5deef4ff6c4ec1063",
+    "app/builder_colors.lua": "5d60cc7de0bf30579f8cb1ffabf3c7734d99d7c622fb663d62e3ac4fc1b5800f",
+    "app/surfaces.lua": "f9b87b643977a2bf49fcf8592f52eb8a7f158a2c491ad77210d0e1f9d538be84",
+    "app/dice.lua": "e2f177e8a060e6f29e2194ce9833a90c32db62b41d2047bee2e9e0ae5bc6424c",
+    "app/table.lua": "093277153cf18f2727469540a1c6d657b90d72041ec909781485577d4af85e20",
+    "app/library.lua": "cf58d69bb8c8d8fe990dd112f14606c5c9349aafa90eae3bb4de0be3a5fc0814",
+    "app/model.lua": "2687594b5528548385fa5c6ea9dfceea1974fe2d6e0a180f4ae2effac42f3dd3",
+    "app/match_ui.lua": "bc5e190e50b31fbf9c9a02ea43b4c5f3a66786b7e63f4842ac57cb06f129ddbe",
+    "app/theme.lua": "e601fb05d15d35345ce2543d9a448ba6a2e6ca7571560e8f402321dc2b75e7c7",
+    "app/bootstrap.lua": "c35dbbcba2d1e53bf87843e5d3f44c1fca84f4f1e619caf4161b5af80aae6eb1",
+    "app/card_printings.lua": "4dd855e7084a5527e228efce1d30d43e89366a8a5ba54ec715578f1e43afb895",
+    "lib/Slab/Style.lua": "d5a2766d100dc98310580e1ff458b4bb849b11cc495ae7ea127dab2537a20086",
+    "lib/Slab/API.lua": "97f6b91c5acd2bfbc25bccfe71f13388b1207ebf3787087030227167e22d3cfc",
+    "lib/Slab/SlabDebug.lua": "2e46c37eb3660cf57b29985c9c39bf3042263e8f56dd858d6f4057ad7648073e",
+    "lib/Slab/init.lua": "9df6b3293c6637c67f48fce59182531e9a56f5dbecb773e044b96ff46f6213c7",
+    "lib/Slab/Internal/Core/Utility.lua": "c9c1c70b6e1d22b4391d2a86d97b42399a890379f360d8faed861f6ca1c32eed",
+    "lib/Slab/Internal/Core/TablePool.lua": "73fa8c038ccdef855afba406c34edb5d06a79bfb69b6d46d2db20a6ae5f777a6",
+    "lib/Slab/Internal/Core/Cursor.lua": "d87bdfa40f53270240a6e8724e5564dadcaa726c52bcb48a8ce573d1463c4b8d",
+    "lib/Slab/Internal/Core/Messages.lua": "763dee8902dfc8d8ef209d66135bc5089a5e0be6eeb918e8df86680b974c8611",
+    "lib/Slab/Internal/Core/Scale.lua": "ac7557498d435556083bdc582f64fba691f4a930fd773ea40eb16bd69ba38457",
+    "lib/Slab/Internal/Core/DrawCommands.lua": "709d5f817099a36243655f6b7b7494aa299f4911887c17e3542acfd6d4929700",
+    "lib/Slab/Internal/Core/Stats.lua": "b6a944f67db8dc3e0c8427c60e1d689bcbfb198a59a0674e67503301295eee35",
+    "lib/Slab/Internal/Core/Config.lua": "d7566879bfe154d53bc2b969c55a88ef62d942307d8f45ec7231ecd6615a6b4e",
+    "lib/Slab/Internal/Core/IdCache.lua": "170370c1a25b48ca7b1efb1f256b15869f5277243f14704a77088a6eb03066af",
+    "lib/Slab/Internal/Core/FileSystem.lua": "09e2a0f24c9fd1b66ab4fb5ce3123730c9ac22c2f22a18a2b5c12c4d984c610f",
+    "lib/Slab/Internal/Input/Common.lua": "3bb6dc2ad9cff1bdcf30ba78e4eb2015f27b534d7f4b6da6fdbd35e1add3e5e1",
+    "lib/Slab/Internal/Input/Mouse.lua": "80c3b74645d29bbb9255a680a0ef2cf0efae3a2e74afddeabff4caf1d402a904",
+    "lib/Slab/Internal/Input/Keyboard.lua": "c2a353d609785faf5052e944355106154ce21557c7cd1d599f2ed66f497f55b9",
+    "lib/Slab/Internal/UI/ComboBox.lua": "a423b1fc9c206aae318c42835cc0e6030893925de80a7e61ac2913111183e195",
+    "lib/Slab/Internal/UI/Window.lua": "329870b4e61d27578e58eb90fc32ddff36e3005ec2057a3589450064b17c7b37",
+    "lib/Slab/Internal/UI/CheckBox.lua": "4a336cef2bdd9c35d46bae38c89ca39e2c538654b9fd90192d9a3415619b7971",
+    "lib/Slab/Internal/UI/Input.lua": "bff26d20a87a977e2ddd455d6bb5a566ceb22cf1086d92726242acc0dd8dbf15",
+    "lib/Slab/Internal/UI/Region.lua": "aa6efae5453fcc2a400fe81986d1999ed50fad5705ca232650572a8865c890ab",
+    "lib/Slab/Internal/UI/Shape.lua": "67022e36693d93094a3abeb01b85cdb0577d8dd3bc8887c23cf7d9789297da98",
+    "lib/Slab/Internal/UI/ListBox.lua": "01c983c835d270b0d0eb5e031eec31156dacc6fca14fa21624c045955cd52f48",
+    "lib/Slab/Internal/UI/LayoutManager.lua": "7438628018b473da9884ddd7068f7c614d76de8e5830be6e2803cd1d231a200f",
+    "lib/Slab/Internal/UI/Image.lua": "5d246ea11d13ef6998a3a16bb90cb382f3cc295ee2ae6e66ce14edaf7f357a20",
+    "lib/Slab/Internal/UI/Tooltip.lua": "11f587cee05766c5cf25a544b0529b93ac64c1e9e7949b27b975aacff5283654",
+    "lib/Slab/Internal/UI/MenuBar.lua": "72bac9a0a1b8365abad39ac6dfe18190b4d4a72ab5b4947dfe813cfd7335a12a",
+    "lib/Slab/Internal/UI/MenuState.lua": "593548e18bc4dc83511096639feae7595fccff249a854adb99792c109e01f2d2",
+    "lib/Slab/Internal/UI/Button.lua": "db2d8c5cd6a6755f58e1ead0d67b39dcdcb39f183a9b3f99ee2f6b88f2de1af6",
+    "lib/Slab/Internal/UI/Dock.lua": "99d0b3b7734b28cc2221c9478eef2e3c79969230263dcec8967aef63bd8bc1a6",
+    "lib/Slab/Internal/UI/Dialog.lua": "d172ba31c8c4bc74bc24b60df4b2fee41b2e0cb2abea20d63da32bbf3e38c89c",
+    "lib/Slab/Internal/UI/ColorPicker.lua": "6ddec764e38870805661b3bd14bb2db49ccf2bf0137aa6cb9c0bf34e9e8a85bb",
+    "lib/Slab/Internal/UI/Separator.lua": "6798041d756a760f0e9cd1879b69021377a79bc298b960b5125ff70ce8c6851b",
+    "lib/Slab/Internal/UI/Text.lua": "4eb6bd10bf14ab46b51f18505854155b87127130a3698d9e8720def429b9532a",
+    "lib/Slab/Internal/UI/Tree.lua": "c430e1ad3f499faba39ccb9b338e352db5ff94a0f4bc03391de5a0bd85b2b9c8",
+    "lib/Slab/Internal/UI/Menu.lua": "2374e24545ac064a7035cf512e49d5db18e8960914ef04d06edcb6b69d7d38cd",
+    "tests/storage_ui.lua": "cfcfff471cf9499594f26ab54928e4c379171eb4a483b3d4b99b5d35b495b346"
+  }
+}

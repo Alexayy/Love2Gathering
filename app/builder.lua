@@ -3,21 +3,22 @@ local palette={text={.90,.94,.98},muted={.46,.56,.66},accent={.28,.89,.72},gold=
 local Builder={}
 local formats={'Modern','Standard','Pioneer','Commander'}
 local function clamp(n,a,b)return math.max(a,math.min(b,n))end
-function Builder.layout(w,h)
-    local margin,gap,top=24,18,156
+function Builder.layout(w,h,mode,splitRatio)
+    if mode=='Simplified'then return require('app.builder_simplified').layout(w,h,splitRatio)end
+    local margin,gap,top=24,26,100
     local previewW=w>=1200 and clamp(w*.20,240,320) or 0
     local deckW=clamp(w*.31,328,448)
-    local searchW=w-margin*2-deckW-gap-(previewW>0 and previewW+gap or 0)
-    if searchW<280 then deckW=math.max(250,w*.38);searchW=w-margin*2-deckW-gap end
+    local searchW=w-margin*2-14-deckW-gap-(previewW>0 and previewW+gap or 0)
+    if searchW<280 then deckW=math.max(250,w*.38);searchW=w-margin*2-14-deckW-gap end
     local deckX=margin+searchW+gap
-    local gridY=top+202;local gridH=h-gridY-58
+    local gridY=top+258;local gridH=h-gridY-58
     local columns=math.max(2,math.floor((searchW+14)/154))
     local rows=gridH>=440 and 2 or 1
     local cardW=math.min((searchW-(columns-1)*14)/columns,(gridH/rows-33)/1.4)
     cardW=math.max(60,cardW)
-    return {search={x=margin,y=top,w=searchW,h=184},grid={x=margin,y=gridY,w=searchW,h=gridH},
-        controls={x=deckX,y=top,w=deckW,h=216},list={x=deckX,y=top+230,w=deckW,h=h-top-254},
-        preview=previewW>0 and {x=deckX+deckW+gap,y=top,w=previewW,h=h-top-24} or nil,
+    return {search={x=margin,y=top,w=searchW,h=230},grid={x=margin,y=gridY,w=searchW,h=gridH},
+        controls={x=deckX,y=top,w=deckW,h=190},list={x=deckX,y=top+224,w=deckW,h=h-top-262},
+        preview=previewW>0 and {x=deckX+deckW+gap,y=top,w=previewW,h=h-top-38} or nil,
         columns=columns,rows=rows,cardW=cardW,cardH=cardW*1.4,pageSize=columns*rows}
 end
 local function short(text,length)
@@ -32,6 +33,19 @@ local function iconButton(v,label,icon,width,height,options)
     opts.LabelColor=nil;opts.W=width;opts.H=height;opts.Tooltip=opts.Tooltip or label
     opts.Image={Image=v.r.assets:buttonImage(icon,label,width,height,{font=v.r.fonts[16],iconSize=18,color=tint})}
     return v.S.Button(label,opts)
+end
+function Builder.openSetFilter(v,id)
+    local m=v.m;local deck,generation,format,mode=m.editDeck,m.editGeneration,m.searchFormat,m.settings.builderLayout
+    if not deck then return end
+    if not m.setsBusy and(m.setsFormat~=format or#(m.sets or{})==0)then m:refreshSets()end
+    require('app.set_picker').open(v,{id=id or'builder-sets',owner=deck,title='Filter cards by set',
+        items=function()return m.sets end,selected=m.searchSet=='All'and''or m.searchSet,
+        busy=function()return m.setsBusy end,error=function()return m.setsError end,
+        isCurrent=function()return m.page=='builder'and m.editDeck==deck and m.editGeneration==generation and m.searchFormat==format and m.settings.builderLayout==mode and(id~='simple-set'or v.builderFiltersOpen)end,
+        onSelect=function(code)m.searchSet=code==''and'All'or code;m:searchChanged()end})
+end
+local function space(v,pixels)
+    local _,y=v.S.GetCursorPos({Absolute=true});v.S.SetCursorPos(nil,y+(pixels or 6),{Absolute=true})
 end
 local function combo(v,id,label,value,items,width,changed)
 
@@ -81,37 +95,50 @@ local function sortedEntries(m,zone)
     table.sort(entries,function(a,b)return key(a)<key(b)end);return entries
 end
 function Builder.build(v,w,h)
+    if v.m.settings.builderLayout=='Simplified'then return require('app.builder_simplified').build(v,w,h)end
     local RichText=require('app.richtext')
     local C=v.r.colors or palette
     local S,m=v.S,v.m;local deck=m.editDeck;if not deck then return end
+    local formats=m.playFormats and m:playFormats()or formats
     local l=Builder.layout(w,h);m:setSearchLimit(l.pageSize)
     local content=l.search.w-24
     v:window('builder-search',l.search.x,l.search.y,l.search.w,l.search.h)
     if S.Input('query',{Text=m.search,W=content,H=36,Align='left',Tooltip='Search card names, rules and types'}) then m.search=S.GetInputText();m:searchChanged() end
-    local half=(content-8)/2
-    combo(v,'builder-format','Format',m.searchFormat,formats,half,function(value)m.searchFormat=value;m.searchSet='All';m:searchChanged();m:refreshSets()end);S.SameLine()
-    combo(v,'builder-color','Color',m.searchColor,{'All','W','U','B','R','G','C'},half,function(value)m.searchColor=value;m:searchChanged()end)
-    combo(v,'builder-type','Type',m.searchType=='' and 'All' or m.searchType,{'All','Creature','Instant','Sorcery','Artifact','Enchantment','Planeswalker','Land','Battle'},half,function(value)m.searchType=value=='All' and '' or value;m:searchChanged()end);S.SameLine()
+    space(v,6)
+    local half=(content-16)/2
+    combo(v,'builder-format','Format',m.searchFormat,formats,half,function(value)m.searchFormat=value;m.searchSet='All';m:searchChanged();m:refreshSets()end);S.SameLine({Pad=12})
+    combo(v,'builder-color','Color',m.searchColor,{'All','W','U','B','R','G','C'},half,function(value)m:setSearchColor(value)end)
+    space(v,6)
+    combo(v,'builder-type','Type',m.searchType=='' and 'All' or m.searchType,{'All','Creature','Instant','Sorcery','Artifact','Enchantment','Planeswalker','Land','Battle'},half,function(value)m.searchType=value=='All' and '' or value;m:searchChanged()end);S.SameLine({Pad=12})
     combo(v,'builder-sort','Sort',m.searchSort,{'Name','Color','Set'},half,function(value)m.searchSort=value;m:searchChanged()end)
-    local setItems={{label='All sets',value='All'}};local selected='All sets'
-    for _,set in ipairs(m.sets)do local label=set.name..' ['..set.code:upper()..']';setItems[#setItems+1]={label=label,value=set.code};if set.code==m.searchSet then selected=set.code:upper()end end
-    combo(v,'builder-set','Set',selected,setItems,content,function(value)m.searchSet=value;m:searchChanged()end)
+    space(v,6)
+    local selected='All sets'
+    for _,set in ipairs(m.sets or{})do if set.code==m.searchSet then selected=(set.code or''):upper()..' · '..set.name;break end end
+    S.PushID('builder-set')
+    if iconButton(v,v.r:fit('Set: '..selected,content-58,16,1),'library',content,36,{Tooltip='Search sets in a grid'})then Builder.openSetFilter(v,'builder-set')end
+    S.PopID()
     S.EndWindow()
     local d=l.controls;local dw=d.w-24
     v:window('builder-deck-controls',d.x,d.y,d.w,d.h)
-    if S.Input('deck-name',{Text=deck.name,W=dw,H=36,Align='left'})then deck.name=S.GetInputText();m.dirty=true end
-    combo(v,'builder-deck-format','Deck',deck.format,formats,dw-106,function(value)m:changeDeckFormat(value)end);S.SameLine()
+    combo(v,'builder-deck-format','Deck',deck.format,formats,dw-114,function(value)m:changeDeckFormat(value)end);S.SameLine({Pad=12})
     if iconButton(v,m.dirty and 'Save *' or 'Save','save',98,34)then m:saveDeck()end
+    space(v,6)
     local zones=(deck.format=='Commander' or Model.count(deck,'commander')>0) and {'main','commander','sideboard'} or {'main','sideboard'}
     local zoneLabels={main='Main',commander='Cmd',sideboard='Side'}
     for i,zone in ipairs(zones)do
         if i>1 then S.SameLine()end
         if iconButton(v,zoneLabels[zone]..' '..Model.count(deck,zone),({main='library',commander='commander',sideboard='sideboard'})[zone],(dw-(#zones-1)*8)/#zones,34,{Color=m.selectedSection==zone and {.13,.37,.34,1} or nil})then m.selectedSection=zone end
     end
+    space(v,6)
     local total=Model.count(deck,'main')+Model.count(deck,'commander')
-    S.Text(total..(deck.format=='Commander' and '/100 cards' or ' main / 60 minimum')..' · '..Model.count(deck,'sideboard')..' sideboard',{Color=C.muted})
-    if iconButton(v,'Validate','check',(dw-8)/2,32)then m:validateDeck()end;S.SameLine()
-    if iconButton(v,'Preview card','search',(dw-8)/2,32)then m.inspectCard=m.previewCard or m.cards[1] end
+    S.Text(total..(deck.format=='Commander' and '/100 cards' or ' main cards')..' · '..Model.count(deck,'sideboard')..' sideboard',{Color=C.muted})
+    space(v,6)
+    local validateW=math.floor((dw-48)*.46);local previewW=dw-48-validateW
+    if iconButton(v,'Validate','check',validateW,32)then m:validateDeck()end;S.SameLine()
+    if S.Button('Preview card',{W=previewW,H=32,Image={Image=v.r.assets:buttonImage('search','Preview',previewW,32)},Tooltip='Inspect preview card'})then local card=m.previewCard or m.cards[1];if card then m:selectBuilderArtwork(card);m.inspectCard=card end end;S.SameLine()
+    if S.Button('Token artwork',{W=32,H=32,Image={Image=v.r.assets:iconImage('creature',21)},Tooltip='Token artwork choices'})then
+        if m.dirty then m:toast('Save this deck before choosing token artwork',true)else m:showTokenSettings(deck.id)end
+    end
     S.EndWindow()
     local list=l.list
     v:window('builder-deck-list',list.x,list.y,list.w,list.h)
@@ -120,7 +147,7 @@ function Builder.build(v,w,h)
     if m.lastBuilderError then S.Textf('Addition refused: '..m.lastBuilderError,{W=list.w-24,Color=C.gold})end
     local validation=m.validation
     if validation then
-        S.Text(validation.saveAllowed and (validation.draft and 'INCOMPLETE DRAFT' or 'CONSTRUCTION CHECK PASSED') or 'DECK NEEDS CORRECTIONS',{Color=validation.saveAllowed and C.accent or C.red})
+        S.Text(validation.saveAllowed and(validation.snapshotLegalityChecked==false and'XMAGE VALIDATION REQUIRED'or validation.draft and'INCOMPLETE DRAFT'or'CONSTRUCTION CHECK PASSED')or'DECK NEEDS CORRECTIONS',{Color=validation.saveAllowed and C.accent or C.red})
         for _,issue in ipairs(validation.errors or {})do S.Textf(issue.message,{W=list.w-24,Color=C.red})end
         for _,issue in ipairs(validation.warnings or {})do S.Textf(issue.message,{W=list.w-24,Color=C.gold})end
         S.Separator()
@@ -134,9 +161,10 @@ function Builder.build(v,w,h)
         local data=m:cardData(entry) or entry;local rawCost=tostring(data.mana_cost or data.manaCost or '');local cost=rawCost:match('^(.-)%s*//') or rawCost
         local _,symbolCount=tostring(cost):gsub('{','')
         local costWidth=list.w>=400 and cost~='' and symbolCount<=4 and 72 or 0
-        local nameWidth=list.w-104-(costWidth>0 and costWidth+4 or 0)
+        local nameWidth=list.w-140-(costWidth>0 and costWidth+4 or 0)
         local shown=v.r:fit(title,nameWidth-12,16,1)
-        if S.Button(shown,{W=nameWidth,H=32,Tooltip=entry.name})then m.previewCard={name=entry.name}end
+        if S.Button(shown,{W=nameWidth,H=32,Tooltip=entry.name})then m:selectBuilderArtwork(entry)end
+        if m.showCardPrintings then S.SameLine();if S.Button('Edition artwork',{W=32,H=32,Image={Image=v.r.assets:iconImage('gallery',19)},Tooltip='Choose edition or alternate artwork for '..entry.name})then m:showCardPrintings(entry,m.selectedSection)end end
         if costWidth>0 then S.SameLine({CenterY=true});RichText.slab(v,'entry-mana',cost,costWidth,{size=12,iconSize=14,lineHeight=20,maxLines=1})end
         S.PopID()
     end
@@ -146,44 +174,46 @@ function Builder.build(v,w,h)
     if not validation then S.Textf('Validate the list to check format, copies and Commander restrictions.',{W=list.w-24,Color=C.muted})end
     S.EndWindow()
     local preview=m.previewCard or (v.r.hover and v.r.hover.card) or m.cards[1] or m:deckCoverCard(deck)
-    if preview then m:getArt(preview,true)end
+    if preview then m:getBuilderPreviewArt(preview)end
     if l.preview then
         local p=l.preview;local pw=p.w-24
         v:window('builder-card-preview',p.x,p.y,p.w,p.h)
         if preview then
-            local card=m:cardData(preview) or preview;local art=m:getArt(card,true)
+            local card=m:cardData(preview) or preview;local art=m:getBuilderPreviewArt(preview)
             local imageW=math.min(pw,(p.h-185)/1.4)
-            if art then S.Image('preview-art',{Image=art,W=imageW,H=imageW*1.4})else S.Textf('Loading card image…',{W=pw,Color=C.muted})end
+            if art then S.Image('preview-art',{Image=art,W=imageW,H=imageW*1.4})else S.Textf(m.artworkLabel and m:artworkLabel(card)or'Card image unavailable',{W=pw,Color=C.muted})end
             S.Textf(card.name or '',{W=pw,Color=C.accent})
             RichText.slab(v,'preview-cost',card.mana_cost or card.manaCost or '',pw,{size=18,lineHeight=26})
             RichText.slab(v,'preview-type',card.type_line or card.type or '',pw,{size=14,color=C.muted})
             if iconButton(v,'Add to '..m.selectedSection,'plus',pw,36)then m:addCard(card)end
             if iconButton(v,'Use as deck cover','cover',pw,34)then m:setDeckCover(card)end
-            if iconButton(v,'Inspect full card','search',pw,32)then m.inspectCard=card end
+            if m.showCardPrintings and iconButton(v,'Choose edition / art','gallery',pw,34)then m:showCardPrintings(card,m.selectedSection)end
+            if iconButton(v,'Inspect full card','search',pw,32)then m:selectBuilderArtwork(preview);m.inspectCard=card end
             RichText.slab(v,'preview-oracle',card.oracle_text or card.rules or '',pw,{size=14,color=C.text})
-            if card.legalities and card.legalities[deck.format:lower()]~='legal' then S.Textf('Not legal in '..deck.format..'. Saving will require removing this card.',{W=pw,Color=C.gold})end
+            local legality=card.legalities and card.legalities[deck.format:lower()]
+            if legality=='banned'or legality=='not_legal'then S.Textf('The snapshot marks this card as not legal in '..deck.format..'.',{W=pw,Color=C.gold})
+            elseif legality=='restricted'then S.Textf('Restricted in '..deck.format..' · quantities are checked when saving and by XMage.',{W=pw,Color=C.gold})end
         end
         S.EndWindow()
     end
     popup(v,w,h)
 end
 function Builder.draw(r,w,h)
+    if r.model.settings.builderLayout=='Simplified'then return require('app.builder_simplified').draw(r,w,h)end
     local C=r.colors or palette
     local m=r.model;local l=Builder.layout(w,h);r.builderDrop=l.list
-    r:text(m.editDeck and m.editDeck.name or 'Deck builder',24,96,22,C.text)
-    r:text('Legal cards for your format. Double-click or drag to add. Select a card for its image.',24,130,13,C.muted)
     local totalW=l.columns*l.cardW+(l.columns-1)*14;local start=l.grid.x+(l.grid.w-totalW)/2
     for i,card in ipairs(m.cards)do
         if i<=l.pageSize then
             local x=start+((i-1)%l.columns)*(l.cardW+14);local y=l.grid.y+math.floor((i-1)/l.columns)*(l.cardH+33)
-            m:getArt(card,true);r:drawCard(card,x,y,l.cardW,l.cardH,{kind='search',imageOnly=true})
+            r:drawCard(card,x,y,l.cardW,l.cardH,{kind='search',imageOnly=true})
             local name=short(card.name,26)
             r:text(name,x,y+l.cardH+5,12,C.muted,l.cardW)
         end
     end
     if not m.catalogHealth.ready then
         r:text('Preparing card catalog…',l.grid.x,l.grid.y+20,18,C.muted,l.grid.w)
-    elseif #m.cards==0 then r:text(m.searchBusy and 'Searching…' or 'No legal cards match these filters.',l.grid.x,l.grid.y+20,16,C.muted,l.grid.w)end
+    elseif #m.cards==0 then r:text(m.searchBusy and'Searching…'or m.searchError and('Search unavailable · '..m.searchError)or'No cards match these filters.',l.grid.x,l.grid.y+20,16,C.muted,l.grid.w)end
     local y=h-43;local step=m.searchLimit
     r:button('‹ Previous',l.grid.x,y,112,32,function()if m.offset>0 then m.offset=math.max(0,m.offset-step);m:searchCards()end end)
     r:button('Next ›',l.grid.x+l.grid.w-96,y,96,32,function()if m.offset+step<m.total then m.offset=m.offset+step;m:searchCards()end end)

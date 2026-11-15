@@ -1,0 +1,193 @@
+name: Installers and releases
+
+on:
+  push:
+    branches: [development, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-release:
+    if: github.repository == 'Alexayy/Love2Gathering' && (github.ref == 'refs/heads/development' || github.ref == 'refs/heads/master')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      MAVEN_OPTS: -Xmx3g
+    steps:
+      - name: Check out only the parent repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          submodules: false
+          persist-credentials: false
+
+      - name: Reject any outgoing XMage pin or source-URL change
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          args=(--head "$GITHUB_SHA" --index)
+          if [[ -n "$BEFORE" && "$BEFORE" != 0000000000000000000000000000000000000000 ]]; then
+            args+=(--base "$BEFORE")
+          fi
+          python3 scripts/check-submodule-pin.py "${args[@]}"
+
+      - name: Choose this run's version and release tag
+        id: release
+        run: python3 scripts/ci/build-identifiers.py
+
+      - name: Verify an already published immutable release before rebuilding
+        id: published
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+          VERSION: ${{ steps.release.outputs.version }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_CHANNEL: ${{ steps.release.outputs.channel }}
+          RELEASE_BRANCH: ${{ steps.release.outputs.branch }}
+        run: python3 scripts/ci/publish-release.py --check-published --version "$VERSION" --tag "$RELEASE_TAG" --commit "$GITHUB_SHA" --channel "$RELEASE_CHANNEL" --branch "$RELEASE_BRANCH"
+
+      - name: Reclaim unused SDK space on the disposable runner
+        if: steps.published.outputs.already_published != 'true'
+        run: |
+          sudo rm -rf /usr/local/lib/android /opt/ghc /usr/share/dotnet
+          df -h "$GITHUB_WORKSPACE"
+
+      - name: Initialize only the recorded XMage revision
+        if: steps.published.outputs.already_published != 'true'
+        run: |
+          git -c fetch.recurseSubmodules=false submodule update --init --recursive --depth 1
+          test "$(git -C engine/mage rev-parse HEAD)" = d9b266fc981024873ac7ec5f90ee7121a060725e
+
+      - name: Set up Java 21
+        if: steps.published.outputs.already_published != 'true'
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Cache Maven dependencies for the pinned engine
+        if: steps.published.outputs.already_published != 'true'
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: .tools/m2
+          key: maven-${{ runner.os }}-java21-d9b266fc98-${{ hashFiles('bridge/pom.xml', 'engine/mage/**/pom.xml') }}
+
+      - name: Install native build tools
+        if: steps.published.outputs.already_published != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends python3 python3-pil python3-yaml rpm nsis love desktop-file-utils dbus-daemon libglib2.0-bin xz-utils
+          mkdir -p build/ci/reports
+
+      - name: Check services, publish guards and installer helpers
+        if: steps.published.outputs.already_published != 'true'
+        run: |
+          python3 -m unittest discover -s service/tests -v 2>&1 | tee build/ci/reports/service-tests.log
+          python3 tests/test_submodule_publish_guard.py -v 2>&1 | tee build/ci/reports/submodule-guard.log
+          python3 scripts/ci/test_build_support.py -v 2>&1 | tee build/ci/reports/build-support.log
+          python3 scripts/ci/test_publish_release.py -v 2>&1 | tee build/ci/reports/publish-tests.log
+          python3 scripts/ci/test_promote_latest.py -v 2>&1 | tee build/ci/reports/latest-promotion.log
+          python3 scripts/ci/test_workflow.py -v 2>&1 | tee build/ci/reports/workflow-tests.log
+          python3 packaging/test_python_dependencies.py -v 2>&1 | tee build/ci/reports/python-dependencies.log
+          python3 packaging/flatpak/test_build.py -v 2>&1 | tee build/ci/reports/flatpak-builder.log
+          dbus-run-session -- python3 packaging/linux/test_installer.py -v 2>&1 | tee build/ci/reports/linux-installer.log
+          dbus-run-session -- python3 packaging/flatpak/test_installer.py -v 2>&1 | tee build/ci/reports/flatpak-installer.log
+
+      - name: Acquire only bulk card metadata
+        if: steps.published.outputs.already_published != 'true'
+        run: python3 scripts/ci/prepare-metadata.py --output build/ci/cards.jsonl --report build/ci/cards.provenance.json
+
+      - name: Build the pinned XMage engine and bridge
+        if: steps.published.outputs.already_published != 'true'
+        run: bash scripts/build-engine.sh 2>&1 | tee build/ci/reports/engine-build.log
+
+      - name: Build common payload and Linux DEB, RPM and folder installer
+        if: steps.published.outputs.already_published != 'true'
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_CHANNEL: ${{ steps.release.outputs.channel }}
+          RELEASE_BRANCH: ${{ steps.release.outputs.branch }}
+        run: python3 packaging/build.py --format all-linux --source build/ci/cards.jsonl --version "$VERSION" --channel "$RELEASE_CHANNEL" --branch "$RELEASE_BRANCH" --tag "$RELEASE_TAG" 2>&1 | tee build/ci/reports/linux-build.log
+
+      - name: Verify actual compiled services and native packages
+        if: steps.published.outputs.already_published != 'true'
+        run: |
+          python3 scripts/ci/smoke-installed.py --payload dist/stage/linux/Love2Gathering --report build/ci/reports/compiled-services.json
+          rpmkeys --checksig dist/*.rpm
+          dpkg-deb --info dist/*.deb
+
+      - name: Build Windows setup with bundled runtimes
+        if: steps.published.outputs.already_published != 'true'
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: python3 packaging/windows/build.py --payload dist/stage/common/Love2Gathering --output dist --makensis /usr/bin/makensis --version "$VERSION" 2>&1 | tee build/ci/reports/windows-build.log
+
+      - name: Prepare isolated Flatpak build environment
+        if: steps.published.outputs.already_published != 'true'
+        run: bash scripts/ci/flatpak-setup.sh
+
+      - name: Build Flatpak against its actual runtime
+        if: steps.published.outputs.already_published != 'true'
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: dbus-run-session -- python3 packaging/flatpak/build.py --payload dist/stage/linux/Love2Gathering --output dist --work build/flatpak/application --version "$VERSION" 2>&1 | tee build/ci/reports/flatpak-build.log
+
+      - name: Recheck the parent pin before publishing
+        if: steps.published.outputs.already_published != 'true'
+        run: python3 scripts/check-submodule-pin.py --head "$GITHUB_SHA" --index
+
+      - name: Publish complete branch release
+        if: steps.published.outputs.already_published != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+          VERSION: ${{ steps.release.outputs.version }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_CHANNEL: ${{ steps.release.outputs.channel }}
+          RELEASE_BRANCH: ${{ steps.release.outputs.branch }}
+        run: python3 scripts/ci/publish-release.py --channel "$RELEASE_CHANNEL" --branch "$RELEASE_BRANCH" --dist dist --version "$VERSION" --tag "$RELEASE_TAG" --commit "$GITHUB_SHA" --metadata-report build/ci/cards.provenance.json
+
+      - name: Keep compact build reports and checksums
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: ${{ steps.release.outputs.channel }}-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            build/ci/reports/
+            dist/SHA256SUMS
+            dist/release-manifest.json
+            build/ci/cards.provenance.json
+
+  promote-stable-latest:
+    needs: build-and-release
+    if: github.repository == 'Alexayy/Love2Gathering' && github.ref == 'refs/heads/master' && needs.build-and-release.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    concurrency:
+      group: stable-latest
+      cancel-in-progress: false
+    steps:
+      - name: Check out only the parent repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          submodules: false
+          persist-credentials: false
+      - name: Verify the recorded engine pin without initializing it
+        run: python3 scripts/check-submodule-pin.py --head "$GITHUB_SHA" --index
+      - name: Promote the highest verified published stable version
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+        run: python3 scripts/ci/promote-latest.py

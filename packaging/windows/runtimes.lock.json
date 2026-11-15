@@ -1,0 +1,20 @@
+{
+  "love": {
+    "version": "11.5",
+    "url": "https://github.com/love2d/love/releases/download/11.5/love-11.5-win64.zip",
+    "sha256": "ba6e56be2685e53c817749c4a5007f51137136fe5a3ab64920508babc2e74369",
+    "filename": "love-11.5-win64.zip"
+  },
+  "python": {
+    "version": "3.13.11",
+    "url": "https://www.python.org/ftp/python/3.13.11/python-3.13.11-embed-amd64.zip",
+    "sha256": "1ec066fb61ba5e8c73e29e048cd07c26850f74585e3a116005135b31b8004890",
+    "filename": "python-3.13.11-embed-amd64.zip"
+  },
+  "java": {
+    "version": "21.0.13+9.0.LTS",
+    "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_windows_hotspot_21.0.13_9.zip",
+    "sha256": "2332c0b4cff6bed722da3567c91d5e47568bcba863fa4945d0a8d6fc76158628",
+    "filename": "OpenJDK21U-jre_x64_windows_hotspot_21.0.13_9.zip"
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "captures": [
+    "/tmp/love2gathering-startup-readiness-Y9yRGU/saved-theme-pending-profile.png",
+    "/tmp/love2gathering-startup-readiness-Y9yRGU/personalized-ready.png",
+    "/tmp/love2gathering-startup-readiness-Y9yRGU/saved-profile-error.png",
+    "/tmp/love2gathering-startup-readiness-Y9yRGU/personalized-offline.png",
+    "/tmp/love2gathering-startup-readiness-Y9yRGU/older-catalog-service.png"
+  ],
+  "checks": [
+    "Main builds the personalized controls in the same update that releases the gate: ",
+    "Healthy services alone cannot reveal the default application",
+    "Saved theme arriving before profile does not release the splash",
+    "Saved colors and Slab skin are actually applied during the splash",
+    "Saved native display mode is applied behind the startup gate",
+    "Splash displays measured integer percentage below100 while profile is pending",
+    "Supplied circular loading asset rotates while saved data is pending",
+    "Actual decoded Kenney loading-circle pixels rotate between timed frames",
+    "Reduced motion keeps the real loading sprite still",
+    "Reduced-motion loading-circle pixels remain identical across timestamps",
+    "Saved identity decks and layout are all ready before handoff",
+    "Post-preference raster generation has nonblank icon pixels after display invalidation",
+    "100percent means saved data and applied graphics are complete",
+    "A saved-profile failure stays blocked with Retry instead of opening defaults",
+    "Retry re-fetches only failed saved data without duplicating completed hydration",
+    "Retry completes with the saved profile and applied theme",
+    "Offline library cannot bypass pending saved identity and preferences",
+    "Only an explicitly personalized saved library offers offline continuation",
+    "Offline continuation preserves diagnostic and saved identity",
+    "An older catalog is rejected before loading saved data or offering default/offline entry",
+    "All startup requests are read-only; no persistence or gameplay mutation occurs"
+  ],
+  "geometry": [
+    {
+      "initial": [
+        1440,
+        900
+      ]
+    },
+    {
+      "initial": [
+        1440,
+        900
+      ]
+    },
+    {
+      "initial": [
+        1440,
+        900
+      ]
+    },
+    {
+      "initial": [
+        1440,
+        900
+      ]
+    }
+  ],
+  "passed": true,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "delayed",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "delayed",
+      "service": "engine"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "delayed",
+      "service": "room"
+    },
+    {
+      "method": "GET",
+      "path": "/settings",
+      "scenario": "delayed"
+    },
+    {
+      "method": "GET",
+      "path": "/profile",
+      "scenario": "delayed"
+    },
+    {
+      "method": "GET",
+      "path": "/decks",
+      "scenario": "delayed"
+    },
+    {
+      "method": "GET",
+      "path": "/ui-layout",
+      "scenario": "delayed"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "profile-error",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "profile-error",
+      "service": "engine"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "profile-error",
+      "service": "room"
+    },
+    {
+      "method": "GET",
+      "path": "/settings",
+      "scenario": "profile-error"
+    },
+    {
+      "method": "GET",
+      "path": "/profile",
+      "scenario": "profile-error"
+    },
+    {
+      "method": "GET",
+      "path": "/decks",
+      "scenario": "profile-error"
+    },
+    {
+      "method": "GET",
+      "path": "/ui-layout",
+      "scenario": "profile-error"
+    },
+    {
+      "method": "GET",
+      "path": "/profile",
+      "scenario": "profile-error"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "metadata-missing",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "metadata-missing",
+      "service": "engine"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "metadata-missing",
+      "service": "room"
+    },
+    {
+      "method": "GET",
+      "path": "/settings",
+      "scenario": "metadata-missing"
+    },
+    {
+      "method": "GET",
+      "path": "/profile",
+      "scenario": "metadata-missing"
+    },
+    {
+      "method": "GET",
+      "path": "/decks",
+      "scenario": "metadata-missing"
+    },
+    {
+      "method": "GET",
+      "path": "/ui-layout",
+      "scenario": "metadata-missing"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "old-service",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "old-service",
+      "service": "engine"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "scenario": "old-service",
+      "service": "room"
+    }
+  ],
+  "scope": "Actual L\u00d6VE Startup, supplied PNG/Slab/Beleren and native display-mode application; delayed health/settings/profile/deck/layout responses are explicit isolated fixtures, not real-service throughput or native-game evidence.",
+  "sourceSha256": {
+    "app/startup.lua": "1d3a6177b96b2d01837dd1154d2e88b5ace9954b8ed97c52ad3ffec9ffa92a4c",
+    "app/preferences.lua": "2f5b2b690bb7bbc3e5b2d87f286b478ca80a9571d18804a6c30ac2aca6d358eb",
+    "app/assets.lua": "172406e8bb63e17a2b22b6b54a6dc84a3c56907f408cd24a1d2db2ae4b85dce4",
+    "main.lua": "82a96d7878c23297cf712f9d3014350a838542b2f5b27c50ec83ab01046eb639",
+    "tests/startup_readiness_ui.lua": "4c70260f0f4d434607f55695451cb20406b5eb8cee5456e2de1089155835a360",
+    "assets/kenney/runtime/loading.lua": "fbae554d3a03fe4e22eb21904242b0985c40d05515d2bb9f11040f42a3631f68",
+    "assets/kenney/runtime/icons/loading_circle.png": "7e7660813df757657ffbc1adf4be9f0c1ed3239620f1c770f887baf4c7f900a4"
+  }
+}

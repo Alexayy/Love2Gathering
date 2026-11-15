@@ -1,0 +1,249 @@
+{
+  "passed": true,
+  "kind": "Real XMage production deck startup, human HTTP choices and MAD bot turns; no injected state or frontend UI",
+  "health": {
+    "ok": true,
+    "engine": "XMage",
+    "version": "1.4.63",
+    "implementedCards": 32950,
+    "recordingError": null
+  },
+  "concurrentSnapshotReads": 5702,
+  "snapshotReadErrors": [],
+  "failure": null,
+  "bounds": true,
+  "nativeBotDeckValidation": true,
+  "tests": [
+    {
+      "playerCount": 4,
+      "passed": true,
+      "opening": [
+        {
+          "name": "Commander Human",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Krenko, Mob Boss"
+        },
+        {
+          "name": "Commander Bot 1",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Goreclaw, Terror of Qal Sisma"
+        },
+        {
+          "name": "Commander Bot 2",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Ayara, First of Locthwain"
+        },
+        {
+          "name": "Commander Bot 3",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Giada, Font of Hope"
+        }
+      ],
+      "freeMulligan": true,
+      "allStartingPlayerTargets": 4,
+      "activePlayersObserved": 4,
+      "turn": 5,
+      "actionCount": 3,
+      "replayId": "game-ee5b00dd-1843-482d-b2e6-7575cccbd1e7",
+      "actions": [
+        {
+          "turn": 1,
+          "type": "pick_target",
+          "message": "Select a starting player",
+          "choice": "Commander Human"
+        },
+        {
+          "turn": 1,
+          "type": "ask",
+          "message": "Mulligan  for free , draw another 7 cards?",
+          "choice": "Keep"
+        },
+        {
+          "turn": 1,
+          "type": "pick_target",
+          "message": "Select a card to discard",
+          "choice": "Hobgoblin Bandit Lord"
+        }
+      ],
+      "recordingFramesChecked": 181,
+      "recordingParticipantCount": 4
+    },
+    {
+      "playerCount": 5,
+      "passed": true,
+      "opening": [
+        {
+          "name": "Commander Human",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Krenko, Mob Boss"
+        },
+        {
+          "name": "Commander Bot 1",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Goreclaw, Terror of Qal Sisma"
+        },
+        {
+          "name": "Commander Bot 2",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Ayara, First of Locthwain"
+        },
+        {
+          "name": "Commander Bot 3",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Giada, Font of Hope"
+        },
+        {
+          "name": "Commander Bot 4",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Talrand, Sky Summoner"
+        }
+      ],
+      "freeMulligan": true,
+      "allStartingPlayerTargets": 5,
+      "activePlayersObserved": 5,
+      "turn": 6,
+      "actionCount": 5,
+      "replayId": "game-e331747c-24af-4799-a9e4-fd6e8c41ef5e",
+      "actions": [
+        {
+          "turn": 1,
+          "type": "pick_target",
+          "message": "Select a starting player",
+          "choice": "Commander Human"
+        },
+        {
+          "turn": 1,
+          "type": "ask",
+          "message": "Mulligan  for free , draw another 7 cards?",
+          "choice": "Keep"
+        },
+        {
+          "turn": 1,
+          "type": "select",
+          "message": "Play spells and abilities",
+          "choice": "Pass / Done"
+        },
+        {
+          "turn": 1,
+          "type": "select",
+          "message": "Play spells and abilities",
+          "choice": "Pass / Done"
+        },
+        {
+          "turn": 1,
+          "type": "pick_target",
+          "message": "Select a card to discard",
+          "choice": "Empty the Warrens"
+        }
+      ],
+      "recordingFramesChecked": 192,
+      "recordingParticipantCount": 5
+    },
+    {
+      "playerCount": 6,
+      "passed": true,
+      "opening": [
+        {
+          "name": "Commander Human",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Krenko, Mob Boss"
+        },
+        {
+          "name": "Commander Bot 1",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Goreclaw, Terror of Qal Sisma"
+        },
+        {
+          "name": "Commander Bot 2",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Ayara, First of Locthwain"
+        },
+        {
+          "name": "Commander Bot 3",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Giada, Font of Hope"
+        },
+        {
+          "name": "Commander Bot 4",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Talrand, Sky Summoner"
+        },
+        {
+          "name": "Commander Bot 5",
+          "life": 40,
+          "handCount": 7,
+          "libraryCount": 92,
+          "commander": "Krenko, Mob Boss"
+        }
+      ],
+      "freeMulligan": true,
+      "allStartingPlayerTargets": 6,
+      "activePlayersObserved": 6,
+      "turn": 7,
+      "actionCount": 5,
+      "replayId": "game-2d857c46-1587-4caa-a1c3-337b7438772b",
+      "actions": [
+        {
+          "turn": 1,
+          "type": "pick_target",
+          "message": "Select a starting player",
+          "choice": "Commander Human"
+        },
+        {
+          "turn": 1,
+          "type": "ask",
+          "message": "Mulligan  for free , draw another 7 cards?",
+          "choice": "Keep"
+        },
+        {
+          "turn": 1,
+          "type": "select",
+          "message": "Play spells and abilities",
+          "choice": "Pass / Done"
+        },
+        {
+          "turn": 1,
+          "type": "select",
+          "message": "Play spells and abilities",
+          "choice": "Pass / Done"
+        },
+        {
+          "turn": 1,
+          "type": "pick_target",
+          "message": "Select a card to discard",
+          "choice": "Foundry Street Denizen"
+        }
+      ],
+      "recordingFramesChecked": 280,
+      "recordingParticipantCount": 6
+    }
+  ]
+}

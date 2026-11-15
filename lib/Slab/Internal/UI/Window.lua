@@ -446,6 +446,10 @@ function Window.Top()
 end
 
 function Window.IsObstructed(x, y, skipScrollCheck)
+	if not skipScrollCheck and ActiveInstance ~= nil
+		and not Region.IsPointVisibleInWindow(ActiveInstance.Id, x, y) then
+		return true
+	end
 	if Region.IsScrolling() then
 		return true
 	end
@@ -631,15 +635,19 @@ function Window.Begin(id, options)
 	-- Apply requested resets before measuring this frame. Delaying this until
 	-- after Region.Begin adds the previous resize delta to a caller's newly
 	-- saved dimensions for one frame and feeds that extra size back to storage.
-	if resetSize or options.ResetLayout then
-		ActiveInstance.SizeDeltaX = 0
-		ActiveInstance.SizeDeltaY = 0
-	end
+	-- Auto windows consume the preceding frame's content measurement once,
+	-- then collect a fresh one below. Their implicit reset must not discard
+	-- that measurement before the region has a usable width/height.
+	local measuredAutoW = ActiveInstance.AutoSizeWindowW and ActiveInstance.SizeDeltaX or 0
+	local measuredAutoH = ActiveInstance.AutoSizeWindowH and ActiveInstance.SizeDeltaY or 0
+	if options.ResetSize or options.ResetLayout then measuredAutoW, measuredAutoH = 0, 0 end
+	if resetSize or options.ResetLayout or autoSizeWindowW then ActiveInstance.SizeDeltaX = 0 end
+	if resetSize or options.ResetLayout or autoSizeWindowH then ActiveInstance.SizeDeltaY = 0 end
 
 	ActiveInstance.X = ActiveInstance.TitleDeltaX + x
 	ActiveInstance.Y = ActiveInstance.TitleDeltaY + y
-	ActiveInstance.W = max(ActiveInstance.SizeDeltaX + w + border, border)
-	ActiveInstance.H = max(ActiveInstance.SizeDeltaY + h + border, border)
+	ActiveInstance.W = max((autoSizeWindowW and measuredAutoW or ActiveInstance.SizeDeltaX) + w + border, border)
+	ActiveInstance.H = max((autoSizeWindowH and measuredAutoH or ActiveInstance.SizeDeltaY) + h + border, border)
 	ActiveInstance.ContentW = contentW
 	ActiveInstance.ContentH = contentH
 	ActiveInstance.BackgroundColor = bgColor
@@ -743,6 +751,7 @@ function Window.Begin(id, options)
 		elseif titleAlignY == 'bottom' then
 			titleY = floor(ActiveInstance.Y - Style.Font:getHeight())
 		end
+		if titleAlignY == 'center' and Style.TextVerticalOffset then titleY = titleY + Style.TextVerticalOffset(Style.Font, ActiveInstance.Title) end
 
 		local titleColor = ActiveInstance.BackgroundColor
 		if ActiveInstance == Stack[1] then
@@ -1013,7 +1022,7 @@ end
 
 function Window.TransformPoint(x, y)
 	if ActiveInstance ~= nil then
-		return Region.Transform(ActiveInstance.Id, x, y)
+		return Region.TransformToWindow(ActiveInstance.Id, x, y)
 	end
 	return 0, 0
 end

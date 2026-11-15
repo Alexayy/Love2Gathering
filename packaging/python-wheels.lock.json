@@ -1,0 +1,16 @@
+{
+  "windows-cp313": {
+    "name": "Pillow",
+    "version": "13.0.0",
+    "filename": "pillow-13.0.0-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/d7/ed/1b16fb66a37e1b9e41370b93b2c614c7da761a5b2a41dc333f7af4639962/pillow-13.0.0-cp313-cp313-win_amd64.whl",
+    "sha256": "9dda0788a9932776a75d8bcc020076edc308ce2508b51f6739a45e3158b3fc42"
+  },
+  "flatpak-cp313": {
+    "name": "Pillow",
+    "version": "13.0.0",
+    "filename": "pillow-13.0.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+    "url": "https://files.pythonhosted.org/packages/ef/fe/f5cdaa2d1c4086e757430f368c271a58ee29cfe7378e7ae7b9d964015c25/pillow-13.0.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+    "sha256": "5f56499c1a74d2b862beb0c33b8016f99d095858455df9d21583bbbc1c15b582"
+  }
+}

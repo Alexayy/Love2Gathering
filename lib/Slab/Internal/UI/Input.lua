@@ -272,6 +272,14 @@ local function GetAlignmentOffset(Instance)
 	return Offset
 end
 
+local function GetVerticalOffset(Instance)
+	if Instance == nil then return 0 end
+	if Instance.MultiLine then return Style.InputPaddingY or 4 end
+	-- Editable values keep a stable baseline while typing ascenders/descenders.
+	local optical = Style.TextVerticalOffset and Style.TextVerticalOffset(Style.Font, Instance.ReadOnly and Instance.Text or 'H') or 0
+	return math.max(0, math.floor((Instance.H - Text.GetHeight()) * 0.5 + optical))
+end
+
 local function GetSelection(Instance)
 	if Instance ~= nil and TextCursorAnchor >= 0 and TextCursorAnchor ~= TextCursorPos then
 		local Min = min(TextCursorAnchor, TextCursorPos) + 1
@@ -394,13 +402,13 @@ local function GetCursorXOffset(Instance)
 end
 
 local function GetCursorPos(Instance)
-	local X, Y = GetAlignmentOffset(Instance), 0.0
+	local X, Y = GetAlignmentOffset(Instance), GetVerticalOffset(Instance)
 
 	if Instance ~= nil then
 		local Data = Instance.Text
 		if Instance.Lines ~= nil then
 			Data = Instance.Lines[TextCursorPosLineNumber]
-			Y = Text.GetHeight() * (TextCursorPosLineNumber - 1)
+			Y = GetVerticalOffset(Instance) + Text.GetHeight() * (TextCursorPosLineNumber - 1)
 		end
 		local CursorPos = min(TextCursorPosLine, len(Data))
 		if CursorPos > 0 then
@@ -522,6 +530,7 @@ end
 local function GetTextCursorPos(Instance, X, Y)
 	local Result = 0
 	if Instance ~= nil then
+		Y = Y - GetVerticalOffset(Instance)
 		local Line = Instance.Text
 		local Start = 0
 
@@ -661,6 +670,7 @@ end
 
 local function DrawSelection(Instance, X, Y, W, H, Color)
 	if Instance ~= nil and TextCursorAnchor >= 0 and TextCursorAnchor ~= TextCursorPos then
+		Y = Y + GetVerticalOffset(Instance)
 		local Min = min(TextCursorAnchor, TextCursorPos)
 		local Max = max(TextCursorAnchor, TextCursorPos)
 		H = Text.GetHeight()
@@ -901,9 +911,10 @@ local function DrawSlider(Instance, DrawSliderAsHandle)
 		if Value ~= nil then
 			local Min = Instance.MinNumber == nil and -huge or Instance.MinNumber
 			local Max = Instance.MaxNumber == nil and huge or Instance.MaxNumber
-			local Ratio = (Value - Min) / (Max - Min)
+			local Ratio = Max > Min and (Value - Min) / (Max - Min) or 0
 			local SliderSize = 6.0
 			local MinX, MinY = Cursor.GetPosition()
+			if DrawCommands.Slider(MinX, MinY, Instance.W, Instance.H, Ratio) then return true end
 			local MaxX, MaxY = MinX + Instance.W - SliderSize, MinY + Instance.H
 			local X = (MaxX - MinX) * Ratio + MinX
 			if DrawSliderAsHandle then
@@ -1038,7 +1049,7 @@ function Input.Begin(Id, Options)
 			"Invalid MinNumber and MaxNumber passed to Input control '" .. Instance.Id .. "'. MinNumber: " .. Instance.MinNumber .. " MaxNumber: " .. Instance.MaxNumber)
 	end
 
-	local H = Options.H == nil and Text.GetHeight() or Options.H
+	local H = Options.H == nil and max(Style.ControlHeight or 32, Text.GetHeight() + (Style.InputPaddingY or 6) * 2) or Options.H
 	local W = Options.W == nil and MIN_WIDTH or Options.W
 	local ContentW, ContentH = 0.0, 0.0
 	local Result = false
@@ -1064,6 +1075,13 @@ function Input.Begin(Id, Options)
 	end
 
 	local ShouldUpdateTextObject = Instance.ShouldUpdateTextObject
+	if Instance.Font ~= Style.Font then
+		Instance.Font = Style.Font
+		Instance.TextObject = nil
+		Instance.LineNumbersObject = nil
+		Instance.Lines = nil
+		ShouldUpdateTextObject = true
+	end
 	Instance.ShouldUpdateTextObject = false
 
 	if Options.MultiLine and (Instance.Lines == nil) and (Instance.Text ~= "") then
@@ -1125,7 +1143,7 @@ function Input.Begin(Id, Options)
 	local HoveredScrollBar = Region.IsHoverScrollBar(Instance.Id) or Region.IsScrolling()
 
 	if Hovered and not HoveredScrollBar then
-		Mouse.SetCursor('ibeam')
+		Mouse.SetCursor(Instance.ReadOnly and 'hand' or 'ibeam')
 		Tooltip.Begin(Options.Tooltip)
 		Window.SetHotItem(WinItemId)
 	end
@@ -1465,14 +1483,15 @@ function Input.Begin(Id, Options)
 		end
 	end
 
+	local SkinnedSlider = false
 	if Options.UseSlider then
 		if not IsEditing then
-			DrawSlider(Instance, Options.DrawSliderAsHandle)
+			SkinnedSlider = DrawSlider(Instance, Options.DrawSliderAsHandle) == true
 		end
 	end
 
-	if Instance.Text ~= "" then
-		Cursor.SetPosition(X + GetAlignmentOffset(Instance), Y)
+	if Instance.Text ~= "" and not SkinnedSlider then
+		Cursor.SetPosition(X + GetAlignmentOffset(Instance), Y + GetVerticalOffset(Instance))
 
 		LayoutManager.Begin(Instance.Id .. "_TextLayout", {Ignore = true})
 

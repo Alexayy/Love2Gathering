@@ -1,0 +1,226 @@
+{
+  "scope": "Read-only actual API6 on root-owned isolated catalog17460; no user/deck/settings/cache writes, no engine legality claim. Separate fullservice tests exercise owned copy/save/repair with temporary fixtures.",
+  "checks": [
+    {
+      "name": "isolated API6 service",
+      "passed": true
+    },
+    {
+      "name": "all3154 source records indexed",
+      "passed": true
+    },
+    {
+      "name": "ready1183 decks;611 packets;1360 collections withheld",
+      "passed": true
+    },
+    {
+      "name": "packet expansions/formats offered",
+      "passed": true
+    },
+    {
+      "name": "bounded distinct summary pages",
+      "passed": true
+    },
+    {
+      "name": "summaries omit full card zones",
+      "passed": true
+    },
+    {
+      "name": "page limit capped60",
+      "passed": true
+    },
+    {
+      "name": "historical Standard filter returns89 unvalidated archives",
+      "passed": true
+    },
+    {
+      "name": "Jumpstart separate packet category611",
+      "passed": true
+    },
+    {
+      "name": "withheld collections explicit only",
+      "passed": true
+    },
+    {
+      "name": "Calling All Angels actualCommander Giada99plus1",
+      "passed": true
+    },
+    {
+      "name": "CallingAllAngels Plains32 andwhite identity",
+      "passed": true
+    },
+    {
+      "name": "official Wizards provenance retained",
+      "passed": true
+    },
+    {
+      "name": "twenty immutable starter aliases",
+      "passed": true
+    },
+    {
+      "name": "MyDecks contains only owned origin",
+      "passed": true
+    },
+    {
+      "name": "legacy lobby excludes allprecons",
+      "passed": true
+    }
+  ],
+  "passed": 16,
+  "source": {
+    "categories": {
+      "collection": 1360,
+      "deck": 1183,
+      "packet": 611
+    },
+    "coverage": "Every record in this MTGJSON DeckList snapshot; not a guarantee that upstream contains every historical Wizards product. Non-deck collections are retained for audit but excluded from default browsing.",
+    "earliestRelease": "1993-12-10",
+    "examples": {
+      "Calling All Angels": {
+        "category": "deck",
+        "counts": {
+          "commander": 1,
+          "main": 99,
+          "planes": 0,
+          "schemes": 0,
+          "sideboard": 0
+        },
+        "expansion": "Foundations Commander",
+        "faceCommander": "Giada, Font of Hope",
+        "format": "Commander",
+        "historicalFormat": "Commander",
+        "id": "precon-c5991f11a1cbeca29555",
+        "productType": "Commander Deck",
+        "set": "fdc",
+        "source": {
+          "date": "2026-11-14",
+          "fileName": "CallingAllAngels_FDC",
+          "license": "MIT",
+          "licenseURL": "https://mtgjson.com/license/",
+          "officialOriginal": true,
+          "originalURL": "https://magic.wizards.com/en/news/announcements/foundations-commander-decklists",
+          "provider": "MTGJSON",
+          "url": "https://mtgjson.com/api/v5/decks/CallingAllAngels_FDC.json",
+          "version": "5.3.0+20261114"
+        }
+      },
+      "Feline Ferocity": {
+        "category": "deck",
+        "counts": {
+          "commander": 1,
+          "main": 99,
+          "planes": 0,
+          "schemes": 0,
+          "sideboard": 0
+        },
+        "expansion": "Commander 2017",
+        "faceCommander": "Arahbo, Roar of the World",
+        "format": "Commander",
+        "historicalFormat": "Commander",
+        "id": "precon-d7c30c86c0c29981833c",
+        "productType": "Commander Deck",
+        "set": "c17",
+        "source": {
+          "date": "2026-11-14",
+          "fileName": "FelineFerocity_C17",
+          "license": "MIT",
+          "licenseURL": "https://mtgjson.com/license/",
+          "officialOriginal": true,
+          "originalURL": "https://magic.wizards.com/en/articles/archive/feature/commander-2017-edition-decklists-2017-08-11",
+          "provider": "MTGJSON",
+          "url": "https://mtgjson.com/api/v5/decks/FelineFerocity_C17.json",
+          "version": "5.3.0+20261114"
+        }
+      }
+    },
+    "historicalFormats": {
+      "Archenemy": 8,
+      "Brawl": 9,
+      "Commander": 208,
+      "Constructed (release-era)": 848,
+      "Jumpstart": 611,
+      "Modern": 1,
+      "Pioneer": 8,
+      "Planechase": 12,
+      "Product collection": 1360,
+      "Standard": 89
+    },
+    "index": "https://mtgjson.com/api/v5/DeckList.json",
+    "latestRelease": "2026-12-16",
+    "license": "MIT",
+    "licenseURL": "https://mtgjson.com/license/",
+    "originalWizardsSourceCount": 2074,
+    "preparedAt": "2026-11-14T16:14:00.559486+00:00",
+    "productTypes": {
+      "Addon": 1,
+      "Advanced Deck": 12,
+      "Advanced Pack": 8,
+      "Archenemy Deck": 8,
+      "Arena Promotional Deck": 4,
+      "Arena Starter Deck": 101,
+      "Arena Starter Kit": 8,
+      "Booster Battle Pack Packet": 20,
+      "Box Set": 76,
+      "Brawl Deck": 4,
+      "Bundle Land Pack": 111,
+      "Challenge Deck": 3,
+      "Challenger Deck": 22,
+      "Clash Pack": 9,
+      "Commander Deck": 206,
+      "Dandan Deck": 1,
+      "Deck Builder's Toolkit": 120,
+      "Demo Deck": 8,
+      "Duel Deck": 52,
+      "Duel Of The Planeswalkers Deck": 5,
+      "Enemy Deck": 1,
+      "Enhanced Deck": 20,
+      "Event Deck": 26,
+      "Game Night Deck": 15,
+      "Guild Kit": 10,
+      "Halfdeck": 5,
+      "Historic Brawl Precon Deck": 5,
+      "Intro Pack": 167,
+      "Jumpstart": 570,
+      "MTGO Commander Deck": 2,
+      "MTGO Duel Deck": 2,
+      "MTGO Redemption": 198,
+      "MTGO Theme Deck": 18,
+      "Modern Event Deck": 1,
+      "Pioneer Challenger Deck": 8,
+      "Planechase Deck": 12,
+      "Planeswalker Deck": 41,
+      "Premium Deck": 3,
+      "Pro Tour Deck": 8,
+      "Sample Deck": 50,
+      "San Diego Comic Con Promos": 7,
+      "Secret Lair Drop": 792,
+      "Shandalar Enemy Deck": 55,
+      "Spellslinger Starter Kit": 4,
+      "Starter Deck": 20,
+      "Starter Kit": 12,
+      "Theme Deck": 220,
+      "Welcome Booster": 16,
+      "Welcome Deck": 55,
+      "World Championship Deck": 32
+    },
+    "provider": "MTGJSON",
+    "schema": 1,
+    "sets": "https://mtgjson.com/api/v5/SetList.json",
+    "sha256": "ce2ccbb53ebbbe9e1ed56540e3e229c60e6f9b252e274789ddf378948555ca6f",
+    "snapshotDate": "2026-11-14",
+    "source": "https://mtgjson.com/api/v5/AllDeckFiles.tar.xz",
+    "totalSourceRecords": 3154,
+    "version": "5.3.0+20261114"
+  },
+  "acquisition": {
+    "officialArchiveSha256": "ce2ccbb53ebbbe9e1ed56540e3e229c60e6f9b252e274789ddf378948555ca6f",
+    "officialArchiveBytes": 149581668,
+    "packagedSourceBytes": 5354866,
+    "offlinePreparedRecords": 3154
+  },
+  "serviceTests": {
+    "passed": 93,
+    "preconTests": 13,
+    "profilesTests": 7
+  }
+}

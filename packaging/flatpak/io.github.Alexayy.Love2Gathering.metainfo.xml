@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.Alexayy.Love2Gathering</id>
+  <name>Love: 2 Gathering</name>
+  <summary>Desktop card game client powered by XMage</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-project</project_license>
+  <description><p>A desktop client for native XMage games, private room-code multiplayer, decks and drafts.</p></description>
+  <launchable type="desktop-id">io.github.Alexayy.Love2Gathering.desktop</launchable>
+  <url type="homepage">https://github.com/Alexayy/Love2Gathering</url>
+  <provides><binary>love2gathering</binary></provides>
+  <releases><release version="2026.11.14" date="2026-11-14"/></releases>
+</component>

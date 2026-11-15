@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "scope": "Final catalog-lock .flatpak actually updated into an isolated custom folder, verified deployed commit and installed launcher/catalog hashes, ran actual Platform25.08 catalog/XMage/gateway health and actual L\u00d6VE splash/decks/builder/lobby smoke. No full-game, WAN or native Windows claim.",
+  "installedCommit": "357ddf8bc251d89f7e9eab94289ae1873c7e0cfcad5e86264ede2ed167f03b6c",
+  "sourceSha256": {
+    "packaging/runtime/launcher.py": "9d2563629d941377670cafaa134d21189ac1d2a541198acd1ff9d554cda7a06e",
+    "service/catalog.py": "69d8be7ab77d0917c12b587ee831ebc81e6c031bcefbfc3111ccc33a8bbdac44"
+  },
+  "runtime": "org.freedesktop.Platform/x86_64/25.08",
+  "indexedLines": 120134,
+  "catalogCards": 38840,
+  "engineCards": 32950,
+  "catalogApi": 10,
+  "separateCache": true,
+  "temporaryDataOnly": true,
+  "nativeUserFolderInstaller": true,
+  "applicationMenuAndSymlink": true,
+  "actualDesktopSmoke": true,
+  "captures": {
+    "smoke-startup.png": "/tmp/love2gathering-flatpak-smoke-startup.png",
+    "smoke-decks.png": "/tmp/love2gathering-flatpak-smoke-decks.png",
+    "smoke-builder.png": "/tmp/love2gathering-flatpak-smoke-builder.png",
+    "smoke-lobby.png": "/tmp/love2gathering-flatpak-smoke-lobby.png"
+  },
+  "capturesInspected": true,
+  "desktopCompleted": true
+}

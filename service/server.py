@@ -5,8 +5,14 @@ import argparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
+import shutil
+import ipaddress
+import signal
+import sqlite3
+from contextlib import nullcontext,contextmanager
 from pathlib import Path
 import threading
+import time
 from urllib.parse import parse_qs, unquote, urlsplit
 from urllib.request import Request, urlopen
 from urllib.error import URLError
@@ -14,26 +20,66 @@ from urllib.error import URLError
 from catalog import Catalog, SCHEMA_VERSION
 from storage import Storage, ConflictError
 from validation import validate
+from artwork import prefer_cached_card
+from deck_printings import printings as card_printings
+from deck_import import preview as import_preview
+from playmats import lookup_playmat
+from paths import default_data_dir, default_cache_dir
+from downloads import DownloadManager
+from maintenance import StorageMaintenance, operation_lock
+from storage_locations import StorageLocations
+from image_packs import ImagePacks
+from engine_support import EngineSupport
+from deck_covers import cover as deck_cover
+from formats import PROFILES
 
 PROJECT = Path(__file__).resolve().parent.parent
 
 
-def make_handler(catalog, storage):
+def make_handler(catalog, storage, location_manager=None):
+    if hasattr(storage,'enable_thumbnails'):storage.enable_thumbnails()
     art_locks = {}
     art_guard = threading.Lock()
+    downloads = DownloadManager(catalog, storage)
+    maintenance = StorageMaintenance(storage)
+    locations = location_manager or StorageLocations(storage)
+    image_packs = ImagePacks(catalog, storage)
+    engine_support = EngineSupport(storage)
+    storage_health = storage.health()
+    @contextmanager
+    def image_lock(key):
+        started=time.monotonic()
+        with art_guard:
+            item=art_locks.setdefault(key,[threading.Lock(),0]);item[1]+=1
+        acquired=False
+        try:
+            acquired=item[0].acquire(timeout=3)
+            if not acquired:raise sqlite3.OperationalError('Local artwork is busy; retry shortly')
+            waited=time.monotonic()-started
+            if hasattr(storage,'image_io'):storage.image_io.note_stage('imageQueue',waited)
+            yield waited
+        finally:
+            if acquired:item[0].release()
+            with art_guard:
+                item[1]-=1
+                if not item[1]:art_locks.pop(key,None)
     class Handler(BaseHTTPRequestHandler):
         server_version = "Love2Gathering/1"
 
         def log_message(self, *args):
             pass
 
-        def respond(self, status, body):
+        def respond(self, status, body, retry_after=None):
             data = json.dumps(body, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-            self.send_response(status)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Content-Length", str(len(data)))
-            self.end_headers()
-            self.wfile.write(data)
+            try:
+                self.send_response(status)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(data)))
+                if retry_after is not None:self.send_header('Retry-After',str(retry_after))
+                self.end_headers()
+                self.wfile.write(data)
+            except (BrokenPipeError,ConnectionResetError):
+                pass
 
         def read_json(self):
             try:
@@ -48,8 +94,18 @@ def make_handler(catalog, storage):
                 raise ValueError("Invalid JSON body")
 
         def run_request(self, method):
+            self.image_timings={}
             try:
-                self.route(method)
+                path=urlsplit(self.path).path
+                selected=parse_qs(urlsplit(self.path).query).get('priority')==['selected']or path=='/art/download'
+                io_scope=storage.image_io.foreground(selected)if hasattr(storage,'image_io')and(method=='GET'or path=='/art/download')else nullcontext()
+                with storage.interactive_access()if hasattr(storage,'interactive_access')else nullcontext(),io_scope:
+                    if path.startswith('/art/')or path.startswith('/gallery/art/'):
+                        # The whole image request participates, including a slow
+                        # network fetch or legacy import, so it cannot refill a
+                        # category immediately after an exclusive purge.
+                        with operation_lock(storage.root,blocking=False):self.route(method)
+                    else:self.route(method)
             except ConflictError as exc:
                 self.respond(409, {"error": str(exc)})
             except KeyError as exc:
@@ -58,6 +114,10 @@ def make_handler(catalog, storage):
                 self.respond(400, {"error": str(exc)})
             except (BrokenPipeError, ConnectionResetError):
                 pass
+            except sqlite3.OperationalError as exc:
+                if any(word in str(exc).lower()for word in('locked','busy')):
+                    self.respond(503,{'error':'Local storage is busy. Please retry shortly.','retryable':True},retry_after=1)
+                else:self.respond(500,{'error':str(exc)})
             except Exception as exc:
                 self.respond(500, {"error": str(exc)})
 
@@ -66,17 +126,102 @@ def make_handler(catalog, storage):
         def do_PUT(self): self.run_request("PUT")
         def do_DELETE(self): self.run_request("DELETE")
 
+        @contextmanager
+        def image_stage(self,name):
+            started=time.monotonic()
+            try:yield
+            finally:
+                elapsed=time.monotonic()-started;self.image_timings[name]=self.image_timings.get(name,0)+elapsed
+                if hasattr(storage,'image_io'):storage.image_io.note_stage(name,elapsed)
+
+        def local_storage_control(self):
+            # These explicit desktop actions must not be triggerable by a
+            # browser page submitting opaque cross-origin requests to loopback.
+            if not ipaddress.ip_address(self.client_address[0]).is_loopback or self.headers.get('Origin')or self.headers.get('Sec-Fetch-Site'):
+                self.respond(403,{'error':'Storage controls require a direct local desktop request'});return False
+            if self.headers.get_content_type()!='application/json':
+                self.respond(400,{'error':'Storage controls require application/json'});return False
+            return True
+
         def route(self, method):
             url = urlsplit(self.path)
             path = unquote(url.path).rstrip("/") or "/"
             query = parse_qs(url.query)
             param = lambda key, default="": query.get(key, [default])[0]
+            if path == '/formats' and method == 'GET':
+                self.respond(200,{'formats':list(PROFILES.values()),'nativeValidationRequired':True});return
+            if path == '/engine-support/registry' and method == 'POST':
+                if not self.local_storage_control():return
+                self.respond(202, engine_support.register(self.read_json()));return
+            if path == '/engine-support/status' and method == 'GET':
+                self.respond(200, engine_support.status());return
+            if path == '/engine-support/decks' and method == 'POST':
+                if not self.local_storage_control():return
+                body=self.read_json()
+                if not isinstance(body,dict)or set(body)!={'ids'}:raise ValueError('Choose deck identities to check')
+                self.respond(200, engine_support.batch(body['ids']));return
+            if path == '/deck-cover' and method == 'GET':
+                if catalog.status()['state']!='ready':self.respond(503,{'error':'Card index is not ready'});return
+                self.respond(200,deck_cover(catalog,storage,param('name'),param('printing'),param('deckId')));return
+            if path=='/playmat-art'and method=='GET':
+                self.respond(200,lookup_playmat(catalog,storage,param('name'),param('seed')));return
+            if path=='/storage/image-packs/status'and method=='GET':
+                self.respond(200,image_packs.status());return
+            if path in('/storage/image-packs/inspect','/storage/image-packs/install')and method=='POST':
+                if not self.local_storage_control():return
+                body=self.read_json();key='path'if path.endswith('/inspect')else'jobId'
+                if not isinstance(body,dict)or set(body)!={key}or not isinstance(body[key],str):raise ValueError('Choose one local image pack or its inspected job')
+                if catalog.status()['state']!='ready':self.respond(503,{'error':'Wait for the local card catalog before inspecting image packs'});return
+                self.respond(202,image_packs.inspect(body['path'])if key=='path'else image_packs.install(body['jobId']));return
+            if path=='/storage/locations'and method=='GET':
+                self.respond(200,locations.status());return
+            if path=='/storage/locations/cancel'and method=='POST':
+                if not self.local_storage_control():return
+                if self.read_json()!={}:raise ValueError('Cancel takes no extra options')
+                self.respond(200,locations.cancel());return
+            if path in('/storage/locations','/storage/locations/validate')and method=='POST':
+                if not self.local_storage_control():return
+                body=self.read_json()
+                self.respond(200 if path.endswith('/validate')else 202,locations.validate(body)if path.endswith('/validate')else locations.prepare(body));return
+            if path=='/storage/status'and method=='GET':
+                self.respond(200,maintenance.status(refresh=param('refresh')=='1'));return
+            if path=='/storage/purge'and method=='POST':
+                if not self.local_storage_control():return
+                body=self.read_json()
+                if not isinstance(body,dict)or set(body)!={'categories'}:raise ValueError('Choose only the storage categories to purge')
+                self.respond(202,maintenance.start_purge(body['categories']));return
+            if path=='/storage/compact'and method=='POST':
+                if not self.local_storage_control():return
+                if self.read_json()!={}:raise ValueError('Compaction takes no paths or extra options')
+                self.respond(202,maintenance.start_compact());return
+            if path=='/downloads/status'and method=='GET':
+                self.respond(200,downloads.status());return
+            if path=='/downloads/scan'and method=='POST':
+                if not self.local_storage_control():return
+                self.respond(202,downloads.scan(self.read_json()));return
+            if path=='/downloads/control'and method=='POST':
+                if not self.local_storage_control():return
+                body=self.read_json()
+                if not isinstance(body,dict)or set(body)!={'command'}:raise ValueError('Choose one image download command')
+                self.respond(200,downloads.control(body['command']));return
             if method == "GET" and path == "/health":
                 progress = catalog.status()
-                storage_status = storage.health()
+                try:
+                    storage_status = storage.health()
+                    with art_guard:
+                        storage_health.update(storage_status)
+                except ConflictError:
+                    # Maintenance owns the database briefly. Its last verified
+                    # identity is still valid; health/progress must not queue
+                    # behind VACUUM or make the catalog appear disconnected.
+                    with art_guard:
+                        storage_status = dict(storage_health, maintenanceBusy=True)
                 self.respond(200, {"status": "ok", "ready": progress["state"] == "ready",
-                                   "index": progress, "source": catalog.source.name, "version": 3,
-                                   "apiVersion": 3, "schemaVersion": int(SCHEMA_VERSION),
+                                   "index": progress, "source": catalog.source.name,
+                                   "catalogSource": str(catalog.source.resolve()), "version": 3,
+                                   "apiVersion": 15, "schemaVersion": int(SCHEMA_VERSION),
+                                   "imageVariants":storage.thumbnails.status()if hasattr(storage,'thumbnails')else{'available':False},
+                                   "deckSupport":{'available':True,'version':1},"deckCovers":True,
                                    "storage": storage_status, "userStore": storage_status})
                 return
             if path == "/ui-layout":
@@ -89,6 +234,9 @@ def make_handler(catalog, storage):
                     self.respond(200, storage.list_replays(min(200, max(1, int(param("limit", "50")))), max(0, int(param("offset", "0")))))
                 elif method == "POST": self.respond(201, storage.create_replay(self.read_json()))
                 else: self.respond(405, {"error": "Method not allowed"})
+                return
+            if path == '/history' and method == 'GET':
+                self.respond(200, storage.history(min(60, max(1, int(param('limit', '30')))), max(0, int(param('offset', '0')))))
                 return
             if path.startswith("/replays/"):
                 parts = path.split("/")
@@ -115,10 +263,50 @@ def make_handler(catalog, storage):
                 elif method == "PUT": self.respond(200, storage.save_settings(self.read_json()))
                 else: self.respond(405, {"error": "Method not allowed"})
                 return
+            if path == '/profile':
+                if method == 'GET':self.respond(200,storage.profile())
+                elif method == 'PUT':self.respond(200,storage.save_profile(self.read_json(),catalog))
+                else:self.respond(405,{'error':'Method not allowed'})
+                return
+            if path == '/precons/stats' and method == 'GET':
+                self.respond(200,storage.precon_stats());return
+            if path == '/precons' and method == 'GET':
+                page=storage.precons(param('q'),param('format'),param('set'),param('type'),param('category','deck'),min(60,max(1,int(param('limit','24')))),max(0,int(param('offset','0'))))
+                engine_support.decorate(page['decks']);self.respond(200,page);return
+            if path.startswith('/precons/') and method == 'GET':
+                deck=storage.get_precon(path[len('/precons/'):])
+                if deck:engine_support.decorate([deck])
+                self.respond(200 if deck else 404,deck or {'error':'Preconstructed deck not found'});return
             if path == "/decks":
-                if method == "GET": self.respond(200, {"decks": storage.list_decks()})
+                if method == "GET":
+                    decks = storage.list_decks(param('origin') or None)
+                    engine_support.decorate(decks)
+                    if catalog.status()['state'] == 'ready':
+                        for deck in decks: deck['colorIdentity'] = catalog.deck_colors(deck)
+                    self.respond(200, {"decks": decks})
                 elif method == "POST": self.save_deck(self.read_json(), status=201)
                 else: self.respond(405, {"error": "Method not allowed"})
+                return
+            if path.startswith('/decks/') and path.endswith('/fork') and method == 'POST':
+                if catalog.status()['state']!='ready':self.respond(503,{'error':'Card index is not ready'});return
+                identifier=path[len('/decks/'):-len('/fork')];body=self.read_json()
+                if not isinstance(body,dict):raise ValueError('Deck copy options must be an object')
+                deck=storage.copy_deck(identifier,body.get('name'),body.get('format'))
+                result=validate(deck,catalog)
+                if not result['saveAllowed']:
+                    self.respond(422,{'error':result['errors'][0]['message'],'deck':deck,'validation':result,'saved':False});return
+                self.respond(201,{'deck':storage.save_deck(deck,validation=result),'validation':result,'saved':True});return
+            if path == '/imports/preview' and method == 'POST':
+                if catalog.status()['state'] != 'ready':
+                    self.respond(503, {'error': 'Card index is not ready'});return
+                self.respond(200, import_preview(self.read_json(), catalog, storage))
+                return
+            if path.startswith('/decks/') and path.endswith('/token-art'):
+                identifier = path[len('/decks/'):-len('/token-art')]
+                if not storage.get_deck(identifier): raise KeyError('Deck not found')
+                if method == 'GET': self.respond(200, storage.token_preferences(identifier))
+                elif method == 'PUT': self.respond(200, storage.save_token_preferences(identifier, self.read_json(), catalog))
+                else: self.respond(405, {'error': 'Method not allowed'})
                 return
             if path == "/decks/validate" and method == "POST":
                 if catalog.status()["state"] != "ready":
@@ -139,55 +327,122 @@ def make_handler(catalog, storage):
                     self.respond(200 if deleted else 404, {"deleted": deleted})
                 else: self.respond(405, {"error": "Method not allowed"})
                 return
-            if path.startswith(("/cards", "/art", "/sets")) and catalog.status()["state"] != "ready":
+            if path.startswith(("/cards", "/art", "/sets", "/printings", "/gallery/art", "/tokens")) and catalog.status()["state"] != "ready":
                 self.respond(503, {"error": "Card index is not ready", "index": catalog.status()})
                 return
             if method == "GET" and path == "/cards":
                 limit = min(200, max(1, int(param("limit", "50"))))
                 offset = max(0, int(param("offset", "0")))
-                self.respond(200, catalog.search(param("q"), param("format").lower(), param("color"), param("type"), limit, offset, param("sort", "name").lower(), param("set")))
+                self.respond(200, catalog.search(param("q"), param("format").lower(), param("color"), param("type"), limit, offset, param("sort", "name").lower(), param("set"), color_mode=param("colorMode", "legacy")))
                 return
             if method == "GET" and path == "/sets":
                 self.respond(200, {"sets": catalog.sets(param("format").lower())})
                 return
+            if method == 'GET' and path == '/printings':
+                self.respond(200,card_printings(catalog,param('name'),param('q'),param('set'),param('variant','all'),int(param('limit','12')),int(param('offset','0'))));return
             if method == "GET" and path.startswith("/cards/"):
                 card = catalog.get(name=param("name"), printing_id=param("printing") or None) if path == "/cards/by-name" else catalog.get(identifier=path[len("/cards/"):], printing_id=param("printing") or None)
+                if card and not param('printing'): card = prefer_cached_card(catalog, storage, card)
                 self.respond(200 if card else 404, card or {"error": "Card not found"})
                 return
-            if method == "GET" and path.startswith("/art/"):
-                identifier = path[len("/art/"):]
-                card = catalog.get(identifier=identifier, printing_id=param("printing") or None)
+            if path == '/tokens' and method == 'GET':
+                deck = storage.get_deck(param('deckId')) if param('deckId') else None
+                if param('deckId') and not deck: raise KeyError('Deck not found')
+                preferences = storage.token_preferences(param('deckId')) if deck else {'mode': 'default', 'selected': []}
+                result = catalog.tokens(param('q'), deck, min(60, max(1, int(param('limit', '24')))), max(0, int(param('offset', '0'))), groups=param('groups')=='1', identity=param('identity'), preferences=preferences)
+                result['preferences'] = preferences
+                self.respond(200, result);return
+            if path == '/tokens/resolve' and method == 'POST':
+                body = self.read_json();deck_id = body.get('deckId');deck = storage.get_deck(deck_id) if deck_id else None
+                preferences = storage.token_preferences(deck_id) if deck else {'mode': 'default', 'selected': []}
+                card = catalog.resolve_token(body.get('token'), preferences, body.get('seed', ''), deck)
+                effective = (preferences.get('overrides') or {}).get((card or {}).get('tokenIdentity'), preferences)
+                self.respond(200, {'card': card, 'mode': effective.get('mode', 'default')});return
+            if method == "GET" and path == "/gallery":
+                if catalog.status()["state"] != "ready":
+                    self.respond(503, {"error": "Artwork index is not ready. Configure a local JSONL source or explicitly download Scryfall bulk metadata.", "index": catalog.status()})
+                    return
+                result=catalog.gallery(param("q"), param("artist"), param("set"), param("variant", "all"), param("lang", "en"), min(60, max(1, int(param("limit", "24")))), max(0, int(param("offset", "0"))))
+                storage.artwork_statuses(result['items']);self.respond(200,result)
+                return
+            if method=='GET'and path=='/art/cache-info':
+                info=storage.artwork_summary();info['bulk']=None
+                if hasattr(storage,'thumbnails'):info['thumbnails']=storage.thumbnails.status()
+                if hasattr(storage,'image_io'):info['io']=storage.image_io.status()
+                status_path=PROJECT/'.runtime/card-image-download-status.json'
+                if status_path.is_file():
+                    try:
+                        progress=json.loads(status_path.read_text())
+                        if Path(progress.get('dataDirectory','')).resolve()==storage.root.resolve():info['bulk']={'stage':progress.get('stage'),'paused':progress.get('stage')=='paused','reason':progress.get('reason')}
+                    except(ValueError,OSError):pass
+                self.respond(200,info);return
+            if method=='POST'and path=='/art/download':
+                body=self.read_json()
+                if not isinstance(body,dict)or set(body)-{'printingId','face','kind'}:raise ValueError('Choose one exact printing, face and image kind')
+                face=body.get('face',0);kind=body.get('kind','art_crop')
+                if isinstance(face,bool)or not isinstance(face,int)or kind not in('normal','large','art_crop'):raise ValueError('Invalid artwork face or kind')
+                with self.image_stage('catalog'):item=catalog.gallery_item(body.get('printingId',''),face)
+                if not item:raise ValueError('Artwork printing and face are not in the local catalog')
+                key=item['printing_id']+'-'+str(face)+'-'+kind+'.jpg'
+                with image_lock(key):
+                    local=storage.local_art(item['printing_id'],item['oracle_id'],face,kind,aliases=False)
+                    if local:self.respond(200,{'cached':True,'downloaded':False,'printingId':item['printing_id'],'face':face,'kind':kind});return
+                    if min(shutil.disk_usage(storage.root).free,shutil.disk_usage(storage.cache_root).free)<64*1024**2+3*3*1024**2:
+                        self.respond(409,{'error':'Free a little disk space before downloading this illustration (64 MiB reserve). Existing cached images remain available.','reserveBlocked':True});return
+                    url=item['image_uris'].get(kind)
+                    if not url or urlsplit(url).hostname!='cards.scryfall.io':raise ValueError('No Scryfall image for this printing and kind')
+                    with self.image_stage('network'),storage.external_io()if hasattr(storage,'external_io')else nullcontext():data=self.download_art(url)
+                    storage.save_art(key,data,{'printingId':item['printing_id'],'oracleId':item['oracle_id'],'face':face,'kind':kind,'source':url})
+                self.respond(200,{'cached':True,'downloaded':True,'printingId':item['printing_id'],'face':face,'kind':kind});return
+            if method == "GET" and (path.startswith("/art/") or path.startswith("/gallery/art/")):
+                gallery = path.startswith("/gallery/art/")
+                identifier = path[len("/gallery/art/"):] if gallery else path[len("/art/"):]
+                face = int(param("face", "0"))
+                if not 0 <= face <= 9: raise ValueError("Face must be 0 to 9")
+                with self.image_stage('catalog'):card = catalog.gallery_item(identifier, face) if gallery else catalog.get(identifier=identifier, printing_id=param("printing") or None)
                 if not card:
                     self.respond(404, {"error": "Card not found"})
                     return
-                face = int(param("face", "0"))
-                if not 0 <= face <= 1:
-                    raise ValueError("Face must be 0 or 1")
                 images = card["image_uris"]
-                if face:
+                if face and not gallery:
                     faces = card.get("card_faces", [])
                     face_images = faces[face].get("image_uris", {}) if len(faces) > face else {}
                     images = face_images or (images if card.get("layout") in ("adventure", "split", "flip") else {})
                 kind = param("kind", "normal")
-                if kind not in ("normal", "art_crop"):
-                    raise ValueError("Image kind must be normal or art_crop")
+                if kind not in ("normal", "large", "art_crop"):
+                    raise ValueError("Image kind must be normal, large or art_crop")
+                variant=param('variant','original')
+                if variant not in('original','thumb'):raise ValueError('Image variant must be original or thumb')
                 art_url = images.get(kind)
-                if not art_url or urlsplit(art_url).hostname != "cards.scryfall.io":
-                    self.respond(404, {"error": "No card image"})
-                    return
                 cache_key = card["printing_id"] + f"-{face}-{kind}.jpg"
-                legacy_keys = (card["printing_id"] + f"-{face}.jpg", card["id"] + f"-{face}.jpg") if kind == "normal" else ()
-                with art_guard:
-                    lock = art_locks.setdefault(cache_key, threading.Lock())
-                with lock:
-                    data = storage.get_art(cache_key, legacy_keys)
+                legacy_keys = (card["printing_id"] + f"-{face}.jpg", (card.get("oracle_id") or card["id"]) + f"-{face}.jpg") if kind == "normal" else ()
+                with image_lock(cache_key)as queue_wait:
+                    self.image_timings['queue']=queue_wait
+                    with self.image_stage('local'):local = storage.local_art(card['printing_id'], card.get('oracle_id') or card['id'], face, kind, aliases=not gallery and param('exact') != '1',variant=variant)
+                    data = local[0] if local else None
                     if data is None:
-                        data = self.download_art(art_url)
-                        storage.save_art(cache_key, data, {"oracleId": card["id"], "printingId": card["printing_id"], "face": face, "kind": kind, "source": art_url})
+                        allow_network = param('network') == '1' or (param('network') != '0' and storage.settings().get('localArtworkOnly') is False)
+                        if not allow_network:
+                            self.respond(404, {'error': 'Artwork is not cached locally. The background image downloader can fill this cache.', 'cachedMiss': True})
+                            return
+                        if not art_url or urlsplit(art_url).hostname != "cards.scryfall.io":
+                            self.respond(404, {"error": "No card image"})
+                            return
+                        with self.image_stage('network'),storage.external_io()if hasattr(storage,'external_io')else nullcontext():data=self.download_art(art_url)
+                        storage.save_art(cache_key, data, {"oracleId": card.get("oracle_id") or card["id"], "printingId": card["printing_id"], "face": face, "kind": kind, "source": art_url})
+                        if variant=='thumb':
+                            queued=storage.queue_thumbnail(cache_key)
+                            local=(data,cache_key,{'_imageVariant':'original','_thumbPending':queued=='pending','_thumbUnavailable':queued=='unavailable'})
                 self.send_response(200)
                 self.send_header("Content-Type", "image/jpeg")
                 self.send_header("Content-Length", str(len(data)))
-                self.send_header("Cache-Control", "public, max-age=31536000, immutable")
+                details=local[2]if local else{}
+                self.send_header('X-Love2Gathering-Art-Variant',details.get('_imageVariant','original'))
+                if details.get('_thumbPending'):self.send_header('X-Love2Gathering-Thumb-Pending','1')
+                if details.get('_thumbUnavailable'):self.send_header('X-Love2Gathering-Thumb-Unavailable','1')
+                self.send_header('Server-Timing',', '.join(name+';dur='+format(seconds*1000,'.3f')for name,seconds in self.image_timings.items()))
+                self.send_header("Cache-Control", "no-store"if details.get('_thumbPending')else"public, max-age=31536000, immutable")
+                if local: self.send_header('X-Love2Gathering-Art-Key', local[1])
                 self.end_headers()
                 self.wfile.write(data)
                 return
@@ -197,6 +452,8 @@ def make_handler(catalog, storage):
             try:
                 request = Request(art_url, headers={"User-Agent": "Love2Gathering/1.0 (local personal MTG client)", "Accept": "image/jpeg"})
                 with urlopen(request, timeout=6) as response:
+                    if urlsplit(response.geturl()).hostname != "cards.scryfall.io":
+                        raise ValueError("Card image redirected outside Scryfall")
                     data = response.read(3 * 1024 * 1024 + 1)
                     if len(data) > 3 * 1024 * 1024 or not data.startswith(b"\xff\xd8"):
                         raise ValueError("Invalid card image response")
@@ -215,6 +472,19 @@ def make_handler(catalog, storage):
                 return
             self.respond(status, storage.save_deck(deck, identifier, result))
 
+    Handler.downloads=downloads
+    Handler.maintenance=maintenance
+    Handler.locations=locations
+    Handler.image_packs=image_packs
+    Handler.engine_support=engine_support
+    def close_managers():
+        engine_support.close()
+        image_packs.close()
+        locations.close()
+        maintenance.close()
+        downloads.close()
+        if hasattr(storage,'close_images'):storage.close_images()
+    Handler.close_managers=staticmethod(close_managers)
     return Handler
 
 
@@ -222,9 +492,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=17370)
     parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--source", type=Path, default=next((PROJECT / "assets").glob("all-cards*.jsonl"), PROJECT / "assets" / "all-cards.jsonl"))
+    parser.add_argument("--source", type=Path, default=Path(os.environ["LOVE2GATHERING_CATALOG_SOURCE"]) if os.environ.get("LOVE2GATHERING_CATALOG_SOURCE") else next((PROJECT / "assets").glob("all-cards*.jsonl"), PROJECT / "assets" / "all-cards.jsonl"))
     parser.add_argument("--database", type=Path, default=PROJECT / "service" / "data" / "catalog.sqlite")
-    parser.add_argument("--data-dir", type=Path, default=Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share"))) / "love2gathering")
+    parser.add_argument("--data-dir", type=Path, default=default_data_dir())
+    parser.add_argument("--cache-dir", type=Path, default=None)
     parser.add_argument("--build-only", action="store_true")
     args = parser.parse_args()
     catalog = Catalog(args.source, args.database)
@@ -232,18 +503,22 @@ def main():
         catalog.ensure()
         print(json.dumps(catalog.status()))
         return 0 if catalog.status()["state"] == "ready" else 1
-    storage = Storage(args.data_dir, PROJECT / "decks")
+    storage = Storage(args.data_dir, PROJECT / "decks", cache_dir=args.cache_dir if args.cache_dir is not None else default_cache_dir(args.data_dir,fresh_default=True))
     thread = threading.Thread(target=catalog.ensure, name="catalog-index", daemon=True)
     thread.start()
     server = ThreadingHTTPServer((args.host, args.port), make_handler(catalog, storage))
     server.daemon_threads = True
     print(f"Catalog API listening on http://{args.host}:{args.port}", flush=True)
+    def stop_server(*_):
+        threading.Thread(target=server.shutdown,name='Catalog shutdown',daemon=True).start()
+    signal.signal(signal.SIGTERM,stop_server)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         pass
     finally:
         server.server_close()
+        server.RequestHandlerClass.close_managers()
     return 0
 
 

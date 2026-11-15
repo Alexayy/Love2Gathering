@@ -5,6 +5,8 @@ Rules source: MagicCompRules 20260807.pdf, 100.2a, 100.4a, 101.1,
 """
 from collections import Counter
 import re
+from deck_printings import validate_printings
+from formats import profile as format_profile
 
 NUMBERS = {word: value for value, word in enumerate(("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"))}
 BASIC_LAND_COLORS = {"Plains": "W", "Island": "U", "Swamp": "B", "Mountain": "R", "Forest": "G"}
@@ -61,6 +63,7 @@ def pair_compatible(cards):
 def validate(deck, catalog):
     errors, warnings = [], []
     fmt = deck["format"].lower()
+    profile = format_profile(deck['format']);snapshot_key=profile['snapshotKey'];snapshot_checked=snapshot_key is not None
     commander = fmt == "commander"
     counts = {zone: sum(entry["count"] for entry in deck[zone]) for zone in ("main", "sideboard", "commander")}
     def problem(code, message, names=()):
@@ -80,9 +83,10 @@ def validate(deck, catalog):
             combined[canonical] += entry["count"]
     for name, count in combined.items():
         card = cards[name]
-        if card.get("legalities", {}).get(fmt) not in ("legal", "restricted"):
+        legality=card.get('legalities',{}).get(snapshot_key)if snapshot_checked else None
+        if snapshot_checked and legality not in ("legal", "restricted"):
             problem("format_legality", name + " is not legal in " + deck["format"] + ".", [name])
-        limit = copy_limit(card, commander)
+        limit = copy_limit(card, commander)if snapshot_checked else None
         if limit is not None and count > limit:
             problem("copy_limit", f"{name}: {count} copies; maximum {limit} across the deck and sideboard.", [name])
     if commander:
@@ -113,11 +117,13 @@ def validate(deck, catalog):
     else:
         if counts["commander"]:
             problem("unexpected_commander", deck["format"] + " does not use a commander zone.")
-        if counts["sideboard"] > 15:
+        if snapshot_checked and counts["sideboard"] > 15:
             problem("sideboard_size", "A constructed sideboard may contain at most 15 cards.")
-        complete = counts["main"] >= 60
+        complete = counts["main"] >= profile['minimum']
         if not complete:
-            warnings.append({"code": "draft_size", "message": "Draft: add cards until the main deck contains at least 60.", "cards": []})
+            warnings.append({"code": "draft_size", "message": "Draft: the native validator's reported minimum is "+str(profile['minimum'])+" main-deck cards.", "cards": []})
+    if not snapshot_checked:
+        warnings.append({'code':'native_format_required','message':'This snapshot does not encode '+profile['label']+' legality. XMage must check card eligibility, copies, points, sideboards and full construction rules.','cards':[]})
     cover = deck.get("coverCard")
     if cover:
         cover_card = catalog.get(name=cover)
@@ -125,6 +131,8 @@ def validate(deck, catalog):
             problem("unknown_cover", "Unknown cover card: " + cover, [cover])
         else:
             deck["coverCard"] = cover_card["name"]
-    return {"saveAllowed": not errors, "playable": complete and not errors, "valid": complete and not errors,
+    validate_printings(deck, catalog, problem)
+    return {"saveAllowed": not errors, "playable": complete and not errors, "valid": complete and not errors and snapshot_checked,
             "draft": not complete, "errors": errors, "warnings": warnings, "counts": counts,
+            'formatId':profile['id'],'minimum':profile['minimum'],'snapshotLegalityChecked':snapshot_checked,'snapshotFilterAvailable':snapshot_checked,'nativeValidationRequired':True,
             "source": "Scryfall snapshot 2026-09-22; XMage performs final play validation."}

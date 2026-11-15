@@ -1,0 +1,93 @@
+{
+  "passed": true,
+  "scope": "Full local656MB source streamed into an owned temporary SQL plan; empty cache, no network or user-data writes",
+  "sourceBytes": 656595034,
+  "elapsedSeconds": 22.16,
+  "memoryKiB": {
+    "VmHWM": 27464,
+    "VmRSS": 26404
+  },
+  "planDatabaseBytes": 213528576,
+  "status": {
+    "artPurgeGeneration": 0,
+    "bytesDownloaded": 0,
+    "cached": 0,
+    "dataDirectory": "isolated temporary storage (removed after verification)",
+    "downloaded": 0,
+    "error": null,
+    "failed": 0,
+    "networkRequests": 0,
+    "options": {
+      "fullSize": "normal",
+      "kinds": [
+        "normal",
+        "art_crop"
+      ],
+      "mirrors": false
+    },
+    "phase": "download",
+    "processed": 0,
+    "progress": 0.0,
+    "rateBytesPerSecond": 0,
+    "reserveBytes": 3221225472,
+    "scan": {
+      "byKind": {
+        "art_crop": {
+          "cached": 0,
+          "estimatedBytes": 10178232320,
+          "meanBytes": 81920,
+          "mirrorCandidates": 0,
+          "mirrorExports": 124246,
+          "missing": 124246,
+          "sampleCount": 0,
+          "total": 124246
+        },
+        "normal": {
+          "cached": 0,
+          "estimatedBytes": 12722790400,
+          "meanBytes": 102400,
+          "mirrorCandidates": 0,
+          "mirrorExports": 124246,
+          "missing": 124246,
+          "sampleCount": 0,
+          "total": 124246
+        }
+      },
+      "cached": 0,
+      "estimateBasis": "normal: conservative default; no cached sample; art_crop: conservative default; no cached sample. Size is an estimate, not remote Content-Length; mirrors are validated when imported.",
+      "estimatedDownloadBytes": 22901022720,
+      "estimatedMaxBytes": 40076789760,
+      "estimatedMinBytes": 11450511360,
+      "estimatedMirrorBytes": 0,
+      "estimatedSqliteBytes": 22901022720,
+      "estimatedStorageBytes": 22901022720,
+      "fullSize": "normal",
+      "kinds": [
+        "normal",
+        "art_crop"
+      ],
+      "mirrorCandidates": 0,
+      "mirrors": false,
+      "missing": 248492,
+      "networkRequests": 248492,
+      "reusableSqliteBytes": 0,
+      "total": 248492,
+      "uniqueUrls": 248492
+    },
+    "scanComplete": true,
+    "scannedRecords": 120134,
+    "sourceFingerprint": {
+      "bytes": 656595034,
+      "mtimeNs": 1794651941412121965,
+      "path": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/assets/all-cards-20261114-scryfall-default.jsonl"
+    },
+    "state": "ready",
+    "updatedAt": 1794686806822,
+    "freeBytes": 6185308160,
+    "maintenanceBusy": false,
+    "scanValid": true,
+    "scanInvalidReason": null,
+    "canStart": true,
+    "canResume": false
+  }
+}

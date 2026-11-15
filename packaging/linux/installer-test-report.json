@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "tests": 12,
+  "durationSeconds": 0.346,
+  "scope": "Real temporary-filesystem installation/update/uninstall with fixture application and Java launcher, desktop-file-validate and actual gio launch when available. Proves installer/integration behavior, not actual bundled game, WAN or runtime authenticity. All homes and installation targets are temporary.",
+  "checks": [
+    "Selected absolute folder, including spaces, percent, quotes and dollar characters",
+    "User command symlink and application-menu entry",
+    "Optional desktop shortcut",
+    "Real desktop-file-validate and gio launch",
+    "Owned update preserves all user files",
+    "Modified application/helper blocks overwrite",
+    "Uninstall preserves saves/cache, changed files and empty user folders",
+    "Foreign folder/command/symlink rejected",
+    "Bounded archive extraction rejects traversal and out-of-tree links",
+    "Internal hard links supported",
+    "Concurrent installer lock",
+    "Shortcut failure rollback and late foreign shortcut preservation",
+    "Tampered manifest cannot delete outside installation"
+  ],
+  "sourceSha256": {
+    "packaging/linux/install.sh": "c002a7f0d3af5b471c8f9c305d12666efcd7defaeb6538d7773a289c04751ffe",
+    "packaging/linux/uninstall.sh": "be1de8c8ebe5f23d2abfa3fc2e68dc2dc60f5b16467540fb577006e6240efc44",
+    "packaging/linux/installer.py": "89ef08fd9b96f98ecea36981e4fd68499b9b0f35459a72c332a4dc3ae73379da",
+    "packaging/linux/test_installer.py": "79c5853acb20417edd281f118b366220e253c77777ffbb15034d0513a35f269d",
+    "packaging/linux/README.md": "ba9b4c04eb3a5819317a491ce26aafab34633f5dcaf00a01ebc6275f03d4f5e1"
+  },
+  "references": [
+    "https://specifications.freedesktop.org/desktop-entry/latest/exec-variables.html",
+    "https://specifications.freedesktop.org/desktop-entry/latest/value-types.html",
+    "https://specifications.freedesktop.org/basedir/latest/"
+  ]
+}

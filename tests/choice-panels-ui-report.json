@@ -1,0 +1,207 @@
+{
+  "actions": [
+    {
+      "expectedGameId": "choice-panels-fixture",
+      "promptId": 101,
+      "type": "multi_amount",
+      "value": [
+        4,
+        1
+      ]
+    },
+    {
+      "expectedGameId": "choice-panels-fixture",
+      "promptId": 103,
+      "type": "uuid",
+      "value": "forest-native"
+    },
+    {
+      "expectedGameId": "choice-panels-fixture",
+      "promptId": 104,
+      "type": "uuid",
+      "value": "forest-native"
+    },
+    {
+      "expectedGameId": "choice-panels-fixture",
+      "promptId": 105,
+      "type": "uuid",
+      "value": "bear-two"
+    },
+    {
+      "expectedGameId": "choice-panels-fixture",
+      "promptId": 106,
+      "type": "multi_amount",
+      "value": [
+        4,
+        1
+      ]
+    },
+    {
+      "expectedGameId": "choice-panels-fixture",
+      "promptId": 108,
+      "type": "uuid",
+      "value": "forest-native"
+    },
+    {
+      "expectedGameId": "choice-panels-fixture",
+      "promptId": 109,
+      "type": "uuid",
+      "value": "forest-native"
+    },
+    {
+      "expectedGameId": "choice-panels-fixture",
+      "promptId": 110,
+      "type": "uuid",
+      "value": "bear-two"
+    },
+    {
+      "expectedGameId": "778d0c57-7d65-44fc-b954-335319211e4d",
+      "promptId": 3,
+      "type": "uuid",
+      "value": "39a4db5f-a5a9-42ba-92ba-be5270b4d550"
+    },
+    {
+      "expectedGameId": "f15468fe-0592-41fb-89df-7507878ea1ae",
+      "promptId": 2,
+      "type": "multi_amount",
+      "value": [
+        1,
+        2
+      ]
+    },
+    {
+      "expectedGameId": "439e5509-04d5-4c5c-afe8-2d57699f0105",
+      "promptId": 10,
+      "type": "uuid",
+      "value": "668d8c77-3ecd-49d2-8d87-c7e41e28f190"
+    },
+    {
+      "expectedGameId": "choice-panels-fixture",
+      "promptId": 210,
+      "type": "boolean",
+      "value": false
+    }
+  ],
+  "captures": [
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/amount-distribution-minimum.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/library-grid-minimum.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/graveyard-grid-minimum.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/exile-grid-minimum.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/individual-attackers-minimum.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/amount-distribution-scaled.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/library-grid-scaled.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/graveyard-grid-scaled.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/exile-grid-scaled.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/individual-attackers-scaled.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/genuine-native-attackers.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/genuine-native-menace-damage.png",
+    "/tmp/love2gathering-choice-panels-ui-j0xij9/genuine-native-land-search.png"
+  ],
+  "checks": [
+    "minimum confirmation stays within the logical viewport",
+    "The actual amount popup locks background board input: minimum",
+    "Production mouse press routes to the amount card drag through its own modal: minimum",
+    "Actual drag rearranges targets without answering or inventing damage order: minimum",
+    "Actual amount text fields retain each native target index after dragging: minimum",
+    "Actual confirmation submits the native index array once: minimum",
+    "An invalid native total disables confirmation rather than silently changing amounts: minimum",
+    "Escape never invents a cancellation of the required native amount decision: minimum",
+    "A zone opened during the drag consumes the late release without an action: minimum",
+    "The actual library image grid puts visible basic lands before other cards: minimum",
+    "Unavailable visible library cards are grey and disabled from native permissions: minimum",
+    "The library grid never creates controls for a concealed identity: minimum",
+    "Clicking the grey library candidate cannot answer the native prompt: minimum",
+    "An unavailable visible card remains inspectable by right-click without becoming actionable: minimum",
+    "The available basic-land image submits its original native UUID: minimum",
+    "Graveyard browsing uses a real card-image button grid: minimum",
+    "Actual graveyard image click forwards the offered UUID and closes the zone: minimum",
+    "Exile displays an unentitled card only as a disabled generic back: minimum",
+    "Actual right-click opens a visible exiled card without answering: minimum",
+    "Individual attacker images retain the native provisional selection separately from All attack: minimum",
+    "An individual attacker button sends only that offered UUID: minimum",
+    "scaled confirmation stays within the logical viewport",
+    "The actual amount popup locks background board input: scaled",
+    "Production mouse press routes to the amount card drag through its own modal: scaled",
+    "Actual drag rearranges targets without answering or inventing damage order: scaled",
+    "Actual amount text fields retain each native target index after dragging: scaled",
+    "Actual confirmation submits the native index array once: scaled",
+    "An invalid native total disables confirmation rather than silently changing amounts: scaled",
+    "Escape never invents a cancellation of the required native amount decision: scaled",
+    "A zone opened during the drag consumes the late release without an action: scaled",
+    "The actual library image grid puts visible basic lands before other cards: scaled",
+    "Unavailable visible library cards are grey and disabled from native permissions: scaled",
+    "The library grid never creates controls for a concealed identity: scaled",
+    "Clicking the grey library candidate cannot answer the native prompt: scaled",
+    "An unavailable visible card remains inspectable by right-click without becoming actionable: scaled",
+    "The available basic-land image submits its original native UUID: scaled",
+    "Graveyard browsing uses a real card-image button grid: scaled",
+    "Actual graveyard image click forwards the offered UUID and closes the zone: scaled",
+    "Exile displays an unentitled card only as a disabled generic back: scaled",
+    "Actual right-click opens a visible exiled card without answering: scaled",
+    "Individual attacker images retain the native provisional selection separately from All attack: scaled",
+    "An individual attacker button sends only that offered UUID: scaled",
+    "The opening dice overlay hides native-choice controls and blocks their custom input",
+    "The genuine native attacker frame shows its selected and still-offered individual creatures",
+    "Actual click on the genuine native frame submits its exact offered attacker UUID",
+    "The genuine native menace frame opens the two-blocker image/amount decision",
+    "Native exact blocker identities remain bound to the original indices after an actual drag",
+    "The genuine native damage frame submits [1,2], the same accepted native distribution checked by the bridge fixture",
+    "The genuine Evolving Wilds library search puts both explicitly native Basic lands first",
+    "The genuine native-entitled nonbasic land is grey and cannot satisfy the Basic-land prompt",
+    "Actual click on the genuine grey nonbasic candidate sends no action",
+    "Actual choice search filters only the entitled native candidate grid",
+    "The actual searched Forest button submits the same UUID accepted by the native Evolving Wilds fixture",
+    "An actual offered generic amount Cancel choice remains visible in the new popup",
+    "The explicit Cancel button forwards its offered native false response without inventing an answer",
+    "The amount field really has Slab keyboard focus before an asynchronous transition",
+    "An asynchronously disappearing prompt clears hidden numeric-input focus and its modal identity",
+    "A replacement native prompt in the same game clears the previous amount field focus",
+    "A replacement game cannot retain keyboard focus in a prior native choice opening",
+    "The actual zone-search control has keyboard focus before closing its modal",
+    "Escape clears the closed zone grid, hidden search focus and obsolete input lock"
+  ],
+  "modes": [
+    {
+      "logical": [
+        1120,
+        720
+      ],
+      "physical": [
+        1120,
+        720
+      ],
+      "renderScale": 1,
+      "scale": 1
+    },
+    {
+      "logical": [
+        1152,
+        720
+      ],
+      "physical": [
+        1440,
+        900
+      ],
+      "renderScale": 0.75,
+      "scale": 1.25
+    }
+  ],
+  "nativeFrames": true,
+  "scope": "Actual production main input callbacks, L\u00d6VE rendering and Slab drag/text/button dispatch with explicit native-protocol presentation fixtures and optional genuine exported native attacker/menace-damage frames. Native legality/effects are independently tested by bridge fixtures; the UI uses an isolated action ledger with no service/network/user cache/native match.",
+  "sourceSha256": {
+    "app/card_choices.lua": "43b1deb2f8f81bb74c866b6369d4045fc14ec0cd711e19a21d6820feaca171d1",
+    "app/combat_choices.lua": "b7323b79a9d1778ce31626348501dc84b470fc2490e43f50d8eaf1f01446f161",
+    "app/zone_ui.lua": "e38655735e6e73d894c4b7e3b2b24f60c6d909c5b2efafc8306ab41ab210a4ff",
+    "app/view.lua": "034282fbc888bf555631745667ac247e640b23b5827b2276e62314b2b9a16c6b",
+    "app/match_ui.lua": "c2df61ca3086f1ba75e8082c3436da99854b9da01f9eebda0cbfaa1c567b3732",
+    "app/card_presentation.lua": "46324df3d956a7eeb2902dd1a42c84cf1a90b67f5b5494077c9c79d4caeed405",
+    "app/renderer.lua": "675af197fe41dcde0e4e6b9ddb345d26bdfac68a5c0341e80ba59bfb2ee2ed9f",
+    "main.lua": "279c280a9cc2ecd840949df630f367748a5637d26bd94013535ac57ca3913d35",
+    "tests/choice_panels_ui.lua": "1157d1c6519e94126cef91c81119f0e2e8ed9e52c910b8f55b3ee36accbfbf84"
+  },
+  "nativeFrameSha256": {
+    "native-damage.json": "0389cd63da36602cc24b922ec0cb3c326e10f91d15062060185987c457221bb0",
+    "native-land-search.json": "b1f5b991f1f084c18c6d174611766284e8cd44e0b9190b0c330e8ecd6aae02a3",
+    "native-attackers.json": "6fb17b5d4bddbe1f49476e0264fa32c5d0c06b8161f5d706f0ecf3d457791391"
+  }
+}

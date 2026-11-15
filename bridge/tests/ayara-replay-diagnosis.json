@@ -1,0 +1,223 @@
+{
+  "readOnly": true,
+  "source": "Latest completed 2234-frame Commander recording; bounded public combat events only",
+  "turn": 22,
+  "events": [
+    {
+      "sequence": 2315,
+      "type": "public_log",
+      "text": "XMage Bot 2 - Ability triggers: Goreclaw, Terror of Qal Sisma - Whenever Goreclaw, Terror of Qal Sisma attacks, each creature you control with power 4 or greater gets +1/+1 and gains trample until end of turn."
+    },
+    {
+      "sequence": 2321,
+      "type": "public_log",
+      "text": "XMage Bot 2 resolving Goreclaw, Terror of Qal Sisma"
+    },
+    {
+      "sequence": 2343,
+      "type": "public_log",
+      "text": "Attacker: Goreclaw, Terror of Qal Sisma (5/4) blocked by Rat Token (1/1)"
+    },
+    {
+      "sequence": 2345,
+      "type": "public_log",
+      "text": "Attacker: Primordial Sage (5/6) blocked by Pitiless Plunderer (1/4)"
+    },
+    {
+      "sequence": 2347,
+      "type": "public_log",
+      "text": "Attacker: Ulvenwald Hydra (8/8) blocked by Rat Token (1/1)"
+    },
+    {
+      "sequence": 2359,
+      "type": "public_log",
+      "text": "Human sacrificed Rat Token (source: Ayara, First of Locthwain)"
+    },
+    {
+      "sequence": 2362,
+      "type": "public_log",
+      "text": "Human activates: draw a card. from Ayara, First of Locthwain"
+    },
+    {
+      "sequence": 2382,
+      "type": "public_log",
+      "text": "Human resolving Ayara, First of Locthwain"
+    },
+    {
+      "sequence": 2394,
+      "type": "public_log",
+      "text": "Human loses 5 life at combat from Goreclaw, Terror of Qal Sisma"
+    },
+    {
+      "sequence": 2402,
+      "type": "public_log",
+      "text": "Human loses 1 life at combat from Primordial Sage"
+    },
+    {
+      "sequence": 2416,
+      "type": "public_log",
+      "text": "Human loses 7 life at combat from Ulvenwald Hydra"
+    }
+  ],
+  "frames": [
+    {
+      "sequence": 2325,
+      "step": "Declare Attackers",
+      "humanLife": 40,
+      "groups": [
+        {
+          "attacker": "Goreclaw, Terror of Qal Sisma",
+          "power": "5",
+          "nativeStandaloneTrample": true,
+          "blocked": false,
+          "blockers": []
+        },
+        {
+          "attacker": "Primordial Sage",
+          "power": "5",
+          "nativeStandaloneTrample": true,
+          "blocked": false,
+          "blockers": []
+        },
+        {
+          "attacker": "Ulvenwald Hydra",
+          "power": "8",
+          "nativeStandaloneTrample": true,
+          "blocked": false,
+          "blockers": []
+        }
+      ]
+    },
+    {
+      "sequence": 2349,
+      "step": "Declare Blockers",
+      "humanLife": 40,
+      "groups": [
+        {
+          "attacker": "Goreclaw, Terror of Qal Sisma",
+          "power": "5",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": [
+            "Rat Token"
+          ]
+        },
+        {
+          "attacker": "Primordial Sage",
+          "power": "5",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": [
+            "Pitiless Plunderer"
+          ]
+        },
+        {
+          "attacker": "Ulvenwald Hydra",
+          "power": "8",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": [
+            "Rat Token"
+          ]
+        }
+      ]
+    },
+    {
+      "sequence": 2365,
+      "step": "Declare Blockers",
+      "humanLife": 40,
+      "groups": [
+        {
+          "attacker": "Goreclaw, Terror of Qal Sisma",
+          "power": "5",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": []
+        },
+        {
+          "attacker": "Primordial Sage",
+          "power": "5",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": [
+            "Pitiless Plunderer"
+          ]
+        },
+        {
+          "attacker": "Ulvenwald Hydra",
+          "power": "8",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": [
+            "Rat Token"
+          ]
+        }
+      ]
+    },
+    {
+      "sequence": 2392,
+      "step": "Declare Blockers",
+      "humanLife": 40,
+      "groups": [
+        {
+          "attacker": "Goreclaw, Terror of Qal Sisma",
+          "power": "5",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": []
+        },
+        {
+          "attacker": "Primordial Sage",
+          "power": "5",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": [
+            "Pitiless Plunderer"
+          ]
+        },
+        {
+          "attacker": "Ulvenwald Hydra",
+          "power": "8",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": [
+            "Rat Token"
+          ]
+        }
+      ]
+    },
+    {
+      "sequence": 2430,
+      "step": "Combat Damage",
+      "humanLife": 27,
+      "groups": [
+        {
+          "attacker": "Goreclaw, Terror of Qal Sisma",
+          "power": "5",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": []
+        },
+        {
+          "attacker": "Primordial Sage",
+          "power": "5",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": [
+            "Pitiless Plunderer"
+          ]
+        },
+        {
+          "attacker": "Ulvenwald Hydra",
+          "power": "8",
+          "nativeStandaloneTrample": true,
+          "blocked": true,
+          "blockers": [
+            "Rat Token"
+          ]
+        }
+      ]
+    }
+  ],
+  "conclusion": "The Rat block was confirmed before Ayara sacrificed it. Goreclaw attack trigger had already granted trample to all three large attackers. Goreclaw remained blocked but had no blocker left and dealt 5 combat damage; other tramplers dealt 1 and 7. No native combat-rule defect observed."
+}

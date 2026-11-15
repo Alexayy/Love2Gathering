@@ -10,7 +10,11 @@
     <dependency><groupId>org.mage</groupId><artifactId>mage-player-ai-mad</artifactId><version>1.4.63</version></dependency>
     <dependency><groupId>org.mage</groupId><artifactId>mage-game-twoplayerduel</artifactId><version>1.4.63</version></dependency>
     <dependency><groupId>org.mage</groupId><artifactId>mage-game-commanderduel</artifactId><version>1.4.63</version></dependency>
+    <dependency><groupId>org.mage</groupId><artifactId>mage-game-commanderfreeforall</artifactId><version>1.4.63</version></dependency>
     <dependency><groupId>org.mage</groupId><artifactId>mage-deck-constructed</artifactId><version>1.4.63</version></dependency>
+    <dependency><groupId>org.mage</groupId><artifactId>mage-tournament-boosterdraft</artifactId><version>1.4.63</version></dependency>
+    <dependency><groupId>org.mage</groupId><artifactId>mage-deck-limited</artifactId><version>1.4.63</version></dependency>
+    <dependency><groupId>org.mage</groupId><artifactId>mage-game-freeforall</artifactId><version>1.4.63</version></dependency>
   </dependencies>
   <build><sourceDirectory>src</sourceDirectory><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-dependency-plugin</artifactId><version>3.8.1</version><executions><execution><id>runtime</id><phase>package</phase><goals><goal>copy-dependencies</goal></goals><configuration><includeScope>runtime</includeScope><outputDirectory>${project.build.directory}/lib</outputDirectory></configuration></execution></executions></plugin></plugins></build>
 </project>

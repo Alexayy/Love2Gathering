@@ -1,0 +1,61 @@
+{
+  "cases": [
+    {
+      "gameId": "038bf545-ba41-49d9-8aab-9ec8ea8db384",
+      "hiddenBots": 3,
+      "humanHand": 8,
+      "phase": "Precombat Main",
+      "players": 4,
+      "replayId": "game-038bf545-ba41-49d9-8aab-9ec8ea8db384",
+      "revision": 55
+    },
+    {
+      "gameId": "99ec1967-739a-4e74-acf3-4734b11b22c9",
+      "hiddenBots": 5,
+      "humanHand": 8,
+      "phase": "Precombat Main",
+      "players": 6,
+      "replayId": "game-99ec1967-739a-4e74-acf3-4734b11b22c9",
+      "revision": 97
+    }
+  ],
+  "checks": [
+    "Actual Commander lobby seat button: 4",
+    "Actual Model/API startup projects all native seats: 4",
+    "Every native player appears in starting-player choices: 4",
+    "Native free Commander mulligan metadata: 4",
+    "Starting-player and Keep buttons reached native main phase: 4",
+    "Native starting life and command zone: Commander UI Human / 4",
+    "Native starting life and command zone: XMage Bot 1 / 4",
+    "Native bot hand remains private: XMage Bot 1 / 4",
+    "Native starting life and command zone: XMage Bot 2 / 4",
+    "Native bot hand remains private: XMage Bot 2 / 4",
+    "Native starting life and command zone: XMage Bot 3 / 4",
+    "Native bot hand remains private: XMage Bot 3 / 4",
+    "Actual human starting hand rendered: 4",
+    "Native projection uses complete pannable terrain: 4",
+    "Actual callbacks focus native last bot: 4",
+    "Overview returns to actual full native table: 4",
+    "Actual Commander lobby seat button: 6",
+    "Actual Model/API startup projects all native seats: 6",
+    "Every native player appears in starting-player choices: 6",
+    "Native free Commander mulligan metadata: 6",
+    "Starting-player and Keep buttons reached native main phase: 6",
+    "Native starting life and command zone: Commander UI Human / 6",
+    "Native starting life and command zone: XMage Bot 1 / 6",
+    "Native bot hand remains private: XMage Bot 1 / 6",
+    "Native starting life and command zone: XMage Bot 2 / 6",
+    "Native bot hand remains private: XMage Bot 2 / 6",
+    "Native starting life and command zone: XMage Bot 3 / 6",
+    "Native bot hand remains private: XMage Bot 3 / 6",
+    "Native starting life and command zone: XMage Bot 4 / 6",
+    "Native bot hand remains private: XMage Bot 4 / 6",
+    "Native starting life and command zone: XMage Bot 5 / 6",
+    "Native bot hand remains private: XMage Bot 5 / 6",
+    "Actual human starting hand rendered: 6",
+    "Native projection uses complete pannable terrain: 6",
+    "Actual callbacks focus native last bot: 6",
+    "Overview returns to actual full native table: 6"
+  ],
+  "scope": "Actual L\u00d6VE/Slab input, Model/API requests and native XMage production Commander starts; temporary catalog storage; card snapshot unavailable, artwork disabled"
+}

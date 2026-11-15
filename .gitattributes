@@ -1,0 +1,2 @@
+# Preserve the supplied third-party notices byte-for-byte, including CRLF/tabs.
+assets/kenney/runtime/licenses/*.txt -text -whitespace

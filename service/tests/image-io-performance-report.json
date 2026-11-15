@@ -1,0 +1,521 @@
+{
+  "baseline": {
+    "diskOrder": [
+      "bulk",
+      "visible",
+      "visible",
+      "visible",
+      "visible",
+      "visible",
+      "selected"
+    ],
+    "exportMirrorBytes": 0,
+    "forcedNetwork": {
+      "bytes": 476400,
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Content-Length": "476400",
+        "Content-Type": "image/jpeg",
+        "Date": "Sun, 15 Nov 2026 15:39:23 GMT",
+        "Server": "Love2Gathering/1 Python/3.12.3",
+        "Server-Timing": "catalog;dur=0.048, queue;dur=0.003, local;dur=2.268, network;dur=40.046",
+        "X-Love2Gathering-Art-Variant": "original"
+      },
+      "seconds": 0.07425036800123053
+    },
+    "io": {
+      "active": 0,
+      "backgroundYields": 0,
+      "foregroundRequests": 0,
+      "maxConcurrentDiskOperations": 1,
+      "maxWaitSeconds": 0.21890786699805176,
+      "operations": 12,
+      "selectedOperations": 0,
+      "stages": {
+        "catalog": {
+          "count": 9,
+          "maxSeconds": 0.0010750280052889138,
+          "seconds": 0.00511043900041841
+        },
+        "disk": {
+          "count": 1,
+          "maxSeconds": 0.08641739500308177,
+          "seconds": 0.08641739500308177
+        },
+        "imageQueue": {
+          "count": 9,
+          "maxSeconds": 3.818000550381839e-06,
+          "seconds": 2.673998096724972e-05
+        },
+        "local": {
+          "count": 9,
+          "maxSeconds": 0.2548722400024417,
+          "seconds": 1.0044257010013098
+        },
+        "network": {
+          "count": 1,
+          "maxSeconds": 0.0400463519981713,
+          "seconds": 0.0400463519981713
+        },
+        "sql": {
+          "count": 25,
+          "maxSeconds": 0.03598039300413802,
+          "seconds": 0.30781042497983435
+        },
+        "thumbnailDecode": {
+          "count": 1,
+          "maxSeconds": 0.014809836997301318,
+          "seconds": 0.014809836997301318
+        },
+        "thumbnailRead": {
+          "count": 1,
+          "maxSeconds": 0.001966038005775772,
+          "seconds": 0.001966038005775772
+        },
+        "thumbnailWrite": {
+          "count": 1,
+          "maxSeconds": 0.008464747996185906,
+          "seconds": 0.008464747996185906
+        }
+      },
+      "waitSeconds": 0.8696735620032996,
+      "waiting": 0
+    },
+    "metadata": {
+      "bytes": 888,
+      "headers": {
+        "Content-Length": "888",
+        "Content-Type": "application/json; charset=utf-8",
+        "Date": "Sun, 15 Nov 2026 15:39:23 GMT",
+        "Server": "Love2Gathering/1 Python/3.12.3"
+      },
+      "seconds": 0.0015757770015625283
+    },
+    "networkFetchCount": 1,
+    "originals": {
+      "bytes": 3811200,
+      "count": 8
+    },
+    "priorityEnabled": false,
+    "reopenedCached": {
+      "bytes": 476400,
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Content-Length": "476400",
+        "Content-Type": "image/jpeg",
+        "Date": "Sun, 15 Nov 2026 15:39:23 GMT",
+        "Server": "Love2Gathering/1 Python/3.12.3",
+        "Server-Timing": "catalog;dur=0.038, queue;dur=0.003, local;dur=0.809",
+        "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000007-0-normal.jpg",
+        "X-Love2Gathering-Art-Variant": "original"
+      },
+      "seconds": 0.0016899039983400144
+    },
+    "selected": {
+      "bytes": 36463,
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Content-Length": "36463",
+        "Content-Type": "image/jpeg",
+        "Date": "Sun, 15 Nov 2026 15:39:23 GMT",
+        "Server": "Love2Gathering/1 Python/3.12.3",
+        "Server-Timing": "catalog;dur=0.349, queue;dur=0.003, local;dur=254.872",
+        "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000006-0-normal.jpg",
+        "X-Love2Gathering-Art-Variant": "thumb"
+      },
+      "seconds": 0.25605954099592054
+    },
+    "selectedFirst": false,
+    "thumbnailExtra": {
+      "bytes": 291704,
+      "bytesPerImage": 36463.0,
+      "count": 8
+    },
+    "thumbnailGenerationTimings": {
+      "active": 0,
+      "backgroundYields": 0,
+      "foregroundRequests": 0,
+      "maxConcurrentDiskOperations": 1,
+      "maxWaitSeconds": 0.10984627199650276,
+      "operations": 21,
+      "selectedOperations": 0,
+      "stages": {
+        "sql": {
+          "count": 29,
+          "maxSeconds": 0.04607550099899527,
+          "seconds": 0.22799644601036562
+        },
+        "thumbnailDecode": {
+          "count": 7,
+          "maxSeconds": 0.014681453998491634,
+          "seconds": 0.09346289298991906
+        },
+        "thumbnailRead": {
+          "count": 7,
+          "maxSeconds": 0.11116230700281449,
+          "seconds": 0.11526889199012658
+        },
+        "thumbnailWrite": {
+          "count": 7,
+          "maxSeconds": 0.008990726004412863,
+          "seconds": 0.058163086003332864
+        }
+      },
+      "waitSeconds": 0.11018756802513963,
+      "waiting": 0
+    },
+    "thumbnailStats": {
+      "available": true,
+      "dropped": 0,
+      "enabled": true,
+      "failed": 0,
+      "generated": 8,
+      "inputBytes": 3811200,
+      "maxHeight": 512,
+      "outputBytes": 291704,
+      "pending": 0,
+      "queueLimit": 64,
+      "reused": 0,
+      "version": 1,
+      "width": 256,
+      "workerAlive": false
+    },
+    "visible": [
+      {
+        "bytes": 36463,
+        "headers": {
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Length": "36463",
+          "Content-Type": "image/jpeg",
+          "Date": "Sun, 15 Nov 2026 15:39:23 GMT",
+          "Server": "Love2Gathering/1 Python/3.12.3",
+          "Server-Timing": "catalog;dur=0.877, queue;dur=0.004, local;dur=78.504",
+          "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000000-0-normal.jpg",
+          "X-Love2Gathering-Art-Variant": "thumb"
+        },
+        "seconds": 0.1564893300019321
+      },
+      {
+        "bytes": 36463,
+        "headers": {
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Length": "36463",
+          "Content-Type": "image/jpeg",
+          "Date": "Sun, 15 Nov 2026 15:39:23 GMT",
+          "Server": "Love2Gathering/1 Python/3.12.3",
+          "Server-Timing": "catalog;dur=1.075, queue;dur=0.003, local;dur=113.383",
+          "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000001-0-normal.jpg",
+          "X-Love2Gathering-Art-Variant": "thumb"
+        },
+        "seconds": 0.19206457499967655
+      },
+      {
+        "bytes": 36463,
+        "headers": {
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Length": "36463",
+          "Content-Type": "image/jpeg",
+          "Date": "Sun, 15 Nov 2026 15:39:23 GMT",
+          "Server": "Love2Gathering/1 Python/3.12.3",
+          "Server-Timing": "catalog;dur=0.932, queue;dur=0.003, local;dur=148.486",
+          "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000002-0-normal.jpg",
+          "X-Love2Gathering-Art-Variant": "thumb"
+        },
+        "seconds": 0.22779215999617008
+      },
+      {
+        "bytes": 36463,
+        "headers": {
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Length": "36463",
+          "Content-Type": "image/jpeg",
+          "Date": "Sun, 15 Nov 2026 15:39:23 GMT",
+          "Server": "Love2Gathering/1 Python/3.12.3",
+          "Server-Timing": "catalog;dur=0.810, queue;dur=0.003, local;dur=184.065",
+          "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000003-0-normal.jpg",
+          "X-Love2Gathering-Art-Variant": "thumb"
+        },
+        "seconds": 0.2633518759976141
+      },
+      {
+        "bytes": 36463,
+        "headers": {
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Length": "36463",
+          "Content-Type": "image/jpeg",
+          "Date": "Sun, 15 Nov 2026 15:39:23 GMT",
+          "Server": "Love2Gathering/1 Python/3.12.3",
+          "Server-Timing": "catalog;dur=0.646, queue;dur=0.003, local;dur=219.897",
+          "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000004-0-normal.jpg",
+          "X-Love2Gathering-Art-Variant": "thumb"
+        },
+        "seconds": 0.2989305070004775
+      }
+    ]
+  },
+  "baselinePriorityAssertionExpectedFailure": true,
+  "current": {
+    "diskOrder": [
+      "selected",
+      "visible",
+      "visible",
+      "visible",
+      "visible",
+      "visible",
+      "bulk"
+    ],
+    "exportMirrorBytes": 0,
+    "forcedNetwork": {
+      "bytes": 476400,
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Content-Length": "476400",
+        "Content-Type": "image/jpeg",
+        "Date": "Sun, 15 Nov 2026 15:39:24 GMT",
+        "Server": "Love2Gathering/1 Python/3.12.3",
+        "Server-Timing": "catalog;dur=0.040, queue;dur=0.003, local;dur=2.132, network;dur=40.073",
+        "X-Love2Gathering-Art-Variant": "original"
+      },
+      "seconds": 0.07428448199789273
+    },
+    "io": {
+      "active": 0,
+      "backgroundYields": 1,
+      "foregroundRequests": 0,
+      "maxConcurrentDiskOperations": 1,
+      "maxWaitSeconds": 0.22635772000649013,
+      "operations": 14,
+      "selectedOperations": 3,
+      "stages": {
+        "catalog": {
+          "count": 9,
+          "maxSeconds": 0.0012765999999828637,
+          "seconds": 0.004907482994894963
+        },
+        "disk": {
+          "count": 1,
+          "maxSeconds": 0.009092658998270053,
+          "seconds": 0.009092658998270053
+        },
+        "imageQueue": {
+          "count": 9,
+          "maxSeconds": 3.1960007618181407e-06,
+          "seconds": 2.607999340398237e-05
+        },
+        "local": {
+          "count": 9,
+          "maxSeconds": 0.22245562199532287,
+          "seconds": 0.7967164539950318
+        },
+        "network": {
+          "count": 1,
+          "maxSeconds": 0.040072691001114435,
+          "seconds": 0.040072691001114435
+        },
+        "sql": {
+          "count": 25,
+          "maxSeconds": 0.0362493640059256,
+          "seconds": 0.3089018429964199
+        },
+        "thumbnailDecode": {
+          "count": 1,
+          "maxSeconds": 0.014648992000729777,
+          "seconds": 0.014648992000729777
+        },
+        "thumbnailRead": {
+          "count": 1,
+          "maxSeconds": 0.001665627998590935,
+          "seconds": 0.001665627998590935
+        },
+        "thumbnailWrite": {
+          "count": 1,
+          "maxSeconds": 0.009091916996112559,
+          "seconds": 0.009091916996112559
+        }
+      },
+      "waitSeconds": 0.8013335080031538,
+      "waiting": 0
+    },
+    "metadata": {
+      "bytes": 888,
+      "headers": {
+        "Content-Length": "888",
+        "Content-Type": "application/json; charset=utf-8",
+        "Date": "Sun, 15 Nov 2026 15:39:24 GMT",
+        "Server": "Love2Gathering/1 Python/3.12.3"
+      },
+      "seconds": 0.0013209539974923246
+    },
+    "networkFetchCount": 1,
+    "originals": {
+      "bytes": 3811200,
+      "count": 8
+    },
+    "priorityEnabled": true,
+    "reopenedCached": {
+      "bytes": 476400,
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Content-Length": "476400",
+        "Content-Type": "image/jpeg",
+        "Date": "Sun, 15 Nov 2026 15:39:24 GMT",
+        "Server": "Love2Gathering/1 Python/3.12.3",
+        "Server-Timing": "catalog;dur=0.043, queue;dur=0.003, local;dur=1.662",
+        "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000007-0-normal.jpg",
+        "X-Love2Gathering-Art-Variant": "original"
+      },
+      "seconds": 0.002712902998609934
+    },
+    "selected": {
+      "bytes": 36463,
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Content-Length": "36463",
+        "Content-Type": "image/jpeg",
+        "Date": "Sun, 15 Nov 2026 15:39:24 GMT",
+        "Server": "Love2Gathering/1 Python/3.12.3",
+        "Server-Timing": "catalog;dur=0.298, queue;dur=0.003, local;dur=38.592",
+        "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000006-0-normal.jpg",
+        "X-Love2Gathering-Art-Variant": "thumb"
+      },
+      "seconds": 0.04008172899921192
+    },
+    "selectedFirst": true,
+    "thumbnailExtra": {
+      "bytes": 291704,
+      "bytesPerImage": 36463.0,
+      "count": 8
+    },
+    "thumbnailGenerationTimings": {
+      "active": 0,
+      "backgroundYields": 0,
+      "foregroundRequests": 0,
+      "maxConcurrentDiskOperations": 1,
+      "maxWaitSeconds": 0.0763330460031284,
+      "operations": 21,
+      "selectedOperations": 0,
+      "stages": {
+        "sql": {
+          "count": 29,
+          "maxSeconds": 0.013208850999944843,
+          "seconds": 0.19045811900286935
+        },
+        "thumbnailDecode": {
+          "count": 7,
+          "maxSeconds": 0.013109693994920235,
+          "seconds": 0.09074117298587225
+        },
+        "thumbnailRead": {
+          "count": 7,
+          "maxSeconds": 0.07703049800329609,
+          "seconds": 0.08104857700527646
+        },
+        "thumbnailWrite": {
+          "count": 7,
+          "maxSeconds": 0.008280527996248566,
+          "seconds": 0.05726814099034527
+        }
+      },
+      "waitSeconds": 0.07669298201653874,
+      "waiting": 0
+    },
+    "thumbnailStats": {
+      "available": true,
+      "dropped": 0,
+      "enabled": true,
+      "failed": 0,
+      "generated": 8,
+      "inputBytes": 3811200,
+      "maxHeight": 512,
+      "outputBytes": 291704,
+      "pending": 0,
+      "queueLimit": 64,
+      "reused": 0,
+      "version": 1,
+      "width": 256,
+      "workerAlive": false
+    },
+    "visible": [
+      {
+        "bytes": 36463,
+        "headers": {
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Length": "36463",
+          "Content-Type": "image/jpeg",
+          "Date": "Sun, 15 Nov 2026 15:39:24 GMT",
+          "Server": "Love2Gathering/1 Python/3.12.3",
+          "Server-Timing": "catalog;dur=1.277, queue;dur=0.003, local;dur=78.564",
+          "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000000-0-normal.jpg",
+          "X-Love2Gathering-Art-Variant": "thumb"
+        },
+        "seconds": 0.08160618299734779
+      },
+      {
+        "bytes": 36463,
+        "headers": {
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Length": "36463",
+          "Content-Type": "image/jpeg",
+          "Date": "Sun, 15 Nov 2026 15:39:24 GMT",
+          "Server": "Love2Gathering/1 Python/3.12.3",
+          "Server-Timing": "catalog;dur=1.152, queue;dur=0.003, local;dur=114.440",
+          "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000001-0-normal.jpg",
+          "X-Love2Gathering-Art-Variant": "thumb"
+        },
+        "seconds": 0.11766814099973999
+      },
+      {
+        "bytes": 36463,
+        "headers": {
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Length": "36463",
+          "Content-Type": "image/jpeg",
+          "Date": "Sun, 15 Nov 2026 15:39:24 GMT",
+          "Server": "Love2Gathering/1 Python/3.12.3",
+          "Server-Timing": "catalog;dur=0.753, queue;dur=0.003, local;dur=150.334",
+          "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000002-0-normal.jpg",
+          "X-Love2Gathering-Art-Variant": "thumb"
+        },
+        "seconds": 0.15380519199970877
+      },
+      {
+        "bytes": 36463,
+        "headers": {
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Length": "36463",
+          "Content-Type": "image/jpeg",
+          "Date": "Sun, 15 Nov 2026 15:39:24 GMT",
+          "Server": "Love2Gathering/1 Python/3.12.3",
+          "Server-Timing": "catalog;dur=0.627, queue;dur=0.002, local;dur=186.389",
+          "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000003-0-normal.jpg",
+          "X-Love2Gathering-Art-Variant": "thumb"
+        },
+        "seconds": 0.1896562800029642
+      },
+      {
+        "bytes": 36463,
+        "headers": {
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Length": "36463",
+          "Content-Type": "image/jpeg",
+          "Date": "Sun, 15 Nov 2026 15:39:24 GMT",
+          "Server": "Love2Gathering/1 Python/3.12.3",
+          "Server-Timing": "catalog;dur=0.387, queue;dur=0.003, local;dur=222.456",
+          "X-Love2Gathering-Art-Key": "11111111-1111-4111-8111-000000000004-0-normal.jpg",
+          "X-Love2Gathering-Art-Variant": "thumb"
+        },
+        "seconds": 0.2253913980021025
+      }
+    ]
+  },
+  "output": "/tmp/love2gathering-image-io-acceptance-kohpo8k3",
+  "scope": "Owned real ThreadingHTTPServer/Catalog/SQLite and generated JPEGs. The exact same bounded 35ms fake cold-disk step runs in FIFO and priority cases; this measures scheduling, not physical HDD throughput or Internet speed. Originals remain untouched; derived JPEG bytes are additional to originals, independent of optional export mirrors.",
+  "sourceHashes": {
+    "service/artwork.py": "7ef92990d2643dc11ed3bd43f966475527703f29bebd6bc350e9ea0413f1cbf8",
+    "service/image_io.py": "6a34080deb57fb9258b3c2d136632dd10b5aed300cef18160457f86739d9bb2d",
+    "service/server.py": "89f092ade99475ae9c5e2eaaefcddbb8cb164775610dac24843a4a197bb3f1b0",
+    "service/storage.py": "ad9ef476c97b42d043fd8b5af2c2365ed01f99d53c8a2732fc9f2d35a134ee0c",
+    "service/thumbnails.py": "b32b3f184a1ec9ec94cc0a1fa384415fe54a07d3e69c4be622e61126f98e77b1"
+  },
+  "status": "pass"
+}

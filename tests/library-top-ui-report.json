@@ -1,0 +1,133 @@
+{
+  "actions": [
+    {
+      "expectedGameId": "432cb9db-151d-4038-9abe-c237f013966e",
+      "promptId": 1,
+      "type": "uuid",
+      "value": "e8429ad2-6db7-4fbb-8d95-2c70737735b6"
+    },
+    {
+      "expectedGameId": "432cb9db-151d-4038-9abe-c237f013966e",
+      "promptId": 1,
+      "type": "uuid",
+      "value": "e8429ad2-6db7-4fbb-8d95-2c70737735b6"
+    },
+    {
+      "expectedGameId": "432cb9db-151d-4038-9abe-c237f013966e",
+      "promptId": 1,
+      "type": "uuid",
+      "value": "e8429ad2-6db7-4fbb-8d95-2c70737735b6"
+    },
+    {
+      "expectedGameId": "UI-MULTIPLAYER-432cb9db-151d-4038-9abe-c237f013966e",
+      "promptId": 1,
+      "type": "uuid",
+      "value": "e8429ad2-6db7-4fbb-8d95-2c70737735b6"
+    },
+    {
+      "expectedGameId": "UI-MULTIPLAYER-432cb9db-151d-4038-9abe-c237f013966e",
+      "promptId": 1,
+      "type": "uuid",
+      "value": "e8429ad2-6db7-4fbb-8d95-2c70737735b6"
+    },
+    {
+      "expectedGameId": "UI-MULTIPLAYER-432cb9db-151d-4038-9abe-c237f013966e",
+      "promptId": 1,
+      "type": "uuid",
+      "value": "e8429ad2-6db7-4fbb-8d95-2c70737735b6"
+    }
+  ],
+  "captures": [
+    "/tmp/love2gathering-library-top-ui-k9s496/duel-native-playable-top.png",
+    "/tmp/love2gathering-library-top-ui-k9s496/duel-native-library-zone.png",
+    "/tmp/love2gathering-library-top-ui-k9s496/multiplayer-scaled-playable-top.png",
+    "/tmp/love2gathering-library-top-ui-k9s496/multiplayer-scaled-library-zone.png"
+  ],
+  "checks": [
+    "Projected Courser top is visible and actionable: duel-native",
+    "Offscreen library drawing leaves unrelated hit metadata intact: duel-native",
+    "Actual pile click sends the offered native top UUID: duel-native",
+    "Actual top-card press begins a card drag: duel-native",
+    "A dragged top omitted from drawing cannot corrupt previous hits: duel-native",
+    "Actual drag also sends only the native top UUID: duel-native",
+    "Visible top with an empty native actionable list opens details without playing: duel-native",
+    "Opening the library grid cannot select the image under its opening gesture: duel-native",
+    "Library control opens a top-only live zone: duel-native",
+    "Actual entitled zone row sends the native action: duel-native",
+    "An open zone replaces a changed top and drops its old row: duel-native",
+    "Hidden top disappears from its live zone and table hit regions: duel-native",
+    "Pending priority acknowledgement never plays a stale highlighted top: duel-native",
+    "Top-specific details close when native visibility disappears: duel-native",
+    "Actual replay right-click inspects without any live action: duel-native",
+    "Replay frame changes also retire stale top-specific details: duel-native",
+    "A top changed during an actual drag cannot send an old UUID: duel-native",
+    "Projected Courser top is visible and actionable: multiplayer-scaled",
+    "Offscreen library drawing leaves unrelated hit metadata intact: multiplayer-scaled",
+    "Actual pile click sends the offered native top UUID: multiplayer-scaled",
+    "Actual top-card press begins a card drag: multiplayer-scaled",
+    "A dragged top omitted from drawing cannot corrupt previous hits: multiplayer-scaled",
+    "Actual drag also sends only the native top UUID: multiplayer-scaled",
+    "Visible top with an empty native actionable list opens details without playing: multiplayer-scaled",
+    "Opening the library grid cannot select the image under its opening gesture: multiplayer-scaled",
+    "Library control opens a top-only live zone: multiplayer-scaled",
+    "Actual entitled zone row sends the native action: multiplayer-scaled",
+    "An open zone replaces a changed top and drops its old row: multiplayer-scaled",
+    "Hidden top disappears from its live zone and table hit regions: multiplayer-scaled",
+    "Pending priority acknowledgement never plays a stale highlighted top: multiplayer-scaled",
+    "Top-specific details close when native visibility disappears: multiplayer-scaled",
+    "Actual replay right-click inspects without any live action: multiplayer-scaled",
+    "Replay frame changes also retire stale top-specific details: multiplayer-scaled",
+    "A top changed during an actual drag cannot send an old UUID: multiplayer-scaled"
+  ],
+  "geometry": [
+    {
+      "logical": [
+        1120,
+        720
+      ],
+      "mode": [
+        1120,
+        720,
+        1,
+        1,
+        false
+      ],
+      "physical": [
+        1120,
+        720
+      ]
+    },
+    {
+      "logical": [
+        1152,
+        720
+      ],
+      "mode": [
+        1440,
+        900,
+        1.25,
+        0.75,
+        true
+      ],
+      "physical": [
+        1440,
+        900
+      ]
+    }
+  ],
+  "nativeGameId": "432cb9db-151d-4038-9abe-c237f013966e",
+  "nativeTopId": "e8429ad2-6db7-4fbb-8d95-2c70737735b6",
+  "scope": "Actual production callbacks, Slab zone rows and rendered native Courser duel scene; synthetic multiplayer expansion/visibility/priority/replay transitions are labeled presentation fixtures. A controlled action ledger records UUID submission; actual native land play is separately verified by the bridge fixture. No network, external images, user storage or running native game is used by this UI test.",
+  "sourceSha256": {
+    "app/table.lua": "b9f4c1887c5becd92de96dff522391e1e97b16ae68742c22197bfa02b0874e04",
+    "app/multiplayer_table.lua": "d9603ee6c9659846a0bd0b1b51d67bbb29bc8e6f214e28a214665c96a473e618",
+    "app/renderer.lua": "675af197fe41dcde0e4e6b9ddb345d26bdfac68a5c0341e80ba59bfb2ee2ed9f",
+    "app/model.lua": "501ba375ac93a489e70c2108f91c5abf8a4de4ad9c05450eb236db72a460f733",
+    "app/view.lua": "034282fbc888bf555631745667ac247e640b23b5827b2276e62314b2b9a16c6b",
+    "app/layout.lua": "99486d5ed93b53930c87f77a885323477b1ed3c80cea12b93fb1debf924c1b22",
+    "app/match_ui.lua": "c2df61ca3086f1ba75e8082c3436da99854b9da01f9eebda0cbfaa1c567b3732",
+    "tests/library_top_ui.lua": "c0e5efc7b9864850d17c8b9d9394a4b90a381b2c88b20ff7812479deeeb3a179",
+    "main.lua": "279c280a9cc2ecd840949df630f367748a5637d26bd94013535ac57ca3913d35"
+  },
+  "nativeSceneSha256": "f46b8e21cdffdffcb1ab6d20602696056a12a645dd8e8b36d9091556e4b05a12"
+}

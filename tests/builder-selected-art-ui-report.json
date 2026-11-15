@@ -1,0 +1,210 @@
+{
+  "cache": {
+    "budget": 268435456,
+    "bytes": 731136,
+    "images": 2,
+    "pending": 0,
+    "statuses": 4
+  },
+  "captures": [
+    "/tmp/love2gathering-selected-art-ui-1WIKOy/classic-selected-exact.png",
+    "/tmp/love2gathering-selected-art-ui-1WIKOy/edition-candidate.png"
+  ],
+  "checks": [
+    "Builder opens under Cache only without an implicit selected download",
+    "Initial visible artwork lookup never silently enables network",
+    "Initial visible artwork lookup never silently enables network",
+    "Actual Classic card click requests its missing original at selected network priority",
+    "The next actual card click resolves and downloads its saved alternate printing",
+    "The current selected card becomes visible while the prior slow selected image is still waiting",
+    "Idle frames reuse the selected image without repeated acquisition",
+    "A previously missing thumbnail immediately reuses the acquired original",
+    "A late obsolete download cannot upload or replace the current selected artwork",
+    "Opening an edition popup does not acquire its implicit candidate",
+    "Actual candidate click loads exact artwork while leaving deck and parent staging unchanged",
+    "Actual Cancel preserves both the saved edition and parent preview",
+    "Actual Apply selects the changed deck entry and reuses the acquired exact image",
+    "A real Simplified deck-entry click continues from unresolved edition metadata to its exact image",
+    "Actual Simplified selection also explicitly fetches a cache miss",
+    "Closing the old editor fences its pending selected image before GPU upload",
+    "Explicit selection never changes the saved Cache only preference",
+    "Every acquired image belongs to an explicit full-size selection",
+    "Every acquired image belongs to an explicit full-size selection",
+    "Every acquired image belongs to an explicit full-size selection",
+    "Every acquired image belongs to an explicit full-size selection",
+    "Every acquired image belongs to an explicit full-size selection",
+    "Only still-current exact selections reach real GPU uploads"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/sets?format=modern",
+      "seconds": 0.050731089,
+      "service": "catalog"
+    },
+    {
+      "method": "POST",
+      "path": "/decks/validate",
+      "seconds": 0.050731089,
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/cards/alt-b?printing=alt-b",
+      "seconds": 1.800844806,
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/art/oracle-a?face=0&kind=normal&network=0&printing=print-a",
+      "seconds": 0.049551867,
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "path": "/art/oracle-a?face=0&kind=normal&network=0&printing=print-a&variant=thumb",
+      "seconds": 0.049551867,
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "path": "/art/oracle-a?face=0&kind=normal&network=1&printing=print-a&priority=selected",
+      "priority": "selected",
+      "seconds": 1.201379451,
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "path": "/cards/alt-b?printing=alt-b",
+      "priority": "selectedMetadata",
+      "seconds": 0.031436788,
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/art/oracle-b?face=0&kind=normal&network=1&printing=alt-b&exact=1&priority=selected",
+      "priority": "selected",
+      "seconds": 0.030186854,
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "path": "/art/oracle-b?face=0&kind=normal&network=0&printing=alt-b&exact=1&variant=thumb",
+      "seconds": 0.021640863,
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "path": "/printings?name=Current%20selected%20fixture&q=&set=&variant=all&limit=12&offset=0",
+      "seconds": 0.020809674,
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/art/oracle-b?face=0&kind=normal&network=0&printing=popup-alt&exact=1&variant=thumb",
+      "seconds": 0.021773852,
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "path": "/art/oracle-b?face=0&kind=normal&network=1&printing=popup-alt&exact=1&priority=selected",
+      "priority": "selected",
+      "seconds": 0.032086877,
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "path": "/printings?name=Current%20selected%20fixture&q=&set=&variant=all&limit=12&offset=0",
+      "seconds": 0.020513829,
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/cards/popup-alt?printing=popup-alt",
+      "priority": "selectedMetadata",
+      "seconds": 0.020190072,
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/sets?format=modern",
+      "seconds": 0.021223951,
+      "service": "catalog"
+    },
+    {
+      "method": "POST",
+      "path": "/decks/validate",
+      "seconds": 0.021223951,
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/cards/alt-b?printing=alt-b",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/cards/alt-b?printing=alt-b",
+      "priority": "selectedMetadata",
+      "seconds": 0.031948739,
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/art/oracle-b?face=0&kind=normal&network=1&printing=alt-b&exact=1&priority=selected",
+      "priority": "selected",
+      "seconds": 0.031775262,
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "path": "/art/oracle-b?face=0&kind=normal&network=0&printing=alt-b&exact=1&variant=thumb",
+      "seconds": 0.021775545,
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "path": "/art/oracle-a?face=0&kind=normal&network=1&printing=print-a&priority=selected",
+      "priority": "selected",
+      "seconds": 1.200297693,
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "path": "/sets?format=modern",
+      "seconds": 0.020846062,
+      "service": "catalog"
+    },
+    {
+      "method": "POST",
+      "path": "/decks/validate",
+      "seconds": 0.020846062,
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/art/oracle-b?face=0&kind=normal&network=0&printing=print-b&variant=thumb",
+      "seconds": 0.020846062,
+      "service": "art"
+    }
+  ],
+  "scope": "Actual production mouse callbacks, Classic/Simplified visible card clicks and L\u00d6VE GPU upload. Local delayed image/metadata fixture callbacks, generated pixels, no external network, native game or user data. Worker socket priority tested separately.",
+  "uploadMetrics": {
+    "bytes": 1096704,
+    "count": 3,
+    "seconds": 0.00049875599999938
+  },
+  "sourceSha256": {
+    "app/artwork.lua": "8b5409edb04bee4130819b7f64f4be5c9d1f8ace75a46cf633d37222ed32f5ef",
+    "app/api.lua": "20f13b4bd97a5b859eda70aa278170da097ee002ad3301d20860e67edace906e",
+    "app/model.lua": "188ed145bc2b372c4ff17df6db94aa111f6086d4778bbfd2fb18a6983a189f00",
+    "app/renderer.lua": "68252a9b87cc61720d4627cc57783ba70c68e92561343ad2a01eaa2ca754d25d",
+    "app/library.lua": "8b2d0c694ef3d7f20c78148d7becd3c1057d295dd40a7b7fd7607d6d762197ca",
+    "app/builder.lua": "fcac3efc5da8d4072ad3cc033dcfe7c5ba7a9439e682032e903c36f8a882a895",
+    "app/builder_simplified.lua": "9ca0aa69a53154373e4046b51aa56ffe75038507312fc35e081fcd8011cb9b02",
+    "app/card_printings.lua": "8b0f96e428fa8f664b3bba9f9b64da7366c169272ffbdd4b9523b3555145b896",
+    "app/card_printings_ui.lua": "e80cc67b082902ea21d001a8a2c88d47d9be5e5a1de581960cd33aee5086dfaa",
+    "tests/builder_selected_art_ui.lua": "9398c232c7317ca898fe8a66cfd2b676246bc9183c5e381fa868047b2a17a118",
+    "main.lua": "82a96d7878c23297cf712f9d3014350a838542b2f5b27c50ec83ab01046eb639"
+  }
+}

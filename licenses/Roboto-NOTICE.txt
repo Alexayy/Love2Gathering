@@ -1,0 +1,6 @@
+Roboto Regular (retained Slab font), version 2.137 (2017)
+Copyright 2011 Google Inc. All Rights Reserved.
+Licensed under the Apache License, Version 2.0.
+The font file records http://www.apache.org/licenses/LICENSE-2.0
+Source: https://github.com/googlefonts/roboto-2
+The application retains the original font and its embedded name-table notices.

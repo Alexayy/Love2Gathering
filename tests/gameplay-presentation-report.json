@@ -1,0 +1,224 @@
+{
+  "status": "pass",
+  "createdAt": "2026-11-15T19:21:55.689580+00:00",
+  "checkpointCommit": "8bf8367dc9562874b91f0566beda5fdd34961170",
+  "changesAfterCheckpoint": "Working-tree gameplay/UI/image-priority changes; not a second commit or push.",
+  "engine": {
+    "gitlink": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+    "indexGitlink": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+    "unchanged": true,
+    "existingWorktreeStatus": ""
+  },
+  "native": {
+    "status": "pass",
+    "checks": 52,
+    "report": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/bridge/tests/gameplay-presentation-report.json",
+    "jarSha256": "c920aacc2c56250648af085ad49effe8e9a82e5c1da44bbcda724247ab44c9ae",
+    "existingFixtureGroups": 9,
+    "existingFixtureReport": "/tmp/love2gathering-mechanics-gameplay-regressions-complete-7zj9jwzm/report.json",
+    "publishedAtomically": true
+  },
+  "service": {
+    "status": "pass",
+    "tests": 24,
+    "command": "python3 -m unittest service.tests.test_rooms -v",
+    "scope": "Real loopback HTTP gateways with synthetic native adapter; temporary server data, no user room."
+  },
+  "lua": {
+    "status": "pass",
+    "groups": [
+      {
+        "test": "frontend_model",
+        "passed": true,
+        "lastLine": "Frontend model checks: 17 passed, 0 failed"
+      },
+      {
+        "test": "builder_model",
+        "passed": true,
+        "lastLine": "PASS builder model: format/filter synchronization, covers, actionability, serialized copy guards and removal races"
+      },
+      {
+        "test": "builder_layout",
+        "passed": true,
+        "lastLine": "PASS Simplified geometry 3840x2160: 21 columns"
+      },
+      {
+        "test": "replay_model",
+        "passed": true,
+        "lastLine": "Replay model checks: 8 passed, 0 failed"
+      },
+      {
+        "test": "rooms_model",
+        "passed": true,
+        "lastLine": "Rooms model checks: 41 passed"
+      },
+      {
+        "test": "api_rooms",
+        "passed": true,
+        "lastLine": "API room checks: 11 passed"
+      },
+      {
+        "test": "priority_model",
+        "passed": true,
+        "lastLine": "Priority model checks: 23 passed"
+      },
+      {
+        "test": "gallery_model",
+        "passed": true,
+        "lastLine": "Gallery model checks: 10 passed"
+      },
+      {
+        "test": "artwork_model",
+        "passed": true,
+        "lastLine": "Artwork model checks: 19 passed"
+      },
+      {
+        "test": "library_model",
+        "passed": true,
+        "lastLine": "Library model checks: 42 passed"
+      },
+      {
+        "test": "profile_model",
+        "passed": true,
+        "lastLine": "PROFILE MODEL 15 checks passed"
+      },
+      {
+        "test": "card_printings_model",
+        "passed": true,
+        "lastLine": "Card printing model checks: 27 passed"
+      },
+      {
+        "test": "modal_input",
+        "passed": true,
+        "lastLine": "Modal input checks: 11 passed"
+      },
+      {
+        "test": "card_choices",
+        "passed": true,
+        "lastLine": "Card choice checks: 29 passed"
+      },
+      {
+        "test": "board_fx",
+        "passed": true,
+        "lastLine": "Board presentation checks: 50 passed"
+      },
+      {
+        "test": "json_codec",
+        "passed": true,
+        "lastLine": "JSON PASS: signed numbers, exponents, nested null/booleans, UTF-8, arrays and 4.0 MB numeric decode in 0.558s"
+      },
+      {
+        "test": "collection_model",
+        "passed": true,
+        "lastLine": "Collection model checks: 24 passed"
+      },
+      {
+        "test": "game_art_model",
+        "passed": true,
+        "lastLine": "Game artwork/activity checks: 23"
+      },
+      {
+        "test": "api_lanes",
+        "passed": true,
+        "lastLine": "API lane checks: 15"
+      },
+      {
+        "test": "choice_panels_model",
+        "passed": true,
+        "lastLine": "Choice panel checks: 32"
+      },
+      {
+        "test": "card_presentation",
+        "passed": true,
+        "lastLine": "Card presentation: 27 checks (display only)"
+      },
+      {
+        "test": "table_card_sizes",
+        "passed": true,
+        "lastLine": "Table card sizing geometry: 1686 checks (synthetic presentation only)"
+      }
+    ]
+  },
+  "gui": {
+    "choices": {
+      "status": "pass",
+      "checks": 61,
+      "report": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/tests/choice-panels-ui-report.json",
+      "scope": "Actual production main input callbacks, L\u00d6VE rendering and Slab drag/text/button dispatch with explicit native-protocol presentation fixtures and optional genuine exported native attacker/menace-damage frames. Native legality/effects are independently tested by bridge fixtures; the UI uses an isolated action ledger with no service/network/user cache/native match."
+    },
+    "libraryTop": {
+      "status": "pass",
+      "checks": 34,
+      "report": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/tests/library-top-ui-report.json",
+      "scope": "Actual production callbacks, Slab zone rows and rendered native Courser duel scene; synthetic multiplayer expansion/visibility/priority/replay transitions are labeled presentation fixtures. A controlled action ledger records UUID submission; actual native land play is separately verified by the bridge fixture. No network, external images, user storage or running native game is used by this UI test."
+    },
+    "rooms": {
+      "status": "pass",
+      "checks": 10,
+      "report": "/tmp/love2gathering-rooms-padding-report.json",
+      "scope": "Synthetic rooms; actual L\u00d6VE/Slab layout, checkbox input and inspected screenshots at 1440/1120 and UI scales 1/1.25. No network/native game or live invitation used."
+    },
+    "lobby": {
+      "status": "pass",
+      "checks": 30,
+      "report": "/tmp/love2gathering-lobby-ui-report.json",
+      "scope": "Synthetic lobby decks and intercepted native start; actual L\u00d6VE/Slab tile popup, six-seat scrolling, name-glyph pixels, fifth-bot selection and payload at UI scales 1/1.25; no native-game claims"
+    },
+    "readability": {
+      "status": "pass",
+      "checks": 188,
+      "report": "/tmp/love2gathering-table-readability-ui.json",
+      "scope": "Actual L\u00d6VE images/hit regions and synthetic native-shaped action states; optional genuine native manifest projections are read-only recordings. No live engine, network or user saves"
+    },
+    "mechanicsClient": {
+      "status": "pass",
+      "checks": 0,
+      "report": "/tmp/love2gathering-client-evidence-20261115T191953966817Z/report.json",
+      "scope": "Client/model/transport/synthetic rendering only; native rules require separate native scenario results",
+      "cases": [
+        {
+          "name": "client-watchdog-owned-process",
+          "status": "pass"
+        },
+        {
+          "name": "client-10-equal-stack0",
+          "status": "pass"
+        }
+      ]
+    }
+  },
+  "fixedInteractionRegressions": [
+    "Required damage fields retain unique per-game/prompt/target state and allow direct numeric typing.",
+    "Async native prompt/game changes retire hidden amount-field focus.",
+    "Closing/changing any modal retires stale Slab hot region and text focus.",
+    "A zone consumes its opening gesture before its new images may submit a native UUID."
+  ],
+  "limits": [
+    "Native cases use real pinned XMage with deterministic initial zones/resources; GUI scenes are presentation fixtures or read-only exported native projections with an isolated action ledger.",
+    "No complete new multiplayer bot match, network PvP acceptance or external CDN/bulk-download benchmark was run for this change.",
+    "Image warmup queue/fences/cache-key reuse are verified by model/API tests; existing disk cache and user services were not used for acceptance."
+  ],
+  "sourceSha256": {
+    "main.lua": "279c280a9cc2ecd840949df630f367748a5637d26bd94013535ac57ca3913d35",
+    "app/model.lua": "501ba375ac93a489e70c2108f91c5abf8a4de4ad9c05450eb236db72a460f733",
+    "app/api.lua": "a25a0602ee0eceba3df99f0f6aa48bff26d5210920794e95be24e6ab16cd902f",
+    "app/artwork.lua": "729bd681645817741207a4f02d2d8691c6ca39496ecddb6ba5d256377b0f9785",
+    "app/game_art.lua": "baff567f9feceb5cfb3e2383ce5358f4ae86364fb0e0c7646380b887dd3b741a",
+    "app/activity.lua": "e871a5ff62f01863b2a45653d7a1f5133ec1ee5319057e029182b5c5dc4a1282",
+    "app/card_presentation.lua": "46324df3d956a7eeb2902dd1a42c84cf1a90b67f5b5494077c9c79d4caeed405",
+    "app/card_choices.lua": "43b1deb2f8f81bb74c866b6369d4045fc14ec0cd711e19a21d6820feaca171d1",
+    "app/combat_choices.lua": "b7323b79a9d1778ce31626348501dc84b470fc2490e43f50d8eaf1f01446f161",
+    "app/zone_ui.lua": "e38655735e6e73d894c4b7e3b2b24f60c6d909c5b2efafc8306ab41ab210a4ff",
+    "app/view.lua": "034282fbc888bf555631745667ac247e640b23b5827b2276e62314b2b9a16c6b",
+    "app/renderer.lua": "675af197fe41dcde0e4e6b9ddb345d26bdfac68a5c0341e80ba59bfb2ee2ed9f",
+    "app/board_fx.lua": "788a0a43e47d43b65095c7dc638baa6f935772057f86815e735be40ac8119f28",
+    "app/table.lua": "b9f4c1887c5becd92de96dff522391e1e97b16ae68742c22197bfa02b0874e04",
+    "app/multiplayer_table.lua": "d9603ee6c9659846a0bd0b1b51d67bbb29bc8e6f214e28a214665c96a473e618",
+    "app/layout.lua": "99486d5ed93b53930c87f77a885323477b1ed3c80cea12b93fb1debf924c1b22",
+    "app/lobby_ui.lua": "d282c192673d86e402ef713f25dff9dc3382d02d4e627365b1bc9a93fb8e49ff",
+    "app/room_ui.lua": "fd1684f6969928bfc991b7316f4ec01e6d1d3b2cbba6cd0a29557081bcc55c33",
+    "app/rooms.lua": "4b5f09960bf7bf9f953a90cf6cdccfd54ff49e58aab799e7ad10f188258ddd63",
+    "app/settings.lua": "7c2f7640fe7249902bb1aad171621e0018c495403760d0e963cc058d808cfd9a",
+    "service/rooms.py": "dd43fa7175720af78db7bcbe0f6b38a906b8d2bf364391ec6299350aaf104d20"
+  }
+}

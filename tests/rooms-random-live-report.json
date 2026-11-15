@@ -1,0 +1,91 @@
+{
+  "scope": "Real room gateway and native random booster drafts: one human plus three XMage bots per room, explicit eligible sets versus unrestricted sets, stale traditional pack slots, native pick clocks and all offered human picks, complete pools and native Limited deck validation. Swiss and elimination are selected independently; this test does not play tournament games or prove external LAN/WAN connectivity.",
+  "gateway": "http://127.0.0.1:17451",
+  "passed": true,
+  "checks": [
+    "Isolated gateway serves the desktop room API",
+    "Native capabilities offer the selected booster pools and both tournament procedures",
+    "restricted: normalized random config ignores stale traditional pack slots",
+    "restricted: requested tournament pairing remains independent of random card pool",
+    "restricted: four native seats contain one human and three bots",
+    "restricted: human completes all three native-generated random packs",
+    "restricted: native pick deadlines are present and other seats keep their cards private",
+    "restricted: every accepted human pick is retained exactly once in the completed native pool",
+    "restricted: all 45 drafted cards come from M20/M21 despite stale M14 slots",
+    "restricted: native Limited accepts a 40-card deck from this pool and offered basics",
+    "restricted: all three native bot decks and the human deck are ready",
+    "restricted: host closes only its own native draft room",
+    "unrestricted: normalized random config ignores stale traditional pack slots",
+    "unrestricted: requested tournament pairing remains independent of random card pool",
+    "unrestricted: four native seats contain one human and three bots",
+    "unrestricted: human completes all three native-generated random packs",
+    "unrestricted: native pick deadlines are present and other seats keep their cards private",
+    "unrestricted: every accepted human pick is retained exactly once in the completed native pool",
+    "unrestricted: unrestricted native selection completes without a hidden traditional-set restriction",
+    "unrestricted: native Limited accepts a 40-card deck from this pool and offered basics",
+    "unrestricted: all three native bot decks and the human deck are ready",
+    "unrestricted: host closes only its own native draft room"
+  ],
+  "cases": [
+    {
+      "case": "restricted",
+      "randomSets": [
+        "M20",
+        "M21"
+      ],
+      "pairing": "swiss",
+      "humanPicks": 45,
+      "humanPoolCount": 45,
+      "observedSetCodes": [
+        "M20",
+        "M21"
+      ],
+      "packInitialSizes": {
+        "1": 15,
+        "2": 15,
+        "3": 15
+      },
+      "nativePackGenerations": [
+        1,
+        2,
+        3
+      ],
+      "nativeDeckSize": 40
+    },
+    {
+      "case": "unrestricted",
+      "randomSets": [],
+      "pairing": "elimination",
+      "humanPicks": 45,
+      "humanPoolCount": 45,
+      "observedSetCodes": [
+        "30A",
+        "A25",
+        "DIS",
+        "DKA",
+        "DRK",
+        "EOE",
+        "ISD",
+        "ME4",
+        "MMQ",
+        "ORI",
+        "RIX",
+        "TDM",
+        "WTH"
+      ],
+      "packInitialSizes": {
+        "1": 15,
+        "2": 15,
+        "3": 15
+      },
+      "nativePackGenerations": [
+        1,
+        2,
+        3
+      ],
+      "nativeDeckSize": 40
+    }
+  ],
+  "seconds": 20.901,
+  "allCreatedRoomsClosed": true
+}

@@ -69,6 +69,7 @@ function love.load()
     local originalSelectable=S.TextSelectable
     S.TextSelectable=function(label,options)local result=originalSelectable(label,options);local x,y,w,h=Cursor.GetItemBounds();selections[tostring(label)]={x=x,y=y,w=w,h=h};return result end
     captured={};m.answer=function(_,kind,value)captured[#captured+1]={kind=kind,value=value}end
+    m.priorityCommand=function(_,command,body)captured[#captured+1]={kind='priority',command=command,body=body};return true end
     reports={};stage='load';timer=0;draws=0;caseIndex=0
     cases={
         {name='1440-decks',w=1440,h=900,page='decks',wait=3},
@@ -100,7 +101,7 @@ local function inspect(case)
         local L=Layout.table(w,h)
         if os.getenv('LOVE2GATHERING_UX_ONLY')=='match-layout' then
             expect(not r.navCalledThisDraw,'Global brand/navigation header still renders on match page')
-            expect(L.board.y==16 and L.sidebar.y==16,'Match board/sidebar did not reclaim header space')
+            expect(L.board.y==16 and L.board.w==w-32,'Full-width match board did not reclaim header space')
             expect(buttons.Settings and buttons.Lobby,'Compact Settings/Lobby access is missing from action pane')
             local battlefield=r.cardRects['human-guide'];expect(battlefield,'Fixture creature missing')
             local handTop=h
@@ -117,7 +118,7 @@ local function inspect(case)
             if hit.kind=='hand' then hand=hand+1;minW=math.min(minW,hit.w);expect(hit.x>=L.board.x-2 and hit.x+hit.w<=L.board.x+L.board.w+2,'Hand rectangle extends outside board')end
             if hit.kind=='mana' then expect(hit.x>=0 and hit.y>=0 and hit.x+hit.w<=w and hit.y+hit.h<=h,'Mana wheel outside viewport')end
         end
-        expect(hand==7,'Seven-card hand not rendered');expect(minW>=100,'Hand cards became too small')
+        expect(hand==7,'Seven-card hand not rendered');expect(minW>=84,'Collapsed hand cards became too small')
         record.handWidth=minW;record.checks[#record.checks+1]='Hand fan, battlefield and wheel bounds'
         local before=#captured
         if not case.variant then
@@ -125,7 +126,7 @@ local function inspect(case)
             expect(not m:selectCard({id='hand-guide'}),'Illegal card was selected');expect(#captured==before,'Non-actionable click sent an answer')
             local hit;for _,candidate in ipairs(r.hits)do if candidate.y==L.phaseY and candidate.action then hit=candidate;break end end
             expect(hit,'Phase marker missing');r:mousepressed(hit.x+hit.w/2,hit.y+hit.h/2,1,1)
-            expect(#captured==before,'Preview phase marker sent an engine action');record.checks[#record.checks+1]='Legal outlines and preview-only phase marker'
+            expect(#captured==before+1 and captured[#captured].kind=='priority' and captured[#captured].command=='configure','Real phase stop did not send its explicit priority configuration');record.checks[#record.checks+1]='Legal outlines and explicit phase-stop command'
         elseif case.variant=='wheel' then
             local hit;for _,candidate in ipairs(r.hits)do if candidate.kind=='mana' then hit=candidate;break end end
             expect(hit,'Mana wheel choices missing');r:mousepressed(hit.x+hit.w/2,hit.y+hit.h/2,1,1)

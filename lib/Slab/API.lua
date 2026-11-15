@@ -435,7 +435,8 @@ end
 
 	Return: None.
 --]]
-function Slab.Draw()
+function Slab.Draw(options)
+	Region.EndFrame()
 	if Stats.IsEnabled() then
 		PrevStatsData = love.graphics.getStats(PrevStatsData)
 	end
@@ -466,9 +467,10 @@ function Slab.Draw()
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.push()
+	love.graphics.push('all')
 	love.graphics.origin()
-	DrawCommands.Execute()
+	love.graphics.setScissor()
+	DrawCommands.Execute(options and options.DeferOverlays)
 	love.graphics.pop()
 	love.graphics.setColor(1, 1, 1, 1)
 
@@ -487,6 +489,17 @@ function Slab.Draw()
 			StatsData[k] = v - PrevStatsData[k]
 		end
 	end
+end
+
+-- Optional final pass after application-owned foreground drawing. Call only
+-- when Slab.Draw({DeferOverlays = true}) was used for this frame.
+function Slab.DrawOverlays()
+	love.graphics.push('all')
+	love.graphics.origin()
+	love.graphics.setScissor()
+	love.graphics.setColor(1, 1, 1, 1)
+	DrawCommands.ExecuteOverlays()
+	love.graphics.pop()
 end
 
 --[[
@@ -1659,6 +1672,8 @@ end
 	items have been added.
 
 	Id: [String] A string uniquely identifying this list box within the context of the current window.
+	Options.AlwaysShowScrollBarY: [Boolean] Keep the vertical scrollbar visible, including while idle.
+	Options.ScrollStep: [Number] Optional logical content pixels per wheel notch (1–500).
 	Options: [Table] List of options controlling the behavior of the list box.
 		W: [Number] The width of the list box. If nil, a default value of 150 is used.
 		H: [Number] The height of the list box. If nil, a default value of 150 is used.

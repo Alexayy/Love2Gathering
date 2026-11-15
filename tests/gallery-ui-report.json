@@ -1,0 +1,71 @@
+{
+  "checks": [
+    "Actual model loads per-printing gallery metadata",
+    "Every visible artwork decodes through the actual HTTP image worker",
+    "Art crop retains its original aspect ratio",
+    "Art crop retains its original aspect ratio",
+    "Art crop retains its original aspect ratio",
+    "Art crop retains its original aspect ratio",
+    "Artist websites never open during browsing",
+    "Actual shop button opens its verified artist destination",
+    "Clicking artwork opens an art-only enlarged view",
+    "Enlarged artwork closes through its actual button",
+    "Actual Next button loads a bounded next page",
+    "Actual Previous button restores the first page",
+    "Actual variant dropdown loads only real extended-art printing metadata",
+    "Artwork stays inside the smaller logical viewport"
+  ],
+  "logical": [
+    1120,
+    720
+  ],
+  "physical": [
+    1120,
+    720
+  ],
+  "scope": "Actual LÖVE/Slab, real catalog HTTP and SQLite JPEG artwork; prepared Scryfall metadata/crops; artist URL launch intercepted only to avoid opening a test browser",
+  "metadataSource": "Official Scryfall API; four bounded printing records; original project source and user data untouched",
+  "printings": [
+    {
+      "id": "ed0ace28-9a33-4f0d-b8c8-f5517f20ccf1",
+      "name": "Ayara, First of Locthwain",
+      "set": "eld",
+      "artist": "Ryan Pancoast",
+      "released_at": "2019-10-04",
+      "scryfall_uri": "https://scryfall.com/card/eld/75/ayara-first-of-locthwain?utm_source=api"
+    },
+    {
+      "id": "8ae6fc26-cfad-4da8-98d9-49c27c24d293",
+      "name": "Giada, Font of Hope",
+      "set": "fdn",
+      "artist": "Kai Carpenter",
+      "released_at": "2024-11-15",
+      "scryfall_uri": "https://scryfall.com/card/fdn/141/giada-font-of-hope?utm_source=api"
+    },
+    {
+      "id": "824b2d73-2151-4e5e-9f05-8f63e2bdcaa9",
+      "name": "Krenko, Mob Boss",
+      "set": "fdn",
+      "artist": "Lie Setiawan",
+      "released_at": "2024-11-15",
+      "scryfall_uri": "https://scryfall.com/card/fdn/204/krenko-mob-boss?utm_source=api"
+    },
+    {
+      "id": "21c6e2cf-3799-4d5b-99c2-feeec15580ec",
+      "name": "Ayara, First of Locthwain",
+      "set": "eld",
+      "artist": "Ryan Pancoast",
+      "released_at": "2019-10-04",
+      "scryfall_uri": "https://scryfall.com/card/eld/350/ayara-first-of-locthwain?utm_source=api"
+    }
+  ],
+  "artworkSource": "Four original Scryfall art_crop JPEGs, 313383 bytes total, cached in isolated app.sqlite; images not committed",
+  "unavailableSource": {
+    "checks": [
+      "Missing metadata shows an explicit indexing error without invented artwork",
+      "Unavailable-source view opens no artist links"
+    ],
+    "error": "Artwork index is not ready. Configure a local JSONL source or explicitly download Scryfall bulk metadata."
+  },
+  "checkedAt": "2026-11-13"
+}

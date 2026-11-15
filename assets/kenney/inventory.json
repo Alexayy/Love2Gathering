@@ -1,0 +1,7384 @@
+{
+  "root": "assets/kenney",
+  "packs": [
+    {
+      "name": "kenney_background-elements",
+      "files": 135,
+      "bytes": 1348462,
+      "extensions": {
+        ".url": 2,
+        ".txt": 1,
+        ".png": 125,
+        ".db": 2,
+        ".xml": 1,
+        ".ai": 2,
+        ".svg": 2
+      },
+      "pngDimensions": {
+        "205x182": 1,
+        "295x138": 2,
+        "189x127": 1,
+        "199x125": 1,
+        "176x121": 1,
+        "228x124": 2,
+        "239x134": 1,
+        "266x138": 2,
+        "234x118": 2,
+        "209x119": 1,
+        "212x119": 1,
+        "1001x206": 1,
+        "1000x246": 1,
+        "128x88": 2,
+        "110x86": 2,
+        "26x29": 4,
+        "38x35": 4,
+        "1001x128": 2,
+        "102x115": 2,
+        "102x174": 2,
+        "189x115": 2,
+        "174x174": 2,
+        "286x306": 1,
+        "249x242": 1,
+        "245x397": 1,
+        "215x166": 2,
+        "1001x168": 1,
+        "1024x1024": 9,
+        "223x131": 2,
+        "66x227": 3,
+        "136x293": 4,
+        "128x230": 6,
+        "48x105": 6,
+        "106x241": 4,
+        "70x144": 3,
+        "53x144": 3,
+        "97x260": 4,
+        "59x285": 3,
+        "59x245": 3,
+        "59x259": 3,
+        "143x305": 3,
+        "141x252": 4,
+        "204x182": 2,
+        "190x127": 1,
+        "200x125": 1,
+        "177x121": 1,
+        "238x135": 1,
+        "210x119": 1,
+        "213x119": 1,
+        "85x85": 1,
+        "84x85": 1,
+        "87x86": 1,
+        "129x230": 2,
+        "918x515": 2,
+        "1024x1025": 4,
+        "2048x2048": 1
+      },
+      "pngModes": {
+        "RGBA": 123,
+        "RGB": 2
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_background-elements/License.txt",
+          "sha256": "b0d1670b013ded8e334b3e14ec996572e05f412d128cd1510eecc89e1b9037e4",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_background-elements/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/Sample.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/PNG/Flat/castle.png",
+          "size": [
+            205,
+            182
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            205,
+            182
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/PNG/Flat/clouds1.png",
+          "size": [
+            1001,
+            206
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            1001,
+            206
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/PNG/Flat/house_side_tall.png",
+          "size": [
+            174,
+            174
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            174,
+            174
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/PNG/Flat/tree03.png",
+          "size": [
+            48,
+            105
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            48,
+            105
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/PNG/castle_beige.png",
+          "size": [
+            204,
+            182
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            204,
+            182
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/PNG/cloud9.png",
+          "size": [
+            213,
+            119
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            213,
+            119
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/PNG/house_grey_front.png",
+          "size": [
+            102,
+            174
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            102,
+            174
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/PNG/tree03.png",
+          "size": [
+            136,
+            293
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            136,
+            293
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/PNG/tree14.png",
+          "size": [
+            48,
+            105
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            48,
+            105
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/PNG/tree25.png",
+          "size": [
+            59,
+            245
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            59,
+            245
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/Samples/colored_castle.png",
+          "size": [
+            1024,
+            1025
+          ],
+          "alphaRange": [
+            63,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            1024,
+            1025
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements/Samples/uncolored_talltrees.png",
+          "size": [
+            1024,
+            1024
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            1024,
+            1024
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_background-elements.png"
+    },
+    {
+      "name": "kenney_background-elements-remastered",
+      "files": 171,
+      "bytes": 1269166,
+      "extensions": {
+        ".png": 162,
+        ".url": 2,
+        ".txt": 1,
+        ".xml": 2,
+        ".svg": 2,
+        ".swf": 2
+      },
+      "pngDimensions": {
+        "1024x400": 8,
+        "1024x200": 1,
+        "356x352": 1,
+        "340x278": 1,
+        "306x444": 1,
+        "1024x1024": 8,
+        "120x60": 1,
+        "53x44": 1,
+        "59x52": 1,
+        "50x46": 1,
+        "141x47": 1,
+        "45x55": 1,
+        "43x53": 1,
+        "50x48": 1,
+        "124x59": 1,
+        "56x46": 1,
+        "56x52": 1,
+        "50x35": 1,
+        "96x139": 1,
+        "71x135": 1,
+        "68x133": 1,
+        "108x85": 2,
+        "60x60": 2,
+        "203x121": 2,
+        "196x156": 2,
+        "216x139": 2,
+        "250x146": 2,
+        "104x77": 1,
+        "120x121": 1,
+        "208x224": 1,
+        "281x217": 1,
+        "168x224": 1,
+        "241x217": 1,
+        "76x50": 2,
+        "76x70": 2,
+        "78x80": 1,
+        "84x84": 2,
+        "204x200": 1,
+        "204x148": 1,
+        "73x245": 2,
+        "38x90": 2,
+        "94x204": 1,
+        "172x247": 1,
+        "94x233": 1,
+        "82x249": 2,
+        "82x215": 1,
+        "82x239": 1,
+        "101x259": 1,
+        "200x238": 1,
+        "106x254": 2,
+        "106x257": 1,
+        "106x247": 1,
+        "20x43": 3,
+        "23x68": 1,
+        "30x49": 3,
+        "23x65": 1,
+        "23x61": 1,
+        "101x231": 1,
+        "240x120": 1,
+        "105x88": 1,
+        "117x104": 1,
+        "100x92": 1,
+        "282x95": 1,
+        "90x110": 1,
+        "87x105": 1,
+        "100x96": 1,
+        "248x118": 1,
+        "111x92": 1,
+        "113x104": 1,
+        "99x70": 1,
+        "192x278": 1,
+        "141x270": 1,
+        "136x266": 1,
+        "216x170": 2,
+        "120x120": 2,
+        "406x242": 2,
+        "392x312": 2,
+        "432x278": 2,
+        "500x292": 2,
+        "207x155": 1,
+        "240x242": 1,
+        "415x448": 1,
+        "562x434": 1,
+        "335x448": 1,
+        "482x434": 1,
+        "150x100": 2,
+        "153x140": 2,
+        "156x160": 1,
+        "168x168": 2,
+        "408x400": 1,
+        "408x297": 1,
+        "146x490": 2,
+        "76x180": 2,
+        "188x408": 1,
+        "343x493": 1,
+        "188x466": 1,
+        "163x498": 2,
+        "163x430": 1,
+        "163x478": 1,
+        "202x518": 1,
+        "400x476": 1,
+        "212x508": 2,
+        "212x514": 1,
+        "212x494": 1,
+        "40x86": 3,
+        "46x136": 1,
+        "60x98": 3,
+        "46x130": 1,
+        "46x122": 1,
+        "202x462": 1,
+        "918x515": 2,
+        "1067x1095": 1,
+        "2168x2142": 1
+      },
+      "pngModes": {
+        "P": 151,
+        "RGBA": 11
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/License.txt",
+          "sha256": "2555b7f582b087a11a5a976f33a74ac36a9ed6da08534de7f84faa325a001f6d",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/Sample.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/Backgrounds/Elements/cloudLayer1.png",
+          "size": [
+            1024,
+            400
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            1024,
+            400
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/Backgrounds/backgroundColorFall.png",
+          "size": [
+            1024,
+            1024
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            1024,
+            1024
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/PNG/Default/bushOrange2.png",
+          "size": [
+            56,
+            46
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            56,
+            46
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/PNG/Default/cloud5.png",
+          "size": [
+            203,
+            121
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            203,
+            121
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/PNG/Default/moon.png",
+          "size": [
+            78,
+            80
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            78,
+            80
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/PNG/Default/treeLongOrange.png",
+          "size": [
+            82,
+            249
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            82,
+            249
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/PNG/Default/treeSmall_orange2.png",
+          "size": [
+            23,
+            61
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            23,
+            61
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/PNG/Retina/bushOrange4.png",
+          "size": [
+            99,
+            70
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            99,
+            70
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/PNG/Retina/cloud7.png",
+          "size": [
+            432,
+            278
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            432,
+            278
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/PNG/Retina/pyramid.png",
+          "size": [
+            408,
+            400
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            408,
+            400
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/PNG/Retina/treePalm.png",
+          "size": [
+            400,
+            476
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            400,
+            476
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_background-elements-remastered/PNG/Retina/treeSnow.png",
+          "size": [
+            202,
+            462
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            202,
+            462
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_background-elements-remastered.png"
+    },
+    {
+      "name": "kenney_board-game-icons",
+      "files": 774,
+      "bytes": 1227074,
+      "extensions": {
+        ".txt": 2,
+        ".png": 513,
+        ".svg": 256,
+        ".swf": 1,
+        ".url": 2
+      },
+      "pngDimensions": {
+        "64x64": 255,
+        "128x128": 255,
+        "918x515": 1,
+        "1344x832": 1,
+        "2688x1664": 1
+      },
+      "pngModes": {
+        "P": 513
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_board-game-icons/License.txt",
+          "sha256": "cefe0a336122ad3873b07a21bfba79a14c237bed25c24c90c6a9987bdd881b5c",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_board-game-icons/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/arrow_clockwise.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            6,
+            8,
+            62,
+            56
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/cards_order.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            4,
+            4,
+            59,
+            60
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/d4_outline_number.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            4,
+            4,
+            60,
+            60
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/hand_cross.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            2,
+            7,
+            55,
+            60
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/rhombus_question.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            64,
+            64
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Default (64px)/tag_shield_5.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            38,
+            36,
+            62,
+            62
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Double (128px)/card_flipdouble.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            12,
+            14,
+            115,
+            115
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Double (128px)/crown_b.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            6,
+            12,
+            122,
+            112
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Double (128px)/dice_question.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            128,
+            128
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Double (128px)/pawn_down.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            10,
+            12,
+            108,
+            122
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Double (128px)/tag_5.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            68,
+            68,
+            124,
+            124
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-icons/PNG/Double (128px)/tokens_stack.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            4,
+            0,
+            122,
+            128
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_board-game-icons.png"
+    },
+    {
+      "name": "kenney_board-game-info",
+      "files": 868,
+      "bytes": 3153092,
+      "extensions": {
+        ".txt": 1,
+        ".png": 577,
+        ".svg": 288,
+        ".url": 2
+      },
+      "pngDimensions": {
+        "128x128": 288,
+        "256x256": 288,
+        "918x515": 1
+      },
+      "pngModes": {
+        "P": 577
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_board-game-info/License.txt",
+          "sha256": "4d7bebfb157d312c221fe2c9d7c39143ecfdaf8824fbf7599e2739c454060383",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_board-game-info/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Default (128px)/ages.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            128,
+            128
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Default (128px)/players_1_2.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            128,
+            128
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Default (256px)/blank_panel.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Default (256px)/players_2_10.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Fantasy (128px)/duration_10.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            128,
+            128
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Fantasy (128px)/players_3.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            128,
+            128
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Fantasy (256px)/duration_60_90.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Fantasy (256px)/players_4_10.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Space (128px)/knowledge_text.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            128,
+            128
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Space (128px)/puzzle.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            128,
+            128
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Space (256px)/medium_light_text.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_board-game-info/PNG/Space (256px)/tiles_text.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_board-game-info.png"
+    },
+    {
+      "name": "kenney_boardgame-pack",
+      "files": 583,
+      "bytes": 3197991,
+      "extensions": {
+        ".ogg": 12,
+        ".png": 539,
+        ".xml": 7,
+        ".svg": 12,
+        ".swf": 12,
+        ".txt": 1
+      },
+      "pngDimensions": {
+        "140x190": 68,
+        "64x64": 419,
+        "68x68": 20,
+        "64x38": 8,
+        "68x42": 8,
+        "512x512": 1,
+        "256x128": 2,
+        "256x256": 2,
+        "1216x192": 7,
+        "512x1024": 1,
+        "1024x2048": 1,
+        "918x515": 2
+      },
+      "pngModes": {
+        "RGBA": 539
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/license.txt",
+          "sha256": "2c3673522b318f87f53616a1dde3360291551b2e08e5f45f6293da751159fc11",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/cardPlace1.ogg",
+          "duration": 0.77746,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/cardPlace2.ogg",
+          "duration": 0.459388,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/cardPlace3.ogg",
+          "duration": 0.883492,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/cardSlide1.ogg",
+          "duration": 0.600771,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/cardSlide2.ogg",
+          "duration": 0.600771,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/cardSlide3.ogg",
+          "duration": 0.636122,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/chipsCollide1.ogg",
+          "duration": 0.258753,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/chipsCollide2.ogg",
+          "duration": 0.229977,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/chipsCollide3.ogg",
+          "duration": 0.258753,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/dieShuffle1.ogg",
+          "duration": 1.480567,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/dieThrow1.ogg",
+          "duration": 0.632472,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/Bonus/dieThrow2.ogg",
+          "duration": 0.402472,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/sample.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Cards/cardBack_blue1.png",
+          "size": [
+            140,
+            190
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            140,
+            190
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Cards/cardHearts7.png",
+          "size": [
+            140,
+            190
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            140,
+            190
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Chips/chipWhiteBlue_side.png",
+          "size": [
+            64,
+            38
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            64,
+            38
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Pieces (Black)/pieceBlack_border18.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            17,
+            13,
+            50,
+            54
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Pieces (Blue)/pieceBlue_border09.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            7,
+            6,
+            58,
+            59
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Pieces (Blue)/pieceBlue_single18.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            23,
+            12,
+            41,
+            55
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Pieces (Green)/pieceGreen_single09.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            17,
+            13,
+            48,
+            52
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Pieces (Purple)/piecePurple_multi18.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            19,
+            15,
+            48,
+            52
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Pieces (Red)/pieceRed_multi09.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            8,
+            8,
+            55,
+            58
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Pieces (White)/pieceWhite_border18.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            17,
+            13,
+            50,
+            54
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Pieces (Yellow)/pieceYellow_border09.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            15,
+            11,
+            50,
+            54
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_boardgame-pack/PNG/Pieces (Yellow)/pieceYellow_single18.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            19,
+            8,
+            45,
+            57
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_boardgame-pack.png"
+    },
+    {
+      "name": "kenney_casino-audio",
+      "files": 58,
+      "bytes": 955950,
+      "extensions": {
+        ".ogg": 55,
+        ".txt": 1,
+        ".url": 2
+      },
+      "pngDimensions": {},
+      "pngModes": {},
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_casino-audio/License.txt",
+          "sha256": "418596902a86b3bedc8b36bc7c3fd125b2b5d5f53740e0f8185d53acedaf4c1c",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-fan-1.ogg",
+          "duration": 0.720816,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-fan-2.ogg",
+          "duration": 1.306508,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-place-1.ogg",
+          "duration": 0.689116,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-place-2.ogg",
+          "duration": 0.459388,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-place-3.ogg",
+          "duration": 0.883492,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-place-4.ogg",
+          "duration": 0.600771,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-shove-1.ogg",
+          "duration": 0.765873,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-shove-2.ogg",
+          "duration": 0.766848,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-shove-3.ogg",
+          "duration": 0.692834,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-shove-4.ogg",
+          "duration": 0.809297,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-shuffle.ogg",
+          "duration": 3.063492,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-slide-1.ogg",
+          "duration": 0.600771,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-slide-2.ogg",
+          "duration": 0.584082,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-slide-3.ogg",
+          "duration": 0.598118,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-slide-4.ogg",
+          "duration": 0.45941,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-slide-5.ogg",
+          "duration": 0.600748,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-slide-6.ogg",
+          "duration": 0.600771,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-slide-7.ogg",
+          "duration": 0.636122,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/card-slide-8.ogg",
+          "duration": 0.671429,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/cards-pack-open-1.ogg",
+          "duration": 0.937392,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/cards-pack-open-2.ogg",
+          "duration": 0.732041,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/cards-pack-take-out-1.ogg",
+          "duration": 0.495578,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/cards-pack-take-out-2.ogg",
+          "duration": 0.630726,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chip-lay-1.ogg",
+          "duration": 0.172494,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chip-lay-2.ogg",
+          "duration": 0.229977,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chip-lay-3.ogg",
+          "duration": 0.244354,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-collide-1.ogg",
+          "duration": 0.258753,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-collide-2.ogg",
+          "duration": 0.229977,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-collide-3.ogg",
+          "duration": 0.258753,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-collide-4.ogg",
+          "duration": 0.215624,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-handle-1.ogg",
+          "duration": 0.616259,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-handle-2.ogg",
+          "duration": 0.546213,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-handle-3.ogg",
+          "duration": 0.23,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-handle-4.ogg",
+          "duration": 0.359342,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-handle-5.ogg",
+          "duration": 0.833719,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-handle-6.ogg",
+          "duration": 0.459977,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-stack-1.ogg",
+          "duration": 0.287483,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-stack-2.ogg",
+          "duration": 0.172494,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-stack-3.ogg",
+          "duration": 0.373719,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-stack-4.ogg",
+          "duration": 0.23,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-stack-5.ogg",
+          "duration": 0.186871,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/chips-stack-6.ogg",
+          "duration": 0.186871,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/dice-grab-1.ogg",
+          "duration": 0.704354,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/dice-grab-2.ogg",
+          "duration": 0.826576,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/dice-shake-1.ogg",
+          "duration": 1.480567,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/dice-shake-2.ogg",
+          "duration": 1.379932,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/dice-shake-3.ogg",
+          "duration": 1.523696,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/dice-throw-1.ogg",
+          "duration": 0.632472,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/dice-throw-2.ogg",
+          "duration": 0.402472,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/dice-throw-3.ogg",
+          "duration": 0.574989,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/die-throw-1.ogg",
+          "duration": 0.531859,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/die-throw-2.ogg",
+          "duration": 0.646871,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/die-throw-3.ogg",
+          "duration": 0.733084,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Audio/die-throw-4.ogg",
+          "duration": 0.474376,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_casino-audio/Preview.ogg",
+          "duration": 35.106938,
+          "codec_name": "vorbis",
+          "sample_rate": "48000",
+          "channels": 2
+        }
+      ],
+      "representatives": [],
+      "errors": [],
+      "contactSheet": null
+    },
+    {
+      "name": "kenney_cursor-pack",
+      "files": 1096,
+      "bytes": 816586,
+      "extensions": {
+        ".txt": 1,
+        ".png": 729,
+        ".svg": 364,
+        ".url": 2
+      },
+      "pngDimensions": {
+        "32x32": 364,
+        "64x64": 364,
+        "918x515": 1
+      },
+      "pngModes": {
+        "RGBA": 175,
+        "P": 554
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_cursor-pack/License.txt",
+          "sha256": "a4a4d7d230187943362ce37d84b800472b3372bebb43c1d259ead69e63db2afa",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_cursor-pack/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Basic/Default/arrow_e.png",
+          "size": [
+            32,
+            32
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            6,
+            9,
+            26,
+            23
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Basic/Default/lock.png",
+          "size": [
+            32,
+            32
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            6,
+            5,
+            26,
+            27
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Basic/Default/resize_d_cross.png",
+          "size": [
+            32,
+            32
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            2,
+            2,
+            30,
+            30
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/busy_hourglass_outline.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            14,
+            8,
+            50,
+            56
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/navigation_ne.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            16,
+            16,
+            50,
+            50
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Basic/Double/rotate_horizontal_down.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            6,
+            20,
+            58,
+            52
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Outline/Default/door_exit.png",
+          "size": [
+            32,
+            32
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            2,
+            2,
+            30,
+            30
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Outline/Default/pointer_j.png",
+          "size": [
+            32,
+            32
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            6,
+            6,
+            26,
+            26
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Outline/Default/tool_shovel.png",
+          "size": [
+            32,
+            32
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            2,
+            2,
+            30,
+            30
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Outline/Double/hand_point.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            4,
+            4,
+            61,
+            60
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Outline/Double/resize_a_cross_diagonal.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            10,
+            10,
+            54,
+            54
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pack/PNG/Outline/Double/zoom_reset.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            4,
+            4,
+            60,
+            60
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_cursor-pack.png"
+    },
+    {
+      "name": "kenney_cursor-pixel-pack",
+      "files": 227,
+      "bytes": 68962,
+      "extensions": {
+        ".txt": 2,
+        ".png": 223,
+        ".url": 2
+      },
+      "pngDimensions": {
+        "918x515": 1,
+        "339x186": 1,
+        "320x176": 1,
+        "16x16": 220
+      },
+      "pngModes": {
+        "P": 184,
+        "RGBA": 39
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/License.txt",
+          "sha256": "2eb5ee50af751d4e24bee8372c339c45679d1125e205865044c9db5096dcb385",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0000.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            3,
+            0,
+            13,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0020.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            3,
+            0,
+            13,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0040.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            3,
+            0,
+            13,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0060.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            3,
+            0,
+            13,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0080.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            3,
+            2,
+            13,
+            14
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0100.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            0
+          ],
+          "visibleBounds": null
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0119.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            0
+          ],
+          "visibleBounds": null
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0139.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            1,
+            3,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0159.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            2,
+            3,
+            15,
+            15
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0179.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0199.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            1,
+            1,
+            15,
+            15
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_cursor-pixel-pack/Tiles/tile_0219.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            0
+          ],
+          "visibleBounds": null
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_cursor-pixel-pack.png"
+    },
+    {
+      "name": "kenney_development-essentials",
+      "files": 22,
+      "bytes": 1163800,
+      "extensions": {
+        ".png": 19,
+        ".txt": 1,
+        ".url": 2
+      },
+      "pngDimensions": {
+        "1x1": 3,
+        "4x4": 3,
+        "16x16": 3,
+        "256x256": 9,
+        "918x515": 1
+      },
+      "pngModes": {
+        "LA": 4,
+        "L": 2,
+        "RGBA": 11,
+        "P": 2
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_development-essentials/License.txt",
+          "sha256": "bb691710342a4ef7d0ab2469dbb820ada013ea1abb17583bff074d231a28971e",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_development-essentials/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/1\u00d71 Pixels/pixel-black.png",
+          "size": [
+            1,
+            1
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/1\u00d71 Pixels/pixel-white.png",
+          "size": [
+            1,
+            1
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/4\u00d74 Pixels/pixel-black.png",
+          "size": [
+            4,
+            4
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/4\u00d74 Pixels/pixel-white.png",
+          "size": [
+            4,
+            4
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            4,
+            4
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/Checkerboard/checkerboard-transparent.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/Gradient/gradient-angular.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/Gradient/gradient-horizontal-mirror.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/Gradient/gradient-radial.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/Gradient/gradient-vertical-mirror.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/Noise/perlin-noise-small.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/Noise/perlin-noise.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_development-essentials/UV texture/uv-texture.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_development-essentials.png"
+    },
+    {
+      "name": "kenney_emotes-pack",
+      "files": 534,
+      "bytes": 385741,
+      "extensions": {
+        ".url": 2,
+        ".txt": 1,
+        ".png": 513,
+        ".xml": 16,
+        ".svg": 1,
+        ".swf": 1
+      },
+      "pngDimensions": {
+        "16x16": 240,
+        "32x38": 240,
+        "918x515": 1,
+        "80x96": 8,
+        "192x190": 8,
+        "160x48": 8,
+        "320x114": 8
+      },
+      "pngModes": {
+        "P": 513
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_emotes-pack/License.txt",
+          "sha256": "6f32f44676f921a39eaf9f91269ca9981c6bf29a12ee5f650540f9da76cab6f8",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_emotes-pack/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Pixel/Style 1/emote__.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Pixel/Style 2/emote_exclamations.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Pixel/Style 3/emote_star.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Pixel/Style 5/emote_drop.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Pixel/Style 6/emote_question.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Pixel/Style 8/emote_dots1.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            4,
+            6,
+            6,
+            8
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Vector/Style 1/emote_idea.png",
+          "size": [
+            32,
+            38
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            32,
+            38
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Vector/Style 3/emote_circle.png",
+          "size": [
+            32,
+            38
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            32,
+            38
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Vector/Style 4/emote_heart.png",
+          "size": [
+            32,
+            38
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            32,
+            38
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Vector/Style 6/emote_anger.png",
+          "size": [
+            32,
+            38
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            32,
+            38
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Vector/Style 7/emote_faceAngry.png",
+          "size": [
+            32,
+            38
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            32,
+            38
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_emotes-pack/PNG/Vector/Style 8/emote_swirl.png",
+          "size": [
+            32,
+            38
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            7,
+            8,
+            24,
+            25
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_emotes-pack.png"
+    },
+    {
+      "name": "kenney_fantasy-ui-borders",
+      "files": 286,
+      "bytes": 425905,
+      "extensions": {
+        ".txt": 1,
+        ".png": 282,
+        ".svg": 1,
+        ".url": 2
+      },
+      "pngDimensions": {
+        "48x48": 128,
+        "96x22": 4,
+        "96x10": 2,
+        "96x18": 4,
+        "96x14": 2,
+        "96x96": 128,
+        "192x44": 4,
+        "192x20": 2,
+        "192x36": 4,
+        "192x28": 2,
+        "918x515": 2
+      },
+      "pngModes": {
+        "P": 269,
+        "RGBA": 13
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/License.txt",
+          "sha256": "c42eea52d3c6c56be839fce4df93fe3c85be6705e3249805ae0688212e17b989",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/Sample.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Default/Border/panel-border-000.png",
+          "size": [
+            48,
+            48
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            48,
+            48
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Default/Border/panel-border-025.png",
+          "size": [
+            48,
+            48
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            48,
+            48
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Default/Panel/panel-007.png",
+          "size": [
+            48,
+            48
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            48,
+            48
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Default/Transparent border/panel-transparent-border-000.png",
+          "size": [
+            48,
+            48
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            48,
+            48
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Default/Transparent border/panel-transparent-border-025.png",
+          "size": [
+            48,
+            48
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            48,
+            48
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Default/Transparent center/panel-transparent-center-019.png",
+          "size": [
+            48,
+            48
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            48,
+            48
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Double/Border/panel-border-012.png",
+          "size": [
+            96,
+            96
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            96,
+            96
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Double/Divider Fade/divider-fade-000.png",
+          "size": [
+            192,
+            44
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            1,
+            0,
+            192,
+            44
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Double/Panel/panel-019.png",
+          "size": [
+            96,
+            96
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            96,
+            96
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Double/Transparent border/panel-transparent-border-012.png",
+          "size": [
+            96,
+            96
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            96,
+            96
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Double/Transparent center/panel-transparent-center-006.png",
+          "size": [
+            96,
+            96
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            96,
+            96
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_fantasy-ui-borders/PNG/Double/Transparent center/panel-transparent-center-031.png",
+          "size": [
+            96,
+            96
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            96,
+            96
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_fantasy-ui-borders.png"
+    },
+    {
+      "name": "kenney_game-icons",
+      "files": 434,
+      "bytes": 4070719,
+      "extensions": {
+        ".png": 425,
+        ".xml": 4,
+        ".ai": 2,
+        ".svg": 2,
+        ".txt": 1
+      },
+      "pngDimensions": {
+        "50x50": 210,
+        "100x100": 210,
+        "1024x512": 2,
+        "1024x2048": 2,
+        "918x515": 1
+      },
+      "pngModes": {
+        "RGBA": 425
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_game-icons/license.txt",
+          "sha256": "5d57a5e5fa1c14d5002f5735cd46cd3285b559500b648cdf137bdc4c3dec6053",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_game-icons/preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/Black/1x/arrowDown.png",
+          "size": [
+            50,
+            50
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            11,
+            8,
+            39,
+            42
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/Black/1x/film.png",
+          "size": [
+            50,
+            50
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            9,
+            10,
+            41,
+            42
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/Black/1x/rewind.png",
+          "size": [
+            50,
+            50
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            7,
+            10,
+            45,
+            42
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/Black/2x/button2.png",
+          "size": [
+            100,
+            100
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            20,
+            18,
+            84,
+            82
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/Black/2x/joystickUp.png",
+          "size": [
+            100,
+            100
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            22,
+            18,
+            82,
+            88
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/Black/2x/singleplayer.png",
+          "size": [
+            100,
+            100
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            22,
+            20,
+            78,
+            84
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/White/1x/buttonR1.png",
+          "size": [
+            50,
+            50
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            6,
+            14,
+            44,
+            38
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/White/1x/massiveMultiplayer.png",
+          "size": [
+            50,
+            50
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            5,
+            13,
+            46,
+            41
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/White/1x/up.png",
+          "size": [
+            50,
+            50
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            9,
+            15,
+            41,
+            35
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/White/2x/downRight.png",
+          "size": [
+            100,
+            100
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            24,
+            24,
+            80,
+            80
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/White/2x/pause.png",
+          "size": [
+            100,
+            100
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            22,
+            16,
+            78,
+            81
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_game-icons/PNG/White/2x/zoomOut.png",
+          "size": [
+            100,
+            100
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            20,
+            20,
+            84,
+            85
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_game-icons.png"
+    },
+    {
+      "name": "kenney_googly-eyes",
+      "files": 12,
+      "bytes": 208342,
+      "extensions": {
+        ".png": 9,
+        ".txt": 1,
+        ".url": 2
+      },
+      "pngDimensions": {
+        "1024x1024": 3,
+        "326x330": 2,
+        "325x330": 3,
+        "918x515": 1
+      },
+      "pngModes": {
+        "P": 9
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_googly-eyes/License.txt",
+          "sha256": "2af77c6bab707ff09facb57e635eca4fa620e071b46f1110b7f35d0c8ec45056",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_googly-eyes/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_googly-eyes/Layers/0.png",
+          "size": [
+            1024,
+            1024
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            23,
+            33,
+            995,
+            1006
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_googly-eyes/Layers/1.png",
+          "size": [
+            1024,
+            1024
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            226,
+            226,
+            798,
+            798
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_googly-eyes/Layers/2.png",
+          "size": [
+            1024,
+            1024
+          ],
+          "alphaRange": [
+            0,
+            33
+          ],
+          "visibleBounds": [
+            521,
+            179,
+            875,
+            533
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_googly-eyes/PNG/googly-a.png",
+          "size": [
+            326,
+            330
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            326,
+            330
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_googly-eyes/PNG/googly-b.png",
+          "size": [
+            326,
+            330
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            326,
+            330
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_googly-eyes/PNG/googly-c.png",
+          "size": [
+            325,
+            330
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            325,
+            330
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_googly-eyes/PNG/googly-d.png",
+          "size": [
+            325,
+            330
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            325,
+            330
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_googly-eyes/PNG/googly-e.png",
+          "size": [
+            325,
+            330
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            325,
+            330
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_googly-eyes.png"
+    },
+    {
+      "name": "kenney_impact-sounds",
+      "files": 133,
+      "bytes": 1035004,
+      "extensions": {
+        ".ogg": 130,
+        ".url": 2,
+        ".txt": 1
+      },
+      "pngDimensions": {},
+      "pngModes": {},
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_impact-sounds/License.txt",
+          "sha256": "48d20ed2f4fd9146e76b7f558d09a1c27e62554d9897beb93dee57d269006d02",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_carpet_000.ogg",
+          "duration": 0.144785,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_carpet_001.ogg",
+          "duration": 0.144785,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_carpet_002.ogg",
+          "duration": 0.144785,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_carpet_003.ogg",
+          "duration": 0.144785,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_carpet_004.ogg",
+          "duration": 0.144785,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_concrete_000.ogg",
+          "duration": 0.105918,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_concrete_001.ogg",
+          "duration": 0.107642,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_concrete_002.ogg",
+          "duration": 0.112789,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_concrete_003.ogg",
+          "duration": 0.110499,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_concrete_004.ogg",
+          "duration": 0.114354,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_grass_000.ogg",
+          "duration": 0.777574,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_grass_001.ogg",
+          "duration": 0.673605,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_grass_002.ogg",
+          "duration": 0.692449,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_grass_003.ogg",
+          "duration": 0.66932,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_grass_004.ogg",
+          "duration": 0.590227,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_snow_000.ogg",
+          "duration": 0.374218,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_snow_001.ogg",
+          "duration": 0.374218,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_snow_002.ogg",
+          "duration": 0.374218,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_snow_003.ogg",
+          "duration": 0.374218,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_snow_004.ogg",
+          "duration": 0.374218,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_wood_000.ogg",
+          "duration": 0.249592,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_wood_001.ogg",
+          "duration": 0.251565,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_wood_002.ogg",
+          "duration": 0.251383,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_wood_003.ogg",
+          "duration": 0.251519,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/footstep_wood_004.ogg",
+          "duration": 0.247914,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactBell_heavy_000.ogg",
+          "duration": 1.480181,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactBell_heavy_001.ogg",
+          "duration": 1.740862,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactBell_heavy_002.ogg",
+          "duration": 0.697279,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactBell_heavy_003.ogg",
+          "duration": 0.653605,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactBell_heavy_004.ogg",
+          "duration": 0.301451,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGeneric_light_000.ogg",
+          "duration": 0.138685,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGeneric_light_001.ogg",
+          "duration": 0.117506,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGeneric_light_002.ogg",
+          "duration": 0.139592,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGeneric_light_003.ogg",
+          "duration": 0.137982,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGeneric_light_004.ogg",
+          "duration": 0.14034,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_heavy_000.ogg",
+          "duration": 0.241224,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_heavy_001.ogg",
+          "duration": 0.429002,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_heavy_002.ogg",
+          "duration": 0.247166,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_heavy_003.ogg",
+          "duration": 0.171542,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_heavy_004.ogg",
+          "duration": 0.399184,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_light_000.ogg",
+          "duration": 0.209592,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_light_001.ogg",
+          "duration": 0.209592,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_light_002.ogg",
+          "duration": 0.209592,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_light_003.ogg",
+          "duration": 0.209592,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_light_004.ogg",
+          "duration": 0.209592,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_medium_000.ogg",
+          "duration": 0.543356,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_medium_001.ogg",
+          "duration": 0.543356,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_medium_002.ogg",
+          "duration": 0.543356,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_medium_003.ogg",
+          "duration": 0.543356,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactGlass_medium_004.ogg",
+          "duration": 0.543356,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_heavy_000.ogg",
+          "duration": 0.167664,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_heavy_001.ogg",
+          "duration": 0.359274,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_heavy_002.ogg",
+          "duration": 0.117302,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_heavy_003.ogg",
+          "duration": 0.206916,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_heavy_004.ogg",
+          "duration": 0.13381,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_light_000.ogg",
+          "duration": 0.351474,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_light_001.ogg",
+          "duration": 0.251837,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_light_002.ogg",
+          "duration": 0.235782,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_light_003.ogg",
+          "duration": 0.482041,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_light_004.ogg",
+          "duration": 0.213401,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_medium_000.ogg",
+          "duration": 0.271769,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_medium_001.ogg",
+          "duration": 0.143447,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_medium_002.ogg",
+          "duration": 0.119138,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_medium_003.ogg",
+          "duration": 0.253968,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMetal_medium_004.ogg",
+          "duration": 0.109433,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMining_000.ogg",
+          "duration": 0.937438,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMining_001.ogg",
+          "duration": 0.86941,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMining_002.ogg",
+          "duration": 0.804671,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMining_003.ogg",
+          "duration": 0.991723,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactMining_004.ogg",
+          "duration": 0.830295,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlank_medium_000.ogg",
+          "duration": 0.779002,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlank_medium_001.ogg",
+          "duration": 0.779002,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlank_medium_002.ogg",
+          "duration": 0.779002,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlank_medium_003.ogg",
+          "duration": 0.779002,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlank_medium_004.ogg",
+          "duration": 0.779002,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_heavy_000.ogg",
+          "duration": 0.488662,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_heavy_001.ogg",
+          "duration": 0.352336,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_heavy_002.ogg",
+          "duration": 0.494195,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_heavy_003.ogg",
+          "duration": 0.346553,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_heavy_004.ogg",
+          "duration": 0.55907,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_light_000.ogg",
+          "duration": 0.542426,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_light_001.ogg",
+          "duration": 0.654671,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_light_002.ogg",
+          "duration": 0.488821,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_light_003.ogg",
+          "duration": 0.527596,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_light_004.ogg",
+          "duration": 0.656599,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_medium_000.ogg",
+          "duration": 0.609274,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_medium_001.ogg",
+          "duration": 0.616213,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_medium_002.ogg",
+          "duration": 0.515238,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_medium_003.ogg",
+          "duration": 0.653673,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPlate_medium_004.ogg",
+          "duration": 0.534308,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPunch_heavy_000.ogg",
+          "duration": 0.649025,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPunch_heavy_001.ogg",
+          "duration": 0.535941,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPunch_heavy_002.ogg",
+          "duration": 0.457483,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPunch_heavy_003.ogg",
+          "duration": 0.47381,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPunch_heavy_004.ogg",
+          "duration": 0.536349,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPunch_medium_000.ogg",
+          "duration": 0.430544,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPunch_medium_001.ogg",
+          "duration": 0.404603,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPunch_medium_002.ogg",
+          "duration": 0.541406,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPunch_medium_003.ogg",
+          "duration": 0.455261,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactPunch_medium_004.ogg",
+          "duration": 0.542925,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactSoft_heavy_000.ogg",
+          "duration": 0.505102,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactSoft_heavy_001.ogg",
+          "duration": 0.572041,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactSoft_heavy_002.ogg",
+          "duration": 0.572313,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactSoft_heavy_003.ogg",
+          "duration": 0.544172,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactSoft_heavy_004.ogg",
+          "duration": 0.500952,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactSoft_medium_000.ogg",
+          "duration": 0.118005,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactSoft_medium_001.ogg",
+          "duration": 0.183288,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactSoft_medium_002.ogg",
+          "duration": 0.135193,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactSoft_medium_003.ogg",
+          "duration": 0.140227,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactSoft_medium_004.ogg",
+          "duration": 0.147143,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactTin_medium_000.ogg",
+          "duration": 0.158707,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactTin_medium_001.ogg",
+          "duration": 0.174308,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactTin_medium_002.ogg",
+          "duration": 0.133787,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactTin_medium_003.ogg",
+          "duration": 0.214558,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactTin_medium_004.ogg",
+          "duration": 0.178549,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_heavy_000.ogg",
+          "duration": 0.313039,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_heavy_001.ogg",
+          "duration": 0.313039,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_heavy_002.ogg",
+          "duration": 0.313039,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_heavy_003.ogg",
+          "duration": 0.313039,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_heavy_004.ogg",
+          "duration": 0.313039,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_light_000.ogg",
+          "duration": 0.265601,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_light_001.ogg",
+          "duration": 0.265601,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_light_002.ogg",
+          "duration": 0.265601,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_light_003.ogg",
+          "duration": 0.265601,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_light_004.ogg",
+          "duration": 0.265601,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_medium_000.ogg",
+          "duration": 0.332676,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_medium_001.ogg",
+          "duration": 0.332676,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_medium_002.ogg",
+          "duration": 0.332676,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_medium_003.ogg",
+          "duration": 0.332676,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_impact-sounds/Audio/impactWood_medium_004.ogg",
+          "duration": 0.332676,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        }
+      ],
+      "representatives": [],
+      "errors": [],
+      "contactSheet": null
+    },
+    {
+      "name": "kenney_input-prompts_1.5",
+      "files": 4667,
+      "bytes": 5960296,
+      "extensions": {
+        ".url": 3,
+        ".png": 3056,
+        ".otf": 17,
+        ".ttf": 17,
+        ".txt": 35,
+        ".svg": 1504,
+        ".xml": 34,
+        ".html": 1
+      },
+      "pngDimensions": {
+        "64x64": 1504,
+        "128x128": 1504,
+        "640x640": 3,
+        "1280x1280": 3,
+        "384x384": 1,
+        "768x768": 2,
+        "1088x1024": 1,
+        "2176x2048": 1,
+        "512x448": 1,
+        "1024x896": 1,
+        "576x576": 1,
+        "1152x1152": 1,
+        "704x704": 2,
+        "1408x1408": 2,
+        "768x704": 1,
+        "1536x1408": 1,
+        "640x576": 1,
+        "1280x1152": 1,
+        "576x512": 2,
+        "1152x1024": 2,
+        "1536x1536": 1,
+        "384x320": 2,
+        "768x640": 2,
+        "918x515": 14,
+        "448x384": 1,
+        "896x768": 1
+      },
+      "pngModes": {
+        "P": 3056
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/License.txt",
+          "sha256": "12e0cc92d3d4da782dfd5e9079cd0f141b0ef4102ba03482255ac5d5320a5184",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Preview Flairs & Overlays.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Preview Generic.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Flairs/Default/controller_battery_empty.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            8,
+            14,
+            55,
+            53
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Keyboard & Mouse/Default/keyboard_6_outline.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            8,
+            8,
+            56,
+            56
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Keyboard & Mouse/Double/keyboard_arrow_right_outline.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            16,
+            16,
+            112,
+            112
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Meta Quest/Double/controller_quest_left_letter.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            16,
+            16,
+            104,
+            112
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Nintendo Switch/Default/switch_joycon_right_diagonal_outline.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            7,
+            7,
+            56,
+            56
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Nintendo Switch 2/Double/switch_button_b.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            16,
+            16,
+            112,
+            112
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Nintendo Wii/Double/wii_stick_r_left.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            6,
+            16,
+            112,
+            112
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/PlayStation Series/Default/playstation_trigger_l2_outline.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            8,
+            8,
+            56,
+            56
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Steam Controller/Default/steam_dpad_vertical_outline.png",
+          "size": [
+            64,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            8,
+            8,
+            56,
+            56
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Steam Deck/Double/steamdeck_button_x_outline.png",
+          "size": [
+            128,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            16,
+            16,
+            112,
+            112
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Touch/touch_sheet_double.png",
+          "size": [
+            768,
+            640
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            26,
+            0,
+            768,
+            622
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_input-prompts_1.5/Xbox Series/xbox-series_sheet_double.png",
+          "size": [
+            1280,
+            1280
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            6,
+            0,
+            1280,
+            1264
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_input-prompts_1.5.png"
+    },
+    {
+      "name": "kenney_interface-sounds",
+      "files": 103,
+      "bytes": 961273,
+      "extensions": {
+        ".ogg": 100,
+        ".url": 2,
+        ".txt": 1
+      },
+      "pngDimensions": {},
+      "pngModes": {},
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_interface-sounds/License.txt",
+          "sha256": "f7e58f21a053c54110a27e7da3510d73e50640a0dc85328afe077fc36191702f",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/back_001.ogg",
+          "duration": 0.063878,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/back_002.ogg",
+          "duration": 0.069841,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/back_003.ogg",
+          "duration": 0.09288,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/back_004.ogg",
+          "duration": 0.072993,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/bong_001.ogg",
+          "duration": 0.122834,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/click_001.ogg",
+          "duration": 0.100023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/click_002.ogg",
+          "duration": 0.010023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/click_003.ogg",
+          "duration": 0.010023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/click_004.ogg",
+          "duration": 0.010023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/click_005.ogg",
+          "duration": 0.010023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/close_001.ogg",
+          "duration": 0.147778,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/close_002.ogg",
+          "duration": 0.313787,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/close_003.ogg",
+          "duration": 0.313787,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/close_004.ogg",
+          "duration": 0.32288,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/confirmation_001.ogg",
+          "duration": 0.289841,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/confirmation_002.ogg",
+          "duration": 0.539002,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/confirmation_003.ogg",
+          "duration": 0.322018,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/confirmation_004.ogg",
+          "duration": 0.490408,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/drop_001.ogg",
+          "duration": 0.109819,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/drop_002.ogg",
+          "duration": 0.191088,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/drop_003.ogg",
+          "duration": 0.191088,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/drop_004.ogg",
+          "duration": 0.286689,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/error_001.ogg",
+          "duration": 0.164558,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/error_002.ogg",
+          "duration": 0.164558,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/error_003.ogg",
+          "duration": 0.533469,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/error_004.ogg",
+          "duration": 0.102698,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/error_005.ogg",
+          "duration": 0.500045,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/error_006.ogg",
+          "duration": 0.500045,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/error_007.ogg",
+          "duration": 0.191995,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/error_008.ogg",
+          "duration": 0.13932,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/glass_001.ogg",
+          "duration": 0.278435,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/glass_002.ogg",
+          "duration": 0.125306,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/glass_003.ogg",
+          "duration": 0.123673,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/glass_004.ogg",
+          "duration": 0.692268,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/glass_005.ogg",
+          "duration": 0.110794,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/glass_006.ogg",
+          "duration": 0.110794,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/glitch_001.ogg",
+          "duration": 0.020023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/glitch_002.ogg",
+          "duration": 0.030023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/glitch_003.ogg",
+          "duration": 0.010023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/glitch_004.ogg",
+          "duration": 0.022902,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/maximize_001.ogg",
+          "duration": 0.25839,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/maximize_002.ogg",
+          "duration": 0.258277,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/maximize_003.ogg",
+          "duration": 0.211859,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/maximize_004.ogg",
+          "duration": 0.417959,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/maximize_005.ogg",
+          "duration": 0.526372,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/maximize_006.ogg",
+          "duration": 0.379955,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/maximize_007.ogg",
+          "duration": 0.18576,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/maximize_008.ogg",
+          "duration": 0.225351,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/maximize_009.ogg",
+          "duration": 0.224785,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/minimize_001.ogg",
+          "duration": 0.25839,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/minimize_002.ogg",
+          "duration": 0.258277,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/minimize_003.ogg",
+          "duration": 0.211859,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/minimize_004.ogg",
+          "duration": 0.417959,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/minimize_005.ogg",
+          "duration": 0.526372,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/minimize_006.ogg",
+          "duration": 0.379955,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/minimize_007.ogg",
+          "duration": 0.18576,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/minimize_008.ogg",
+          "duration": 0.225351,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/minimize_009.ogg",
+          "duration": 0.224785,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/open_001.ogg",
+          "duration": 0.147778,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/open_002.ogg",
+          "duration": 0.313787,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/open_003.ogg",
+          "duration": 0.313787,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/open_004.ogg",
+          "duration": 0.32288,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/pluck_001.ogg",
+          "duration": 0.102426,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/pluck_002.ogg",
+          "duration": 0.164558,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/question_001.ogg",
+          "duration": 0.49068,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/question_002.ogg",
+          "duration": 0.332517,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/question_003.ogg",
+          "duration": 0.332494,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/question_004.ogg",
+          "duration": 0.332472,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/scratch_001.ogg",
+          "duration": 0.13932,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/scratch_002.ogg",
+          "duration": 0.13932,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/scratch_003.ogg",
+          "duration": 0.123424,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/scratch_004.ogg",
+          "duration": 0.325079,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/scratch_005.ogg",
+          "duration": 0.325079,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/scroll_001.ogg",
+          "duration": 1.000023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/scroll_002.ogg",
+          "duration": 1.000023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/scroll_003.ogg",
+          "duration": 1.000023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/scroll_004.ogg",
+          "duration": 1.000023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/scroll_005.ogg",
+          "duration": 1.000023,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/select_001.ogg",
+          "duration": 0.043288,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/select_002.ogg",
+          "duration": 0.043288,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/select_003.ogg",
+          "duration": 0.382766,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/select_004.ogg",
+          "duration": 0.382766,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/select_005.ogg",
+          "duration": 0.382766,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/select_006.ogg",
+          "duration": 1.943923,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/select_007.ogg",
+          "duration": 0.046939,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/select_008.ogg",
+          "duration": 0.046939,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/switch_001.ogg",
+          "duration": 0.617664,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/switch_002.ogg",
+          "duration": 0.610952,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/switch_003.ogg",
+          "duration": 0.5,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/switch_004.ogg",
+          "duration": 0.5,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/switch_005.ogg",
+          "duration": 0.611927,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/switch_006.ogg",
+          "duration": 0.610544,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/switch_007.ogg",
+          "duration": 0.614354,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 2
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/tick_001.ogg",
+          "duration": 0.02322,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/tick_002.ogg",
+          "duration": 0.02322,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/tick_004.ogg",
+          "duration": 0.054807,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/toggle_001.ogg",
+          "duration": 0.13932,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/toggle_002.ogg",
+          "duration": 0.13932,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/toggle_003.ogg",
+          "duration": 0.13932,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        },
+        {
+          "path": "assets/kenney/kenney_interface-sounds/Audio/toggle_004.ogg",
+          "duration": 0.066168,
+          "codec_name": "vorbis",
+          "sample_rate": "44100",
+          "channels": 1
+        }
+      ],
+      "representatives": [],
+      "errors": [],
+      "contactSheet": null
+    },
+    {
+      "name": "kenney_light-masks-1.0",
+      "files": 460,
+      "bytes": 15442482,
+      "extensions": {
+        ".png": 457,
+        ".txt": 1,
+        ".url": 2
+      },
+      "pngDimensions": {
+        "512x512": 456,
+        "918x515": 1
+      },
+      "pngModes": {
+        "RGBA": 70,
+        "P": 387
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/License.txt",
+          "sha256": "bd63320439b690e8e44968cdac62ddc30d02a9af81f753a11919582c908fa779",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Default/circle_a.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Default/cone_composed_a_noise.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Default/ring_a.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Default/window_b_noise.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Inverted/circle_d_noise.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Inverted/cone_d_noise.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Inverted/shape_e.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Inverted/window_g_blur.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Transparent/circle_rings_d_streaks.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            0,
+            254
+          ],
+          "visibleBounds": [
+            39,
+            34,
+            473,
+            478
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Transparent/fan_c_gradient.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            59,
+            58,
+            453,
+            455
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Transparent/streaks_composed_f_noise.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            0,
+            156
+          ],
+          "visibleBounds": [
+            115,
+            7,
+            399,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_light-masks-1.0/Transparent/window_k_noise.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            0,
+            177
+          ],
+          "visibleBounds": [
+            119,
+            53,
+            393,
+            459
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_light-masks-1.0.png"
+    },
+    {
+      "name": "kenney_pattern-pack",
+      "files": 256,
+      "bytes": 1404632,
+      "extensions": {
+        ".txt": 1,
+        ".png": 171,
+        ".svg": 84
+      },
+      "pngDimensions": {
+        "256x256": 84,
+        "512x512": 84,
+        "918x515": 1,
+        "3072x1792": 1,
+        "6144x3584": 1
+      },
+      "pngModes": {
+        "P": 171
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_pattern-pack/License.txt",
+          "sha256": "0bf6d15cd32147bdaab5960af5cba1ba4f8d604393caed4ac350b9c3369cef49",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_pattern-pack/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Default/pattern_01.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Default/pattern_16.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Default/pattern_31.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Default/pattern_47.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Default/pattern_62.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Default/pattern_77.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Double/pattern_08.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Double/pattern_23.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Double/pattern_38.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Double/pattern_54.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Double/pattern_69.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack/PNG/Double/pattern_84.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_pattern-pack.png"
+    },
+    {
+      "name": "kenney_pattern-pack(1)",
+      "files": 256,
+      "bytes": 1404632,
+      "extensions": {
+        ".txt": 1,
+        ".png": 171,
+        ".svg": 84
+      },
+      "pngDimensions": {
+        "256x256": 84,
+        "512x512": 84,
+        "918x515": 1,
+        "3072x1792": 1,
+        "6144x3584": 1
+      },
+      "pngModes": {
+        "P": 171
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/License.txt",
+          "sha256": "0bf6d15cd32147bdaab5960af5cba1ba4f8d604393caed4ac350b9c3369cef49",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Default/pattern_01.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Default/pattern_16.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Default/pattern_31.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Default/pattern_47.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Default/pattern_62.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Default/pattern_77.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            256,
+            256
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Double/pattern_08.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Double/pattern_23.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Double/pattern_38.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Double/pattern_54.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Double/pattern_69.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack(1)/PNG/Double/pattern_84.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            512,
+            512
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_pattern-pack(1).png"
+    },
+    {
+      "name": "kenney_pattern-pack-pixel",
+      "files": 137,
+      "bytes": 37587,
+      "extensions": {
+        ".txt": 2,
+        ".png": 133,
+        ".url": 2
+      },
+      "pngDimensions": {
+        "918x515": 1,
+        "135x135": 2,
+        "128x128": 2,
+        "16x16": 128
+      },
+      "pngModes": {
+        "P": 133
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/License.txt",
+          "sha256": "d32216d0ec850ea0d337f3fa0a0a778b1d1615314b4e8b0f0e02ea2af4026c2c",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Color)/tile_0000.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Color)/tile_0012.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Color)/tile_0023.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Color)/tile_0035.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Color)/tile_0046.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Color)/tile_0058.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Grayscale)/tile_0005.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Grayscale)/tile_0017.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Grayscale)/tile_0028.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Grayscale)/tile_0040.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Grayscale)/tile_0051.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_pattern-pack-pixel/Tiles (Grayscale)/tile_0063.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_pattern-pack-pixel.png"
+    },
+    {
+      "name": "kenney_skyboxes-space",
+      "files": 12,
+      "bytes": 8165538,
+      "extensions": {
+        ".url": 3,
+        ".txt": 1,
+        ".png": 8
+      },
+      "pngDimensions": {
+        "918x515": 3,
+        "4096x2048": 5
+      },
+      "pngModes": {
+        "RGBA": 1,
+        "P": 7
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_skyboxes-space/License.txt",
+          "sha256": "6842ec511f8c97213e1fc880cff5e1e1a2bbe6f921b03b0fe8cf7482b581b3d1",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_skyboxes-space/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_skyboxes-space/Sample (Band).png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_skyboxes-space/Skyboxes/skybox-space-band.png",
+          "size": [
+            4096,
+            2048
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            4096,
+            2048
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_skyboxes-space/Skyboxes/skybox-space-dark.png",
+          "size": [
+            4096,
+            2048
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            4096,
+            2048
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_skyboxes-space/Skyboxes/skybox-space-day.png",
+          "size": [
+            4096,
+            2048
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            4096,
+            2048
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_skyboxes-space/Skyboxes/skybox-space-galaxy.png",
+          "size": [
+            4096,
+            2048
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            4096,
+            2048
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_skyboxes-space/Skyboxes/skybox-space-nebula.png",
+          "size": [
+            4096,
+            2048
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            4096,
+            2048
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_skyboxes-space.png"
+    },
+    {
+      "name": "kenney_splat-pack",
+      "files": 113,
+      "bytes": 464339,
+      "extensions": {
+        ".txt": 1,
+        ".png": 73,
+        ".svg": 37,
+        ".url": 2
+      },
+      "pngDimensions": {
+        "256x256": 36,
+        "512x512": 36,
+        "918x515": 1
+      },
+      "pngModes": {
+        "P": 73
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_splat-pack/License.txt",
+          "sha256": "eaba971eb27701538a0a57542934a403b45de568c1b8ffc1b374ca84b0cec700",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_splat-pack/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Default (256px)/splat00.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            17,
+            25,
+            239,
+            232
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Default (256px)/splat06.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            15,
+            20,
+            241,
+            236
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Default (256px)/splat13.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            18,
+            27,
+            238,
+            229
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Default (256px)/splat19.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            10,
+            24,
+            246,
+            232
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Default (256px)/splat26.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            12,
+            21,
+            244,
+            235
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Default (256px)/splat32.png",
+          "size": [
+            256,
+            256
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            16,
+            38,
+            240,
+            218
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Double (512px)/splat03.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            21,
+            44,
+            491,
+            468
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Double (512px)/splat09.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            26,
+            31,
+            486,
+            482
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Double (512px)/splat16.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            19,
+            49,
+            493,
+            463
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Double (512px)/splat22.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            55,
+            58,
+            457,
+            454
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Double (512px)/splat29.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            70,
+            28,
+            442,
+            484
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_splat-pack/PNG/Double (512px)/splat35.png",
+          "size": [
+            512,
+            512
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            27,
+            24,
+            485,
+            488
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_splat-pack.png"
+    },
+    {
+      "name": "kenney_ui-pack-space-expansion",
+      "files": 1117,
+      "bytes": 865395,
+      "extensions": {
+        ".ttf": 2,
+        ".txt": 1,
+        ".png": 742,
+        ".svg": 370,
+        ".url": 2
+      },
+      "pngDimensions": {
+        "96x24": 24,
+        "12x24": 48,
+        "24x24": 49,
+        "96x16": 24,
+        "8x16": 48,
+        "16x16": 48,
+        "192x64": 44,
+        "64x64": 54,
+        "30x30": 12,
+        "28x28": 12,
+        "192x48": 24,
+        "24x48": 48,
+        "48x48": 49,
+        "192x32": 24,
+        "16x32": 48,
+        "32x32": 48,
+        "384x128": 44,
+        "128x128": 54,
+        "60x60": 12,
+        "56x56": 12,
+        "21x21": 1,
+        "19x19": 1,
+        "20x20": 1,
+        "23x23": 2,
+        "16x20": 1,
+        "22x28": 1,
+        "42x42": 1,
+        "38x38": 1,
+        "40x40": 1,
+        "46x46": 2,
+        "32x40": 1,
+        "44x56": 1,
+        "918x515": 2
+      },
+      "pngModes": {
+        "P": 671,
+        "RGBA": 71
+      },
+      "licenses": [
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/License.txt",
+          "sha256": "48a3b7b10ce10a84a96b864937f8b0f8545018e6ce42281a5be92279cc3c3bff",
+          "license": "CC0 1.0"
+        }
+      ],
+      "audio": [],
+      "representatives": [
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/Preview.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/Sample.png",
+          "size": [
+            918,
+            515
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            918,
+            515
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Blue/Default/bar_round_gloss_large.png",
+          "size": [
+            96,
+            24
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            96,
+            24
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Blue/Double/bar_round_gloss_small_m.png",
+          "size": [
+            32,
+            32
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            32,
+            32
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Extra/Default/bar_shadow_round_outline_small_square.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            76
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Extra/Double/bar_shadow_round_outline_small_m.png",
+          "size": [
+            32,
+            32
+          ],
+          "alphaRange": [
+            51,
+            76
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            32,
+            32
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Green/Default/bar_round_gloss_small_square.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Green/Double/bar_round_small_l.png",
+          "size": [
+            16,
+            32
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            32
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Grey/Default/bar_square_gloss_large_r.png",
+          "size": [
+            12,
+            24
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            12,
+            24
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Grey/Double/bar_square_large.png",
+          "size": [
+            192,
+            48
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            192,
+            48
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Red/Default/bar_square_small_m.png",
+          "size": [
+            16,
+            16
+          ],
+          "alphaRange": [
+            255,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Red/Double/button_square_header_large_rectangle_screws.png",
+          "size": [
+            384,
+            128
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            384,
+            128
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Yellow/Default/button_square_header_small_rectangle.png",
+          "size": [
+            192,
+            64
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            192,
+            64
+          ]
+        },
+        {
+          "path": "assets/kenney/kenney_ui-pack-space-expansion/PNG/Yellow/Double/crosshair_color_d.png",
+          "size": [
+            56,
+            56
+          ],
+          "alphaRange": [
+            0,
+            255
+          ],
+          "visibleBounds": [
+            0,
+            0,
+            56,
+            56
+          ]
+        }
+      ],
+      "errors": [],
+      "contactSheet": "/tmp/love2gathering-asset-inventory-kenney_ui-pack-space-expansion.png"
+    }
+  ],
+  "auditedAt": "2026-11-14",
+  "method": "All supplied pack file entries, every PNG dimension/mode header, all source licenses, ffprobe of every audio stream; 20 representative image contact sheets visually reviewed. No claim that every sprite was visually viewed.",
+  "archives": []
+}

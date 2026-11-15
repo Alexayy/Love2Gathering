@@ -1,0 +1,433 @@
+{
+  "checks": [
+    "Actual lobby Start match loads both validated bundled Modern decks",
+    "Actual bot icon selects an opponent end-step stop",
+    "Actual player icon selects an own main-phase stop",
+    "Actual starting-player and Keep Slab buttons reach native main priority",
+    "Real human hand is present and native bot hand remains hidden",
+    "Native state confirms own stop and configured opponent end step",
+    "Real projected hand renders as selectable card hit regions",
+    "Actual native own-main pause has a visible gold status surface",
+    "Native priority prompt exposes the actual End Turn control",
+    "End Turn reaches the selected opponent stop without asking to Pass empty priority windows",
+    "Native opponent end step is held with yielding canceled",
+    "Paused stop retains the actual native prompt and actionable IDs",
+    "The selected native stop stays paused without submitting an automatic answer",
+    "Actual native opponent-end pause has a visible gold status surface",
+    "Actual Slab Pass is available at the selected opponent end step",
+    "Actual Pass resumes the held stop and preserves subsequent native choices",
+    "Actual priority-mode icon switches the native engine to full control",
+    "Actual priority-mode icon returns the native engine to automatic passing",
+    "Actual UI sent native configure and End Turn commands through Model/API"
+  ],
+  "engineCalls": [
+    {
+      "body": {
+        "botDeck": {
+          "commander": [],
+          "description": "Islandwalk and tribal lords build an evasive board; Aether Vial exercises activated abilities.",
+          "format": "Modern",
+          "id": "modern-merfolk",
+          "main": [
+            {
+              "count": 4,
+              "name": "Island"
+            },
+            {
+              "count": 4,
+              "name": "Cavern of Souls"
+            },
+            {
+              "count": 4,
+              "name": "Mutavault"
+            },
+            {
+              "count": 4,
+              "name": "Seachrome Coast"
+            },
+            {
+              "count": 4,
+              "name": "Waterlogged Grove"
+            },
+            {
+              "count": 4,
+              "name": "Aether Vial"
+            },
+            {
+              "count": 4,
+              "name": "Tide Shaper"
+            },
+            {
+              "count": 4,
+              "name": "Silvergill Adept"
+            },
+            {
+              "count": 4,
+              "name": "Lord of Atlantis"
+            },
+            {
+              "count": 4,
+              "name": "Master of the Pearl Trident"
+            },
+            {
+              "count": 4,
+              "name": "Merfolk Trickster"
+            },
+            {
+              "count": 4,
+              "name": "Vodalian Hexcatcher"
+            },
+            {
+              "count": 4,
+              "name": "Svyelun of Sea and Sky"
+            },
+            {
+              "count": 4,
+              "name": "Spreading Seas"
+            },
+            {
+              "count": 4,
+              "name": "Force of Negation"
+            }
+          ],
+          "name": "Merfolk",
+          "origin": "bundled",
+          "sideboard": [
+            {
+              "count": 3,
+              "name": "Dismember"
+            },
+            {
+              "count": 3,
+              "name": "Relic of Progenitus"
+            },
+            {
+              "count": 3,
+              "name": "Hurkyl's Recall"
+            },
+            {
+              "count": 3,
+              "name": "Counterspell"
+            },
+            {
+              "count": 3,
+              "name": "Kira, Great Glass-Spinner"
+            }
+          ]
+        },
+        "deck": {
+          "commander": [],
+          "description": "Fast red damage with white interaction; tests prowess, combat and targeted spells.",
+          "format": "Modern",
+          "id": "modern-boros-burn",
+          "main": [
+            {
+              "count": 4,
+              "name": "Goblin Guide"
+            },
+            {
+              "count": 4,
+              "name": "Monastery Swiftspear"
+            },
+            {
+              "count": 4,
+              "name": "Eidolon of the Great Revel"
+            },
+            {
+              "count": 4,
+              "name": "Lightning Bolt"
+            },
+            {
+              "count": 4,
+              "name": "Lava Spike"
+            },
+            {
+              "count": 4,
+              "name": "Rift Bolt"
+            },
+            {
+              "count": 4,
+              "name": "Boros Charm"
+            },
+            {
+              "count": 4,
+              "name": "Lightning Helix"
+            },
+            {
+              "count": 4,
+              "name": "Searing Blaze"
+            },
+            {
+              "count": 4,
+              "name": "Skullcrack"
+            },
+            {
+              "count": 4,
+              "name": "Inspiring Vantage"
+            },
+            {
+              "count": 4,
+              "name": "Sacred Foundry"
+            },
+            {
+              "count": 4,
+              "name": "Arid Mesa"
+            },
+            {
+              "count": 4,
+              "name": "Sunbaked Canyon"
+            },
+            {
+              "count": 4,
+              "name": "Mountain"
+            }
+          ],
+          "name": "Boros Burn",
+          "origin": "bundled",
+          "sideboard": [
+            {
+              "count": 3,
+              "name": "Path to Exile"
+            },
+            {
+              "count": 3,
+              "name": "Smash to Smithereens"
+            },
+            {
+              "count": 3,
+              "name": "Rest in Peace"
+            },
+            {
+              "count": 3,
+              "name": "Deflecting Palm"
+            },
+            {
+              "count": 3,
+              "name": "Roiling Vortex"
+            }
+          ]
+        },
+        "format": "Modern",
+        "playerName": "Priority UI Human",
+        "priority": {
+          "autoPass": true,
+          "stops": {
+            "opponent": [
+              "END_TURN"
+            ],
+            "own": [
+              "PRECOMBAT_MAIN"
+            ]
+          }
+        },
+        "recordingPort": 17400,
+        "settings": {
+          "animations": false,
+          "autoMana": true,
+          "colorblindMode": "Off",
+          "fontFamily": "Built-in DejaVu Sans",
+          "frameLimit": 0,
+          "highContrast": false,
+          "manualTriggers": false,
+          "masterVolume": 0.7,
+          "msaa": 0,
+          "musicEnabled": false,
+          "musicVolume": 0.25,
+          "particles": false,
+          "reducedMotion": false,
+          "renderScale": 1,
+          "resolution": "1440x900",
+          "sfxEnabled": false,
+          "sfxVolume": 0.45,
+          "showCardArt": false,
+          "showTooltips": true,
+          "textureFilter": "linear",
+          "uiScale": 1,
+          "vsync": false,
+          "windowMode": "Windowed"
+        }
+      },
+      "path": "/session/start"
+    },
+    {
+      "body": {
+        "autoPass": true,
+        "command": "configure",
+        "stops": {
+          "opponent": [
+            "END_TURN"
+          ],
+          "own": []
+        }
+      },
+      "path": "/session/priority"
+    },
+    {
+      "body": {
+        "autoPass": true,
+        "command": "configure",
+        "stops": {
+          "opponent": [],
+          "own": []
+        }
+      },
+      "path": "/session/priority"
+    },
+    {
+      "body": {
+        "autoPass": true,
+        "command": "configure",
+        "stops": {
+          "opponent": [
+            "END_TURN"
+          ],
+          "own": []
+        }
+      },
+      "path": "/session/priority"
+    },
+    {
+      "body": {
+        "autoPass": true,
+        "command": "configure",
+        "stops": {
+          "opponent": [
+            "END_TURN"
+          ],
+          "own": [
+            "PRECOMBAT_MAIN"
+          ]
+        }
+      },
+      "path": "/session/priority"
+    },
+    {
+      "body": {
+        "promptId": 4,
+        "type": "uuid",
+        "value": "dcd6489f-b662-437b-9a78-81d593117d24"
+      },
+      "path": "/session/action"
+    },
+    {
+      "body": {
+        "promptId": 23,
+        "type": "boolean",
+        "value": false
+      },
+      "path": "/session/action"
+    },
+    {
+      "body": {
+        "command": "end_turn",
+        "promptId": 32
+      },
+      "path": "/session/priority"
+    },
+    {
+      "body": {
+        "promptId": 85,
+        "type": "boolean",
+        "value": true
+      },
+      "path": "/session/action"
+    },
+    {
+      "body": {
+        "autoPass": false,
+        "command": "configure",
+        "stops": {
+          "opponent": [
+            "END_TURN"
+          ],
+          "own": [
+            "PRECOMBAT_MAIN"
+          ]
+        }
+      },
+      "path": "/session/priority"
+    },
+    {
+      "body": {
+        "autoPass": true,
+        "command": "configure",
+        "stops": {
+          "opponent": [
+            "END_TURN"
+          ],
+          "own": [
+            "PRECOMBAT_MAIN"
+          ]
+        }
+      },
+      "path": "/session/priority"
+    },
+    {
+      "body": {},
+      "path": "/session/stop"
+    }
+  ],
+  "gameId": "af53b298-2a20-4423-95d5-f2f589cd4cdd",
+  "logical": [
+    1440,
+    900
+  ],
+  "physical": [
+    1440,
+    900
+  ],
+  "prioritySamples": [
+    {
+      "activePlayerId": "dcd6489f-b662-437b-9a78-81d593117d24",
+      "autoPass": true,
+      "autoPassCount": 1,
+      "canEndTurn": true,
+      "meaningfulActionCount": 2,
+      "paused": true,
+      "pending": false,
+      "reason": "stop",
+      "status": "Stopped at Precombat Main",
+      "step": "PRECOMBAT_MAIN",
+      "stopPlayerId": "dcd6489f-b662-437b-9a78-81d593117d24",
+      "stopStep": "PRECOMBAT_MAIN",
+      "stops": {
+        "opponent": [
+          "END_TURN"
+        ],
+        "own": [
+          "PRECOMBAT_MAIN"
+        ]
+      },
+      "turn": 1,
+      "yielding": false
+    },
+    {
+      "activePlayerId": "79541137-487e-46bb-af36-164ab2ce8dbf",
+      "autoPass": true,
+      "autoPassCount": 16,
+      "canEndTurn": true,
+      "meaningfulActionCount": 0,
+      "paused": true,
+      "pending": false,
+      "reason": "stop",
+      "status": "Stopped at End Turn",
+      "step": "END_TURN",
+      "stopPlayerId": "79541137-487e-46bb-af36-164ab2ce8dbf",
+      "stopStep": "END_TURN",
+      "stops": {
+        "opponent": [
+          "END_TURN"
+        ],
+        "own": [
+          "PRECOMBAT_MAIN"
+        ]
+      },
+      "turn": 2,
+      "yielding": false
+    }
+  ],
+  "replayId": "game-af53b298-2a20-4423-95d5-f2f589cd4cdd",
+  "scope": "Actual LÖVE/Slab callbacks, Model/API and XMage production bundled Modern duel; temporary catalog; no injected projections or answers",
+  "passed": true,
+  "oldPromptAfterEndTurnSubmitted": false
+}

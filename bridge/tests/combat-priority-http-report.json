@@ -1,0 +1,73 @@
+{
+  "passed": true,
+  "kind": "Real native production game, HTTP controls and ordinary validated all-Plains decks; no injected game state or frontend UI",
+  "checks": {
+    "endTurnRejectedDuringPregame": true,
+    "persistedStopsAppliedBeforeStart": true,
+    "emptyInitialUpkeepAutoPassed": true,
+    "visibleOwnMainStop": true,
+    "staleEndTurnRejected": true,
+    "staleActionRejected": true,
+    "malformedActionRejected": true,
+    "endTurnCancelledAtNewTurnWithoutEmptyQuestion": true,
+    "endTurnDidNotPlayLand": true,
+    "emptyOpponentEndStepBluffStop": true,
+    "fullControlHoldsEmptyPriority": true,
+    "invalidStopRejected": true,
+    "nativeLandActionHeld": true,
+    "cancelPreservesAvailableAction": true,
+    "automaticAndExplicitPriorityRecorded": true,
+    "rejectedAttemptsNotRecorded": true,
+    "coherentPrioritySnapshots": true
+  },
+  "concurrentSnapshotReads": 1424,
+  "snapshotFailures": [],
+  "failure": null,
+  "replayId": "game-ea26274d-cae4-43dc-9d19-3ed5e6ba58ae",
+  "prioritySamples": [
+    {
+      "autoPass": true,
+      "stops": {
+        "own": [
+          "PRECOMBAT_MAIN"
+        ],
+        "opponent": [
+          "END_TURN"
+        ]
+      },
+      "yielding": false,
+      "pending": false,
+      "paused": true,
+      "reason": "stop",
+      "status": "Stopped at End Turn",
+      "step": "END_TURN",
+      "turn": 2,
+      "activePlayerId": "cc559692-0da4-4cda-9fbb-99ef0182b622",
+      "stopStep": "END_TURN",
+      "stopPlayerId": "cc559692-0da4-4cda-9fbb-99ef0182b622",
+      "meaningfulActionCount": 0,
+      "autoPassCount": 14,
+      "canEndTurn": true
+    },
+    {
+      "autoPass": true,
+      "stops": {
+        "own": [],
+        "opponent": []
+      },
+      "yielding": false,
+      "pending": false,
+      "paused": true,
+      "reason": "action",
+      "status": "Your action",
+      "step": "PRECOMBAT_MAIN",
+      "turn": 3,
+      "activePlayerId": "b517bf41-f5a8-4045-9a40-da8de4d26a30",
+      "stopStep": null,
+      "stopPlayerId": null,
+      "meaningfulActionCount": 8,
+      "autoPassCount": 17,
+      "canEndTurn": true
+    }
+  ]
+}

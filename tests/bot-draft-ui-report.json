@@ -1,0 +1,290 @@
+{
+  "captures": [
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/native-cube-1120-ui1.png",
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/booster-grid-1120-ui1.png",
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/draft-setup-1120-ui1.png",
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/native-pack-projection-1120-ui1.png",
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/native-cube-2560-ui1.png",
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/booster-grid-2560-ui1.png",
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/draft-setup-2560-ui1.png",
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/native-pack-projection-2560-ui1.png",
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/native-cube-2560-ui1.25.png",
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/booster-grid-2560-ui1.25.png",
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/draft-setup-2560-ui1.25.png",
+    "/tmp/love2gathering-bot-draft-ui-WIoJLP/native-pack-projection-2560-ui1.25.png"
+  ],
+  "checks": [
+    "Native option is present in format: Legacy",
+    "Actual Constructed format selector accepts installed Legacy: 1120-ui1",
+    "Native option is present in format: Vintage",
+    "Actual Constructed format selector accepts installed Vintage: 1120-ui1",
+    "Constructed selector excludes Limited and unsupported native formats: 1120-ui1",
+    "The actual Draft with bots shortcut opens eight native seats by default: 1120-ui1",
+    "Draft seat bounds come from the installed capability range: 1120-ui1",
+    "Actual seat menu covers native4\u201316 seats only: 1120-ui1",
+    "Minimum native seat count is selectable: 1120-ui1",
+    "Native option is present in bot-draft-count: You + 15 bots",
+    "Maximum native seat count is selectable: 1120-ui1",
+    "Native option is present in bot-draft-count: You + 7 bots",
+    "Native option is present in bot-draft-mode: Native cube draft",
+    "Actual procedure selector chooses the native cube mode: 1120-ui1",
+    "A real wheel over the read-only combo scrolls the enclosing draft form: 1120-ui1",
+    "The ignored-scroll input preserves parent wheel ownership: 1120-ui1",
+    "Native option is present in bot-draft-cube: Native cube two",
+    "Cube selector uses the offered exact native cube ID: 1120-ui1",
+    "Native option is present in bot-draft-mode: Random booster draft",
+    "Random draft remains an explicit native procedure: 1120-ui1",
+    "Random mode explains the native eligible-set pool: 1120-ui1",
+    "Native option is present in bot-draft-mode: Traditional booster draft",
+    "Traditional mode restores booster selection: 1120-ui1",
+    "Actual pack button opens the shared grid with All sets disabled: 1120-ui1",
+    "Pack grid contains exactly offered booster sets and no All sets tile: 1120-ui1",
+    "The no-All booster grid reports its true offered set count: 1120-ui1",
+    "Actual booster tile stays within the scaled popup: 1120-ui1 m21",
+    "Actual booster tile stays within the scaled popup: 1120-ui1 thb",
+    "Actual booster tile stays within the scaled popup: 1120-ui1 m20",
+    "Selecting a booster tile preserves its exact native set code: 1120-ui1",
+    "An existing private room disables starting another bot draft: 1120-ui1",
+    "Disabled Start cannot create a second room: 1120-ui1",
+    "Draft Start has a separate visible footer with padding: 1120-ui1",
+    "One actual Start chains create, bots, ready and native draft start in order: 1120-ui1",
+    "The created room carries the exact selected native draft options: 1120-ui1",
+    "The shortcut requests seven bots, readies only the local seat, then starts without inventing picks: 1120-ui1",
+    "An actual native-shaped draft projection opens the existing offered-pack Draft UI: 1120-ui1",
+    "Native option is present in format: Legacy",
+    "Actual Constructed format selector accepts installed Legacy: 2560-ui1",
+    "Native option is present in format: Vintage",
+    "Actual Constructed format selector accepts installed Vintage: 2560-ui1",
+    "Constructed selector excludes Limited and unsupported native formats: 2560-ui1",
+    "The actual Draft with bots shortcut opens eight native seats by default: 2560-ui1",
+    "Draft seat bounds come from the installed capability range: 2560-ui1",
+    "Actual seat menu covers native4\u201316 seats only: 2560-ui1",
+    "Minimum native seat count is selectable: 2560-ui1",
+    "Native option is present in bot-draft-count: You + 15 bots",
+    "Maximum native seat count is selectable: 2560-ui1",
+    "Native option is present in bot-draft-count: You + 7 bots",
+    "Native option is present in bot-draft-mode: Native cube draft",
+    "Actual procedure selector chooses the native cube mode: 2560-ui1",
+    "The ignored-scroll input preserves parent wheel ownership: 2560-ui1",
+    "Native option is present in bot-draft-cube: Native cube two",
+    "Cube selector uses the offered exact native cube ID: 2560-ui1",
+    "Native option is present in bot-draft-mode: Random booster draft",
+    "Random draft remains an explicit native procedure: 2560-ui1",
+    "Random mode explains the native eligible-set pool: 2560-ui1",
+    "Native option is present in bot-draft-mode: Traditional booster draft",
+    "Traditional mode restores booster selection: 2560-ui1",
+    "Actual pack button opens the shared grid with All sets disabled: 2560-ui1",
+    "Pack grid contains exactly offered booster sets and no All sets tile: 2560-ui1",
+    "The no-All booster grid reports its true offered set count: 2560-ui1",
+    "Actual booster tile stays within the scaled popup: 2560-ui1 m21",
+    "Actual booster tile stays within the scaled popup: 2560-ui1 thb",
+    "Actual booster tile stays within the scaled popup: 2560-ui1 m20",
+    "Selecting a booster tile preserves its exact native set code: 2560-ui1",
+    "An existing private room disables starting another bot draft: 2560-ui1",
+    "Disabled Start cannot create a second room: 2560-ui1",
+    "Draft Start has a separate visible footer with padding: 2560-ui1",
+    "One actual Start chains create, bots, ready and native draft start in order: 2560-ui1",
+    "The created room carries the exact selected native draft options: 2560-ui1",
+    "The shortcut requests seven bots, readies only the local seat, then starts without inventing picks: 2560-ui1",
+    "An actual native-shaped draft projection opens the existing offered-pack Draft UI: 2560-ui1",
+    "Native option is present in format: Legacy",
+    "Actual Constructed format selector accepts installed Legacy: 2560-ui1.25",
+    "Native option is present in format: Vintage",
+    "Actual Constructed format selector accepts installed Vintage: 2560-ui1.25",
+    "Constructed selector excludes Limited and unsupported native formats: 2560-ui1.25",
+    "The actual Draft with bots shortcut opens eight native seats by default: 2560-ui1.25",
+    "Draft seat bounds come from the installed capability range: 2560-ui1.25",
+    "Actual seat menu covers native4\u201316 seats only: 2560-ui1.25",
+    "Minimum native seat count is selectable: 2560-ui1.25",
+    "Native option is present in bot-draft-count: You + 15 bots",
+    "Maximum native seat count is selectable: 2560-ui1.25",
+    "Native option is present in bot-draft-count: You + 7 bots",
+    "Native option is present in bot-draft-mode: Native cube draft",
+    "Actual procedure selector chooses the native cube mode: 2560-ui1.25",
+    "A real wheel over the read-only combo scrolls the enclosing draft form: 2560-ui1.25",
+    "The ignored-scroll input preserves parent wheel ownership: 2560-ui1.25",
+    "Native option is present in bot-draft-cube: Native cube two",
+    "Cube selector uses the offered exact native cube ID: 2560-ui1.25",
+    "Native option is present in bot-draft-mode: Random booster draft",
+    "Random draft remains an explicit native procedure: 2560-ui1.25",
+    "Random mode explains the native eligible-set pool: 2560-ui1.25",
+    "Native option is present in bot-draft-mode: Traditional booster draft",
+    "Traditional mode restores booster selection: 2560-ui1.25",
+    "Actual pack button opens the shared grid with All sets disabled: 2560-ui1.25",
+    "Pack grid contains exactly offered booster sets and no All sets tile: 2560-ui1.25",
+    "The no-All booster grid reports its true offered set count: 2560-ui1.25",
+    "Actual booster tile stays within the scaled popup: 2560-ui1.25 m21",
+    "Actual booster tile stays within the scaled popup: 2560-ui1.25 thb",
+    "Actual booster tile stays within the scaled popup: 2560-ui1.25 m20",
+    "Selecting a booster tile preserves its exact native set code: 2560-ui1.25",
+    "An existing private room disables starting another bot draft: 2560-ui1.25",
+    "Disabled Start cannot create a second room: 2560-ui1.25",
+    "Draft Start has a separate visible footer with padding: 2560-ui1.25",
+    "One actual Start chains create, bots, ready and native draft start in order: 2560-ui1.25",
+    "The created room carries the exact selected native draft options: 2560-ui1.25",
+    "The shortcut requests seven bots, readies only the local seat, then starts without inventing picks: 2560-ui1.25",
+    "An actual native-shaped draft projection opens the existing offered-pack Draft UI: 2560-ui1.25"
+  ],
+  "modes": [
+    {
+      "logical": [
+        1120,
+        720
+      ],
+      "physical": [
+        1120,
+        720
+      ],
+      "uiScale": 1
+    },
+    {
+      "logical": [
+        2560,
+        1008
+      ],
+      "physical": [
+        2560,
+        1008
+      ],
+      "uiScale": 1
+    },
+    {
+      "logical": [
+        2048,
+        806.4
+      ],
+      "physical": [
+        2560,
+        1008
+      ],
+      "uiScale": 1.25
+    }
+  ],
+  "requests": [
+    {
+      "body": {
+        "commanderDamage": true,
+        "draft": {
+          "cubeId": "cube-two",
+          "mode": "booster",
+          "pairing": "swiss",
+          "profile": "Limited",
+          "randomSets": [],
+          "sets": [
+            "THB",
+            "M21",
+            "M21"
+          ],
+          "timing": "regular"
+        },
+        "format": "Vintage",
+        "kind": "draft",
+        "maxPlayers": 8,
+        "name": "Bot draft",
+        "playerName": "Synthetic drafter",
+        "priority": {
+          "autoPass": true,
+          "stops": {
+            "opponent": [],
+            "own": []
+          }
+        },
+        "profile": {
+          "name": "Synthetic drafter"
+        },
+        "settings": {
+          "accentColor": "",
+          "animations": false,
+          "artworkMemoryMiB": 256,
+          "autoFollowTurn": true,
+          "autoMana": true,
+          "boardImpactIntensity": 0.55,
+          "builderLayout": "Classic",
+          "cardBackStyle": "Arcane",
+          "colorblindMode": "Off",
+          "counterStyle": "Dice",
+          "cursorScale": 0.55,
+          "cursorStyle": "Kenney",
+          "fontFamily": "Beleren",
+          "fontQuality": "High",
+          "frameLimit": 0,
+          "highContrast": false,
+          "keywordReminders": true,
+          "localArtworkOnly": true,
+          "manualTriggers": false,
+          "masterVolume": 0.7,
+          "msaa": 0,
+          "musicEnabled": false,
+          "musicVolume": 0.25,
+          "opponentColor": "",
+          "panelOpacity": 0.65,
+          "particles": false,
+          "playmatOpacity": 0.88,
+          "presentationVersion": 2,
+          "reducedMotion": true,
+          "renderScale": 1,
+          "resolution": "2560x1080",
+          "sfxEnabled": false,
+          "sfxVolume": 0.45,
+          "showCardArt": false,
+          "showTooltips": false,
+          "skybox": "Off",
+          "skyboxBrightness": 0.32,
+          "textureFilter": "linear",
+          "theme": "Midnight",
+          "titleFontFamily": "Beleren",
+          "uiScale": 1.25,
+          "vsync": false,
+          "windowMode": "Windowed"
+        }
+      },
+      "method": "POST",
+      "path": "/client/rooms",
+      "service": "room"
+    },
+    {
+      "body": {
+        "count": 7
+      },
+      "method": "POST",
+      "path": "/client/rooms/synthetic-draft-connection/bots",
+      "service": "room"
+    },
+    {
+      "body": {
+        "ready": true
+      },
+      "method": "POST",
+      "path": "/client/rooms/synthetic-draft-connection/ready",
+      "service": "room"
+    },
+    {
+      "body": {},
+      "method": "POST",
+      "path": "/client/rooms/synthetic-draft-connection/start",
+      "service": "room"
+    }
+  ],
+  "scope": "Actual production Slab/main clicks, scrolling, capability-driven setup and room request chain with simulated native capabilities/responses. No real boosters, native draft/game, network, saves or user cache.",
+  "sourceSha256": {
+    "application-main.lua": "0a709427e3aa91010dfcf28309c329e8939beb5959f28e258e73c4906f07ca2d",
+    "app/bot_draft.lua": "69636bc09de874c10aeacc7acc5ef7a4eb41a57bd9e510144c11e9d1703fdad8",
+    "app/bot_draft_ui.lua": "b09f52e4f931975b206fdd31c2ed4fd8a97e137b65cb54e24543ff41599f3a3f",
+    "app/lobby_ui.lua": "4e334971bcaa005e7890cf9be14ba6459eb5b6d2f9877336e619e178b90e83b4",
+    "app/draft_ui.lua": "a8dfd797a98552cc23edf680e16e499cf5a7dfb649721264ba6da63eaf189873",
+    "app/set_picker.lua": "43e0971dbb8bc4598059e5486312c53c507d7bb615fb8cef8b8fb3c2db3b25cd",
+    "app/native_capabilities.lua": "29dc3bd3edd2822fa95c593a346d7e4aef9e8bf5ff5821dc57121fa45d109284",
+    "app/renderer.lua": "5d6cb46312352f8b7d97b80eaab707913d3d84394e953489ff3c506153527273",
+    "app/model.lua": "78ca00f2e03c990976158ce4e6d414f1136863f7122747dbbcdc2409aef5dcfc",
+    "app/rooms.lua": "d563028eaafc513412117af1b925484b8a8636832381a51431a458c0c5afef95",
+    "app/view.lua": "3a973172f4e97dfab640813ab1496783b663f95dabaae627ab8b8948e8ad5758",
+    "app/assets.lua": "b8510ede93126011ea65ee3e4f8e76e9d24e4290b02a87ac5465d2e89bee4212",
+    "lib/Slab/Internal/UI/Region.lua": "b968685c4127a250906b3b76b60f97b3c2802aaa60c64bece426e25072b9ad4f",
+    "assets/kenney/runtime/enhancements.lua": "1fcd3acb131d9037b63f126cdafd5e4a3911bb04e0a0129c475a71ba52a2ce60",
+    "assets/kenney/runtime/loading.lua": "fbae554d3a03fe4e22eb21904242b0985c40d05515d2bb9f11040f42a3631f68",
+    "assets/kenney/runtime/manifest.lua": "26da5e80c9646fea54da4d3f2abf1ef0dade88ff33ce68a5220b76f119fe820f",
+    "assets/kenney/runtime/window_actions.lua": "c027c78e5ce3ab370036ab5d92082fca0186a87fceaa6d7252ff5e3ba22c037c",
+    "assets/kenney/runtime/icons/arrow_counterclockwise.png": "b9eeaef1c13da76de40fc22b5df08003f65b82de2453a9d59c3dbf9999f98e43",
+    "tests/bot_draft_ui.lua": "f48c81d6ac820f126ac5875c1f4999bef370644d644dc7d0ea58a5ad1d63fe22"
+  }
+}

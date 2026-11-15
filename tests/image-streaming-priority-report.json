@@ -1,0 +1,394 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-11-15T15:59:36.885423+00:00",
+  "status": "pass",
+  "workingDirectory": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering",
+  "catalogApi": 14,
+  "behavior": {
+    "imageOrder": [
+      "selected",
+      "visible",
+      "background"
+    ],
+    "cacheFirst": true,
+    "explicitBuilderSelectionMayDownloadUnderCacheOnly": true,
+    "implicitOpeningOrHoverGrantsNetwork": false,
+    "exactPrintingAndFacePreserved": true,
+    "derivative": {
+      "format": "JPEG",
+      "maxWidth": 256,
+      "maxHeight": 512,
+      "backgroundOnly": true,
+      "queueKeys": 64,
+      "retainsOriginal": true,
+      "additionalDiskBytes": true,
+      "codec": "Pillow/JPEG",
+      "missingCodecFallback": "original"
+    },
+    "memoryMiB": {
+      "default": 256,
+      "choices": [
+        128,
+        256,
+        512
+      ],
+      "actualImageAliasDeduplication": true,
+      "processRamHardLimit": false
+    },
+    "uploadsPerUpdate": {
+      "images": 2,
+      "bytes": 8388608,
+      "oneLargerBoundedFirstImageAllowed": true
+    },
+    "imageDiskOperationsPerProcess": 1,
+    "ordinarySavedDataSqlNotGated": true,
+    "newJobsExportMirrorsByDefault": false,
+    "savedExportChoicesPreserved": true
+  },
+  "evidence": [
+    {
+      "name": "builderSelection",
+      "report": "tests/builder-selected-art-ui-report.json",
+      "reportSha256": "247f7db17f46064d529646bcaa918aed24d896897ce0edbcb5269ce0f5c1c8b2",
+      "checks": 23,
+      "scope": "Actual production mouse callbacks, Classic/Simplified visible card clicks and LÖVE GPU upload. Local delayed image/metadata fixture callbacks, generated pixels, no external network, native game or user data. Worker socket priority tested separately.",
+      "status": "pass",
+      "sourceChangesAfterCapture": [
+        {
+          "field": "sourceSha256",
+          "path": "app/artwork.lua",
+          "testedSha256": "8b5409edb04bee4130819b7f64f4be5c9d1f8ace75a46cf633d37222ed32f5ef",
+          "finalSha256": "8f808616c024b7fbfd39f2d26a56f1215542976e14d0cc28e78c1d59dfee343d"
+        }
+      ]
+    },
+    {
+      "name": "gpuCacheAndUploads",
+      "report": "tests/artwork-budget-ui-report.json",
+      "reportSha256": "b61e4eb17af6bce100ddcda0cec0c0f604ba0c489541285d9ff632ce2070fd53",
+      "checks": 38,
+      "scope": "Actual LÖVE image allocations/byte LRU/coalesced decoded ownership and real Slab settings input; fixture image responses, no user storage or engine",
+      "status": "pass",
+      "sourceChangesAfterCapture": [
+        {
+          "field": "sourceSha256",
+          "path": "app/artwork.lua",
+          "testedSha256": "ef3bd37ca78673d61daf250fc2fda91cb622dcae0ad5012a8b5be1ab8de46269",
+          "finalSha256": "8f808616c024b7fbfd39f2d26a56f1215542976e14d0cc28e78c1d59dfee343d"
+        }
+      ]
+    },
+    {
+      "name": "workerTransport",
+      "report": "tests/image-worker-http-report.json",
+      "reportSha256": "cca7bb0d0895d359ad4289a07fa1600cd4f55fe39a494647db1f7062d37d10ac",
+      "checks": 53,
+      "scope": "Actual headless LÖVE LuaSocket worker threads, real ImageData transfer/release, generated PNG/JPEG fixtures and a minimal owned HTTP fault fixture. Native allocation auditing wraps the unchanged production worker loader. No GPU rendering, native game, external network or user data.",
+      "status": "pass",
+      "sourceChangesAfterCapture": [
+        {
+          "field": "fixtureSourceHashes",
+          "path": "tests/loading_http.py",
+          "testedSha256": "8db7c85622b15c78b9f5dec9a6d2b614e4a8c97c344dac7714a53f55f2d22691",
+          "finalSha256": "3838469f372fa400a6f698e2d480658c9c70364b3ac1eb96b78a2dfbedbedfb8"
+        }
+      ]
+    },
+    {
+      "name": "diskScheduling",
+      "report": "service/tests/image-io-performance-report.json",
+      "reportSha256": "b07229b5a4266feac799dc286c98b6cb4cd47a013127df4f6a7504664714fb61",
+      "scope": "Owned real ThreadingHTTPServer/Catalog/SQLite and generated JPEGs. The exact same bounded 35ms fake cold-disk step runs in FIFO and priority cases; this measures scheduling, not physical HDD throughput or Internet speed. Originals remain untouched; derived JPEG bytes are additional to originals, independent of optional export mirrors.",
+      "status": "pass",
+      "sourceChangesAfterCapture": []
+    },
+    {
+      "name": "serviceConcurrency",
+      "report": "tests/loading-http-report.json",
+      "reportSha256": "179da8e35090070b85786fc6180b51cfd6a441d00ebc9873df36529b799740a2",
+      "checks": 31,
+      "scope": "Actual headless LÖVE HTTP workers + actual isolated SQLite/catalog/background image job; generated JPEGs and explicit synthetic HTTP delay/status routes; baseline replaces API/worker only, another copy disables only the mutation-read barrier, backend is shared current code; no native game, external downloads or user data",
+      "status": "pass",
+      "sourceChangesAfterCapture": []
+    },
+    {
+      "name": "startup",
+      "report": "tests/startup-readiness-ui-report.json",
+      "reportSha256": "215b913a889c7bfc87d33798ab2afaae020d0cd495ae8747f91eb324f2d03fa6",
+      "checks": 21,
+      "scope": "Actual LÖVE Startup, supplied PNG/Slab/Beleren and native display-mode application; delayed health/settings/profile/deck/layout responses are explicit isolated fixtures, not real-service throughput or native-game evidence.",
+      "status": "pass",
+      "sourceChangesAfterCapture": []
+    },
+    {
+      "name": "globalControls",
+      "report": "tests/global-controls-ui-report.json",
+      "reportSha256": "64cf675132840dfa331b174038a427bdfeb7125fa8f622c96651f7de08893a56",
+      "checks": 189,
+      "scope": "Actual Model/Renderer/View/Preferences/Slab, native desktop mode/cursors and measured rendering; storage callback intercepted, no service or native-game calls",
+      "status": "pass",
+      "sourceChangesAfterCapture": [
+        {
+          "field": "sourceSha256",
+          "path": "app/artwork.lua",
+          "testedSha256": "8b5409edb04bee4130819b7f64f4be5c9d1f8ace75a46cf633d37222ed32f5ef",
+          "finalSha256": "8f808616c024b7fbfd39f2d26a56f1215542976e14d0cc28e78c1d59dfee343d"
+        }
+      ]
+    },
+    {
+      "name": "deckScrolling",
+      "report": "tests/deck-picker-scroll-ui-report.json",
+      "reportSha256": "8d827468bc56fb75bdf0150ab788f1ac602afd78e8914c7c71f1c1106be3dc9f",
+      "checks": 24,
+      "scope": "Actual LÖVE/Slab with controlled deck metadata, one genuine local JPEG and a deliberate slow wheel frame. No native match, SQL writes or image acquisition.",
+      "status": "pass",
+      "sourceChangesAfterCapture": []
+    }
+  ],
+  "serviceSuite": {
+    "command": "python3 -m unittest discover -s service/tests -v",
+    "passed": 267,
+    "log": "/tmp/love2gathering-image-priority-service-final.log",
+    "logSha256": "570dca4d125e9705cacbba72787712ada7b70c6048f91d8ef19a08c4f9682b26",
+    "temporaryStorageOnly": true
+  },
+  "finalModels": {
+    "runner": "python3 .runtime/run-lua-check.py FILE (one file per invocation)",
+    "passed": {
+      "image_hints": 9,
+      "profile_model": 15,
+      "storage_model": 32,
+      "deck_picker_model": 25,
+      "image_priority": 34,
+      "artwork_model": 19,
+      "card_printings_model": 27,
+      "library_model": 42
+    },
+    "negativeCacheRegression": "After80ready images and64missing identities, a second pass sends zero requests within the ordinary30second retry interval."
+  },
+  "measurements": {
+    "simulatedScheduling": {
+      "scope": "Owned real ThreadingHTTPServer/Catalog/SQLite and generated JPEGs. The exact same bounded 35ms fake cold-disk step runs in FIFO and priority cases; this measures scheduling, not physical HDD throughput or Internet speed. Originals remain untouched; derived JPEG bytes are additional to originals, independent of optional export mirrors.",
+      "fifoSelectedSeconds": 0.25605954099592054,
+      "prioritySelectedSeconds": 0.04008172899921192,
+      "fifoOrder": [
+        "bulk",
+        "visible",
+        "visible",
+        "visible",
+        "visible",
+        "visible",
+        "selected"
+      ],
+      "priorityOrder": [
+        "selected",
+        "visible",
+        "visible",
+        "visible",
+        "visible",
+        "visible",
+        "bulk"
+      ]
+    },
+    "derivativeBytes": {
+      "bytes": 291704,
+      "bytesPerImage": 36463.0,
+      "count": 8
+    },
+    "serviceConcurrency": {
+      "timings": {
+        "cachedImage": {
+          "code": 200,
+          "seconds": 0.006683787,
+          "slowImageCompleted": false,
+          "slowMaintenanceCompleted": false
+        },
+        "cards": {
+          "code": 200,
+          "seconds": 0.006724584,
+          "slowImageCompleted": false,
+          "slowMaintenanceCompleted": false
+        },
+        "decks": {
+          "code": 200,
+          "seconds": 0.006732809,
+          "slowImageCompleted": false,
+          "slowMaintenanceCompleted": false
+        },
+        "profile": {
+          "code": 200,
+          "seconds": 0.006711469,
+          "slowImageCompleted": false,
+          "slowMaintenanceCompleted": false
+        },
+        "settings": {
+          "code": 200,
+          "seconds": 0.006704757,
+          "slowImageCompleted": false,
+          "slowMaintenanceCompleted": false
+        }
+      },
+      "backgroundResumed": {
+        "artPurgeGeneration": 0,
+        "bytesDownloaded": 644,
+        "cacheDirectory": "/tmp/love2gathering-mechanics-loading-http-0denx1le/current/service/data",
+        "cached": 1,
+        "canResume": false,
+        "canStart": false,
+        "checkedImages": 81,
+        "dataDirectory": "/tmp/love2gathering-mechanics-loading-http-0denx1le/current/service/data",
+        "databaseFreeBytes": 21474836480,
+        "downloaded": 1,
+        "failed": 0,
+        "freeBytes": 21474836480,
+        "imagesAdded": 1,
+        "imported": 0,
+        "jobId": "fbde2922-37f8-4bba-bb0c-43015f1a4e42",
+        "maintenanceBusy": false,
+        "networkRequests": 1,
+        "options": {
+          "fullSize": "large",
+          "kinds": [
+            "large"
+          ],
+          "mirrors": false
+        },
+        "phase": "download",
+        "prioritizedCards": 1,
+        "prioritizedPrintings": 1,
+        "priorityImages": 1,
+        "priorityTruncated": false,
+        "processed": 2,
+        "progress": 0.024691358024691,
+        "rateBytesPerSecond": 443,
+        "reserveBytes": 3221225472,
+        "scan": {
+          "byKind": {
+            "large": {
+              "cached": 1,
+              "estimatedBytes": 51520,
+              "meanBytes": 644,
+              "mirrorCandidates": 0,
+              "mirrorExports": 81,
+              "missing": 80,
+              "sampleCount": 1,
+              "total": 81
+            }
+          },
+          "cached": 1,
+          "estimateBasis": "large: sample mean of 1 SQL images (at most 512). Size is an estimate, not remote Content-Length; mirrors are validated when imported.",
+          "estimatedDownloadBytes": 51520,
+          "estimatedMaxBytes": 90160,
+          "estimatedMinBytes": 25760,
+          "estimatedMirrorBytes": 0,
+          "estimatedSqliteBytes": 51520,
+          "estimatedStorageBytes": 51520,
+          "fullSize": "large",
+          "kinds": [
+            "large"
+          ],
+          "mirrorCandidates": 0,
+          "mirrors": false,
+          "missing": 80,
+          "networkRequests": 80,
+          "reusableSqliteBytes": 0,
+          "total": 81,
+          "uniqueUrls": 81
+        },
+        "scanComplete": true,
+        "scanValid": true,
+        "scannedRecords": 81,
+        "sourceFingerprint": {
+          "bytes": 54594,
+          "mtimeNs": 1.7947573546595e+18,
+          "path": "/tmp/love2gathering-mechanics-loading-http-0denx1le/current/service/metadata.jsonl"
+        },
+        "state": "downloading",
+        "updatedAt": 1794757356343
+      },
+      "scope": "Current real services/SQLite and real LÖVE workers, generatedJPEGs and controlled1.4second delays; no Internet/coldHDD comparison"
+    },
+    "latestSelectedWorkerSeconds": 0.0032630709999999
+  },
+  "packaging": {
+    "linuxDependencyDeclared": true,
+    "privateWindowsAndFlatpakWheelsChecksumPinned": true,
+    "flatpakCodec": {
+      "python": "3.13.16",
+      "pillow": "13.0.0",
+      "jpeg": true,
+      "thumbnail": [
+        256,
+        357
+      ],
+      "bytes": 2101
+    },
+    "windowsScope": "Wheel checksum, native DLLs/licenses and runtime paths checked; headless Wine exited with WinError6 before imports. Windows codec execution remains unverified.",
+    "installersBuiltThisTask": false
+  },
+  "verificationNotes": [
+    "Builder/GPU captures precede only the independent negative-status allowance fix in app/artwork.lua. Covered upload/selection/trim logic is unchanged; final Artwork19 and Priority34 checks include the fix.",
+    "Worker report predates a tests/loading_http.py harness fix: add required decoder to copied app and allow current-only mode; worker production sources still match. Current serviceConcurrency report matches the updated harness.",
+    "Legacy assertion demanded background commit during a higher-priority slow foreground request. It now asserts the job remains live and resumes committed progress after foreground completion; existing latency, cache, ordering, retry and mutation checks retained.",
+    "Deckscroll failure was a fixture measuring the outer window instead of child region and resuming before deferred wheel consumption. Exact child suffix and completed-build gating retain all24checks, including a deliberate200ms frame. Three fresh runs pass.",
+    "PAK/Zstd/GPU texture compression deferred. Existing user cache was not converted, purged, migrated or used for acquisition. Tests do not establish instant uncached Internet artwork or physical-HDD performance."
+  ],
+  "engine": {
+    "gitlink": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+    "diffExitCode": 0,
+    "sourceOrGitlinkChanged": false,
+    "nativeGameplayRerunForThisTask": false
+  },
+  "git": {
+    "commitOrPushPerformed": false
+  },
+  "sourceSha256": {
+    "app/api.lua": "20f13b4bd97a5b859eda70aa278170da097ee002ad3301d20860e67edace906e",
+    "app/artwork.lua": "8f808616c024b7fbfd39f2d26a56f1215542976e14d0cc28e78c1d59dfee343d",
+    "app/image_decode.lua": "5c8b422d03b40931338e45798ad28b71ebb1c484c1559af4fb34b6d42632186b",
+    "app/http_worker.lua": "0f325c84a1688cd1ccdeacb4b0d9991cb22990c3d7eac6e79cb60e277bb216e8",
+    "app/image_hints.lua": "025dd9662a6a25ef8d1337209d2c138618a15d56b603008153e8f52524503f42",
+    "app/model.lua": "188ed145bc2b372c4ff17df6db94aa111f6086d4778bbfd2fb18a6983a189f00",
+    "app/builder.lua": "fcac3efc5da8d4072ad3cc033dcfe7c5ba7a9439e682032e903c36f8a882a895",
+    "app/builder_simplified.lua": "9ca0aa69a53154373e4046b51aa56ffe75038507312fc35e081fcd8011cb9b02",
+    "app/card_printings.lua": "8b0f96e428fa8f664b3bba9f9b64da7366c169272ffbdd4b9523b3555145b896",
+    "app/card_printings_ui.lua": "e80cc67b082902ea21d001a8a2c88d47d9be5e5a1de581960cd33aee5086dfaa",
+    "app/renderer.lua": "68252a9b87cc61720d4627cc57783ba70c68e92561343ad2a01eaa2ca754d25d",
+    "app/library.lua": "8b2d0c694ef3d7f20c78148d7becd3c1057d295dd40a7b7fd7607d6d762197ca",
+    "app/profile.lua": "0e82386d99b922f442c975d77317590bccdfbb2cb780c7c578462d0e0dfa80c1",
+    "app/profile_ui.lua": "49592f15c792b1217133c5b7b49d7a6f20046ac1fce757ea3944d284985f74aa",
+    "app/deck_picker.lua": "a33417d43577a03ea377fd85210b882ea2d166cc3455c43d582ffc2e2c30f360",
+    "app/settings.lua": "1f7321b7502620235631358769fee8f143051766b054d0397e788ebac27fbc52",
+    "app/startup.lua": "1d3a6177b96b2d01837dd1154d2e88b5ace9954b8ed97c52ad3ffec9ffa92a4c",
+    "service/image_io.py": "6a34080deb57fb9258b3c2d136632dd10b5aed300cef18160457f86739d9bb2d",
+    "service/thumbnails.py": "b32b3f184a1ec9ec94cc0a1fa384415fe54a07d3e69c4be622e61126f98e77b1",
+    "service/artwork.py": "7ef92990d2643dc11ed3bd43f966475527703f29bebd6bc350e9ea0413f1cbf8",
+    "service/storage.py": "ad9ef476c97b42d043fd8b5af2c2365ed01f99d53c8a2732fc9f2d35a134ee0c",
+    "service/storage_schema.py": "24b19ae01fb1e12554d9e2aa5eb1c43971e559f4059451409a8b8ed1f862f71c",
+    "service/storage_locations.py": "d5577cc1aff3762d7540994c30aecbc02c0b080f77e7ae04817e7441de936868",
+    "service/server.py": "89f092ade99475ae9c5e2eaaefcddbb8cb164775610dac24843a4a197bb3f1b0",
+    "service/downloads.py": "d691d1ffe15e84ee6fb1c067b313721fc059ef394e4f4e681e11aa4ee9ccd079",
+    "service/image_packs.py": "0a44451ce4e54564cc7a0037734c657e93d15c511dcccc4435d3757ac4710015",
+    "scripts/download-card-images.py": "41daac1a137600fa0dd2b914951c2faf3fc8b1fa8a8594e14983e26ef63930bd",
+    "packaging/python_dependencies.py": "e3b6551903e773ed9ce1d02e1932ca691b58643f51edd03ff58f5a635f6ac9d3",
+    "packaging/python-wheels.lock.json": "cd86b8674945c9032612c2bcbf6146c2c9763e033f25f1f10f8edacc7c6b7510",
+    "packaging/build.py": "a4503fb11680facc077f91ae8dee42bf26cfea16de5d810830236efa7f331d3b",
+    "packaging/windows/build.py": "4181afa0eb89d539c197cfe74e6e576abf3418cf0ceac5eea485641af45eabd1",
+    "packaging/flatpak/build.py": "7dce18b0788219c794fcfad79d38306dc89367f1d250a9cb05faf12a847d84d4",
+    "packaging/runtime/launcher.py": "ccd3719fbf41703c74f726b47f13a3c7e301e62d72db8df8d16d994dae26a9e7",
+    "run.sh": "c50613dc0b0091672f2b3bb61866d8f2667577e5b5404f5e689e10666e089fed",
+    "tests/image_hints.lua": "7cca2bd35f341039c3b504a5f08d092b5d3f32bf6c8a16b42e1128a77fc3c426",
+    "tests/image_priority.lua": "f54d63c8269da2acaf64faa03ccce45d6523ee8bc1fb643188f815bd1561f952",
+    "tests/artwork_model.lua": "8c1e6e58556dc8d5f691d7d909b3982004f8dd7e9dece731fdcdab58b0a463b6",
+    "tests/loading_http.py": "3838469f372fa400a6f698e2d480658c9c70364b3ac1eb96b78a2dfbedbedfb8",
+    "tests/loading_http.lua": "6042906ea1be03a1b87b8e7da10104c0001c99d2958ae181637e636fb5c273da",
+    "tests/deck_picker_scroll_ui.lua": "b5429ad479d632a2d1f732a2e641a95c0225225dd4afd4920debb0b6fdbeafff",
+    "service/tests/test_thumbnails.py": "00f4ed9f3ca8f539d474fe581759726011bd1e0a71581c6b5094841927758a73",
+    "service/tests/test_storage_locations.py": "76646f99fa69659274b086c0430ed1eeeb745a0097ce1bc1ed3e49a852ef1cc2",
+    "README.md": "3c592484711493877764c247e1a4decd505f37616ed26fc9894aa2edaaa724dd",
+    "CODEX.md": "28ff1b6454f6311b2974a7e498d11e94adea2118e0e0963e39ba6175482d618f",
+    "AGENTS.md": "6567fe32645c9e1e106a17e5cdec30c7cb757f8f4901169f8edb6346ab34bea7",
+    "service/STORAGE.md": "6801a7b9c69484b36912c392a355c481eb7f6f2abc34f2cffab717507d8dfa74"
+  }
+}

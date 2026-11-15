@@ -106,6 +106,7 @@ function Button.Begin(label, options)
 			Window.SetHotItem(id)
 
 			if not disabled then
+				Mouse.SetCursor('hand')
 				if not Utility.IsMobile() then
 					color = hoverColor
 				end
@@ -141,8 +142,9 @@ function Button.Begin(label, options)
 		else
 			local labelX = x + (w * 0.5) - (Style.Font:getWidth(label) * 0.5)
 			local fontHeight = Style.Font:getHeight() * vLines
+			local optical = vLines == 1 and Style.TextVerticalOffset and Style.TextVerticalOffset(Style.Font, label) or 0
 			Cursor.SetX(floor(labelX))
-			Cursor.SetY(floor(y + (h * 0.5) - (fontHeight * 0.5)))
+			Cursor.SetY(floor(y + (h * 0.5) - (fontHeight * 0.5) + optical))
 			labelColor.color = disabled and Style.ButtonDisabledTextColor or nil
 			Text.Begin(label, labelColor)
 		end
@@ -239,7 +241,7 @@ end
 function Button.GetSize(label)
 	local w = Style.Font:getWidth(label)
 	local h = Style.Font:getHeight()
-	return max(w, MINWIDTH) + PAD * 2.0, h + PAD * 0.5
+	return max(w, MINWIDTH) + PAD * 2.0, max(Style.ControlHeight or 32, h + 12)
 end
 
 function Button.ClearClicked()

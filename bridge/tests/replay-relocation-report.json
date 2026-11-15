@@ -1,0 +1,1 @@
+{"passed":true,"checks":8,"scope":"Actual SQLite JDBC writer contention and retired-source guard in temporary storage; no user files or network calls","storageRelocationProtocol":1}

@@ -8,6 +8,9 @@ function love.conf(t)
     t.window.minwidth = 1120
     t.window.minheight = 720
     t.window.resizable = true
+    t.window.fullscreen = true
+    t.window.fullscreentype = 'desktop'
+    t.window.borderless = true
     t.window.vsync = 1
     t.console = true
     t.modules.audio = true

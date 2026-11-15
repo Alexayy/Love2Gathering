@@ -1,0 +1,26 @@
+{
+  "captures": [
+    "/tmp/love2gathering-preview-utf8-dl8J9n/land-choice-preview.png",
+    "/tmp/love2gathering-preview-utf8-dl8J9n/mana-and-unicode-preview.png"
+  ],
+  "checks": [
+    "The real offered-land hover reaches fallback drawPreview without an invalid UTF-8 crash",
+    "The valid native-style rule demonstrably crosses the old 97-byte slice inside an em dash",
+    "Rendering preserves the original native card identity and rule text",
+    "Every interior byte position of two-, three- and four-byte characters is safe at the former preview boundary",
+    "The actual catalog Khalni oracle text also renders through the fallback preview",
+    "Valid UTF-8, inline mana and unknown braces are retained byte-for-byte",
+    "Mana parsing preserves tap, normal, hybrid and Phyrexian symbols",
+    "Malformed external fragments are repaired before font measurement while valid adjacent text remains renderable",
+    "Repair preserves valid multibyte text on both sides of a damaged byte",
+    "The existing line bound truncates safely at text/mana run boundaries"
+  ],
+  "scope": "Actual L\u00d6VE fonts, Slab native-card choice hover and Renderer.drawPreview/inline mana. Offered cards and damage-free native rules are presentation fixtures; actual Khalni oracle read from supplied catalog. No user storage, network, game actions or engine modifications.",
+  "sourceSha256": {
+    "app/utf8_text.lua": "3800ca6b64c33742a1d4b7d1c7bb840e3357378d2746962f9664540887d8f826",
+    "app/richtext.lua": "1139aee9f61585d5d6d0cf729c6b4c2210307156c02940ecc8a7f55e6b82267b",
+    "app/renderer.lua": "15c38433798568f09db7956be6ab49d2bc73994bba08ceb7e1122ffa63105c08",
+    "app/card_choices.lua": "a5731f8961aad88cd6f20297a64f16d3c832c5f374cb883ae0e4dca6ab8febff",
+    "tests/preview_utf8_ui.lua": "c0e2f87083d34db34226947093c960170c53fd6374d8b3ea056dd169b22a7de6"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "cases": [
+    {
+      "logical": [
+        1120,
+        720
+      ],
+      "name": "1120-ui1",
+      "physical": [
+        1120,
+        720
+      ],
+      "stop": {
+        "h": 32,
+        "w": 208,
+        "x": 882,
+        "y": 76
+      }
+    },
+    {
+      "logical": [
+        2560,
+        1008
+      ],
+      "name": "2560-ui1",
+      "physical": [
+        2560,
+        1008
+      ],
+      "stop": {
+        "h": 32,
+        "w": 208,
+        "x": 2322,
+        "y": 76
+      }
+    },
+    {
+      "logical": [
+        2048,
+        806.4
+      ],
+      "name": "2560-ui1.25",
+      "physical": [
+        2560,
+        1008
+      ],
+      "stop": {
+        "h": 32,
+        "w": 208,
+        "x": 1810,
+        "y": 76
+      }
+    }
+  ],
+  "checks": 42,
+  "requests": 6,
+  "scope": "Synthetic native-shaped acknowledgement/combat states; actual Slab clicks/pixels. No native rules, service, network or user saves."
+}

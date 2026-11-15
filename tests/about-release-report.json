@@ -1,0 +1,248 @@
+{
+  "schema": 1,
+  "status": "pass",
+  "generatedAt": "2026-11-15T17:14:09.092912+00:00",
+  "request": [
+    "About/version/attribution/notices",
+    "development DEV- prereleases and master normal releases",
+    "CONTRIBUTING.md",
+    "free project license"
+  ],
+  "license": {
+    "project": "MIT",
+    "scope": "Project-authored code/documentation only",
+    "thirdPartyTermsSeparate": true,
+    "ownerRetainedUnverifiedAssets": [
+      "assets/fonts/Beleren2016-Bold.ttf",
+      "assets/card-backs/classic-magic.jpg",
+      "assets/card-backs/mystic-eye.png"
+    ],
+    "removalRequestPolicyPresent": true,
+    "permissionNotClaimed": true,
+    "remainingRightsAndLegacyDependencyGaps": "THIRD_PARTY_NOTICES.md"
+  },
+  "about": {
+    "uiChecks": 70,
+    "uiReport": "tests/about-ui-report.json",
+    "uiReportSha256": "8449807e23ee4f5b1bea851f79ea17ea621b545686e4f6cb0758efee526b1a4d",
+    "scope": "Real LÖVE/Slab page and in-game popup input, scrolling, local credit documents and supplied fonts/icons. Build manifest and background match are explicit fixtures; browser calls intercepted; no live service/user settings/native game.",
+    "captures": [
+      "/tmp/love2gathering-about-ui-IHnrkd/about-page-build.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-project-license.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-font-rights.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-card-back-rights.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-credits-bottom.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-complete-credits.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-page-1120.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-popup-1120.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-popup-license.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-popup-long-license-end.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-popup-final-policy.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-popup-bottom.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-popup-scaled.png",
+      "/tmp/love2gathering-about-ui-IHnrkd/about-source-build.png"
+    ],
+    "visuallyInspected": true,
+    "modelChecks": 19,
+    "modelLog": "/tmp/love2gathering-about-model-final.log",
+    "modelLogSha256": "849685761fb32ab055f05827471a782dad9d1b1c81a837f30c3fd574785b09c2",
+    "existingGlobalControls": {
+      "checks": 189,
+      "log": "/tmp/love2gathering-about-global-controls.log",
+      "report": "tests/global-controls-ui-report.json"
+    }
+  },
+  "ci": {
+    "checks": 91,
+    "evidence": {
+      "status": "pass",
+      "results": [
+        {
+          "file": "scripts/ci/test_publish_release.py",
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-about-test_publish_release.log",
+          "logSha256": "853893266ab62d3dd1ae2f6c6634b605a595579ba75b21fbddb0167e0ccb8a8f",
+          "summary": [
+            "----------------------------------------------------------------------",
+            "Ran 22 tests in 0.235s",
+            "",
+            "OK"
+          ]
+        },
+        {
+          "file": "scripts/ci/test_promote_latest.py",
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-about-test_promote_latest.log",
+          "logSha256": "693f50aec20a23b8b4d9e1af819dbc7c665c813db03019de26dda6e91c720a5d",
+          "summary": [
+            "----------------------------------------------------------------------",
+            "Ran 7 tests in 0.016s",
+            "",
+            "OK"
+          ]
+        },
+        {
+          "file": "scripts/ci/test_workflow.py",
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-about-test_workflow.log",
+          "logSha256": "e5f1cf2a63028b5801063d77e3e63b36e156bcf6ef89d666d9f55e6bd604094a",
+          "summary": [
+            "----------------------------------------------------------------------",
+            "Ran 14 tests in 0.188s",
+            "",
+            "OK"
+          ]
+        },
+        {
+          "file": "scripts/ci/test_build_support.py",
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-about-test_build_support.log",
+          "logSha256": "5a2d100d428181d0183c3aaac54a080cc15db01c023424633d77677d63b92009",
+          "summary": [
+            "----------------------------------------------------------------------",
+            "Ran 14 tests in 0.125s",
+            "",
+            "OK"
+          ]
+        },
+        {
+          "file": "scripts/ci/test_starter_images.py",
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-about-test_starter_images.log",
+          "logSha256": "1efb9891fe4367b2d34c9e9b5715a1e95aafd32beeb10a912daec8ceeff0e8ef",
+          "summary": [
+            "----------------------------------------------------------------------",
+            "Ran 12 tests in 0.085s",
+            "",
+            "OK"
+          ]
+        },
+        {
+          "file": "tests/test_submodule_publish_guard.py",
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-about-test_submodule_publish_guard.log",
+          "logSha256": "49f180bdf4a3a6c71e17d895fe942c4039fc6a9fc56a34d6e82c94db793a7515",
+          "summary": [
+            "----------------------------------------------------------------------",
+            "Ran 10 tests in 0.596s",
+            "",
+            "OK"
+          ]
+        },
+        {
+          "file": "packaging/test_python_dependencies.py",
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-about-test_python_dependencies.log",
+          "logSha256": "13ebdb465ee01e5dbf89260557339a7e014b8a346b0616e2c9e0b0872d643a57",
+          "summary": [
+            "----------------------------------------------------------------------",
+            "Ran 6 tests in 0.043s",
+            "",
+            "OK"
+          ]
+        },
+        {
+          "file": "packaging/flatpak/test_build.py",
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-about-test_build.log",
+          "logSha256": "71c79780de2798e268fd3c375f4933280f472c378d3ac339dd311dbfbc3ff421",
+          "summary": [
+            "----------------------------------------------------------------------",
+            "Ran 6 tests in 0.007s",
+            "",
+            "OK"
+          ]
+        }
+      ]
+    },
+    "channels": {
+      "development": "DEV-<version>-<attempt>-<SHA12> prerelease",
+      "master": "v<version> normal release"
+    },
+    "publishedBytesImmutable": true,
+    "serializedNumericStableLatestPromotion": true,
+    "optionalSecret": "RELEASE_TOKEN",
+    "secretScope": "Release preflight/publication/promotion only; never checkout or builds",
+    "secretSetup": "packaging/README.md#build-again",
+    "repository": {
+      "visibility": "private",
+      "defaultBranch": "master",
+      "verified": "Read-only GitHub connector metadata"
+    }
+  },
+  "payload": {
+    "scope": "Actual common payload from current source, supplied runtime assets and existing compiled bridge; tiny synthetic metadata, no user storage, image acquisition, installer build or publication",
+    "payload": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/release-payload-4dl6cod7/dist/stage/common/Love2Gathering",
+    "bytes": 85469511,
+    "buildInfo": {
+      "version": "2026.11.15.42",
+      "channel": "stable",
+      "branch": "master",
+      "revision": "724032c3fb68b9145020c270184d03ccdb4626f8",
+      "tag": "v2026.11.15.42",
+      "builtAtUTC": "2026-11-15T16:59:17Z",
+      "repository": "https://github.com/Alexayy/Love2Gathering",
+      "engineRevision": "d9b266fc981024873ac7ec5f90ee7121a060725e"
+    },
+    "aboutNoticePathsVerified": 17,
+    "retainedAssets": [
+      "assets/fonts/Beleren2016-Bold.ttf",
+      "assets/card-backs/classic-magic.jpg",
+      "assets/card-backs/mystic-eye.png"
+    ],
+    "licenses": 32,
+    "nestedJarNotices": [
+      "licenses/sqlite-jdbc-3.47.2.0-META-INF-maven-org.xerial-sqlite-jdbc-LICENSE",
+      "licenses/jsoup-1.21.2-META-INF-jsoup-LICENSE",
+      "licenses/ormlite-jdbc-5.7-com-j256-ormlite-jdbc-LICENSE.txt",
+      "licenses/ormlite-core-5.7-com-j256-ormlite-core-LICENSE.txt",
+      "licenses/sqlite-jdbc-3.47.2.0-META-INF-maven-org.xerial-sqlite-jdbc-LICENSE.zentus"
+    ]
+  },
+  "reviewFixes": [
+    "Reused Linux stages now match source/engine/channel/branch/tag/version, not version alone.",
+    "Stable publishers never force Latest; a serialized promotion independently chooses the highest verified numeric stable release.",
+    "About fixture resolves credit names instead of brittle row indices after a new Roboto credit."
+  ],
+  "limits": [
+    "No live Actions dispatch, tag creation or Release publication was performed.",
+    "The real common-payload verification uses tiny isolated metadata and an existing compiled bridge, not six newly built platform installers.",
+    "Payload evidence predates final publisher/promotion changes; common-payload and About behavior are unchanged, with final helper contracts tested separately.",
+    "Attribution/private use/removal promises do not cure missing asset permission or unresolved copyleft/source obligations."
+  ],
+  "engineUnchanged": true,
+  "enginePin": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+  "userDataChanged": false,
+  "commitOrPushPerformed": false,
+  "sourceSha256": {
+    ".github/workflows/development-release.yml": "f0fee7c1d8fb5e94c88cd3ece71da45dae55dbd4181501e897a20e2782b22b95",
+    "app/settings.lua": "8589ff271ba000fda73c20c71cbb70ec6a5ceb899fd77017ecc3c96d298ce1c0",
+    "app/about.lua": "2915037de2949232f18510ea77a722774072e30cf7578748d290881cedd75484",
+    "app/build_info.lua": "53f59788c94b7c6e5351a0ce17a7801ec901d284b65f5545df123361b52a9b56",
+    "app/credits.lua": "837cd96a7f80413367e68598a94e7c9e663b83f2b18680071004abc21e83daab",
+    "scripts/ci/build-identifiers.py": "6b812a0056a852f00343ac48bd2de8a9198d1d5baeb1230c00d705bb1bc39b94",
+    "scripts/ci/publish-release.py": "035b1998b3ded64dabbdb5c5de9f1548062917f3a66cf8229d271b0f94c22635",
+    "scripts/ci/promote-latest.py": "3a198815caf5ce204f17f4740232ca497498feac1e19be9772f2b5e7f6b47483",
+    "scripts/ci/test_publish_release.py": "c8fb5cbceaf9a2a5d911b804067e4bd53bc4126fe142d4b1f3fe73fab7aa5446",
+    "scripts/ci/test_promote_latest.py": "ef887669e9bf0f2c4a71651126ea6174a09f5c3e910d2f74fbfd043f0ccc58e1",
+    "scripts/ci/test_workflow.py": "2444b98b5f2781e36d4a02f50bdc3440ef75a265da7bf28fe1e9e9b574abd620",
+    "scripts/ci/test_build_support.py": "c75bac8cb20dd231c91ab5cb268d409bf94d8a88a7846a3369eabcfc6b325f68",
+    "packaging/build.py": "e221f79c8903e2aec41de3f4ecfcfb25fea8bfcc71a5b70374d8fd361ace3572",
+    "packaging/README.md": "e05daae5853b933ba8aa275b19eaa4089d6d4edb1b6195f2a240c9aa532af1b9",
+    "tests/about_model.lua": "38e47b2eb88b57ae4522481ac06c53cf795eb0d5153c73ba5e9e5365ca78b2e8",
+    "tests/about_ui.lua": "b02b30a9c2b81d1aee66b28079861f89bb588cd7a3aeaf0b5afc7e0d63bec3fe",
+    "tests/about_ui.sh": "46adcf9dd61f967baeab107fb6af714141b101ea64e1e3a396b892439431c515",
+    "LICENSE": "d9894f7092d168bbef757ecafd54bbd19eb46c59d00dd04dbee6304ac855a301",
+    "CONTRIBUTING.md": "bd54b4407b419cfcc1c96fc78e8ac074322908545b32c0cfda353fddd995dc2c",
+    "CREDITS.md": "19d95e0b52c136e6b909a6cfba16c7472e0d39326c2711d5daff6ee690c0becb",
+    "THIRD_PARTY_NOTICES.md": "81e07bbe178c3984de5c30b4fd8a68b088cebceb8f925cfbda202bc09d582ffe",
+    "README.md": "492e25ee72744123920e6df1bd3a81e47478b0e56d9a7564e67b0294180505b6",
+    "CODEX.md": "937c551b62300c3679435e4e38788e42f038e6453e2d3ff039b1955db42f3081",
+    "AGENTS.md": "b3bc59e2d30a345b3babb38f95ca2fbe51d8b4ee769e474945127928bb8b54ca",
+    "licenses/Apache-2.0.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "licenses/MTGJSON-MIT.txt": "9db9aa0e403a0ba79eac9b44ca97b6b9009c98157e93614be942cb640f51d1e7",
+    "licenses/Roboto-NOTICE.txt": "f1eb596b634790d9a603ab1360674b4eb0fd7296f0462fd8ed25f639dc035e28",
+    "licenses/Slab-MIT.txt": "04dbb71cce84fbeef089f72959c12af974b5352396472b80a561f7dc37583339",
+    "licenses/XMage-MIT.txt": "bf696b246e52a279557d991916f7288c3dd296b9998f593c9d133c6906554ba3"
+  }
+}

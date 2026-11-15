@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "scope": "Real launcher path resolution/early desktop ordering with an explicit stand-in desktop process that consumes the normal status JSON. No actual L\u00d6VE graphics, user data, engine or network access.",
+  "checks": [
+    {
+      "kind": "database",
+      "earlyDesktopReceivedStorageError": true,
+      "servicesOnlyError": true,
+      "emptyReplacementAvoided": true,
+      "message": "Saved database is unavailable. Reconnect its drive before starting: /tmp/love2gathering-missing-drive-5lia_m2j/database/data"
+    },
+    {
+      "kind": "cache",
+      "earlyDesktopReceivedStorageError": true,
+      "servicesOnlyError": true,
+      "emptyReplacementAvoided": true,
+      "message": "Image cache is unavailable. Reconnect its drive before starting: /tmp/love2gathering-missing-drive-5lia_m2j/cache/unavailable-cache"
+    }
+  ]
+}

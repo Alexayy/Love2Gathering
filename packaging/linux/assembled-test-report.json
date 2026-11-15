@@ -1,0 +1,97 @@
+{
+  "passed": true,
+  "scope": "Actual final assembled Linux release installed to a selected MNT folder, real symlink --check and owned Python catalog / bundled Java XMage bridge / private room gateway readiness, validated desktop entry, actual installed uninstaller. One-card catalog metadata is an explicit fixture; no native game, full-snapshot index, WAN or complete artwork claim. Existing temporary SQLite sentinel and image database survive uninstall; original user storage untouched.",
+  "selectedFolderCharacters": [
+    "spaces",
+    "percent",
+    "double-quotes",
+    "dollar"
+  ],
+  "runtimeCheck": {
+    "passed": true,
+    "root": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/acceptance/linux-installer-tfw0fg1o/Games with space 100% \"Arcane\" $value/Love2Gathering",
+    "java": "openjdk version \"21.0.13.0.2\" 2026-10-22 LTS",
+    "love": "LOVE 11.5 (Mysterious Mysteries)",
+    "python": "3.12.3"
+  },
+  "actualHealth": {
+    "passed": true,
+    "ports": {
+      "CATALOG": 18140,
+      "ENGINE": 18141,
+      "ROOM": 18142
+    },
+    "catalog": {
+      "status": "ok",
+      "ready": true,
+      "index": {
+        "state": "ready",
+        "lines": 1,
+        "cards": 1,
+        "error": null,
+        "seconds": 0.0
+      },
+      "source": "one-card-metadata.jsonl",
+      "catalogSource": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/acceptance/linux-installer-tfw0fg1o/one-card-metadata.jsonl",
+      "version": 3,
+      "apiVersion": 10,
+      "schemaVersion": 7,
+      "storage": {
+        "database": "app.sqlite",
+        "dataDirectory": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/acceptance/linux-installer-tfw0fg1o/saves",
+        "cacheDirectory": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/acceptance/linux-installer-tfw0fg1o/images",
+        "cacheDatabase": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/acceptance/linux-installer-tfw0fg1o/images/images.sqlite",
+        "separateCache": true,
+        "schemaVersion": 1,
+        "journalMode": "wal",
+        "legacyFilesPreserved": true,
+        "migrationIssues": []
+      },
+      "userStore": {
+        "database": "app.sqlite",
+        "dataDirectory": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/acceptance/linux-installer-tfw0fg1o/saves",
+        "cacheDirectory": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/acceptance/linux-installer-tfw0fg1o/images",
+        "cacheDatabase": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/acceptance/linux-installer-tfw0fg1o/images/images.sqlite",
+        "separateCache": true,
+        "schemaVersion": 1,
+        "journalMode": "wal",
+        "legacyFilesPreserved": true,
+        "migrationIssues": []
+      }
+    },
+    "engine": {
+      "ok": true,
+      "engine": "XMage",
+      "version": "1.4.63",
+      "implementedCards": 32950,
+      "recordingError": null,
+      "storageRelocationProtocol": 1
+    },
+    "room": {
+      "status": "ok",
+      "apiVersion": 1,
+      "service": "love2gathering-rooms"
+    },
+    "logs": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/acceptance/linux-installer-tfw0fg1o/xdg-data/love2gathering/runtime/session-286388-fe3a984c"
+  },
+  "preservation": {
+    "existingTemporarySQLiteSentinel": true,
+    "savesAndImageDatabasesAfterUninstall": true,
+    "untrackedInstallFile": true,
+    "menuAndCommandRemoved": true,
+    "ownedPortsStopped": true,
+    "noInstalledPayloadBytecode": true,
+    "allInstalledPayloadFileHashesUnchangedByRuntime": true,
+    "noUnexpectedRuntimePayloadFiles": true
+  },
+  "sourceSha256": {
+    "packaging/linux/install.sh": "c002a7f0d3af5b471c8f9c305d12666efcd7defaeb6538d7773a289c04751ffe",
+    "packaging/linux/installer.py": "89ef08fd9b96f98ecea36981e4fd68499b9b0f35459a72c332a4dc3ae73379da",
+    "packaging/linux/uninstall.sh": "be1de8c8ebe5f23d2abfa3fc2e68dc2dc60f5b16467540fb577006e6240efc44",
+    "dist/stage/linux/Love2Gathering/launcher.py": "9d2563629d941377670cafaa134d21189ac1d2a541198acd1ff9d554cda7a06e",
+    "dist/stage/linux/Love2Gathering/love2gathering": "fdf319635d33dbdbd04014d441dbab440d3dd720774b795c1aed5e3691ff27ec",
+    "dist/stage/linux/Love2Gathering/payload-manifest.json": "bbb6de3fbbc8694ad3ed4a7061d9a90ac7bfa938d025375fa21c6635b804c0bc",
+    "dist/stage/linux/Love2Gathering/service/catalog.py": "69d8be7ab77d0917c12b587ee831ebc81e6c031bcefbfc3111ccc33a8bbdac44"
+  },
+  "logs": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/build/acceptance/linux-installer-tfw0fg1o"
+}

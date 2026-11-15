@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "scope": "Fresh guarded native recorder persists three events while an owned HTTP destination is unavailable; separate JVM recovers through an owned loopback HTTP sink. Temporary data only; no user catalog or native gameplay claim.",
+  "durablePendingAfterCrash": 3,
+  "pendingAfterRecovery": 0,
+  "terminalStatus": "aborted",
+  "storageRelocationProtocol": 1
+}

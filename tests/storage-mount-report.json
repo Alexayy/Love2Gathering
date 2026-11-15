@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-11-14",
+  "scope": "Normal catalog startup from mounted project with no data-dir override, read-only identity/count/status requests. No purge, compaction, scan or image download performed against user data.",
+  "projectDirectory": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering",
+  "dataDirectory": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/.local/share/love2gathering",
+  "apiVersion": 8,
+  "catalogReady": true,
+  "downloadState": "idle",
+  "ownedDecks": 1,
+  "replayCount": 4,
+  "usage": {
+    "full_cards": {
+      "count": 49391,
+      "bytes": 5027016105,
+      "mirrorCount": 49365,
+      "mirrorBytes": 5024422415
+    },
+    "art_crops": {
+      "count": 49397,
+      "bytes": 3744261142,
+      "mirrorCount": 49364,
+      "mirrorBytes": 3741896580
+    },
+    "replays": {
+      "count": 4,
+      "bytes": 1313971654,
+      "protectedCount": 0,
+      "protectedOutboxCount": 0
+    },
+    "database": {
+      "bytes": 10256453632,
+      "walBytes": 0,
+      "reusableBytes": 106496,
+      "freeBytes": 572709904384,
+      "compactRequiredBytes": 20580016128,
+      "canCompact": true,
+      "outboxBytes": 14041088
+    },
+    "export_duplicates": {
+      "count": 98729,
+      "bytes": 8766318995,
+      "estimated": true
+    },
+    "export_mirrors": {
+      "count": 98729,
+      "bytes": 8766318995
+    },
+    "retainedLegacyBackups": true,
+    "externalMirrorsExcluded": false
+  },
+  "engineSubmoduleUnchanged": true,
+  "homeOriginalPreserved": true
+}

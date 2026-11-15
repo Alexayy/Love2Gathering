@@ -38,6 +38,7 @@ local min = math.min
 local graphics = love.graphics
 
 local DrawCommands = {}
+local Skin = nil -- Optional application skin; control geometry stays in Slab.
 
 local PendingBatches = {}
 local ActiveBatch = nil
@@ -69,6 +70,7 @@ local TypeCurve = 19
 local TypePolygon = 20
 local TypeShaderPush = 21
 local TypeShaderPop = 22
+local TypeSkinRect = 23
 
 local LayerNormal = 1
 local LayerDock = 2
@@ -76,7 +78,8 @@ local LayerContextMenu = 3
 local LayerMainMenuBar = 4
 local LayerDialog = 5
 local LayerDebug = 6
-local LayerMouse = 7
+local LayerTooltip = 7
+local LayerMouse = 8
 
 local LayerNames = {
 	Normal = LayerNormal,
@@ -85,16 +88,17 @@ local LayerNames = {
 	MainMenuBar = LayerMainMenuBar,
 	Dialog = LayerDialog,
 	Debug = LayerDebug,
+	Tooltip = LayerTooltip,
 	Mouse = LayerMouse,
 }
 
-local LayerTable = { {}, {}, {}, {}, {}, {}, {} }
+local LayerTable = { {}, {}, {}, {}, {}, {}, {}, {} }
 
 local ActiveLayer = LayerNormal
 local StatsCategory = 'Slab Draw'
 
 local pool = {}
-for i = TypeRect, TypeShaderPop do
+for i = TypeRect, TypeSkinRect do
 	pool[i] = TablePool()
 end
 
@@ -125,6 +129,13 @@ local function DrawRect(Rect)
 	graphics.setLineWidth(LineW)
 
 	Stats.End(StatHandle)
+end
+local function DrawSkinRect(Rect)
+    if Rect.Kind == 'slider' then
+        Rect.Skin.slider(Rect.X, Rect.Y, Rect.Width, Rect.Height, Rect.Value)
+    else
+        Rect.Skin.draw(Rect.Kind, Rect.X, Rect.Y, Rect.Width, Rect.Height, Rect.Color)
+    end
 end
 
 local function GetTriangleVertices(X, Y, Radius, Rotation)
@@ -341,6 +352,7 @@ local DRAWTYPES = {
 	DrawPolygon,
 	ShaderPush,
 	ShaderPop,
+	DrawSkinRect,
 }
 
 local function DrawElements(Elements)
@@ -442,6 +454,15 @@ end
 
 function DrawCommands.Rectangle(Mode, X, Y, Width, Height, Color, Radius, Segments, LineW)
 	AssertActiveBatch()
+	local kind = Skin and Skin.classify(Mode, Color, Width, Height)
+	if kind then
+		local Item = pool[TypeSkinRect]:pull()
+		Item.Type, Item.Skin, Item.Kind = TypeSkinRect, Skin, kind
+		Item.X, Item.Y, Item.Width, Item.Height = X, Y, Width, Height
+		Item.Color = Color or BLACK
+		insert(ActiveBatch, Item)
+		return
+	end
 	if type(Radius) == 'table' then
 		Segments = Segments == nil and 10 or Segments
 
@@ -475,6 +496,24 @@ function DrawCommands.Rectangle(Mode, X, Y, Width, Height, Color, Radius, Segmen
 		Item.LineW = LineW or graphics.getLineWidth()
 		insert(ActiveBatch, Item)
 	end
+end
+
+-- Skin callbacks execute in the same draw batch, transform and scissor as the
+-- ordinary rectangle. Passing nil restores unmodified Slab rendering.
+function DrawCommands.SetSkin(skin)
+	assert(skin == nil or (type(skin.classify) == 'function' and type(skin.draw) == 'function'), 'Invalid draw skin')
+	Skin = skin
+end
+
+-- Optional native-slider paint hook; retain Slab input, focus and clipping.
+function DrawCommands.Slider(X, Y, W, H, Value)
+    if not Skin or type(Skin.slider) ~= 'function' then return false end
+    AssertActiveBatch()
+    local Item = pool[TypeSkinRect]:pull()
+    Item.Type, Item.Skin, Item.Kind = TypeSkinRect, Skin, 'slider'
+    Item.X, Item.Y, Item.Width, Item.Height, Item.Value = X, Y, W, H, Value
+    insert(ActiveBatch, Item)
+    return true
 end
 
 function DrawCommands.Triangle(Mode, X, Y, Radius, Rotation, Color)
@@ -716,7 +755,7 @@ function DrawCommands.PopShader()
 	insert(ActiveBatch, Item)
 end
 
-function DrawCommands.Execute()
+function DrawCommands.Execute(deferOverlays)
 	local StatHandle = Stats.Begin('Execute', StatsCategory)
 
 	graphics.scale(Scale.GetScale())
@@ -727,11 +766,23 @@ function DrawCommands.Execute()
 	DrawLayer(LayerTable[LayerMainMenuBar], 'MainMenuBar')
 	DrawLayer(LayerTable[LayerDialog], 'Dialog')
 	DrawLayer(LayerTable[LayerDebug], 'Debug')
-	DrawLayer(LayerTable[LayerMouse], 'Mouse')
+	if not deferOverlays then
+		DrawLayer(LayerTable[LayerTooltip], 'Tooltip')
+		DrawLayer(LayerTable[LayerMouse], 'Mouse')
+	end
 
 	graphics.setShader()
 
 	Stats.End(StatHandle)
+end
+
+-- Applications with custom foreground panels can draw these last, without
+-- replaying normal windows or inheriting a caller's clip/transform state.
+function DrawCommands.ExecuteOverlays()
+	graphics.scale(Scale.GetScale())
+	DrawLayer(LayerTable[LayerTooltip], 'Tooltip')
+	DrawLayer(LayerTable[LayerMouse], 'Mouse')
+	graphics.setShader()
 end
 
 local function GetLayerDebugInfo(Layer)
@@ -760,6 +811,7 @@ function DrawCommands.GetDebugInfo()
 	Result['MainMenuBar'] = GetLayerDebugInfo(LayerTable[LayerMainMenuBar])
 	Result['Dialog'] = GetLayerDebugInfo(LayerTable[LayerDialog])
 	Result['Debug'] = GetLayerDebugInfo(LayerTable[LayerDebug])
+	Result['Tooltip'] = GetLayerDebugInfo(LayerTable[LayerTooltip])
 	Result['Mouse'] = GetLayerDebugInfo(LayerTable[LayerMouse])
 
 	return Result

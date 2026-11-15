@@ -16,15 +16,18 @@ function Layout.clip(x,y,w,h)
 end
 function Layout.table(w,h)
     local board={x=16,y=16,w=w-32,h=h-32}
-    local handH=math.max(176,math.min(252,h*.245))
-    local fieldTop=260
-    local fieldBottom=h-handH-46
+    local handH=math.max(116,math.min(140,h*.15))*1.05
+    -- Reclaim the gaps below command cards and above the fixed hand before
+    -- increasing card targets; compact duel rows must retain their separation.
+    local fieldTop=250
+    local fieldBottom=h-100 -- resting hand84px plus16px separation
     local rowH=(fieldBottom-fieldTop)/2
     local logW=math.min(400,w*.27)
     return {board=board,actions={x=w-334,y=132,w=318,h=146},log={x=w-logW-16,y=140,w=logW,h=170},
         handH=handH,handY=h-handH-15,fieldTop=fieldTop,rowH=rowH,
         fieldX=board.x+132,fieldW=board.w-264,enemyY=fieldTop,humanY=fieldTop+rowH,
-        fieldBottom=fieldBottom,divider=fieldTop+rowH-5,zoneW=math.max(78,math.min(102,h*.108)),phaseY=78}
+        fieldBottom=fieldBottom,divider=fieldTop+rowH-5,zoneW=math.max(78,math.min(102,h*.108)),phaseY=46,
+        navY=78,viewport={x=16,y=112,w=w-32,h=h-128},headerH=104}
 end
 -- Center short rows; move a crowded mana row toward the left before overlap.
 function Layout.cardRow(count,x,y,width,cardWidth,cardHeight,shiftCrowded)

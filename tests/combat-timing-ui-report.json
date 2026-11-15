@@ -1,0 +1,366 @@
+{
+  "passed": true,
+  "checks": 34,
+  "runs": [
+    {
+      "cases": {
+        "1440": {
+          "acceptedActions": [
+            {
+              "promptId": 1,
+              "type": "uuid",
+              "value": "ca4401f2-585a-43a1-bf59-275471f77058"
+            },
+            {
+              "promptId": 3,
+              "type": "boolean",
+              "value": true
+            },
+            {
+              "promptId": 8,
+              "type": "uuid",
+              "value": "efc582c3-29fc-4c37-a4ce-c2e322e13ba4"
+            },
+            {
+              "promptId": 10,
+              "type": "uuid",
+              "value": "2a333369-79dc-42f8-9dc8-71944652aff9"
+            },
+            {
+              "promptId": 12,
+              "type": "uuid",
+              "value": "ca4401f2-585a-43a1-bf59-275471f77058"
+            }
+          ],
+          "display": {
+            "logical": [
+              1440,
+              900
+            ],
+            "physical": [
+              1440,
+              900
+            ],
+            "requested": [
+              1440,
+              900
+            ]
+          },
+          "nativeResult": {
+            "combat": {
+              "attackerIds": [
+                "cefde95f-790c-4434-a509-0f30b34ae3f2"
+              ],
+              "blockerIds": {},
+              "groups": [
+                {
+                  "attackerId": "cefde95f-790c-4434-a509-0f30b34ae3f2",
+                  "attackerIds": [
+                    "cefde95f-790c-4434-a509-0f30b34ae3f2"
+                  ],
+                  "blocked": true,
+                  "blockerIds": {},
+                  "declarationConfirmed": true,
+                  "defenderId": "a1753d80-b7ea-4683-b4cb-2d5d2498a2fc",
+                  "defendingPlayerId": "a1753d80-b7ea-4683-b4cb-2d5d2498a2fc",
+                  "maxBlockers": 0,
+                  "minBlockers": 1
+                }
+              ],
+              "step": "COMBAT_DAMAGE"
+            },
+            "done": true,
+            "lifeAfter": 20,
+            "nativeDamageToDefender": 0,
+            "sacrificed": true
+          },
+          "scenario": "ayara",
+          "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+        },
+        "ayara": {
+          "acceptedActions": [
+            {
+              "promptId": 1,
+              "type": "uuid",
+              "value": "ca4401f2-585a-43a1-bf59-275471f77058"
+            },
+            {
+              "promptId": 3,
+              "type": "boolean",
+              "value": true
+            },
+            {
+              "promptId": 8,
+              "type": "uuid",
+              "value": "efc582c3-29fc-4c37-a4ce-c2e322e13ba4"
+            },
+            {
+              "promptId": 10,
+              "type": "uuid",
+              "value": "2a333369-79dc-42f8-9dc8-71944652aff9"
+            },
+            {
+              "promptId": 12,
+              "type": "uuid",
+              "value": "ca4401f2-585a-43a1-bf59-275471f77058"
+            }
+          ],
+          "display": {
+            "logical": [
+              1440,
+              900
+            ],
+            "physical": [
+              1440,
+              900
+            ],
+            "requested": [
+              1440,
+              900
+            ]
+          },
+          "nativeResult": {
+            "combat": {
+              "attackerIds": [
+                "cefde95f-790c-4434-a509-0f30b34ae3f2"
+              ],
+              "blockerIds": {},
+              "groups": [
+                {
+                  "attackerId": "cefde95f-790c-4434-a509-0f30b34ae3f2",
+                  "attackerIds": [
+                    "cefde95f-790c-4434-a509-0f30b34ae3f2"
+                  ],
+                  "blocked": true,
+                  "blockerIds": {},
+                  "declarationConfirmed": true,
+                  "defenderId": "a1753d80-b7ea-4683-b4cb-2d5d2498a2fc",
+                  "defendingPlayerId": "a1753d80-b7ea-4683-b4cb-2d5d2498a2fc",
+                  "maxBlockers": 0,
+                  "minBlockers": 1
+                }
+              ],
+              "step": "COMBAT_DAMAGE"
+            },
+            "done": true,
+            "lifeAfter": 20,
+            "nativeDamageToDefender": 0,
+            "sacrificed": true
+          },
+          "scenario": "ayara",
+          "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+        },
+        "goreclaw": {
+          "acceptedActions": {},
+          "nativeResult": {
+            "done": true,
+            "gainedTrample": true
+          },
+          "scenario": "goreclaw",
+          "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+        }
+      },
+      "checks": [
+        "Native choice clearly labels unconfirmed blocker selection at 1440",
+        "Native prompt explains Done confirmation before activating abilities at 1440",
+        "Selected Rat block is still provisional before Done at 1440",
+        "Actual compact stop control configures native DECLARE_BLOCKERS at 1440",
+        "Actual native stop visibly pauses after confirmed blockers at 1440",
+        "Attacker badge reflects native confirmed Blocked at 1440",
+        "Native holder and actual priority timestamp drive dedicated rope at 1440",
+        "Native sacrifice cost remains interactive, outside auto priority at 1440",
+        "Stack automatically folds so native battlefield sacrifice choices stay accessible at 1440",
+        "Actual confirmed Rat block then Ayara sacrifice prevents nontrample native damage at 1440",
+        "Native confirmed blocked state remains after Rat disappears at 1440",
+        "Only five genuine gameplay inputs assign/confirm/activate/select/sacrifice at 1440",
+        "Compact combat picker opens actual step controls at 1440",
+        "Actual Goreclaw native attack trigger grants live Trample independently from printed rules",
+        "Actual battlefield renderer visibly labels the temporary gained Trample ability",
+        "Actual card details visibly identify temporary granted Trample",
+        "Current native rules can be expanded separately from catalog printing"
+      ],
+      "passed": true,
+      "scope": "Actual main.lua callbacks, Slab controls and asynchronous HTTP against test-only native initial zones; production Session.action, actual blocker confirmation, native pre-damage stop, Ayara cost and real combat damage; requested and actual display dimensions retained"
+    },
+    {
+      "cases": {
+        "1120": {
+          "acceptedActions": [
+            {
+              "promptId": 1,
+              "type": "uuid",
+              "value": "c5752d26-8eb8-43a5-b74b-011fcf90f763"
+            },
+            {
+              "promptId": 3,
+              "type": "boolean",
+              "value": true
+            },
+            {
+              "promptId": 8,
+              "type": "uuid",
+              "value": "06d70b62-d5cc-4929-890d-28be7204605b"
+            },
+            {
+              "promptId": 10,
+              "type": "uuid",
+              "value": "c455ac62-28bf-4e99-9477-87674cb6b7d9"
+            },
+            {
+              "promptId": 12,
+              "type": "uuid",
+              "value": "c5752d26-8eb8-43a5-b74b-011fcf90f763"
+            }
+          ],
+          "display": {
+            "logical": [
+              1120,
+              760
+            ],
+            "physical": [
+              1120,
+              760
+            ],
+            "requested": [
+              1120,
+              760
+            ]
+          },
+          "nativeResult": {
+            "combat": {
+              "attackerIds": [
+                "90ef2be6-f7aa-4ee4-875e-ada147882e41"
+              ],
+              "blockerIds": {},
+              "groups": [
+                {
+                  "attackerId": "90ef2be6-f7aa-4ee4-875e-ada147882e41",
+                  "attackerIds": [
+                    "90ef2be6-f7aa-4ee4-875e-ada147882e41"
+                  ],
+                  "blocked": true,
+                  "blockerIds": {},
+                  "declarationConfirmed": true,
+                  "defenderId": "86878a30-06b8-441a-b6f1-bce32afd9362",
+                  "defendingPlayerId": "86878a30-06b8-441a-b6f1-bce32afd9362",
+                  "maxBlockers": 0,
+                  "minBlockers": 1
+                }
+              ],
+              "step": "COMBAT_DAMAGE"
+            },
+            "done": true,
+            "lifeAfter": 20,
+            "nativeDamageToDefender": 0,
+            "sacrificed": true
+          },
+          "scenario": "ayara",
+          "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+        },
+        "ayara": {
+          "acceptedActions": [
+            {
+              "promptId": 1,
+              "type": "uuid",
+              "value": "c5752d26-8eb8-43a5-b74b-011fcf90f763"
+            },
+            {
+              "promptId": 3,
+              "type": "boolean",
+              "value": true
+            },
+            {
+              "promptId": 8,
+              "type": "uuid",
+              "value": "06d70b62-d5cc-4929-890d-28be7204605b"
+            },
+            {
+              "promptId": 10,
+              "type": "uuid",
+              "value": "c455ac62-28bf-4e99-9477-87674cb6b7d9"
+            },
+            {
+              "promptId": 12,
+              "type": "uuid",
+              "value": "c5752d26-8eb8-43a5-b74b-011fcf90f763"
+            }
+          ],
+          "display": {
+            "logical": [
+              1120,
+              760
+            ],
+            "physical": [
+              1120,
+              760
+            ],
+            "requested": [
+              1120,
+              760
+            ]
+          },
+          "nativeResult": {
+            "combat": {
+              "attackerIds": [
+                "90ef2be6-f7aa-4ee4-875e-ada147882e41"
+              ],
+              "blockerIds": {},
+              "groups": [
+                {
+                  "attackerId": "90ef2be6-f7aa-4ee4-875e-ada147882e41",
+                  "attackerIds": [
+                    "90ef2be6-f7aa-4ee4-875e-ada147882e41"
+                  ],
+                  "blocked": true,
+                  "blockerIds": {},
+                  "declarationConfirmed": true,
+                  "defenderId": "86878a30-06b8-441a-b6f1-bce32afd9362",
+                  "defendingPlayerId": "86878a30-06b8-441a-b6f1-bce32afd9362",
+                  "maxBlockers": 0,
+                  "minBlockers": 1
+                }
+              ],
+              "step": "COMBAT_DAMAGE"
+            },
+            "done": true,
+            "lifeAfter": 20,
+            "nativeDamageToDefender": 0,
+            "sacrificed": true
+          },
+          "scenario": "ayara",
+          "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+        },
+        "goreclaw": {
+          "acceptedActions": {},
+          "nativeResult": {
+            "done": true,
+            "gainedTrample": true
+          },
+          "scenario": "goreclaw",
+          "scope": "Native deterministic initial zones; actual production Session.action and HumanPlayer responses; not a production-deck game"
+        }
+      },
+      "checks": [
+        "Native choice clearly labels unconfirmed blocker selection at 1120",
+        "Native prompt explains Done confirmation before activating abilities at 1120",
+        "Selected Rat block is still provisional before Done at 1120",
+        "Actual compact stop control configures native DECLARE_BLOCKERS at 1120",
+        "Actual native stop visibly pauses after confirmed blockers at 1120",
+        "Attacker badge reflects native confirmed Blocked at 1120",
+        "Native holder and actual priority timestamp drive dedicated rope at 1120",
+        "Native sacrifice cost remains interactive, outside auto priority at 1120",
+        "Stack automatically folds so native battlefield sacrifice choices stay accessible at 1120",
+        "Actual confirmed Rat block then Ayara sacrifice prevents nontrample native damage at 1120",
+        "Native confirmed blocked state remains after Rat disappears at 1120",
+        "Only five genuine gameplay inputs assign/confirm/activate/select/sacrifice at 1120",
+        "Compact combat picker opens actual step controls at 1120",
+        "Actual Goreclaw native attack trigger grants live Trample independently from printed rules",
+        "Actual battlefield renderer visibly labels the temporary gained Trample ability",
+        "Actual card details visibly identify temporary granted Trample",
+        "Current native rules can be expanded separately from catalog printing"
+      ],
+      "passed": true,
+      "scope": "Actual main.lua callbacks, Slab controls and asynchronous HTTP against test-only native initial zones; production Session.action, actual blocker confirmation, native pre-damage stop, Ayara cost and real combat damage; requested and actual display dimensions retained"
+    }
+  ]
+}

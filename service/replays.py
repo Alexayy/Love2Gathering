@@ -19,6 +19,7 @@ class ReplayStore:
         payload["id"]=identifier
         if len(encode(payload))>1024*1024: raise ValueError("Replay metadata exceeds 1 MB")
         with self.connection(write=True) as c:
+            if c.execute("SELECT 1 FROM replay_tombstones WHERE id=?",(identifier,)).fetchone():raise ConflictError("This recording was purged; its timeline cannot be recreated")
             previous=c.execute("SELECT payload FROM replays WHERE id=?",(identifier,)).fetchone()
             if previous:
                 if previous[0]!=encode(payload): raise ConflictError("Replay ID has different metadata")
@@ -101,4 +102,4 @@ class ReplayStore:
 
     def delete_replay(self,identifier):
         self.check_id(identifier)
-        with self.connection(write=True) as c:return c.execute("DELETE FROM replays WHERE id=?",(identifier,)).rowcount>0
+        return self.purge_storage(['replays'],replay_id=identifier)['deletedReplays']>0

@@ -1,0 +1,1040 @@
+{
+  "schemaVersion": 1,
+  "scenarios": [
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "life-stop-held",
+      "stage": "lifecycle",
+      "purpose": "Bounded Stop vs confirmed GAME exit",
+      "mechanics": [
+        "transport",
+        "lifecycle"
+      ],
+      "combined": true,
+      "evidenceType": "bridge_transport_fault_fixture",
+      "fixtureClass": "love2gathering.MechanicsLifecycleFixture",
+      "actions": [
+        "Initialize actual native Session",
+        "Hold diagnostic GAME only for stop-held; otherwise use native HumanPlayer.chooseUse/getAmount",
+        "Issue the specified current/stale/concurrent response",
+        "Check native thread, offered choice and recording sequence"
+      ],
+      "expected": "Held diagnostic GAME outlives Stop; released thread then confirms exit",
+      "expectedPrompts": [
+        "Native offered boolean or amount; unknown choice fails"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "cpuSeconds": 20,
+        "heapMb": 512,
+        "rssBytes": 1610612736,
+        "diskBytes": 268435456
+      },
+      "repeats": 3,
+      "reproduce": "python3 scripts/test-mechanics.py --mode full --scenario life-stop-held"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "life-stale-game",
+      "stage": "lifecycle",
+      "purpose": "Delayed control across rematch",
+      "mechanics": [
+        "transport",
+        "lifecycle"
+      ],
+      "combined": true,
+      "evidenceType": "bridge_transport_fault_fixture",
+      "fixtureClass": "love2gathering.MechanicsLifecycleFixture",
+      "actions": [
+        "Initialize actual native Session",
+        "Hold diagnostic GAME only for stop-held; otherwise use native HumanPlayer.chooseUse/getAmount",
+        "Issue the specified current/stale/concurrent response",
+        "Check native thread, offered choice and recording sequence"
+      ],
+      "expected": "Wrong expectedGameId rejected before current session changes",
+      "expectedPrompts": [
+        "Native offered boolean or amount; unknown choice fails"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "cpuSeconds": 20,
+        "heapMb": 512,
+        "rssBytes": 1610612736,
+        "diskBytes": 268435456
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode full --scenario life-stale-game"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "life-concede-held-answer",
+      "stage": "lifecycle",
+      "purpose": "Concede bypasses a deliberately held ordinary answer lane",
+      "mechanics": [
+        "transport",
+        "lifecycle"
+      ],
+      "combined": true,
+      "evidenceType": "bridge_transport_fault_fixture",
+      "fixtureClass": "love2gathering.MechanicsLifecycleFixture",
+      "actions": [
+        "Hold ordinary native answer synchronization in a diagnostic thread",
+        "Deliver actual native concession control from another thread",
+        "Require acknowledgement before releasing the held ordinary lane"
+      ],
+      "expected": "Native concession signal acknowledges within500ms while ordinary answer lane remains held; no terminal result is fabricated",
+      "expectedPrompts": [
+        "Native offered boolean or amount; unknown choice fails"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "cpuSeconds": 20,
+        "heapMb": 512,
+        "rssBytes": 1610612736,
+        "diskBytes": 268435456
+      },
+      "repeats": 3,
+      "reproduce": "python3 scripts/test-mechanics.py --mode full --scenario life-concede-held-answer"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "life-concurrent-answer",
+      "stage": "lifecycle",
+      "purpose": "Sixteen simultaneous retries",
+      "mechanics": [
+        "transport",
+        "lifecycle"
+      ],
+      "combined": true,
+      "evidenceType": "bridge_transport_fault_fixture",
+      "fixtureClass": "love2gathering.MechanicsLifecycleFixture",
+      "actions": [
+        "Initialize actual native Session",
+        "Hold diagnostic GAME only for stop-held; otherwise use native HumanPlayer.chooseUse/getAmount",
+        "Issue the specified current/stale/concurrent response",
+        "Check native thread, offered choice and recording sequence"
+      ],
+      "expected": "One accepted response and one recorded action",
+      "expectedPrompts": [
+        "Native offered boolean or amount; unknown choice fails"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "cpuSeconds": 20,
+        "heapMb": 512,
+        "rssBytes": 1610612736,
+        "diskBytes": 268435456
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode full --scenario life-concurrent-answer"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "life-unoffered-uuid",
+      "stage": "lifecycle",
+      "purpose": "Offered types and object IDs",
+      "mechanics": [
+        "transport",
+        "lifecycle"
+      ],
+      "combined": true,
+      "evidenceType": "bridge_transport_fault_fixture",
+      "fixtureClass": "love2gathering.MechanicsLifecycleFixture",
+      "actions": [
+        "Initialize actual native Session",
+        "Hold diagnostic GAME only for stop-held; otherwise use native HumanPlayer.chooseUse/getAmount",
+        "Issue the specified current/stale/concurrent response",
+        "Check native thread, offered choice and recording sequence"
+      ],
+      "expected": "Reject UUID answer to native boolean prompt",
+      "expectedPrompts": [
+        "Native offered boolean or amount; unknown choice fails"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "cpuSeconds": 20,
+        "heapMb": 512,
+        "rssBytes": 1610612736,
+        "diskBytes": 268435456
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode full --scenario life-unoffered-uuid"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "life-typed-boolean",
+      "stage": "lifecycle",
+      "purpose": "Strict boolean transport",
+      "mechanics": [
+        "transport",
+        "lifecycle"
+      ],
+      "combined": true,
+      "evidenceType": "bridge_transport_fault_fixture",
+      "fixtureClass": "love2gathering.MechanicsLifecycleFixture",
+      "actions": [
+        "Initialize actual native Session",
+        "Hold diagnostic GAME only for stop-held; otherwise use native HumanPlayer.chooseUse/getAmount",
+        "Issue the specified current/stale/concurrent response",
+        "Check native thread, offered choice and recording sequence"
+      ],
+      "expected": "Reject string true without consuming prompt",
+      "expectedPrompts": [
+        "Native offered boolean or amount; unknown choice fails"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "cpuSeconds": 20,
+        "heapMb": 512,
+        "rssBytes": 1610612736,
+        "diskBytes": 268435456
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode full --scenario life-typed-boolean"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "life-amount-bounds",
+      "stage": "lifecycle",
+      "purpose": "Native integer bounds",
+      "mechanics": [
+        "transport",
+        "lifecycle"
+      ],
+      "combined": true,
+      "evidenceType": "bridge_transport_fault_fixture",
+      "fixtureClass": "love2gathering.MechanicsLifecycleFixture",
+      "actions": [
+        "Initialize actual native Session",
+        "Hold diagnostic GAME only for stop-held; otherwise use native HumanPlayer.chooseUse/getAmount",
+        "Issue the specified current/stale/concurrent response",
+        "Check native thread, offered choice and recording sequence"
+      ],
+      "expected": "Reject fraction/out-of-range; preserve decision",
+      "expectedPrompts": [
+        "Native offered boolean or amount; unknown choice fails"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "cpuSeconds": 20,
+        "heapMb": 512,
+        "rssBytes": 1610612736,
+        "diskBytes": 268435456
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode full --scenario life-amount-bounds"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "life-empty-actionable",
+      "stage": "lifecycle",
+      "purpose": "Present empty native actionable",
+      "mechanics": [
+        "transport",
+        "lifecycle"
+      ],
+      "combined": true,
+      "evidenceType": "bridge_transport_fault_fixture",
+      "fixtureClass": "love2gathering.MechanicsLifecycleFixture",
+      "actions": [
+        "Initialize actual native Session",
+        "Hold diagnostic GAME only for stop-held; otherwise use native HumanPlayer.chooseUse/getAmount",
+        "Issue the specified current/stale/concurrent response",
+        "Check native thread, offered choice and recording sequence"
+      ],
+      "expected": "No object answer; actual offered boolean remains interactive",
+      "expectedPrompts": [
+        "Native offered boolean or amount; unknown choice fails"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "cpuSeconds": 20,
+        "heapMb": 512,
+        "rssBytes": 1610612736,
+        "diskBytes": 268435456
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode full --scenario life-empty-actionable"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "life-stale-answer",
+      "stage": "lifecycle",
+      "purpose": "Lost response and duplicate retry",
+      "mechanics": [
+        "transport",
+        "lifecycle"
+      ],
+      "combined": true,
+      "evidenceType": "bridge_transport_fault_fixture",
+      "fixtureClass": "love2gathering.MechanicsLifecycleFixture",
+      "actions": [
+        "Initialize actual native Session",
+        "Hold diagnostic GAME only for stop-held; otherwise use native HumanPlayer.chooseUse/getAmount",
+        "Issue the specified current/stale/concurrent response",
+        "Check native thread, offered choice and recording sequence"
+      ],
+      "expected": "Outdated prompt never consumes later decision",
+      "expectedPrompts": [
+        "Native offered boolean or amount; unknown choice fails"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "cpuSeconds": 20,
+        "heapMb": 512,
+        "rssBytes": 1610612736,
+        "diskBytes": 268435456
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode full --scenario life-stale-answer"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "owner": "human",
+          "zone": "outside; native source ability"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "tokens-1",
+      "stage": "stress",
+      "purpose": "Native token creation/projection/JSON/HTTP/recording measurement",
+      "mechanics": [
+        "tokens",
+        "projection",
+        "recording"
+      ],
+      "combined": false,
+      "evidenceType": "deterministic_native",
+      "fixtureClass": "love2gathering.MechanicsStressFixture",
+      "nativeTokens": {
+        "templateClass": "mage.game.permanent.token.WolfToken",
+        "requested": 1,
+        "controllers": 1
+      },
+      "actions": [
+        "Create native tokens with the predeclared request",
+        "Apply predeclared native characteristic changes",
+        "Publish, record, serialize and verify every exact native identity",
+        "Flush and measure recording/outbox; probe frame transport"
+      ],
+      "expected": {
+        "requested": 1,
+        "actual": 1,
+        "nativePerControllerImplementationCap": 500,
+        "capScope": "Pinned implementation resource cap, not Magic rule or frontend limit"
+      },
+      "expectedPrompts": [],
+      "budgets": {
+        "wallSeconds": 90,
+        "cpuSeconds": 80,
+        "heapMb": 768,
+        "rssBytes": 1887436800,
+        "diskBytes": 268435456,
+        "catalogDiskBytes": 8589934592,
+        "projectionBytes": 16777216,
+        "stepSeconds": 80,
+        "nativeEvents": 200000,
+        "nativeObjects": 1000,
+        "flushMillis": 8000
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode stress --scenario tokens-1"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "owner": "human",
+          "zone": "outside; native source ability"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "tokens-10",
+      "stage": "stress",
+      "purpose": "Native token creation/projection/JSON/HTTP/recording measurement",
+      "mechanics": [
+        "tokens",
+        "projection",
+        "recording"
+      ],
+      "combined": false,
+      "evidenceType": "deterministic_native",
+      "fixtureClass": "love2gathering.MechanicsStressFixture",
+      "nativeTokens": {
+        "templateClass": "mage.game.permanent.token.WolfToken",
+        "requested": 10,
+        "controllers": 1
+      },
+      "actions": [
+        "Create native tokens with the predeclared request",
+        "Apply predeclared native characteristic changes",
+        "Publish, record, serialize and verify every exact native identity",
+        "Flush and measure recording/outbox; probe frame transport"
+      ],
+      "expected": {
+        "requested": 10,
+        "actual": 10,
+        "nativePerControllerImplementationCap": 500,
+        "capScope": "Pinned implementation resource cap, not Magic rule or frontend limit"
+      },
+      "expectedPrompts": [],
+      "budgets": {
+        "wallSeconds": 90,
+        "cpuSeconds": 80,
+        "heapMb": 768,
+        "rssBytes": 1887436800,
+        "diskBytes": 268435456,
+        "catalogDiskBytes": 8589934592,
+        "projectionBytes": 16777216,
+        "stepSeconds": 80,
+        "nativeEvents": 200000,
+        "nativeObjects": 1000,
+        "flushMillis": 8000
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode stress --scenario tokens-10"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "owner": "human",
+          "zone": "outside; native source ability"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "tokens-100",
+      "stage": "stress",
+      "purpose": "Native token creation/projection/JSON/HTTP/recording measurement",
+      "mechanics": [
+        "tokens",
+        "projection",
+        "recording"
+      ],
+      "combined": false,
+      "evidenceType": "deterministic_native",
+      "fixtureClass": "love2gathering.MechanicsStressFixture",
+      "nativeTokens": {
+        "templateClass": "mage.game.permanent.token.WolfToken",
+        "requested": 100,
+        "controllers": 1
+      },
+      "actions": [
+        "Create native tokens with the predeclared request",
+        "Apply predeclared native characteristic changes",
+        "Publish, record, serialize and verify every exact native identity",
+        "Flush and measure recording/outbox; probe frame transport"
+      ],
+      "expected": {
+        "requested": 100,
+        "actual": 100,
+        "nativePerControllerImplementationCap": 500,
+        "capScope": "Pinned implementation resource cap, not Magic rule or frontend limit"
+      },
+      "expectedPrompts": [],
+      "budgets": {
+        "wallSeconds": 90,
+        "cpuSeconds": 80,
+        "heapMb": 768,
+        "rssBytes": 1887436800,
+        "diskBytes": 268435456,
+        "catalogDiskBytes": 8589934592,
+        "projectionBytes": 16777216,
+        "stepSeconds": 80,
+        "nativeEvents": 200000,
+        "nativeObjects": 1000,
+        "flushMillis": 8000
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode stress --scenario tokens-100"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "owner": "human",
+          "zone": "outside; native source ability"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only",
+        "Heavy recording profile:2GiB per-process disk ceiling; initial256MiB split1000 checkpoint failed with raw snapshot growth and is retained separately",
+        "Follow-up bounded replay profile: initial8-second flush checkpoint at500 retained389pending events without recordingError; allow45seconds and retain all sequences"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "tokens-500",
+      "stage": "stress",
+      "purpose": "Native token creation/projection/JSON/HTTP/recording measurement",
+      "mechanics": [
+        "tokens",
+        "projection",
+        "recording"
+      ],
+      "combined": false,
+      "evidenceType": "deterministic_native",
+      "fixtureClass": "love2gathering.MechanicsStressFixture",
+      "nativeTokens": {
+        "templateClass": "mage.game.permanent.token.WolfToken",
+        "requested": 500,
+        "controllers": 1
+      },
+      "actions": [
+        "Create native tokens with the predeclared request",
+        "Apply predeclared native characteristic changes",
+        "Publish, record, serialize and verify every exact native identity",
+        "Flush and measure recording/outbox; probe frame transport"
+      ],
+      "expected": {
+        "requested": 500,
+        "actual": 500,
+        "nativePerControllerImplementationCap": 500,
+        "capScope": "Pinned implementation resource cap, not Magic rule or frontend limit"
+      },
+      "expectedPrompts": [],
+      "budgets": {
+        "wallSeconds": 140,
+        "cpuSeconds": 130,
+        "heapMb": 768,
+        "rssBytes": 1887436800,
+        "diskBytes": 2147483648,
+        "catalogDiskBytes": 8589934592,
+        "projectionBytes": 16777216,
+        "stepSeconds": 80,
+        "nativeEvents": 200000,
+        "nativeObjects": 1000,
+        "flushMillis": 45000
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode stress --scenario tokens-500"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "owner": "human",
+          "zone": "outside; native source ability"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only",
+        "Heavy recording profile:2GiB per-process disk ceiling; initial256MiB split1000 checkpoint failed with raw snapshot growth and is retained separately",
+        "Follow-up bounded replay profile: initial8-second flush checkpoint at500 retained389pending events without recordingError; allow45seconds and retain all sequences"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "tokens-1000",
+      "stage": "stress",
+      "purpose": "Native token creation/projection/JSON/HTTP/recording measurement",
+      "mechanics": [
+        "tokens",
+        "projection",
+        "recording"
+      ],
+      "combined": false,
+      "evidenceType": "deterministic_native",
+      "fixtureClass": "love2gathering.MechanicsStressFixture",
+      "nativeTokens": {
+        "templateClass": "mage.game.permanent.token.WolfToken",
+        "requested": 1000,
+        "controllers": 1
+      },
+      "actions": [
+        "Create native tokens with the predeclared request",
+        "Apply predeclared native characteristic changes",
+        "Publish, record, serialize and verify every exact native identity",
+        "Flush and measure recording/outbox; probe frame transport"
+      ],
+      "expected": {
+        "requested": 1000,
+        "actual": 500,
+        "nativePerControllerImplementationCap": 500,
+        "capScope": "Pinned implementation resource cap, not Magic rule or frontend limit"
+      },
+      "expectedPrompts": [],
+      "budgets": {
+        "wallSeconds": 140,
+        "cpuSeconds": 130,
+        "heapMb": 768,
+        "rssBytes": 1887436800,
+        "diskBytes": 2147483648,
+        "catalogDiskBytes": 8589934592,
+        "projectionBytes": 16777216,
+        "stepSeconds": 80,
+        "nativeEvents": 200000,
+        "nativeObjects": 1000,
+        "flushMillis": 45000
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode stress --scenario tokens-1000"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "owner": "human",
+          "zone": "outside; native source ability"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only",
+        "Heavy recording profile:2GiB per-process disk ceiling; initial256MiB split1000 checkpoint failed with raw snapshot growth and is retained separately",
+        "Follow-up bounded replay profile: initial8-second flush checkpoint at500 retained389pending events without recordingError; allow45seconds and retain all sequences"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "tokens-split1000",
+      "stage": "stress",
+      "purpose": "Native token creation/projection/JSON/HTTP/recording measurement",
+      "mechanics": [
+        "tokens",
+        "projection",
+        "recording"
+      ],
+      "combined": false,
+      "evidenceType": "deterministic_native",
+      "fixtureClass": "love2gathering.MechanicsStressFixture",
+      "nativeTokens": {
+        "templateClass": "mage.game.permanent.token.WolfToken",
+        "requested": 1000,
+        "controllers": 2
+      },
+      "actions": [
+        "Create native tokens with the predeclared request",
+        "Apply predeclared native characteristic changes",
+        "Publish, record, serialize and verify every exact native identity",
+        "Flush and measure recording/outbox; probe frame transport"
+      ],
+      "expected": {
+        "requested": 1000,
+        "actual": 1000,
+        "nativePerControllerImplementationCap": 500,
+        "capScope": "Pinned implementation resource cap, not Magic rule or frontend limit"
+      },
+      "expectedPrompts": [],
+      "budgets": {
+        "wallSeconds": 240,
+        "cpuSeconds": 220,
+        "heapMb": 768,
+        "rssBytes": 1887436800,
+        "diskBytes": 3221225472,
+        "catalogDiskBytes": 8589934592,
+        "projectionBytes": 16777216,
+        "stepSeconds": 180,
+        "nativeEvents": 200000,
+        "nativeObjects": 1000,
+        "flushMillis": 45000
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode stress --scenario tokens-split1000"
+    },
+    {
+      "cards": [
+        {
+          "name": "Plains",
+          "count": 60,
+          "owner": "each seat",
+          "zone": "library"
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "owner": "human",
+          "zone": "outside; native source ability"
+        }
+      ],
+      "initial": {
+        "format": "Modern",
+        "players": 2,
+        "battlefield": []
+      },
+      "preconditions": [
+        "Unique owned /tmp cwd/DATA/CACHE/CONFIG/HOME/XDG",
+        "Fresh isolated bridge classes; engine read-only",
+        "Heavy recording profile:2GiB per-process disk ceiling; initial256MiB split1000 checkpoint failed with raw snapshot growth and is retained separately",
+        "Follow-up bounded replay profile: initial8-second flush checkpoint at500 retained389pending events without recordingError; allow45seconds and retain all sequences"
+      ],
+      "evidence": [
+        "result.json",
+        "combined-result.json",
+        "process.json",
+        "process.log",
+        "resource-samples.json"
+      ],
+      "id": "tokens-varied-split1000",
+      "stage": "stress",
+      "purpose": "Native token creation/projection/JSON/HTTP/recording measurement",
+      "mechanics": [
+        "tokens",
+        "projection",
+        "recording",
+        "native tapped/counter/damage variations"
+      ],
+      "combined": true,
+      "evidenceType": "deterministic_native",
+      "fixtureClass": "love2gathering.MechanicsStressFixture",
+      "nativeTokens": {
+        "templateClass": "mage.game.permanent.token.WolfToken",
+        "requested": 1000,
+        "controllers": 2
+      },
+      "actions": [
+        "Create native tokens with the predeclared request",
+        "Apply predeclared native characteristic changes",
+        "Publish, record, serialize and verify every exact native identity",
+        "Flush and measure recording/outbox; probe frame transport"
+      ],
+      "expected": {
+        "requested": 1000,
+        "actual": 1000,
+        "nativePerControllerImplementationCap": 500,
+        "capScope": "Pinned implementation resource cap, not Magic rule or frontend limit"
+      },
+      "expectedPrompts": [],
+      "budgets": {
+        "wallSeconds": 240,
+        "cpuSeconds": 220,
+        "heapMb": 768,
+        "rssBytes": 1887436800,
+        "diskBytes": 3221225472,
+        "catalogDiskBytes": 8589934592,
+        "projectionBytes": 16777216,
+        "stepSeconds": 180,
+        "nativeEvents": 200000,
+        "nativeObjects": 1000,
+        "flushMillis": 45000
+      },
+      "repeats": 1,
+      "reproduce": "python3 scripts/test-mechanics.py --mode stress --scenario tokens-varied-split1000"
+    }
+  ]
+}
