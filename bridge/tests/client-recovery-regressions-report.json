@@ -1,0 +1,410 @@
+{
+  "build": {
+    "classpath": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/bridge-client-recovery-final-b2r4zztl/bridge/target/xmage-bridge-1.0.0.jar:/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/bridge-client-recovery-final-b2r4zztl/bridge/target/lib/*",
+    "command": [
+      "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/apache-maven-3.9.12/bin/mvn",
+      "-o",
+      "-f",
+      "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/bridge-client-recovery-final-b2r4zztl/bridge/pom.xml",
+      "-Dmaven.repo.local=/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/m2",
+      "-DskipTests",
+      "-Dmaven.javadoc.skip=true",
+      "-Dcheckstyle.skip=true",
+      "clean",
+      "package"
+    ],
+    "dependencies": {
+      "commons-lang3-3.18.0.jar": "4eeeae8d20c078abb64b015ec158add383ac581571cddc45c68f0c9ae0230720",
+      "concurrent-1.3.4.jar": "12639def9a5b5ebf56040ab764bd42b7e662523d3b983e5d5da04bf37be152f9",
+      "error_prone_annotations-2.36.0.jar": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+      "failureaccess-1.0.3.jar": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
+      "gson-2.13.2.jar": "dd0ce1b55a3ed2080cb70f9c655850cda86c206862310009dcb5e5c95265a5e0",
+      "guava-33.4.8-jre.jar": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+      "h2-1.4.197.jar": "37f5216e14af2772930dff9b8734353f0a80e89ba3f33e065441de6537c5e842",
+      "j2objc-annotations-3.0.0.jar": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64",
+      "jboss-common-core-2.5.0.Final.jar": "fd3948f9dfeed1c3bc426cf09efcd55998c6dbc8a4ad71b55c9a934d707dea26",
+      "jboss-logging-spi-2.1.2.GA.jar": "aa6a785a52d9dec8d36b4f84219ca4a7c208dcb018f4472b4711f5b9a6c74028",
+      "jboss-remoting-2.5.4.SP5.jar": "383c9d01f1f442441fc7d77afea2a0210a45af349a1a2b8ad80f180f7814dc27",
+      "jboss-serialization-4.2.2.GA.jar": "53a12ccfc2a382dbcc8527b8b45ab038b1c3fb8839fa797c70fb7381a7c02d14",
+      "jsoup-1.21.2.jar": "f05496e255734759f0d4b5632da7b24f81313147c78c69e90ad045d096191344",
+      "jspecify-1.0.0.jar": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+      "jspf-core-0.9.1.jar": "270cf91dd5b4b7becf7b0e770a91945805d5d7df1db05f98fefc2a0707edbf5a",
+      "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+      "mage-1.4.63.jar": "900fce9e4001804e6fea7a3013b6d5882248c52846d3400e3bd7c11c1695bb20",
+      "mage-common-1.4.63.jar": "162eb2027dde7bccabfb43d44ad8c4ca7028fa91a92d12c4b1256434ef0d11d2",
+      "mage-deck-constructed-1.4.63.jar": "81ca8cb8f33c897d61dcf1c198c945b24bb413508a2f4b3af28d31560f22431d",
+      "mage-deck-limited-1.4.63.jar": "be9f6b6476d767c85ef0ff03b4ee66ea7512784479ea899ce04fa4196f8c897c",
+      "mage-game-commanderduel-1.4.63.jar": "d349f59e500c24d824e60e0164142071b8fa3782b41d3d7d6a4a91064bc027a6",
+      "mage-game-commanderfreeforall-1.4.63.jar": "9b96d883df9f1fac3ec00aa62ac79c18af439254099feecf9b3878ae5f136730",
+      "mage-game-freeforall-1.4.63.jar": "d277def4ab3f3fd643a2b492d0ff13019ad37c54fb60b9641e8ab3eec0a0120f",
+      "mage-game-twoplayerduel-1.4.63.jar": "b249c4b5e371dd0bb2f8582a7cc2ae013f15d8808c715198700a8bf1acaa89bc",
+      "mage-player-ai-1.4.63.jar": "232a7523c7a0de16ab37724067df1995d9e72f44a54600674e50cb106676ccb1",
+      "mage-player-ai-mad-1.4.63.jar": "8796dfa68a9f0a4faa026bfb71df29bd91d744cef93e4251631c766577aec6ce",
+      "mage-player-human-1.4.63.jar": "48c54cd340ffe5934120bd202c571af015cb7699a2f363e48dda742bca3327f7",
+      "mage-sets-1.4.63.jar": "c1355cf8786e824edaa5ff0a30ea4fa81b7b47b925bb87f344d339991a24d162",
+      "mage-tournament-boosterdraft-1.4.63.jar": "a877795a3dabcb179f4ab6641f337c5ca80570875d4cf6d61db20e92002ea9cc",
+      "ormlite-core-5.7.jar": "5f1254ca4338d8ce8975d550ab1856073186b8d3128282908abac56d806ca1bd",
+      "ormlite-jdbc-5.7.jar": "156e789cf16ba12cb7176cee86bacaae440316f8b53094cd640876bfef636c29",
+      "prettytime-4.0.6.Final.jar": "c4a6ad3d38577f631cea7cef212e42691ed81d59cf25e5c3e93e00ef4506c000",
+      "protobuf-java-3.25.8.jar": "72bdb32eb38cafb7dcd288262c29a34d57cba2e19101af9685155ba8c0a56008",
+      "reload4j-1.2.22.jar": "222f90d3e69541218ef6e70547749d693bd4c1846817e5bd7949b3e28950f99f",
+      "slf4j-api-2.0.17.jar": "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832",
+      "slf4j-reload4j-2.0.17.jar": "62dfd069563dbce91d276c9a38d557da49df7be15b03bb898b63b5390c6bb889",
+      "sqlite-jdbc-3.47.2.0.jar": "d01df92d62c505beaa3cad33e41fa28876ecc111dd1f8dbc44bf7234cdcba7e3",
+      "trove-1.0.2.jar": "ad68a86cfd0255a2bc0525ce11ec49640caea7e34ff91eb89c3193dcccd77f05"
+    },
+    "engineAndRuntimeIdentityAfter": {
+      "engineDiff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "enginePom": "54cc1919d11f8f3cc55415915416e48eb0e1fc518da9ee9877ea502036f54427",
+      "engineStatus": "",
+      "gitlink": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+      "index": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+      "runtimeJar": "c920aacc2c56250648af085ad49effe8e9a82e5c1da44bbcda724247ab44c9ae"
+    },
+    "engineAndRuntimeIdentityBefore": {
+      "engineDiff": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "enginePom": "54cc1919d11f8f3cc55415915416e48eb0e1fc518da9ee9877ea502036f54427",
+      "engineStatus": "",
+      "gitlink": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+      "index": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+      "runtimeJar": "c920aacc2c56250648af085ad49effe8e9a82e5c1da44bbcda724247ab44c9ae"
+    },
+    "enginePin": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+    "jar": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/bridge-client-recovery-final-b2r4zztl/bridge/target/xmage-bridge-1.0.0.jar",
+    "jarSha256": "6b88b83130c7c3209068c87fd8cbb4479f509d17551f5b894d737c330619cb4a",
+    "javaVersion": "openjdk version \"21.0.13.0.2\" 2026-10-22 LTS\nOpenJDK Runtime Environment Microsoft-15780124 (build 21.0.13.0.2+1-LTS)\nOpenJDK 64-Bit Server VM Microsoft-15780124 (build 21.0.13.0.2+1-LTS, mixed mode, sharing)",
+    "kind": "Fresh isolated offline Maven bridge-only clean package; exact source/poms copied; supplied engine source/targets and runtime JAR unchanged",
+    "log": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/bridge-client-recovery-final-b2r4zztl/process.log",
+    "parentPomSha256": "54cc1919d11f8f3cc55415915416e48eb0e1fc518da9ee9877ea502036f54427",
+    "passed": true,
+    "pomSha256": "9bfa739a9532677a5ae2d8dfe677c04781891bbcd1fa68c4da366c9ae4875285",
+    "sourceUnchangedDuringBuild": true,
+    "sources": {
+      "bridge/src/love2gathering/CardPrintingProjection.java": "6bf741294903bc6823355efb67f195f5e982ace59ff9b3872c0636c736660427",
+      "bridge/src/love2gathering/CombatPromptMetadata.java": "fd81ebc721b0419702c9ce4e46bca8c9747a11548590017e13e4db84f5c8a069",
+      "bridge/src/love2gathering/CommanderHistoryWatcher.java": "c9f9919919c1345ba17cfdc81d74607a75bc8570d73cc6a5914774d19054e724",
+      "bridge/src/love2gathering/DraftSession.java": "785e34c386cfea189265735ed037fcdc3edba34a6c98a6072ae48fecddf4d044",
+      "bridge/src/love2gathering/EngineBridge.java": "bffe1d9913178359391bfe6b01051f8f1b51d79dde0d2e4db1ea4053c4ce9180",
+      "bridge/src/love2gathering/LimitedFreeForAll.java": "8f40ecb7a63347f5990893e1b4ea72f3898e7ee9c9871e25344ef77807252989",
+      "bridge/src/love2gathering/MergedProjection.java": "8ace1bcb977d613d99e6cec27ed12adaf29c0994c6d74e77ea319e6b758e7742",
+      "bridge/src/love2gathering/MultiplayerBridge.java": "e7ec3e359c74b648b2158504ce5f3f77da6a092a8f14f46f4b547e42aff6ad71",
+      "bridge/src/love2gathering/NativeCapabilities.java": "979684dcd2567b3b5a298088295b5e432a4648171aa62048538f397135cf65aa",
+      "bridge/src/love2gathering/NativeInputQueue.java": "ee38e526e5ad29a56bfcd9adb6d8a5e11498cc7efa720a99f977e2937dfcc552",
+      "bridge/src/love2gathering/NativeProjection.java": "3c3445fa4af579a4a3b717b2f8583939fe82e62072d1c3ed3b654d62da39b9b6",
+      "bridge/src/love2gathering/PresentationGames.java": "1e1021e3803f8685f963771cdc6e25476e194041976f16029e0bd65fca0c8eb5",
+      "bridge/src/love2gathering/PriorityController.java": "d7e7556bfe3decdd0e969d1f177de82f0aab80409fb4907ac20b78a2f8b8f6b0",
+      "bridge/src/love2gathering/PromptContext.java": "d9febaecb18457fb2769defe09f48d211e00e0987b72f6ec53d2827971700094",
+      "bridge/src/love2gathering/ReplayRecorder.java": "181cdcbd9c71cf54fde7a6d8da86ce753060108d90ebe87e77032f94675fe419",
+      "bridge/src/love2gathering/RoomSeat.java": "9eb20c34d83c57bc7561db4cec684e52c3a6cecd47ad64e4d0d3dbf81e296bc6",
+      "bridge/src/love2gathering/StartingOrder.java": "86283e0d2a0050984d6f38dc68d653df80e2aa46adb24da4ece0b2e7081907cb"
+    },
+    "stage": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/bridge-client-recovery-final-b2r4zztl",
+    "watchdog": {
+      "cpuSeconds": 9.7,
+      "diskBytes": 98392156,
+      "exitCode": 0,
+      "log": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/bridge-client-recovery-final-b2r4zztl/process.log",
+      "ownedProcessIdentities": [
+        {
+          "birthTicks": 7383965,
+          "cpuTicks": 890,
+          "pid": 518934,
+          "ppid": 518869,
+          "processGroup": 518934,
+          "rssBytes": 305618944,
+          "state": "S",
+          "threads": 20
+        }
+      ],
+      "ownedProcessTerminated": true,
+      "peakRssBytes": 327442432,
+      "recovery": null,
+      "sharedServiceDiskBytes": 0,
+      "status": "pass",
+      "threadDumps": [],
+      "wallSeconds": 4.314,
+      "watchdogReason": null
+    }
+  },
+  "passed": true,
+  "results": {
+    "CardPrintingFixture": {
+      "fixture": {
+        "checks": 13,
+        "passed": true,
+        "scope": "Real initialized native two-human sessions, native moves into entitled hands and exact card projections; no custom rules, full game, HTTP catalog lookup or UI assertion"
+      },
+      "report": "/tmp/love2gathering-mechanics-recovery-regressions-x84gp2z2/CardPrintingFixture/root/bridge/tests/card-printings-native-report.json",
+      "watchdog": {
+        "cpuSeconds": 8.71,
+        "diskBytes": 7866909,
+        "exitCode": 0,
+        "log": "/tmp/love2gathering-mechanics-recovery-regressions-x84gp2z2/CardPrintingFixture/process.log",
+        "ownedProcessIdentities": [
+          {
+            "birthTicks": 7395685,
+            "cpuTicks": 820,
+            "pid": 527806,
+            "ppid": 526898,
+            "processGroup": 527806,
+            "rssBytes": 657141760,
+            "state": "S",
+            "threads": 20
+          }
+        ],
+        "ownedProcessTerminated": true,
+        "peakRssBytes": 686043136,
+        "recovery": null,
+        "sharedServiceDiskBytes": 0,
+        "status": "pass",
+        "threadDumps": [],
+        "wallSeconds": 4.225,
+        "watchdogReason": null
+      }
+    },
+    "ConcessionFixture": {
+      "fixture": {
+        "passed": true,
+        "results": [
+          {
+            "gameEnded": true,
+            "humanLost": true,
+            "passed": true,
+            "scenario": "practice-during-trigger-order",
+            "threadTerminated": true
+          },
+          {
+            "gameEnded": false,
+            "humanLost": true,
+            "passed": true,
+            "scenario": "room-other-seat-during-trigger-order",
+            "threadTerminated": true
+          },
+          {
+            "gameEnded": false,
+            "humanLost": true,
+            "passed": true,
+            "scenario": "room-queued-wake-races-real-order",
+            "threadTerminated": true
+          },
+          {
+            "outcome": "observer",
+            "passed": true,
+            "scenario": "non-seat-observer-result"
+          }
+        ],
+        "scope": "Real native simultaneous-trigger/concession processing; initial zones injected by Game.cheat, separate from production HTTP games"
+      },
+      "report": "/tmp/love2gathering-mechanics-recovery-regressions-x84gp2z2/ConcessionFixture/native/result.json",
+      "watchdog": {
+        "cpuSeconds": 9.08,
+        "diskBytes": 7867091,
+        "exitCode": 0,
+        "log": "/tmp/love2gathering-mechanics-recovery-regressions-x84gp2z2/ConcessionFixture/process.log",
+        "ownedProcessIdentities": [
+          {
+            "birthTicks": 7394756,
+            "cpuTicks": 871,
+            "pid": 527486,
+            "ppid": 526898,
+            "processGroup": 527486,
+            "rssBytes": 718577664,
+            "state": "S",
+            "threads": 20
+          }
+        ],
+        "ownedProcessTerminated": true,
+        "peakRssBytes": 721330176,
+        "recovery": null,
+        "sharedServiceDiskBytes": 0,
+        "status": "pass",
+        "threadDumps": [],
+        "wallSeconds": 4.598,
+        "watchdogReason": null
+      }
+    },
+    "NativeViewFixture": {
+      "fixture": {
+        "checks": 68,
+        "passed": true,
+        "scope": "Real native fixture with deterministic initial zones: boosted P/T/counters, sequential scry/surveil placement/order, precommit activation cancellation, native blocker restrictions, attachments and source-linked exile. No frontend interaction."
+      },
+      "report": "/tmp/love2gathering-mechanics-recovery-regressions-x84gp2z2/NativeViewFixture/root/bridge/tests/native-view-report.json",
+      "watchdog": {
+        "cpuSeconds": 9.41,
+        "diskBytes": 7867047,
+        "exitCode": 0,
+        "log": "/tmp/love2gathering-mechanics-recovery-regressions-x84gp2z2/NativeViewFixture/process.log",
+        "ownedProcessIdentities": [
+          {
+            "birthTicks": 7395220,
+            "cpuTicks": 885,
+            "pid": 527693,
+            "ppid": 526898,
+            "processGroup": 527693,
+            "rssBytes": 719724544,
+            "state": "S",
+            "threads": 22
+          }
+        ],
+        "ownedProcessTerminated": true,
+        "peakRssBytes": 723853312,
+        "recovery": null,
+        "sharedServiceDiskBytes": 0,
+        "status": "pass",
+        "threadDumps": [],
+        "wallSeconds": 4.61,
+        "watchdogReason": null
+      }
+    },
+    "PriorityFixture": {
+      "fixture": {
+        "cancelYield": {
+          "nativeActionRestored": true,
+          "passed": true,
+          "yieldCancelled": true
+        },
+        "coherentSnapshots": {
+          "coherentControlAvailability": true,
+          "consumedPromptHiddenImmediately": true,
+          "newPromptWaitsForCompleteFrame": true,
+          "passed": true
+        },
+        "combatChoice": {
+          "nativeAttackerChoiceHeld": true,
+          "passed": true,
+          "yieldCancelled": true
+        },
+        "emptyAndMana": {
+          "emptyNativePass": true,
+          "manaOnlyNativePass": true,
+          "manaSourceUntouched": true,
+          "passed": true
+        },
+        "endTurn": [
+          {
+            "emptyWindowAutoPassed": true,
+            "interruption": "new_stack",
+            "nativeStackObjects": 1,
+            "passed": true,
+            "reactionAvailable": false
+          },
+          {
+            "emptyWindowAutoPassed": false,
+            "interruption": "new_stack",
+            "nativeStackObjects": 1,
+            "passed": true,
+            "reactionAvailable": true
+          },
+          {
+            "emptyWindowAutoPassed": false,
+            "interruption": "stop",
+            "nativeStackObjects": 0,
+            "passed": true,
+            "reactionAvailable": false
+          },
+          {
+            "emptyWindowAutoPassed": true,
+            "interruption": "new_turn",
+            "nativeStackObjects": 0,
+            "passed": true,
+            "reactionAvailable": false
+          },
+          {
+            "emptyWindowAutoPassed": false,
+            "interruption": "new_turn",
+            "nativeStackObjects": 0,
+            "passed": true,
+            "reactionAvailable": true
+          }
+        ],
+        "fullControl": {
+          "manualEmptyHold": true,
+          "passed": true,
+          "safeConfigurationWake": true
+        },
+        "instantAndFlash": {
+          "nativeSpellsHeld": [
+            "Lightning Bolt",
+            "Ambush Viper"
+          ],
+          "passed": true
+        },
+        "kind": "Real native XMage priority passes, legal instant/flash opportunities, bot casts, targets and payment; deterministic initial zones/turn positions; no frontend UI",
+        "mandatoryPrompts": {
+          "endTurnRejectedDuringTarget": true,
+          "nativeManaPaymentHeld": true,
+          "nativeTargetsHeld": true,
+          "passed": true,
+          "spellReallyCast": true
+        },
+        "passed": true,
+        "stop": {
+          "acknowledgedOnce": true,
+          "emptyOpponentEndStepHeld": true,
+          "passed": true,
+          "repeatedPhaseStopsAgain": true,
+          "visibleStop": {
+            "activePlayerId": "dbd75a22-0c47-443f-b87c-865a76400ba2",
+            "autoPass": true,
+            "autoPassCount": 0,
+            "canEndTurn": true,
+            "meaningfulActionCount": 0,
+            "paused": true,
+            "pending": false,
+            "reason": "stop",
+            "status": "Stopped at End Turn",
+            "step": "END_TURN",
+            "stopPlayerId": "dbd75a22-0c47-443f-b87c-865a76400ba2",
+            "stopStep": "END_TURN",
+            "stops": {
+              "opponent": [
+                "END_TURN"
+              ],
+              "own": []
+            },
+            "turn": 1,
+            "yielding": false
+          }
+        }
+      },
+      "report": "/tmp/love2gathering-mechanics-recovery-regressions-x84gp2z2/PriorityFixture/root/bridge/tests/priority-report.json",
+      "watchdog": {
+        "cpuSeconds": 10.51,
+        "diskBytes": 7870541,
+        "exitCode": 0,
+        "log": "/tmp/love2gathering-mechanics-recovery-regressions-x84gp2z2/PriorityFixture/process.log",
+        "ownedProcessIdentities": [
+          {
+            "birthTicks": 7394226,
+            "cpuTicks": 980,
+            "pid": 527245,
+            "ppid": 526898,
+            "processGroup": 527245,
+            "rssBytes": 719740928,
+            "state": "S",
+            "threads": 21
+          }
+        ],
+        "ownedProcessTerminated": true,
+        "peakRssBytes": 723980288,
+        "recovery": null,
+        "sharedServiceDiskBytes": 0,
+        "status": "pass",
+        "threadDumps": [],
+        "wallSeconds": 5.256,
+        "watchdogReason": null
+      }
+    }
+  },
+  "runtimeJarUnchanged": true,
+  "scope": "Existing native Priority,Concession,NativeView,CardPrinting fixtures against exact current private Maven payload; all output/data/envs inside owned temporary root; no runtime publication or user match requests",
+  "sourceHashes": {
+    "bridge/tests/love2gathering/ActionabilityFixture.java": "cabc5014a0d6006d923e8e307c51416afe3911d1d783e1fdfa14e71baa621ba4",
+    "bridge/tests/love2gathering/CardPrintingFixture.java": "214c9b2128688a86af86c8a9471c32fdf2bfb94e707b618afdac9e47bc1b1cbb",
+    "bridge/tests/love2gathering/ConcessionFixture.java": "33eb322455e09bf676b08728e0cad1be03438e2b316e3436e466678973aea2c2",
+    "bridge/tests/love2gathering/NativeViewFixture.java": "700e68e87dd59eb301f229d8b920f9e184f94f460ce475ae34d43994398436df",
+    "bridge/tests/love2gathering/PriorityFixture.java": "22f8bb625d110d586c70bc655774b7bf1b371aa631d029fcfe7184e3d79cb426",
+    "bridge/tests/love2gathering/TriggerFixture.java": "07d5e8a38cfda36a146d4e033fa9f1204327b346c5dd4f77cb21b94ccc61a051"
+  }
+}

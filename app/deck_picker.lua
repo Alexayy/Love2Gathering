@@ -1,13 +1,15 @@
 local Assets=require('app.assets')
 local Layout=require('app.layout')
+local SetIcons=require('app.set_icons')
+local SupportUI=require('app.deck_support_ui')
 local UI={cache={},clock=0,pixelLimit=12*1024*1024}
 local function tile(v,deck,w,h,squareTile)
-    local cover=deck and(deck.cover or v.m:deckCoverCard(deck));if type(cover)=='string'then cover={name=cover}end
     local artW=squareTile and w-14 or h-14;local artH=squareTile and h-91 or h-14
-    local art=cover and v.m:getArt(cover,true,'art_crop',require('app.image_hints').forSize(artW,artH))
+    local art=deck and v.m:deckCoverArt(deck,require('app.image_hints').forSize(artW,artH))
+    local support=deck and SupportUI.status(v.m,deck)or{state='unknown'}
     local colors=deck and(deck.colorIdentity or deck.colors)or{}
     local commander=deck and(deck.faceCommander or(deck.commander and deck.commander[1]and deck.commander[1].name));if type(commander)=='table'then commander=commander.name end
-    local key=table.concat({Assets.rasterEpoch,tostring(art),deck and deck.id or'',deck and deck.name or'',commander or'',table.concat(colors),w,h,Layout.scale,tostring(v.r.fonts[16]),tostring(squareTile),v.r.assets.theme and v.r.assets.theme.colorSignature or''},':')
+    local key=table.concat({Assets.rasterEpoch,tostring(art),deck and deck.id or'',deck and deck.name or'',commander or'',table.concat(colors),w,h,Layout.scale,tostring(v.r.fonts[16]),tostring(squareTile),support.state,tostring(#(support.missingNames or{})),v.r.assets.theme and v.r.assets.theme.colorSignature or''},':')
     UI.clock=UI.clock+1;local cached=UI.cache[key];if cached then cached.used=UI.clock;return cached.image end
     local image=Assets.rasterize(w*Layout.scale,h*Layout.scale,function()
         love.graphics.scale(Layout.scale);v.r.assets:control(0,0,w,h,'dark')
@@ -17,6 +19,7 @@ local function tile(v,deck,w,h,squareTile)
             local scale=math.min(artW/art:getWidth(),square/art:getHeight());love.graphics.setColor(1,1,1,1)
             love.graphics.draw(art,7+(artW-art:getWidth()*scale)/2,7+(square-art:getHeight()*scale)/2,0,scale,scale);love.graphics.setScissor()
         else v.r.assets:iconSymbol('library',15,15,square-16,v.r.colors.accent)end
+        SupportUI.overlay(v.r,support,7,7,artW,square)
         local x=squareTile and 10 or square+18;local y=squareTile and square+12 or 9;local width=squareTile and w-20 or w-square-30
         v.r:strong(v.r:fit(deck and deck.name or'Choose a deck',width,16,(squareTile or h>=120)and 2 or 1),x,y,16,v.r.colors.text,width)
         if commander then v.r:text(v.r:fit(commander,width,11,1),x,h-43,11,v.r.colors.gold,width)end
@@ -53,10 +56,15 @@ local function matches(deck,state)
     for token in query:gmatch('%S+')do local found=false;for word in haystack:gmatch('%S+')do if word:sub(1,#token)==token then found=true;break end end;if not found then return false end end
     return true
 end
-local function header(v,state,key,label,count,defaultClosed,width)
+local function header(v,state,key,label,count,defaultClosed,width,setCode)
     local closed=state.collapsed[key];if closed==nil then closed=defaultClosed or false end
     local title=label..' · '..tostring(count or 0)
-    if v.S.Button(title,{W=width,H=34,Image={Image=v.r.assets:buttonImage(closed and'expand'or'collapse',title,width,34)},Tooltip=(closed and'Expand 'or'Collapse ')..label})then closed=not closed;state.collapsed[key]=closed end
+    local headerImage
+    if setCode then
+        state.setHeaders=state.setHeaders or{};local cacheKey=table.concat({key,title,setCode,tostring(closed),width,Layout.scale,Assets.rasterEpoch,tostring(v.r.fonts[16]),v.r.assets.theme and v.r.assets.theme.colorSignature or''},'|');headerImage=state.setHeaders[cacheKey]
+        if not headerImage then headerImage=Assets.rasterize(width*Layout.scale,34*Layout.scale,function()love.graphics.scale(Layout.scale);v.r.assets:control(0,0,width,34,'dark');v.r.assets:iconSymbol(closed and'expand'or'collapse',10,8,18,v.r.colors.accent);SetIcons.draw(v.r.assets,setCode,35,6,23,v.r.colors.gold,v.m.settings);v.r:strong(v.r:fit(title,width-77,16,1),66,8,16,v.r.colors.text,width-77)end);state.setHeaders[cacheKey]=headerImage;local count=0;for _ in pairs(state.setHeaders)do count=count+1 end;if count>48 then state.setHeaders={[cacheKey]=headerImage}end end
+    else headerImage=v.r.assets:buttonImage(closed and'expand'or'collapse',title,width,34)end
+    if v.S.Button(title,{W=width,H=34,Image={Image=headerImage},Tooltip=(closed and'Expand 'or'Collapse ')..label})then closed=not closed;state.collapsed[key]=closed end
     v.S.NewLine();return closed
 end
 function UI.popup(v,w,h)
@@ -66,6 +74,11 @@ function UI.popup(v,w,h)
     if S.Button('Close deck selection',{W=inner,H=28})then close(v,state);S.EndWindow();return end
     if S.Input('deck-tile-search',{Text=state.search,W=inner,H=30,Align='left',Tooltip='Search My Decks, Starter and preconstructed products'})then state.search=S.GetInputText();state.scrollReset=true;if m.searchLobbyPrecons then m:searchLobbyPrecons(state)end end
     S.NewLine()
+    if state.supportDetails then
+        local deck=state.supportDetails;S.Textf(deck.name,{W=inner-12,Color=v.r.colors.accent})
+        if S.Button('Back to deck choices',{W=inner,H=30})then state.supportDetails=nil end;S.NewLine()
+        S.BeginListBox('deck-support-details',{W=inner,H=math.max(120,height-216),AlwaysShowScrollBarY=true,ScrollStep=100});SupportUI.details(v,SupportUI.status(m,deck),inner-28);S.EndListBox();S.EndWindow();return
+    end
     if state.confirmAuxiliary then
         local pending=state.confirmAuxiliary
         S.Textf(pending.source.name..' includes planes or schemes. These auxiliary cards are not used by '..state.format..'. The archived original will stay unchanged.',{W=inner-12,Color=v.r.colors.gold});S.NewLine()
@@ -84,8 +97,10 @@ function UI.popup(v,w,h)
             local active=state.selected==deck.id or selected and selected.sourceDeckId==deck.id
             local tx,ty=S.GetCursorPos({Absolute=true});tx,ty=Window.TransformPoint(tx,ty)
             local visible=ty+th>=vy and ty<=vy+listH and tx+tw>=vx and tx<=vx+inner-18
-            if S.Button(deck.name,{W=tw,H=th,Image=visible and{Image=tile(v,deck,tw,th,true)}or nil,Invisible=not visible,Tooltip=deck.name..(precon and' · historical product; XMage validates when the match starts'or''),Active=active,Disabled=not visible or state.detailBusy})then
-                if precon then m:selectLobbyPrecon(state,deck)else state.changed(deck.id);close(v,state)end
+            local support=visible and SupportUI.status(m,deck)or{state='unknown'}
+            if S.Button(deck.name,{W=tw,H=th,Image=visible and{Image=tile(v,deck,tw,th,true)}or nil,Invisible=not visible,Tooltip=deck.name..' · '..SupportUI.label(support),Active=active,Disabled=not visible or state.detailBusy})then
+                if support.state=='unavailable'then state.supportDetails=deck
+                elseif precon then m:selectLobbyPrecon(state,deck)else state.changed(deck.id);close(v,state)end
             end
             S.PopID()
         end
@@ -101,7 +116,7 @@ function UI.popup(v,w,h)
     if not header(v,state,'preconstructed','Preconstructed',state.total or#state.precons,false,inner-20)then
         local groups,order={},{}
         for _,deck in ipairs(state.precons)do local name=deck.expansion or deck.setName or deck.set or'Other products';if not groups[name]then groups[name]={};order[#order+1]=name end;groups[name][#groups[name]+1]=deck end
-        for _,name in ipairs(order)do if not header(v,state,'set:'..name,name,#groups[name],true,inner-20)then grid(groups[name],true)end end
+        for _,name in ipairs(order)do if not header(v,state,'set:'..name,name,#groups[name],true,inner-20,groups[name][1].set)then grid(groups[name],true)end end
         if state.busy or state.timer then S.Text('Loading preconstructed decks…',{Color=v.r.colors.muted})
         elseif state.error then S.Textf(state.error,{W=inner-24,Color=v.r.colors.red});if S.Button('Retry deck search',{W=200,H=28})then m:queryLobbyPrecons(state,true)end
         elseif#order==0 then S.Text('No matching preconstructed products',{Color=v.r.colors.muted})end

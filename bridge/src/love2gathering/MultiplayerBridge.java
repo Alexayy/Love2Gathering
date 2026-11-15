@@ -115,7 +115,7 @@ final class MultiplayerBridge {
     static EngineBridge.Session game(String id) { EngineBridge.Session game = GAMES.get(id); if (game == null) throw new IllegalArgumentException("Unknown room game"); return game; }
     static DraftSession draft(String id) { DraftSession draft = DRAFTS.get(id); if (draft == null) throw new IllegalArgumentException("Unknown draft"); return draft; }
     static Map<String,Object> capabilities() {
-        return EngineBridge.map("protocol", 1, "coordinatorAuthentication", "bearer", "formats", Arrays.asList("Modern", "Standard", "Pioneer", "Commander", "Limited"),
+        return EngineBridge.map("protocol", 1, "coordinatorAuthentication", "bearer", "formats", NativeCapabilities.supportedFormats(),"formatDetails",NativeCapabilities.formats(),"engineRevision",NativeCapabilities.ENGINE_REVISION,
                 "games", Arrays.asList(EngineBridge.map("format", "Commander", "minPlayers", 2, "maxPlayers", new CommanderFreeForAllType().getMaxPlayers()),
                         EngineBridge.map("format", "Limited", "minPlayers", 2, "maxPlayers", new FreeForAllType().getMaxPlayers()),
                         EngineBridge.map("format", "Constructed", "minPlayers", 2, "maxPlayers", new TwoPlayerDuelType().getMaxPlayers())),

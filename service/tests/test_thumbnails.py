@@ -213,7 +213,7 @@ class ThumbnailHTTPTests(unittest.TestCase):
                 with urlopen(base+selected,timeout=3)as response:self.assertEqual(response.read(),data)
                 with urlopen(base+selected,timeout=3)as response:self.assertEqual(response.read(),data)
                 self.assertEqual(len(calls),1)
-                with urlopen(base+'/health',timeout=3)as response:self.assertEqual(json.load(response)['apiVersion'],14)
+                with urlopen(base+'/health',timeout=3)as response:self.assertEqual(json.load(response)['apiVersion'],15)
             finally:
                 release.set();server.shutdown();server.server_close();thread.join(3);handler.close_managers();self.assertFalse(thread.is_alive())
 

@@ -30,6 +30,11 @@ function Board.color(r,player)
     if player and player.human then return r.colors.accent end
     return player and palette[(tonumber(player.seat)or 0)%#palette+1]or r.colors.purple
 end
+function Board.damageActor(r,cards,event)
+    -- Damage event.playerId belongs to the damaged player/permanent controller.
+    -- Attribute the outline only to an observed native source controller.
+    return(cards[event.sourceId]or(r.oldBoardCards or{})[event.sourceId]or{}).controllerId
+end
 function Board.index(game)
     local cards,players,attached,curses={},{},{},{}
     for _,p in ipairs(list(game and game.players))do
@@ -57,6 +62,19 @@ end
 function Board.prepare(r)
     r.boardCards,r.boardPlayers,r.boardAttached,r.boardCurses=Board.index(r.model.game)
     r.playerRects={};r.boardLinks={}
+    r.boardCommanders={}
+    for _,player in pairs(r.boardPlayers)do for _,commander in ipairs(list(player.commanders))do
+        if commander.id then r.boardCommanders[commander.id]=commander end
+    end end
+end
+function Board.cardStatus(r,card)
+    local game=r.model.game or{};local prompt=r.model.prompt and r.model:prompt()
+    local combat=prompt and prompt.combat
+    if combat and combat.blockerId==card.id then return{label='CHOOSE ATTACKER',confirmed=false}end
+    for _,group in ipairs(list((game.combat or{}).groups))do for _,blocker in ipairs(list(group.blockerIds))do
+        if blocker==card.id then return{label=group.declarationConfirmed==true and'BLOCK CONFIRMED'or'BLOCK ASSIGNED',confirmed=group.declarationConfirmed==true}end
+    end end
+    if card.attacking and combat and combat.role=='attackers'then return{label='ATTACK SELECTED',confirmed=false}end
 end
 function Board.priority(r,p,x,y,w,height)
     local game=r.model.game or{};local holder=game.priorityPlayerId
@@ -154,7 +172,7 @@ function Board.update(r,dt)
     if r.oldBoardLife then
         for key,p in pairs(players)do
             local old=r.oldBoardLife[key]
-            if old and p.life and p.life~=old then add(r,{kind=p.life>old and'life_gain'or'life_loss',targetId=key,amount=p.life-old})end
+            if old and p.life and p.life~=old then add(r,{kind=p.life>old and'life_gain'or'life_loss',targetId=key,ownerId=key,amount=p.life-old})end
         end
         local grave={};for _,p in pairs(players)do for _,card in ipairs(list(p.graveyard))do grave[card.id]=true end end
         for key,old in pairs(r.oldBoardCards or{})do if grave[key]and not(r.oldBoardGrave or{})[key]then add(r,{kind='death',targetId=key,card=old});deathTargets[key]=true end end
@@ -178,7 +196,7 @@ function Board.update(r,dt)
                 add(r,{kind='death',targetId=event.targetId,card=(r.oldBoardCards or{})[event.targetId]or cards[event.targetId]});deathTargets[event.targetId]=true
             end
             if r.oldBoardLife and(event.type=='damage'or event.type=='dies'or event.type=='destroy')then
-                add(r,{kind=event.type=='damage'and'damage'or'death',sourceId=event.sourceId,targetId=event.targetId,amount=event.amount,card=cards[event.targetId]})
+                add(r,{kind=event.type=='damage'and'damage'or'death',sourceId=event.sourceId,targetId=event.targetId,ownerId=Board.damageActor(r,cards,event),amount=event.amount,card=cards[event.targetId]})
                 if event.type=='damage'and event.combat==true and(tonumber(event.amount)or 0)>0 then
                     -- XMage selects first/double-strike participants and actual damage.
                     -- Only a source that dealt damage lunges; no inferred retaliation.
@@ -228,7 +246,7 @@ function Board.flush(r)
         local target=point(Board.anchor(r,e.targetId))
         local at=target or from
         if at then
-            e.age=-(e.delay or 0);e.duration=(e.kind=='life_gain'or e.kind=='life_loss')and 1.7 or .65;e.x=at.x;e.y=at.y;e.from=from;e.target=target
+            e.age=-(e.delay or 0);e.duration=(e.kind=='life_gain'or e.kind=='life_loss')and 1.7 or(e.kind=='damage'and 1.25 or .65);e.x=at.x;e.y=at.y;e.from=from;e.target=target
             r.boardEffects[#r.boardEffects+1]=e
             if e.age>=0 then particles(r,e)end
         end
@@ -295,10 +313,19 @@ function Board.foreground(r)
         if e.age>=0 then
         local alpha=math.max(0,1-e.age/e.duration);local t=e.age/e.duration
         if e.kind=='life_gain'or e.kind=='life_loss'then
-            local c=e.kind=='life_gain'and r.colors.accent or r.colors.red
-            tint(c,alpha);r:strong((e.amount>0 and'+'or'')..tostring(e.amount),e.x-45,e.y-25-(moving and t*48 or 0),28,{c[1],c[2],c[3],alpha},90,'center')
+            local c=e.kind=='life_gain'and{.25,.95,.40}or r.colors.red
+            local edge=Board.color(r,e.ownerId or e.targetId);edge={edge[1],edge[2],edge[3],alpha}
+            local text=(e.amount>0 and'+'or'')..tostring(e.amount);local x,y=e.x-65,e.y-40-(moving and t*48 or 0)
+            if r.outlinedStrong then r:outlinedStrong(text,x,y,44,{c[1],c[2],c[3],alpha},edge,130)
+            else r:strong(text,x,y,44,{c[1],c[2],c[3],alpha},130,'center')end
         elseif e.kind=='damage'then
-            line(r,e.from,e.target or{x=e.x,y=e.y},r.colors.red,false)
+            local edge=e.ownerId and Board.color(r,e.ownerId)or r.colors.muted
+            line(r,e.from,e.target or{x=e.x,y=e.y},r.colors.red,false,edge)
+            if(tonumber(e.amount)or 0)>0 then
+                local c=r.colors.red;local x,y=e.x-58,e.y+6-(moving and t*30 or 0)
+                if r.outlinedStrong then r:outlinedStrong('−'..tostring(e.amount),x,y,36,{c[1],c[2],c[3],alpha},{edge[1],edge[2],edge[3],alpha},116)
+                else r:strong('−'..tostring(e.amount),x,y,36,c,116,'center')end
+            end
         elseif e.kind=='death'then
             tint(r.colors.red,alpha);love.graphics.setLineWidth(2)
             for i=1,7 do local a=i*math.pi*2/7;local d=8+(moving and t*42 or 0);love.graphics.rectangle('line',e.x+math.cos(a)*d,e.y+math.sin(a)*d,9*(1-t),13*(1-t),2,2)end

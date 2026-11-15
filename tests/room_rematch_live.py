@@ -36,7 +36,7 @@ def main():
         assert origin.hostname in ('127.0.0.1', 'localhost') and origin.port and origin.port >= 17400, 'Use explicitly isolated loopback services'
     deadline = time.monotonic() + args.timeout
     checks, clients, games, summaries = [], [], [], []
-    report = {'passed': False, 'scope': 'Real native Modern room games with two humans through the desktop gateway: native opening choices/private hands, opposite native concessions, host rematch with the same connections/seats/decks, authorization/stale-game fences, and actual completed host win/loss history from SQLite recordings. No fixture game state, direct native access, or coordinator credentials.'}
+    report = {'passed': False, 'scope': 'Real native Modern room games with two humans through the desktop gateway: native opening choices/private hands, opposite native concessions, rematch request/other-human consent with the same connections/seats/decks, authorization/stale-game fences, and actual completed host win/loss history from SQLite recordings. No fixture game state, direct native access, or coordinator credentials.'}
 
     def check(value, label):
         assert value, label
@@ -155,14 +155,16 @@ def main():
         first_states = reach_main(first_id)
         check(True, 'First real two-human native game reaches main with private seven-card hands and full decks')
         check(not command(clients[0])['room']['canRematch'] and rejected(clients[0], 'rematch', {}, 409), 'Running native game cannot be rematched')
-        check(rejected(clients[1], 'rematch', {}, 403), 'Guest cannot request a host rematch')
+        check(rejected(clients[1], 'rematch', {}, 409), 'A guest cannot rematch a running native game')
         ended = finish(clients[1], first_id, clients[0])
         check(ended['room']['canRematch'], 'Nonactive human concession produces an authoritative winner and enables host rematch')
-        check(not command(clients[1])['room']['canRematch'] and rejected(clients[1], 'rematch', {}, 403), 'Completed native game still grants rematch only to the host')
+        check(command(clients[1])['room']['canRematch'], 'Both completed native human perspectives can request a rematch')
         first_replay = ended['game']['replayId']
         first_history = history(first_replay, 'win')
         check({player['name'] for player in first_history['players']} == {'Rematch Host', 'Rematch Guest'} and all(player['deck']['name'] == deck['name'] and player['deck']['format'] == 'Modern' for player, deck in zip(sorted(first_history['players'], key=lambda player: not player['local']), decks)), 'Host win history preserves both native participant names and their exact deck summaries')
-        catalog_ready();command(clients[0], 'rematch', {})
+        catalog_ready();request=command(clients[0], 'rematch', {})['room']['rematchRequest']
+        offered=command(clients[1]);check(offered['room']['rematchRequest']['requesterName']=='Rematch Host' and offered['game']['gameId']==first_id,'The opponent sees a rematch request before the game is replaced')
+        command(clients[1], 'rematch-response', {'requestId':request['id'],'accept':True})
         second = poll(clients[0], lambda state: state['room']['phase'] == 'playing' and (state.get('game') or {}).get('gameId') and state['game']['gameId'] != first_id, 'Native rematch did not create a different game')
         second_id = second['game']['gameId'];games.append(second_id)
         check(second['participantId'] == clients[0]['seat'] and command(clients[1])['participantId'] == clients[1]['seat'], 'Rematch retains both original human connections and stable seat identities')

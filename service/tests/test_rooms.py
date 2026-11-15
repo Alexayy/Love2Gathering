@@ -204,20 +204,79 @@ class RoomTests(unittest.TestCase):
         with self.assertRaises(HTTPError): self.client(self.a, created, '/bots', {'count': 100})
         self.assertEqual(self.a.engine.games, {})
 
-    def test_constructed_rematch_requires_host_and_finished_native_game(self):
+    def test_commander_damage_option_defaults_validates_and_reaches_native_start(self):
+        self.assertTrue(self.create()['room']['config']['commanderDamage'])
+        for value in ('false', 0, None, {}):
+            with self.subTest(value=value), self.assertRaises(HTTPError):
+                self.a.request('/client/rooms', {'format': 'Commander', 'commanderDamage': value})
+        created = self.a.request('/client/rooms', {'format': 'Commander', 'maxPlayers': 2, 'commanderDamage': False})
+        self.assertFalse(created['room']['config']['commanderDamage'])
+        self.client(self.a, created, '/bots', {'count': 1})
+        self.client(self.a, created, '/deck', {'deck': {'name': 'House rule deck', 'format': 'Commander', 'main': [{'name': 'Forest', 'count': 99}]}})
+        self.client(self.a, created, '/ready', {'ready': True})
+        self.client(self.a, created, '/start', {})
+        state = self.wait_phase(created, 'playing')
+        sent = [body for _, path, body in self.a.engine.calls if path == '/multiplayer/start'][-1]
+        self.assertFalse(sent['commanderDamage'])
+        self.a.engine.games[state['game']['gameId']]['running'] = False
+        self.client(self.a, created, '/rematch', {})
+        self.wait_phase(created, 'playing')
+        self.assertFalse([body for _, path, body in self.a.engine.calls if path == '/multiplayer/start'][-1]['commanderDamage'])
+
+    def test_constructed_rematch_requires_finished_game_and_other_human_consent(self):
         created, joined, state = self.ready_game()
         old_game = state['game']['gameId']
         with self.assertRaises(HTTPError): self.client(self.a, created, '/rematch', {})
         self.a.engine.games[old_game]['running'] = False
         self.assertTrue(self.client(self.a, created)['room']['canRematch'])
-        with self.assertRaises(HTTPError) as error: self.client(self.b, joined, '/rematch', {})
-        self.assertEqual(error.exception.code, 403)
-        self.client(self.a, created, '/rematch', {})
+        requested = self.client(self.b, joined, '/rematch', {})
+        request = requested['room']['rematchRequest']
+        self.assertEqual(request['requesterId'], joined['participantId'])
+        self.assertEqual(self.client(self.a, created)['game']['gameId'], old_game)
+        self.assertEqual(self.client(self.a, created)['room']['rematchRequest']['id'], request['id'])
+        self.client(self.a, created, '/rematch-response', {'requestId': request['id'], 'accept': True})
         after = self.wait_phase(created, 'playing')
         self.assertNotEqual(old_game, after['game']['gameId'])
         self.assertNotIn(old_game, self.a.engine.games)
         self.assertEqual(len(after['room']['members']), 2)
         with self.assertRaises(HTTPError): self.client(self.b, joined, '/game/action', {'expectedGameId': old_game, 'type': 'concede'})
+
+    def test_rematch_decline_cancel_and_stale_response_do_not_replace_a_game(self):
+        created, joined, state = self.ready_game();old = state['game']['gameId']
+        self.a.engine.games[old]['running'] = False
+        requested = self.client(self.a, created, '/rematch', {})['room']['rematchRequest']
+        with self.assertRaises(HTTPError): self.client(self.a, created, '/rematch-response', {'requestId': requested['id'], 'accept': True})
+        with self.assertRaises(HTTPError): self.client(self.b, joined, '/rematch-response', {'requestId': 'old-request', 'accept': True})
+        with self.assertRaises(HTTPError): self.client(self.b, joined, '/rematch-response', {'requestId': requested['id'], 'accept': 'true'})
+        self.client(self.b, joined, '/rematch-response', {'requestId': requested['id'], 'accept': False})
+        self.assertIsNone(self.client(self.a, created)['room']['rematchRequest'])
+        self.assertIn(old, self.a.engine.games)
+        fresh = self.client(self.b, joined, '/rematch', {})['room']['rematchRequest']
+        self.assertNotEqual(fresh['id'], requested['id'])
+        with self.assertRaises(HTTPError): self.client(self.a, created, '/rematch-response', {'requestId': requested['id'], 'accept': True})
+        with self.assertRaises(HTTPError): self.client(self.a, created, '/rematch-cancel', {'requestId': fresh['id']})
+        self.client(self.b, joined, '/rematch-cancel', {'requestId': fresh['id']})
+        self.assertIn(old, self.a.engine.games)
+
+    def test_rematch_requires_every_human_and_expired_request_never_restarts(self):
+        created = self.create(maximum=3);first = self.join(created);second = self.join(created)
+        for gateway, connection in ((self.a, created), (self.b, first), (self.b, second)):
+            self.client(gateway, connection, '/deck', {'deck': {'name': 'Consent fixture', 'format': 'Commander', 'main': [{'name': 'Forest', 'count': 99}]}})
+            self.client(gateway, connection, '/ready', {'ready': True})
+        self.client(self.a, created, '/start', {})
+        old = self.wait_phase(created, 'playing')['game']['gameId'];self.a.engine.games[old]['running'] = False
+        requested = self.client(self.a, created, '/rematch', {})['room']['rematchRequest']
+        partial = self.client(self.b, first, '/rematch-response', {'requestId': requested['id'], 'accept': True})
+        self.assertEqual(partial['room']['phase'], 'playing');self.assertIn(old, self.a.engine.games)
+        self.assertEqual(set(partial['room']['rematchRequest']['approvedSeatIds']), {created['participantId'], first['participantId']})
+        room = self.a.registry.rooms[created['room']['id']]
+        with room.lock: room.rematch_request['deadline'] = time.monotonic() - 1
+        self.assertIsNone(self.client(self.b, second)['room']['rematchRequest'])
+        with self.assertRaises(HTTPError): self.client(self.b, second, '/rematch-response', {'requestId': requested['id'], 'accept': True})
+        self.assertIn(old, self.a.engine.games)
+        fresh = self.client(self.a, created, '/rematch', {})['room']['rematchRequest']
+        for connection in (first, second): self.client(self.b, connection, '/rematch-response', {'requestId': fresh['id'], 'accept': True})
+        self.assertNotEqual(self.wait_phase(created, 'playing')['game']['gameId'], old)
 
     def test_native_capacities_and_draft_profile_validation(self):
         caps = self.a.request('/client/capabilities')

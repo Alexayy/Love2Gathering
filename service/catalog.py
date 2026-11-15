@@ -13,9 +13,9 @@ import time
 from gallery_catalog import GalleryCatalog
 from tokens import TokenCatalog
 from query_cache import QueryCache, cached_query
+from formats import FORMATS, INDEXED_FORMATS, profile as format_profile, clause as format_clause
 
 SCHEMA_VERSION = "7"
-FORMATS = {"modern", "standard", "pioneer", "commander"}
 
 
 class CatalogConnection(sqlite3.Connection):
@@ -179,7 +179,7 @@ class Catalog(GalleryCatalog,TokenCatalog):
             metadata = {"schema": SCHEMA_VERSION, "source_size": str(stat.st_size),
                         "source_mtime": str(stat.st_mtime_ns), "source_name": self.source.name}
             connection.executemany("INSERT INTO metadata VALUES (?,?)", metadata.items())
-            for fmt in FORMATS:
+            for fmt in INDEXED_FORMATS:
                 connection.execute(f"CREATE INDEX cards_{fmt} ON cards({fmt})")
             connection.commit()
             count = connection.execute("SELECT count(*) FROM cards").fetchone()[0]
@@ -198,9 +198,8 @@ class Catalog(GalleryCatalog,TokenCatalog):
             clauses.append("search LIKE ? ESCAPE '\\'")
             params.append("%" + token.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%")
         if format_name:
-            if format_name not in FORMATS:
-                raise ValueError("Unsupported format")
-            clauses.append(f"{format_name} IN ('legal','restricted')")
+            condition=format_clause(format_name)
+            if condition:clauses.append(condition)
         if color_mode not in ("legacy", "any", "exact"):
             raise ValueError("Color mode must be legacy, any or exact")
         if color:
@@ -254,7 +253,10 @@ class Catalog(GalleryCatalog,TokenCatalog):
                 for card in cards:
                     printing = connection.execute("SELECT * FROM card_sets WHERE card_id=? AND set_code=? ORDER BY collector_number LIMIT 1", (card["id"], set_code.casefold())).fetchone()
                     self._printing(card, printing)
-        return {"cards": cards, "total": total, "limit": limit, "offset": offset}
+        result={"cards": cards, "total": total, "limit": limit, "offset": offset}
+        if format_name:
+            selected=format_profile(format_name);result.update(formatId=selected['id'],snapshotLegalityChecked=selected['snapshotKey']is not None,snapshotFilterAvailable=selected['snapshotKey']is not None,nativeValidationRequired=True)
+        return result
 
     @staticmethod
     def _printing(card, printing):
@@ -274,9 +276,8 @@ class Catalog(GalleryCatalog,TokenCatalog):
 
     @cached_query
     def sets(self, format_name=""):
-        if format_name and format_name not in FORMATS:
-            raise ValueError("Unsupported format")
-        where = f" WHERE cards.{format_name} IN ('legal','restricted')" if format_name else ""
+        condition=format_clause(format_name,'cards.')if format_name else None
+        where = ' WHERE '+condition if condition else ''
         with self.connect() as connection:
             rows = connection.execute("SELECT s.set_code AS code, s.set_name AS name, count(DISTINCT s.card_id) AS count FROM card_sets s JOIN cards ON cards.id=s.card_id" + where + " GROUP BY s.set_code ORDER BY s.set_name COLLATE NOCASE")
             return [dict(row) for row in rows]

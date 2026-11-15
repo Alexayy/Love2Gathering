@@ -1,1 +1,1 @@
-{"passed":true,"checks":10,"scope":"Real initialized native two-human sessions and entitled card projections; no runtime card/rule mutation, full game, HTTP catalog lookup or UI assertion"}
+{"passed":true,"checks":13,"scope":"Real initialized native two-human sessions, native moves into entitled hands and exact card projections; no custom rules, full game, HTTP catalog lookup or UI assertion"}

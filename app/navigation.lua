@@ -74,8 +74,9 @@ function Navigation.build(v,w,h)
         local b=L.dynamic;local width=math.max(90,b.w-2*(L.compact and 80 or 108)-24)
         if width>=90 then
             v:window('navbar-deck-context',b.x,b.y,width,54,nil,{Border=0,BgColor={0,0,0,0},AutoSizeContent=false,AllowFocus=true})
-            if S.Input('deck-name',{Text=m.editDeck.name,W=width,H=29,Align='left',Tooltip=m.editDeck.name..'\nLegal cards for your format. Double-click or drag to add.'})then m.editDeck.name=S.GetInputText();m.dirty=true end
-            S.PushFont(v.r.fonts[11]);S.Text(v.r:fit(width<260 and'Double-click / drag to add'or'Legal cards for your format · double-click or drag to add',width,11,1),{Color=v.r.colors.muted});S.PopFont();S.EndWindow()
+            local hint=m.catalogSearchHint and m:catalogSearchHint()or'Double-click or drag to add.'
+            if S.Input('deck-name',{Text=m.editDeck.name,W=width,H=29,Align='left',Tooltip=m.editDeck.name..'\n'..hint})then m.editDeck.name=S.GetInputText();m.dirty=true end
+            S.PushFont(v.r.fonts[11]);S.Text(v.r:fit(hint,width,11,1),{Color=v.r.colors.muted});S.PopFont();S.EndWindow()
         end
     end
     if not v.brandMenu then return end

@@ -147,6 +147,12 @@ check('JSON null prompt never creates an action',function()
     expect(#calls==0,'answer sent without active prompt')
 end)
 
+check('an ended native game never exposes its retained last prompt',function()
+    local model=Model.new();model:setGame({gameId='finished',running=false,revision=1,prompt={id=99,type='ask',choices={{id='old',responseType='string'}}}})
+    expect(model:prompt()==nil,'terminal snapshot exposed a stale native choice')
+    local before=#calls;model:answer('string','old');expect(#calls==before,'terminal choice submitted an action')
+end)
+
 check('saved false settings override true defaults',function()
     local model=Model.new()
     responders['catalog GET /health']=function()return {ready=true,index={state='ready'}}end
@@ -177,15 +183,19 @@ check('practice rematch preserves its original deck payload and resets native pr
     call.callback({gameId='rematched',running=true,prompt={id=5,type='ask',choices={}}})
     expect(model:prompt()and not model.gameBusy and not model.actionBusy,'old prompt/busy state survived rematch')
     expect(not model:rematch(),'running match allowed another rematch')
+    model.game.running=false;model.storageLocationBlocked=true
+    local before=#calls;expect(not model:canRematch()and not model:rematch()and#calls==before,'prepared storage relocation started another recording in the paused catalog')
 end)
 
-check('room rematch is host-authorized and main menu preserves the private connection',function()
+check('either human can request room rematch and main menu preserves the private connection',function()
     local model=Model.new();model.game={running=false};model.roomConnectionId='private-local-connection';model.roomParticipantId='guest'
     model.room={phase='playing',hostId='host',config={kind='constructed'},canRematch=true}
-    expect(not model:canRematch(),'guest could rematch')
-    model.roomParticipantId='host';local endpoint
+    expect(model:canRematch(),'guest could not request consent for a rematch')
+    local endpoint
     function model:roomMutation(path)endpoint=path;return true end
-    expect(model:rematch()and endpoint=='/rematch','host did not use its authenticated room')
+    expect(model:rematch()and endpoint=='/rematch','guest did not use its authenticated room')
+    model.room.rematchRequest={id='pending',requesterId='guest'}
+    expect(not model:canRematch(),'a pending rematch offer allowed another request')
     model:goMain();expect(model.page=='decks'and model.roomConnectionId=='private-local-connection','main menu closed or lost the room')
     model.replay={};expect(not model:canRematch(),'playback allowed rematch')
 end)

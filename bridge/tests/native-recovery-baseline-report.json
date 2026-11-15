@@ -1,0 +1,228 @@
+{
+  "fixture": {
+    "checks": [
+      {
+        "message": "Native Serenity cast pays its actual seven-mana cost",
+        "passed": true
+      },
+      {
+        "message": "Native Serenity enter trigger reaches stack after mixed-zone target selection",
+        "passed": true
+      },
+      {
+        "message": "Native Serenity exiles all three chosen battlefield/graveyard targets",
+        "passed": true
+      },
+      {
+        "message": "Serenity native choice and bridge projection complete within five seconds",
+        "passed": true
+      },
+      {
+        "message": "Owned delayed native publication reaches visible question before response opening",
+        "passed": true
+      },
+      {
+        "message": "Actual owned loopback action route accepts the validated response",
+        "passed": true
+      },
+      {
+        "message": "Validated answer acknowledgement does not wait for delayed native response opening",
+        "passed": false
+      }
+    ],
+    "failure": "java.lang.AssertionError: Validated answer acknowledgement does not wait for delayed native response opening",
+    "measurements": {
+      "acknowledgementMs": 1548,
+      "serenityMs": 120
+    },
+    "passed": false
+  },
+  "jar": "/tmp/love2gathering-mechanics-recovery-baseline-xkwcyzqv/xmage-bridge.jar",
+  "jarSha256": "c920aacc2c56250648af085ad49effe8e9a82e5c1da44bbcda724247ab44c9ae",
+  "queuedUndo": {
+    "fixture": {
+      "checks": [
+        {
+          "message": "Native first equip accepts Giada as offered target",
+          "passed": true
+        },
+        {
+          "message": "Native resolved Greaves is attached to Giada",
+          "passed": true
+        },
+        {
+          "message": "Native priority offers the equipped Greaves object for individual activation",
+          "passed": true
+        },
+        {
+          "message": "Native equip offers Angel of Jubilation and excludes currently shrouded Giada",
+          "passed": true
+        },
+        {
+          "message": "Un offered shrouded target cannot consume equip prompt",
+          "passed": true
+        },
+        {
+          "message": "Actual offered Angel UUID moves Greaves off Giada onto Angel",
+          "passed": true
+        },
+        {
+          "message": "Native Serenity cast pays its actual seven-mana cost",
+          "passed": true
+        },
+        {
+          "message": "Native Serenity enter trigger reaches stack after mixed-zone target selection",
+          "passed": true
+        },
+        {
+          "message": "Native Serenity exiles all three chosen battlefield/graveyard targets",
+          "passed": true
+        },
+        {
+          "message": "Serenity native choice and bridge projection complete within five seconds",
+          "passed": true
+        },
+        {
+          "message": "Native mana action creates an actual reversible tap and black mana",
+          "passed": true
+        },
+        {
+          "message": "Only actual native bookmark offers undo choice",
+          "passed": true
+        },
+        {
+          "message": "GAME-thread native undo restores both mana and untapped land",
+          "passed": true
+        },
+        {
+          "message": "Missing native bookmark cannot be fabricated or consumed by undo",
+          "passed": true
+        },
+        {
+          "message": "Installed native card resource registry is bounded, revisioned and preserves split fallback contract",
+          "passed": true
+        },
+        {
+          "message": "Actual compatible installed native validators extend supported formats",
+          "passed": true
+        },
+        {
+          "message": "Formats needing unavailable special game setup are not falsely offered",
+          "passed": true
+        },
+        {
+          "message": "Selected extra format resolves to actual installed native validator",
+          "passed": true
+        },
+        {
+          "message": "Existing actual native bot draft support exposes native seat bounds",
+          "passed": true
+        },
+        {
+          "message": "Owned delayed native publication reaches visible question before response opening",
+          "passed": true
+        },
+        {
+          "message": "Actual owned loopback action route accepts the validated response",
+          "passed": true
+        },
+        {
+          "message": "Validated answer acknowledgement does not wait for delayed native response opening",
+          "passed": true
+        },
+        {
+          "message": "Transport reports pending delivery while authoritative native question is still opening",
+          "passed": true
+        },
+        {
+          "message": "Only the acknowledged current native question advances after its real response window opens",
+          "passed": true
+        },
+        {
+          "message": "Owned delayed native publication reaches visible question before response opening",
+          "passed": true
+        },
+        {
+          "message": "Actual owned loopback action route accepts the validated response",
+          "passed": true
+        },
+        {
+          "message": "Validated answer acknowledgement does not wait for delayed native response opening",
+          "passed": true
+        },
+        {
+          "message": "Transport reports pending delivery while authoritative native question is still opening",
+          "passed": true
+        },
+        {
+          "message": "Old queued input cannot answer or restore over a newer native prompt generation",
+          "passed": true
+        },
+        {
+          "message": "Only the acknowledged current native question advances after its real response window opens",
+          "passed": true
+        },
+        {
+          "message": "Asynchronous delivery error restores only unchanged exact prompt with unique one-toast identity",
+          "passed": true
+        },
+        {
+          "message": "Actual queued failure persists as compatible transport log rather than a new replay event type",
+          "passed": true
+        },
+        {
+          "message": "Queued undo regression reaches actual native question before response opening",
+          "passed": true
+        },
+        {
+          "message": "Queued undo regression starts from a real native reversible mana bookmark",
+          "passed": true
+        },
+        {
+          "message": "Rejected stale queued undo does not arm a later native answer for rollback",
+          "passed": false
+        }
+      ],
+      "failure": "java.lang.AssertionError: Rejected stale queued undo does not arm a later native answer for rollback",
+      "measurements": {
+        "acknowledgementMs": 3,
+        "serenityMs": 62,
+        "staleAcknowledgementMs": 2
+      },
+      "passed": false
+    },
+    "jarSha256": "f3ec8e4294f0b32ec156dbbc753c928bf3cdbce823325aef447a687b366f7a6c",
+    "ownedProcessTerminated": true,
+    "report": "/tmp/love2gathering-mechanics-native-recovery-oouj7vuj/report.json",
+    "scope": "Follow-up queue review: actual native reversible mana bookmark and delayed response opening; stale queued undo wrongly left bookmark armed for a later answer. Owned isolated process only.",
+    "status": "expected-fail"
+  },
+  "scope": "Actual owned loopback /session/action on unmodified prior bridge. Native Serenity cast/ETB3 mixed-zone targets already pass; injected1.5s native-publication delay demonstrates old synchronous response-opening delay. No actual user match touched.",
+  "status": "expected-fail",
+  "watchdog": {
+    "cpuSeconds": 9.49,
+    "diskBytes": 100248,
+    "exitCode": 1,
+    "log": "/tmp/love2gathering-mechanics-recovery-baseline-http-zsvqdi3y/native/process.log",
+    "ownedProcessIdentities": [
+      {
+        "birthTicks": 7306213,
+        "cpuTicks": 948,
+        "pid": 504651,
+        "ppid": 504650,
+        "processGroup": 504651,
+        "rssBytes": 719814656,
+        "state": "S",
+        "threads": 25
+      }
+    ],
+    "ownedProcessTerminated": true,
+    "peakRssBytes": 720404480,
+    "recovery": null,
+    "sharedServiceDiskBytes": 0,
+    "status": "fail",
+    "threadDumps": [],
+    "wallSeconds": 6.082,
+    "watchdogReason": null
+  }
+}

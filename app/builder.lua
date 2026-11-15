@@ -99,6 +99,7 @@ function Builder.build(v,w,h)
     local RichText=require('app.richtext')
     local C=v.r.colors or palette
     local S,m=v.S,v.m;local deck=m.editDeck;if not deck then return end
+    local formats=m.playFormats and m:playFormats()or formats
     local l=Builder.layout(w,h);m:setSearchLimit(l.pageSize)
     local content=l.search.w-24
     v:window('builder-search',l.search.x,l.search.y,l.search.w,l.search.h)
@@ -130,7 +131,7 @@ function Builder.build(v,w,h)
     end
     space(v,6)
     local total=Model.count(deck,'main')+Model.count(deck,'commander')
-    S.Text(total..(deck.format=='Commander' and '/100 cards' or ' main / 60 minimum')..' · '..Model.count(deck,'sideboard')..' sideboard',{Color=C.muted})
+    S.Text(total..(deck.format=='Commander' and '/100 cards' or ' main cards')..' · '..Model.count(deck,'sideboard')..' sideboard',{Color=C.muted})
     space(v,6)
     local validateW=math.floor((dw-48)*.46);local previewW=dw-48-validateW
     if iconButton(v,'Validate','check',validateW,32)then m:validateDeck()end;S.SameLine()
@@ -146,7 +147,7 @@ function Builder.build(v,w,h)
     if m.lastBuilderError then S.Textf('Addition refused: '..m.lastBuilderError,{W=list.w-24,Color=C.gold})end
     local validation=m.validation
     if validation then
-        S.Text(validation.saveAllowed and (validation.draft and 'INCOMPLETE DRAFT' or 'CONSTRUCTION CHECK PASSED') or 'DECK NEEDS CORRECTIONS',{Color=validation.saveAllowed and C.accent or C.red})
+        S.Text(validation.saveAllowed and(validation.snapshotLegalityChecked==false and'XMAGE VALIDATION REQUIRED'or validation.draft and'INCOMPLETE DRAFT'or'CONSTRUCTION CHECK PASSED')or'DECK NEEDS CORRECTIONS',{Color=validation.saveAllowed and C.accent or C.red})
         for _,issue in ipairs(validation.errors or {})do S.Textf(issue.message,{W=list.w-24,Color=C.red})end
         for _,issue in ipairs(validation.warnings or {})do S.Textf(issue.message,{W=list.w-24,Color=C.gold})end
         S.Separator()
@@ -189,7 +190,9 @@ function Builder.build(v,w,h)
             if m.showCardPrintings and iconButton(v,'Choose edition / art','gallery',pw,34)then m:showCardPrintings(card,m.selectedSection)end
             if iconButton(v,'Inspect full card','search',pw,32)then m:selectBuilderArtwork(preview);m.inspectCard=card end
             RichText.slab(v,'preview-oracle',card.oracle_text or card.rules or '',pw,{size=14,color=C.text})
-            if card.legalities and card.legalities[deck.format:lower()]~='legal' then S.Textf('Not legal in '..deck.format..'. Saving will require removing this card.',{W=pw,Color=C.gold})end
+            local legality=card.legalities and card.legalities[deck.format:lower()]
+            if legality=='banned'or legality=='not_legal'then S.Textf('The snapshot marks this card as not legal in '..deck.format..'.',{W=pw,Color=C.gold})
+            elseif legality=='restricted'then S.Textf('Restricted in '..deck.format..' · quantities are checked when saving and by XMage.',{W=pw,Color=C.gold})end
         end
         S.EndWindow()
     end
@@ -210,7 +213,7 @@ function Builder.draw(r,w,h)
     end
     if not m.catalogHealth.ready then
         r:text('Preparing card catalog…',l.grid.x,l.grid.y+20,18,C.muted,l.grid.w)
-    elseif #m.cards==0 then r:text(m.searchBusy and 'Searching…' or m.searchError and('Search unavailable · '..m.searchError)or 'No legal cards match these filters.',l.grid.x,l.grid.y+20,16,C.muted,l.grid.w)end
+    elseif #m.cards==0 then r:text(m.searchBusy and'Searching…'or m.searchError and('Search unavailable · '..m.searchError)or'No cards match these filters.',l.grid.x,l.grid.y+20,16,C.muted,l.grid.w)end
     local y=h-43;local step=m.searchLimit
     r:button('‹ Previous',l.grid.x,y,112,32,function()if m.offset>0 then m.offset=math.max(0,m.offset-step);m:searchCards()end end)
     r:button('Next ›',l.grid.x+l.grid.w-96,y,96,32,function()if m.offset+step<m.total then m.offset=m.offset+step;m:searchCards()end end)

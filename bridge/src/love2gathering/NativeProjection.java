@@ -68,6 +68,34 @@ final class NativeProjection {
     }
     static String id(UUID value){return EngineBridge.Session.str(value);}
     static List<String> ids(Collection<UUID> values){return values.stream().map(NativeProjection::id).collect(Collectors.toList());}
+    static List<Map<String,Object>> commanders(EngineBridge.Session session,mage.players.Player player){
+        Game game=session.game;List<Map<String,Object>> rows=new ArrayList<>();
+        mage.watchers.common.CommanderPlaysCountWatcher plays=game.getState().getWatcher(mage.watchers.common.CommanderPlaysCountWatcher.class);
+        CommanderHistoryWatcher history=game.getState().getWatcher(CommanderHistoryWatcher.class);
+        for(UUID commanderId:game.getCommandersIds(player,CommanderCardType.COMMANDER_OR_OATHBREAKER,false)){
+            Card card=game.getCard(commanderId);if(card==null)continue;
+            Map<String,Object> tax=null;
+            if(card.getSpellAbility()!=null){
+                // The native card owns tax exceptions (e.g. Liesa's life cost).
+                // This detached ability is display-only and never cast/paid.
+                mage.abilities.SpellAbility probe=card.getSpellAbility().copy();probe.getManaCostsToPay().clear();probe.getCosts().clear();
+                card.commanderCost(game,null,probe);
+                tax=map("manaCost",probe.getManaCostsToPay().getText(),"otherCosts",probe.getCosts().stream().map(cost->EngineBridge.clean(cost.getText())).collect(Collectors.toList()));
+            }
+            rows.add(map("id",id(commanderId),"name",card.getName(),"card",session.card(card,true),"commandZonePlays",plays==null?0:plays.getPlaysCount(commanderId),"deaths",history==null?0:history.count(commanderId),"additionalTax",tax));
+        }
+        return rows;
+    }
+    static List<Map<String,Object>> commanderDamageReceived(EngineBridge.Session session,mage.players.Player victim){
+        Game game=session.game;List<Map<String,Object>> rows=new ArrayList<>();
+        for(mage.players.Player owner:game.getPlayers().values())for(UUID commanderId:game.getCommandersIds(owner,CommanderCardType.COMMANDER_OR_OATHBREAKER,false)){
+            mage.watchers.common.CommanderInfoWatcher watcher=game.getState().getWatcher(mage.watchers.common.CommanderInfoWatcher.class,commanderId);
+            int damage=watcher==null?0:watcher.getDamageToPlayer().getOrDefault(victim.getId(),0);
+            Card card=game.getCard(commanderId);if(card==null)continue;
+            rows.add(map("commanderId",id(commanderId),"ownerId",id(owner.getId()),"name",card.getName(),"amount",damage));
+        }
+        return rows;
+    }
     static Map<String,Object> combat(EngineBridge.Session session) {
         Game game=session.game;List<Map<String,Object>> groups=new ArrayList<>();
         for(CombatGroup group:game.getCombat().getGroups())for(UUID attackerId:group.getAttackers()) {

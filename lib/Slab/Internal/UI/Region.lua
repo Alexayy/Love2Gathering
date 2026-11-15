@@ -321,11 +321,13 @@ function Region.Begin(id, options)
 		instance.ContentW = 0
 	end
 
-	if HotInstance == instance and (not Contains(instance, instance.MouseX, instance.MouseY) or options.IsObstructed) then
+	if HotInstance == instance and (instance.IgnoreScroll or not Contains(instance, instance.MouseX, instance.MouseY) or options.IsObstructed) then
 		HotInstance = nil
 	end
 
-	if not options.IsObstructed then
+	-- Single-line input regions scroll their caret programmatically. They must
+	-- not take wheel ownership from the enclosing form or list beneath them.
+	if not options.IsObstructed and not instance.IgnoreScroll then
 		if (
 			Contains(instance, instance.MouseX, instance.MouseY) or
 			(instance.HoverScrollX or instance.HoverScrollY)

@@ -29,6 +29,7 @@ import mage.players.*;
 import mage.players.net.UserData;
 import mage.players.net.SkipPrioritySteps;
 import mage.util.Copier;
+import mage.util.CardUtil;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +44,7 @@ public final class EngineBridge {
     static final Gson JSON = new GsonBuilder().serializeNulls().disableHtmlEscaping().create();
     static JsonObject cardMap;
     static volatile Session current;
+    static final String INSTANCE_ID=UUID.randomUUID().toString();
 
     public static void main(String[] args) throws Exception {
         org.apache.log4j.BasicConfigurator.configure();
@@ -71,7 +73,11 @@ public final class EngineBridge {
             if (path.startsWith("/multiplayer/") || path.startsWith("/draft/")) {
                 result = MultiplayerBridge.request(exchange, path, method);
             } else if ("/health".equals(path)) {
-                result = map("ok", true, "engine", "XMage", "version", "1.4.63", "implementedCards", cardMap.size(),"recordingError",ReplayRecorder.errors(),"storageRelocationProtocol",1);
+                result = map("ok", true, "engine", "XMage", "version", "1.4.63", "implementedCards", cardMap.size(),"recordingError",ReplayRecorder.errors(),"storageRelocationProtocol",1,"instanceId",INSTANCE_ID,"engineRevision",NativeCapabilities.ENGINE_REVISION);
+            } else if("/capabilities/cards".equals(path)&&"GET".equals(method)){
+                result=NativeCapabilities.cards();
+            } else if("/capabilities".equals(path)&&"GET".equals(method)){
+                result=MultiplayerBridge.capabilities();
             } else if ("/session/start".equals(path) && "POST".equals(method)) {
                 JsonObject body = readBody(exchange);
                 synchronized (EngineBridge.class) {
@@ -225,8 +231,11 @@ public final class EngineBridge {
         final BlockingQueue<List<String>> triggerAnswers = new ArrayBlockingQueue<>(1);
         final Queue<UUID> pendingConcedes = new ConcurrentLinkedQueue<>();
         final Object answerLock=new Object();
+        final NativeInputQueue inputQueue=new NativeInputQueue(this);
+        volatile long nativePromptId;
         volatile Map<String, Object> snapshot = map("running", true, "status", "Starting XMage", "players", Collections.emptyList(), "log", Collections.emptyList());
         volatile Map<String, Object> prompt;
+        volatile Integer undoBookmark;
         volatile boolean running = true;
         volatile boolean manualTriggers;
         volatile String error;
@@ -279,15 +288,7 @@ public final class EngineBridge {
             }
             roomSeatId = primary.seatId;
             recordingPort = recordingPort(body, room, primary.seatId);
-            DeckValidator validator;
-            switch (format.toLowerCase(Locale.ROOT)) {
-                case "modern": validator = new mage.deck.Modern(); break;
-                case "standard": validator = new mage.deck.Standard(); break;
-                case "pioneer": validator = new mage.deck.Pioneer(); break;
-                case "commander": validator = new mage.deck.Commander(); break;
-                case "limited": validator = new mage.deck.Limited(); break;
-                default: throw new IllegalArgumentException("Choose Modern, Standard, Pioneer, Commander or Limited");
-            }
+            DeckValidator validator=NativeCapabilities.validator(format);
             boolean commander = format.equalsIgnoreCase("Commander"), limited = format.equalsIgnoreCase("Limited");
             int count = seatConfigs.size();
             if (count > 2 && !commander && !limited) throw new IllegalArgumentException(room ? "More than two players require Commander or Limited" : "Multiple bots require Commander");
@@ -297,8 +298,10 @@ public final class EngineBridge {
                 multiplayer.setNumPlayers(count); game = multiplayer;
             } else if (limited && count > 2) game = new LimitedFreeForAll(count, new LondonMulligan(1), this::spellResolved,lifecycle);
             else game = commander ? new PresentationGames.Commander(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(1), 40, 7, this::spellResolved,lifecycle)
-                    : new PresentationGames.Duel(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(0), limited ? 40 : 60, 20, 7, this::spellResolved,lifecycle);
+                    : new PresentationGames.Duel(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(0), validator.getDeckMinSize(), 20, 7, this::spellResolved,lifecycle);
             GameOptions options = new GameOptions(); options.rollbackTurnsAllowed = false; game.setGameOptions(options);
+            if(body.has("commanderDamage")&&(!body.get("commanderDamage").isJsonPrimitive()||!body.getAsJsonPrimitive("commanderDamage").isBoolean()))throw new IllegalArgumentException("Commander damage must be true or false");
+            if(game instanceof GameCommanderImpl)((GameCommanderImpl)game).setCheckCommanderDamage(!body.has("commanderDamage")||body.get("commanderDamage").getAsBoolean());
             MatchOptions matchOptions = new MatchOptions(room ? "Room match" : "Local practice", game.getGameType().getName(), false);
             matchOptions.setDeckType(validator.getName()); matchOptions.setWinsNeeded(1); matchOptions.setFreeMulligans(commander || count > 2 ? 1 : 0);
             match = commander ? count > 2 ? new CommanderFreeForAllMatch(matchOptions) : new CommanderDuelMatch(matchOptions)
@@ -336,6 +339,7 @@ public final class EngineBridge {
                 if (perspective != this) { perspective.bots.addAll(bots); perspective.botSources.addAll(botSources); }
                 perspective.bot = seatPlayers.stream().filter(player -> !player.getId().equals(perspective.human.getId())).findFirst().orElse(null);
             }
+            game.getState().addWatcher(new CommanderHistoryWatcher());
             game.getState().addWatcher(new NativeLogWatcher(this));
             game.addPlayerQueryEventListener(event -> { Session perspective = humans.get(event.getPlayerId()); if (perspective != null) perspective.query(event); });
             game.addTableEventListener(event -> {
@@ -364,7 +368,7 @@ public final class EngineBridge {
         }
         void configureHuman(RoomSeat seat) {
             manualTriggers = bool(seat.settings, "manualTriggers", false); if (!seat.priority.entrySet().isEmpty()) priority.configure(seat.priority);
-            UserData data = UserData.getDefaultUserDataView(); data.setAutoOrderTrigger(false); data.setConfirmEmptyManaPool(false);
+            UserData data = UserData.getDefaultUserDataView(); data.setAutoOrderTrigger(false); data.setConfirmEmptyManaPool(false);data.setAutoTargetLevel(0);
             for (SkipPrioritySteps steps : Arrays.asList(data.getUserSkipPrioritySteps().getYourTurn(), data.getUserSkipPrioritySteps().getOpponentTurn())) {
                 steps.setUpkeep(true); steps.setDraw(true); steps.setMain1(true); steps.setBeforeCombat(true); steps.setEndOfCombat(true); steps.setMain2(true); steps.setEndOfTurn(true);
             }
@@ -449,6 +453,7 @@ public final class EngineBridge {
                 } finally {
                     for (Session view : perspectives) {
                         view.running = false; view.prompt = null; view.publish();
+                        view.inputQueue.close();
                         if (view.recorder != null) view.recorder.finish(stopRequested ? "aborted" : view.error != null ? "failed" : "completed", view.result(), view.error);
                     }
                 }
@@ -466,6 +471,7 @@ public final class EngineBridge {
             if (gameThread != null) gameThread.interrupt();
             // Cancellation is input only; the single GAME thread ends execution.
             for (Player player : seatPlayers) player.abort();
+            for(Session view:perspectives)view.inputQueue.close();
             if (gameThread != null && gameThread != Thread.currentThread()) try { gameThread.join(3000); } catch (InterruptedException ex) { Thread.currentThread().interrupt(); }
             for (Session view : perspectives) if (view.recorder != null) {
                 if (gameThread == null) view.recorder.finish("aborted", map("reason", "Stopped before game start"), null);
@@ -525,7 +531,7 @@ public final class EngineBridge {
             // A cleared answer must disappear immediately. Conversely, a new
             // prompt cannot accompany the previous board before GAME publishes
             // its complete projection. Published prompt maps are immutable.
-            Map<String,Object> visible = projectedPrompt == waiting ? waiting : null;
+            Map<String,Object> visible = projectedPrompt == waiting || inputQueue.recoveredPrompt==waiting ? waiting : null;
             if(owner.stopRequested||owner.practiceConcedeRequested)visible=null;
             Map<String,Object> controls = priority.view(visible);
             if (visible != null && Boolean.TRUE.equals(visible.get("priority")) && !Boolean.TRUE.equals(controls.get("canEndTurn"))) {
@@ -533,6 +539,7 @@ public final class EngineBridge {
             }
             Map<String,Object> result=new LinkedHashMap<>(projected);
             result.put("execution",executionState());
+            result.put("inputDelivery",inputQueue.view());
             if(owner.stopRequested)result.put("running",executionAlive());
             if(recorder!=null)result.putAll(recorder.state());
             result.put("prompt", visible);
@@ -754,6 +761,7 @@ public final class EngineBridge {
             if (event.getQueryType() == PlayerQueryEvent.QueryType.PERSONAL_MESSAGE) { addLog(clean(event.getMessage())); publish(); return; }
             long started=System.currentTimeMillis();owner.decisionStartedAt=started;owner.decisionPlayerId=human.getId();
             Map<String, Object> p = map("id", ids.incrementAndGet(), "playerId",str(human.getId()),"startedAt",started,"type", event.getQueryType().name().toLowerCase(Locale.ROOT), "message", clean(event.getMessage()), "min", event.getMin(), "max", event.getMax(), "required", event.isRequired());
+            nativePromptId=((Number)p.get("id")).longValue();
             List<Map<String, Object>> choices = new ArrayList<>();
             Set<String> targets = new LinkedHashSet<>();
             if (event.getTargets() != null) for (UUID id : event.getTargets()) addObjectChoice(choices, targets, id);
@@ -796,6 +804,15 @@ public final class EngineBridge {
             if (event.getMessages() != null) {
                 p.put("message", event.getOptions() != null ? clean(String.valueOf(event.getOptions().getOrDefault("header", "Distribute amounts"))) : "Distribute amounts");
                 p.put("amountMessages", event.getMessages().stream().map(m -> map("message", clean(m.message), "label", clean(m.message), "min", m.min, "max", m.max, "defaultValue", m.defaultValue)).collect(Collectors.toList()));
+                @SuppressWarnings("unchecked") List<Map<String,Object>> rows=(List<Map<String,Object>>)p.get("amountMessages");
+                for(int i=0;i<rows.size();i++)rows.get(i).put("nativeIndex",i+1);
+                Map<String,Object> damage=human.combatDamageContext;
+                if(damage!=null){
+                    @SuppressWarnings("unchecked") List<Map<String,Object>> details=(List<Map<String,Object>>)damage.get("rows");
+                    if(details.size()==rows.size())for(int i=0;i<rows.size();i++)rows.get(i).putAll(details.get(i));
+                    p.put("damageSourceId",damage.get("sourceId"));p.put("damageSourceCard",damage.get("sourceCard"));
+                    p.put("combat",map("role",damage.get("role"),"sourceId",damage.get("sourceId"),"nativeAmountOrder",true));
+                }
                 if(event.getOptions()!=null && Boolean.TRUE.equals(event.getOptions().get("canCancel"))) choices.add(map("id","cancel","label","Cancel","responseType","boolean","value",false));
             }
             switch (event.getQueryType()) {
@@ -847,12 +864,18 @@ public final class EngineBridge {
                     && (event.getOptions() == null || !event.getOptions().containsKey("possibleAttackers") && !event.getOptions().containsKey("possibleBlockers"));
             if (priorityPrompt) { p.put("priority", true); p.put("priorityReason", priority.reason()); }
             else priority.choice();
+            if((priorityPrompt||event.getQueryType()==PlayerQueryEvent.QueryType.PLAY_MANA)&&human.getStoredBookmark()>=0){
+                Map<String,Object> undo=map("id","undo","label","Undo last mana action","responseType","undo","value",true);
+                p.put("undoChoice",undo);p.put("nativeUndoBookmark",human.getStoredBookmark());choices.add(undo);
+            }
             Map<String,Object> cancel=choices.stream().filter(c2->"cancel-choice".equals(c2.get("id"))||"done".equals(c2.get("id"))&&event.getQueryType()==PlayerQueryEvent.QueryType.PICK_TARGET&&!event.isRequired()||"done".equals(c2.get("id"))&&event.getQueryType()==PlayerQueryEvent.QueryType.PLAY_MANA).findFirst().orElse(null);
             p.put("cancelChoice",cancel);
             p.put("cancelScope",human.pendingActionKind!=null?"pending_action":"choice");
             if(human.pendingActionKind!=null)p.put("pendingAction",map("kind",human.pendingActionKind,"sourceId",str(human.pendingActionSource),"canCancel",cancel!=null));
             promptContext.enrich(p,event,choices);
-            if(nativeOptions!=null&&nativeOptions.containsKey("possibleBlockers")){
+            if(nativeOptions!=null&&nativeOptions.containsKey("possibleAttackers")){
+                p.put("combat",map("role","attackers","selectedAttackerIds",NativeProjection.ids(game.getCombat().getAttackers()),"declarationConfirmed",false));
+            }else if(nativeOptions!=null&&nativeOptions.containsKey("possibleBlockers")){
                 Set<UUID> blockers=new LinkedHashSet<>();addIds(blockers,nativeOptions.get("possibleBlockers"));
                 try{p.put("combat",map("role","blockers","declarationConfirmed",false,"message","Blocks are not confirmed yet. Select blockers, then choose Done to confirm before activating abilities.","blockers",NativeProjection.blockerOptions(this,blockers)));}
                 catch(RuntimeException previewError){
@@ -943,6 +966,11 @@ public final class EngineBridge {
             if (!action.has("promptId") || action.get("promptId").getAsLong() != ((Number)p.get("id")).longValue()) throw new IllegalArgumentException("This choice is outdated; refresh the game");
             JsonElement value = action.get("value");
             if (value == null) throw new IllegalArgumentException("Missing answer value");
+            if("undo".equals(type)){
+                if(!(p.get("nativeUndoBookmark") instanceof Number)||!value.isJsonPrimitive()||!value.getAsJsonPrimitive().isBoolean()||!value.getAsBoolean())throw new IllegalArgumentException("Native undo is not offered here");
+                int bookmark=((Number)p.get("nativeUndoBookmark")).intValue();
+                inputQueue.submit(p,()->{recordAction(action.deepCopy());prompt=null;},()->human.setUndoResponse(bookmark));return;
+            }
             if ("order".equals(type)) {
                 if (!"order".equals(p.get("type"))) throw new IllegalArgumentException("Not a trigger ordering prompt");
                 List<String> order = new ArrayList<>();
@@ -990,13 +1018,10 @@ public final class EngineBridge {
                 case "mana": { ManaType answer = ManaType.valueOf(value.getAsString().toUpperCase(Locale.ROOT)); deliver = () -> human.setResponseManaType(human.getId(), answer); break; }
                 default: throw new IllegalArgumentException("Unknown response type: " + type);
             }
-            recordAction(action.deepCopy());
-            // Prompt ID prevents double-clicks from spilling into the next engine question.
-            priority.acknowledge(p);
-            prompt = null;
-            try { deliver.run(); }
-            catch (RuntimeException ex) { if(prompt==null) prompt=p; throw ex; }
+            inputQueue.submit(p,()->{recordAction(action.deepCopy());priority.acknowledge(p);prompt=null;},deliver);
         }
+        void restoreInputPrompt(Map<String,Object> original){synchronized(answerLock){if(prompt==null&&nativePromptId==((Number)original.get("id")).longValue()&&running&&!owner.stopRequested&&!human.hasLeft())prompt=original;}}
+        void recordInputDelivery(String delivery,long promptId,String status){Session saved=recordingView();if(saved!=null&&!saved.recorder.isFinished())try{saved.recorder.event("log",map("type","input_delivery","category","transport","text","Native input "+status,"id",delivery,"actorId",str(human.getId()),"promptId",saved==this?promptId:null,"status",status));}catch(RuntimeException failed){saved.projectionError="Input delivery status recording failed: "+failed;}}
         static int exactInteger(JsonElement value){
             if(!value.isJsonPrimitive()||!value.getAsJsonPrimitive().isNumber())throw new IllegalArgumentException("An integer answer is required");
             try{return value.getAsBigDecimal().intValueExact();}
@@ -1046,6 +1071,7 @@ public final class EngineBridge {
                     ManaPool mana = p.getManaPool();
                     players.add(map("id", p.getId().toString(), "seat", seatOf(p), "seatId", seatIdOf(p), "name", p.getName(), "isHuman", p instanceof BridgeHuman, "isLocal", p.getId().equals(human.getId()), "human", p.getId().equals(human.getId()), "profile", playerProfile(p), "avatarCard", avatarCard(p), "playmatCard",playmatCard(p), "life", p.getLife(), "hand", p.getId().equals(human.getId()) ? cards(p.getHand().getCards(game)) : Collections.emptyList(), "handCount", p.getHand().size(), "libraryCount", p.getLibrary().size(), "libraryTop",NativeProjection.libraryTop(this,p),"libraryTopVisibility",NativeProjection.libraryTopVisibility(this,p), "sideboardCount",p.getSideboard().size(), "graveyard", cards(p.getGraveyard().getCards(game)), "battlefield", battlefield, "command", cards(game.getCommanderCardsFromCommandZone(p, CommanderCardType.ANY)), "exile",cards(game.getExile().getAllCards(game).stream().filter(c -> p.getId().equals(c.getOwnerId())).collect(Collectors.toList())),"mana", map("W",mana.getWhite(),"U",mana.getBlue(),"B",mana.getBlack(),"R",mana.getRed(),"G",mana.getGreen(),"C",mana.getColorless()), "won",p.hasWon(),"lost",p.hasLost(),"attachmentIds",NativeProjection.ids(p.getAttachments())));
                 }
+                for(Map<String,Object> view:players){Player nativePlayer=game.getPlayer(UUID.fromString(view.get("id").toString()));view.put("commanders",NativeProjection.commanders(this,nativePlayer));view.put("commanderDamageReceived",NativeProjection.commanderDamageReceived(this,nativePlayer));}
                 List<Map<String,Object>> stack = new ArrayList<>();
                 int stackIndex=0;for (StackObject o : game.getStack()) {Map<String,Object> view=stackCard(o);view.put("stackIndex",stackIndex);view.put("isTop",stackIndex++==0);stack.add(view);}
                 List<Map<String,Object>> exiled = cards(game.getExile().getAllCards(game));
@@ -1063,7 +1089,9 @@ public final class EngineBridge {
                 Map<String,Object> next = map("running", running, "format", format, "playerCount", seatPlayers.size(), "error", error, "revision", ids.incrementAndGet(), "gameId", game.getId().toString(), "turn", game.getTurnNum(), "phase", game.getTurn() != null && game.getTurn().getPhase() != null ? String.valueOf(game.getTurn().getPhase().getType()) : "", "step", String.valueOf(game.getTurnStepType()), "activePlayerId", str(game.getActivePlayerId()), "priorityPlayerId", str(game.getPriorityPlayerId()), "players", players, "stack", stack, "exile", exiled,"revealed",revealed,"lookedAt",lookedAt, "prompt", prompt, "log", new ArrayList<>(log), "manualTriggers", manualTriggers);
                 next.put("logEntries",new ArrayList<>(log));next.put("logText",log.stream().map(e->e.get("text")).collect(Collectors.toList()));
                 next.put("projectionError",projectionError);
+                if(!running)next.put("result",result());
                 next.put("openingRoll",owner.openingRoll);next.put("combat",NativeProjection.combat(this));next.put("animationEvents",new ArrayList<>(animationEvents));
+                next.put("commanderDamageEnabled",game instanceof GameCommanderImpl?((GameCommanderImpl)game).isCheckCommanderDamage():null);
                 next.put("decisionPlayerId",str(owner.decisionPlayerId));next.put("decisionStartedAt",owner.decisionStartedAt==0?null:owner.decisionStartedAt);
                 next.put("priorityStartedAt",Objects.equals(owner.timedPriorityPlayerId,game.getPriorityPlayerId())?owner.priorityStartedAt:null);
                 next.put("clock",map("enabled",false,"limitSeconds",null,"remainingSeconds",null,"penalty",null));
@@ -1104,9 +1132,18 @@ public final class EngineBridge {
             if (!granted && c instanceof Card && (game.getState().getZone(c.getId())==Zone.LIBRARY||!human.getId().equals(((Card)c).getOwnerId())) && knownObject(c.getId()) == null)
                 return map("id",c.getId().toString(),"name","Hidden card","hidden",true,"manaCost","","type","","rules","","power","","toughness","");
             boolean explicitlySeen=game.getState().getRevealed().values().stream().anyMatch(list->list.contains(c.getId()))||game.getState().getLookedAt(human.getId())!=null&&game.getState().getLookedAt(human.getId()).values().stream().anyMatch(list->list.contains(c.getId()));
-            if(c instanceof Card && ((Card)c).isFaceDown(game) && !mage.util.CardUtil.canShowAsControlled((Card)c,human.getId())&&!explicitlySeen) return map("id",c.getId().toString(),"name","Face-down card","faceDown",true,"hidden",true,"manaCost","","type","","rules","","power","","toughness","");
+            if(c instanceof Card && ((Card)c).isFaceDown(game) && !mage.util.CardUtil.canShowAsControlled((Card)c,human.getId())&&!explicitlySeen){
+                Map<String,Object> hidden=map("id",c.getId().toString(),"name","Face-down card","faceDown",true,"hidden",true,"manaCost","","type","","rules","","power","","toughness","");
+                if(c instanceof Permanent){
+                    Permanent permanent=(Permanent)c;Map<String,Object> counters=new LinkedHashMap<>();permanent.getCounters(game).forEach((name,counter)->counters.put(name,counter.getCount()));
+                    hidden.put("power",permanent.getPower()==mage.MageInt.EmptyMageInt?"":Integer.toString(permanent.getPower().getValue()));hidden.put("toughness",permanent.getToughness()==mage.MageInt.EmptyMageInt?"":Integer.toString(permanent.getToughness().getValue()));
+                    hidden.put("damage",permanent.getDamage());hidden.put("tapped",permanent.isTapped());hidden.put("controllerId",str(permanent.getControllerId()));hidden.put("ownerId",str(permanent.getOwnerId()));hidden.put("counters",counters);
+                    hidden.put("attacking",permanent.isAttacking());hidden.put("blocking",game.getCombat().getBlockers().contains(permanent.getId()));
+                }
+                return hidden;
+            }
             Map<String,Object> m = map("id",c.getId().toString(),"name",c.getName(),"manaCost",c.getManaCost().getText(),"type",c.getCardType(game).toString(),"rules",c.getAbilities().stream().map(a -> clean(a.getRule())).filter(s -> !s.isEmpty()).distinct().collect(Collectors.joining("\n")),"power",c.getPower().toString(),"toughness",c.getToughness().toString(),"set",c.getExpansionSetCode(),"number",c.getCardNumber());
-            m.put("currentRules",m.get("rules"));m.put("keywords",NativeProjection.keywords(c));m.put("abilityIcons",NativeProjection.abilityIcons(c,game));
+            m.put("currentRules",m.get("rules"));m.put("keywords",NativeProjection.keywords(c));m.put("abilityIcons",NativeProjection.abilityIcons(c,game));m.put("supertypes",c.getSuperType(game).stream().map(Object::toString).collect(Collectors.toList()));
             if(c instanceof Card) { Map<String,Object> counters=new LinkedHashMap<>(); ((Card)c).getCounters(game).forEach((name,counter)->counters.put(name,counter.getCount())); m.put("counters",counters); }
             MageObject printed=c instanceof mage.game.permanent.PermanentToken?((mage.game.permanent.PermanentToken)c).getToken():game.getCard(c.getId());
             if(c instanceof mage.game.permanent.PermanentToken&&((Permanent)c).isTransformed()&&((mage.game.permanent.PermanentToken)c).getToken().getBackFace()!=null)printed=((mage.game.permanent.PermanentToken)c).getToken().getBackFace();
@@ -1116,7 +1153,7 @@ public final class EngineBridge {
                 List<String> subtypes=printed.getSubtype(null).stream().map(Object::toString).collect(Collectors.toList());
                 String type=printed.getCardType(null).stream().map(Object::toString).collect(Collectors.joining(" "));
                 m.put("printing",map("name",printed.getName(),"power",printed.getPower().toString(),"toughness",printed.getToughness().toString(),"set",printed.getExpansionSetCode(),"number",printed.getCardNumber(),
-                    "colors",colorNames(printed.getColor()),"type",type,"type_line",type+(subtypes.isEmpty()?"":" — "+String.join(" ",subtypes)),"subtypes",subtypes,"keywords",NativeProjection.keywords(printed)));
+                    "colors",colorNames(printed.getColor()),"type",type,"type_line",type+(subtypes.isEmpty()?"":" — "+String.join(" ",subtypes)),"subtypes",subtypes,"supertypes",printed.getSuperType().stream().map(Object::toString).collect(Collectors.toList()),"keywords",NativeProjection.keywords(printed)));
             }
             if(c instanceof mage.game.permanent.token.Token){
                 Card copySource=((mage.game.permanent.token.Token)c).getCopySourceCard();
@@ -1166,6 +1203,20 @@ public final class EngineBridge {
                 m.put("minBlockers",p.getMinBlockedBy());m.put("maxBlockers",p.getMaxBlockedBy());
             }
             if (c instanceof StackObject) m.put("sourceId",str(((StackObject)c).getSourceId()));
+            if(c instanceof Card&&((Card)c).isFaceDown(game)){
+                m.put("faceDown",true);
+                // This branch is reached only after the native face-down
+                // visibility guard. Keep the live object's 2/2 characteristics
+                // separate from the controller's inspection-only original.
+                if(printed!=null&&CardUtil.canShowAsControlled((Card)c,human.getId())){
+                    Map<String,Object> peek=new LinkedHashMap<>(m);
+                    peek.put("name",printed.getName());peek.put("manaCost",printed.getManaCost().getText());
+                    peek.put("rules",printed.getAbilities().stream().map(a->clean(a.getRule())).filter(s->!s.isEmpty()).distinct().collect(Collectors.joining("\n")));
+                    peek.put("type",printed.getCardType(null).toString());peek.put("power",printed.getPower().toString());peek.put("toughness",printed.getToughness().toString());
+                    peek.put("supertypes",printed.getSuperType().stream().map(Object::toString).collect(Collectors.toList()));
+                    peek.put("faceDown",false);peek.put("inspectionOnly",true);m.put("faceDownIdentity",peek);
+                }
+            }
             return m;
         }
         static List<String> colorNames(mage.ObjectColor color){
@@ -1219,11 +1270,24 @@ public final class EngineBridge {
         transient String pendingActionKind;
         transient UUID pendingActionSource;
         transient Target activeTarget;
+        transient Map<String,Object> combatDamageContext;
         transient Cards activeTargetCards;
         transient Ability activeTargetSource;
+        static final class Delivery {final long prompt;boolean accepted;Integer undoBookmark;Delivery(long prompt){this.prompt=prompt;}}
+        private final transient ThreadLocal<Delivery> deliveryPrompt=new ThreadLocal<>();
         BridgeHuman(String name, Session session) { super(name,RangeOfInfluence.ALL,1); this.session=session; this.triggerOrder=new ArrayDeque<>(); }
         BridgeHuman(BridgeHuman original) { super(original); session=original.session; triggerOrder=original.triggerOrder; }
         @Override public BridgeHuman copy() { return new BridgeHuman(this); }
+        boolean deliverNative(long id,Runnable action){Delivery expected=new Delivery(id);deliveryPrompt.set(expected);try{if(session!=null&&session.nativePromptId==id)action.run();return expected.accepted;}finally{deliveryPrompt.remove();}}
+        void setUndoResponse(int bookmark){Delivery expected=deliveryPrompt.get();if(expected==null)throw new IllegalStateException("Undo requires a fenced native delivery");expected.undoBookmark=bookmark;setResponseString("bridge-native-undo");}
+        @Override protected boolean waitResponseOpen(){boolean ready=super.waitResponseOpen();Delivery expected=deliveryPrompt.get();boolean accepted=ready&&(expected==null||session!=null&&session.nativePromptId==expected.prompt&&session.running&&!session.owner.stopRequested&&!hasLeft());if(expected!=null){expected.accepted=accepted;if(accepted&&expected.undoBookmark!=null)session.undoBookmark=expected.undoBookmark;}return accepted;}
+        @Override protected void waitForResponse(Game game){
+            super.waitForResponse(game);
+            if(real(game)&&session.undoBookmark!=null){
+                Integer bookmark=session.undoBookmark;session.undoBookmark=null;
+                if(!game.hasEnded()&&!hasLeft()&&getStoredBookmark()==bookmark)game.undo(getId());
+            }
+        }
         @Override public void lookAtCards(String title,Card card,Game game){if(session!=null)session.observeLibraryLook(Collections.singletonList(card),game);super.lookAtCards(title,card,game);}
         @Override public void lookAtCards(Ability source,String title,Cards cards,Game game){if(session!=null)session.observeLibraryLook(cards.getCards(game),game);super.lookAtCards(source,title,cards,game);}
         @Override public boolean priority(Game game) {
@@ -1239,6 +1303,12 @@ public final class EngineBridge {
             session.nativePriorityDepth++;
             try { return super.priority(game); }
             finally { session.nativePriorityDepth--; }
+        }
+        @Override public List<Integer> getMultiAmountWithIndividualConstraints(Outcome outcome,List<mage.util.MultiAmountMessage> messages,int totalMin,int totalMax,MultiAmountType type,Game game){
+            if(!real(game))return super.getMultiAmountWithIndividualConstraints(outcome,messages,totalMin,totalMax,type,game);
+            Map<String,Object> previous=combatDamageContext;
+            try{combatDamageContext=CombatPromptMetadata.identify(session,messages,type.getTitle(),type.getHeader());}catch(RuntimeException optionalMetadataError){combatDamageContext=null;}
+            try{return super.getMultiAmountWithIndividualConstraints(outcome,messages,totalMin,totalMax,type,game);}finally{combatDamageContext=previous;}
         }
         @Override public TriggeredAbility chooseTriggeredAbility(List<TriggeredAbility> abilities, Game game) { return session == null ? abilities.get(0) : session.orderTriggers(abilities, game); }
         Map<UUID,ActivatedManaAbilityImpl> usableManaAbilities(MageObject object,Game game) {

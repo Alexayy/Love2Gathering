@@ -35,7 +35,7 @@ function Settings.build(view,w,h,options)
     local function artworkSource()
         S.Image('setting-artwork-source-icon',{Image=r.assets:iconImage('image',19),W=19,H=19});S.SameLine();S.Text('Card image source',{Color=C.text})
         view:combo('setting-artwork-source',s.localArtworkOnly~=false and'Cache only'or'Download as needed',{'Cache only','Download as needed'},math.min(360,inner),function(value)s.localArtworkOnly=value=='Cache only'end)
-        if s.localArtworkOnly~=false then S.Textf('Browse images already saved on this device. Selecting a card in Builder explicitly downloads its missing image with priority. Storage → Downloads can fill the rest separately.',{W=formWidth,Color=C.muted})
+        if s.localArtworkOnly~=false then S.Textf('Browse saved images. Builder selections and live matches explicitly acquire missing images: your hand first, then your deck and basic lands. All acquired images stay cached. Storage → Downloads can fill the rest separately.',{W=formWidth,Color=C.muted})
         else S.Textf('Download missing images needed on screen and reuse them from the cache. Your selected Builder card takes priority. This does not download the whole card catalog.',{W=formWidth,Color=C.muted})end
         local variants=m.catalogHealth and m.catalogHealth.imageVariants
         if variants and variants.available==false then S.Textf('Small image variants are unavailable in this Python runtime. Original cached images still work; install Pillow or use a packaged runtime to enable them.',{W=formWidth,Color=C.gold})end

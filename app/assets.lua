@@ -5,6 +5,7 @@ local Theme=require('app.theme')
 local Fonts=require('app.fonts')
 local haveRuntime,runtime=pcall(require,'assets.kenney.runtime.manifest')
 if not haveRuntime then runtime={icons={},skyboxes={},sounds={},cursors={}} end
+runtime.icons.undo={path='assets/kenney/runtime/icons/arrow_counterclockwise.png',source='assets/kenney/kenney_board-game-icons/PNG/Default (64px)/arrow_counterclockwise.png',width=64,height=64,bounds={4,8,60,56}}
 local Assets={};Assets.__index=Assets
 local unpack=unpack or table.unpack
 local straightAlphaShader

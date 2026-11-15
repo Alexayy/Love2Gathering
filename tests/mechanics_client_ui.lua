@@ -8,7 +8,7 @@ end
 local S=require('lib.Slab');local Model=require('app.model');local Renderer=require('app.renderer');local View=require('app.view');local Preferences=require('app.preferences');local Layout=require('app.layout');local Table=require('app.table')
 local out=assert(os.getenv('L2G_MECHANICS_CLIENT_OUTPUT'));local count=tonumber(os.getenv('L2G_MECHANICS_CLIENT_COUNT'))or 10
 local variant=os.getenv('L2G_MECHANICS_CLIENT_VARIANT')or'equal';local stackCount=tonumber(os.getenv('L2G_MECHANICS_CLIENT_STACK'))or 0
-local m,r,v,p,runner,Cursor,Window,Region;local wake,clock,frame=0,0,0;local mouse={x=1,y=1};local down={};local keys={};local buttons,inputs,choices,choiceRegions={},{},{},{}
+local m,r,v,p,runner,Cursor,Window,Region;local wake,clock,frame=0,0,0;local mouse={x=1,y=1};local down={};local keys={};local buttons,inputs,choices,choiceRegions,zoneCards={},{},{},{},{}
 local checks,shots,captures,metrics={},{},{},{};local phase='warm';local frameTimes,fieldTimes,drawTimes,hitTimes={},{},{},{};local drawTotal,fieldTotal=0,0;local evidenceType='synthetic_rendering_fixture'
 local function check(ok,label)assert(ok,label);checks[#checks+1]=label end
 local function write(name,value)local f=assert(io.open(out..'/'..name,'w'));f:write(json.encode(value));f:close()end
@@ -77,8 +77,7 @@ local function scenario()
     check(zone~=nil,'Captured native battlefield exposes its exact-instance browser')
     click(zone);check(m.zoneView and#m.zoneView.cards==#field,'Captured native browser retains every controller-owned battlefield instance')
     click(inputs['zone-search']);S.OnTextInput(last.id);wait(.15)
-    local selected;local prefix='#'..#field..' '..last.name
-    for label,box in pairs(choices)do if label:find(prefix,1,true)==1 then selected=box;break end end
+    local selected=zoneCards[last.id]
     check(selected~=nil,'Actual UUID search reaches the final captured native instance')
     snapshot('native-last-instance-'..playerIndex)
     local before=#calls;local offered=m:canSelect(last.id);click(selected)
@@ -113,7 +112,7 @@ local function scenario()
   click(zone);check(m.zoneView and#m.zoneView.cards==count,'Opening the battlefield browser retains every object')
   snapshot('zone-'..count..'-'..variant)
   click(inputs['zone-search']);S.OnTextInput('token-'..count);wait(.15)
-  local selected;for label,box in pairs(choices)do if label:find('#'..count..' Rat',1,true)==1 then selected=box end end
+  local selected=zoneCards['token-'..count]
   check(selected~=nil,'Search reaches the last overlapped token by its native object identity')
   snapshot('exact-token-'..count..'-'..variant)
   local before=#calls;click(selected)
@@ -180,7 +179,9 @@ function love.load()
  love.mouse.getPosition=function()return mouse.x,mouse.y end;love.mouse.isDown=function(b)return down[b]==true end;love.keyboard.isDown=function(k)return keys[k]==true end
  m=Model.new();m.loaded=true;m.settingsLoaded=true;m.catalogHealth={ready=false};m.settings.showCardArt=false;m.settings.skybox='Off';m.settings.sfxEnabled=false;m.settings.particles=false;m.settings.animations=false;m.settings.showTooltips=true;m.settings.windowMode='Windowed';m.settings.resolution='1440x900';m.settings.uiScale=1;m.settings.renderScale=1;m.settings.vsync=false;m.settings.frameLimit=0
  r=Renderer.new(m);v=View.new(S,m,r);p=Preferences.new(m,S,r);v.preferences=p;p.appliedLoaded=true;p:apply(true)
- for _,name in ipairs({'Button','Input','TextSelectable'})do local old=S[name];S[name]=function(label,options)local result=old(label,options);(name=='Input'and inputs or name=='TextSelectable'and choices or buttons)[label]=bounds();if name=='TextSelectable'then local x,y,w,h=Region.GetBounds();choiceRegions[label]={x=x,y=y,w=w,h=h}end;return result end end
+ local scopes={};local push,pop=S.PushID,S.PopID
+ S.PushID=function(id)scopes[#scopes+1]=id;return push(id)end;S.PopID=function()scopes[#scopes]=nil;return pop()end
+ for _,name in ipairs({'Button','Input','TextSelectable'})do local old=S[name];S[name]=function(label,options)local result=old(label,options);(name=='Input'and inputs or name=='TextSelectable'and choices or buttons)[label]=bounds();if name=='TextSelectable'then local x,y,w,h=Region.GetBounds();choiceRegions[label]={x=x,y=y,w=w,h=h}end;if name=='Button'then local id=tostring(scopes[#scopes]or''):match('^zone%-card%-(.*)$');if id then zoneCards[id]=bounds()end end;return result end end
  local oldField=Table.field;Table.field=function(...)local began=love.timer.getTime();oldField(...);fieldTotal=fieldTotal+love.timer.getTime()-began end
  local oldDraw=r.drawPermanent;r.drawPermanent=function(self,...)local began=love.timer.getTime();local value=oldDraw(self,...);drawTotal=drawTotal+love.timer.getTime()-began;return value end
  runner=coroutine.create(scenario)
@@ -188,7 +189,7 @@ end
 function love.update(dt)
  clock=clock+dt;frame=frame+1;assert(clock<50,'UI fixture deadline exceeded');p:update();S.Update(dt);r:update(dt)
  if clock>=wake and coroutine.status(runner)~='dead'then local ok,err=coroutine.resume(runner);assert(ok,err)end
- buttons={};inputs={};choices={};choiceRegions={};v:build();r.uiHovered=not S.IsVoidHovered()
+ buttons={};inputs={};choices={};choiceRegions={};zoneCards={};v:build();r.uiHovered=not S.IsVoidHovered()
 end
 function love.draw()
  drawTotal=0;fieldTotal=0;local began=love.timer.getTime();p:beginFrame();r:draw();p:endScene();S.Draw({DeferOverlays=true})

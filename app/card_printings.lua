@@ -106,7 +106,9 @@ function Printings.install(Model)
  function Model:cardData(card)return self:printingData(card,baseCardData(self,card))end
  local baseCover=Model.deckCoverCard
  function Model:deckCoverCard(deck)
-  local card=baseCover(self,deck);local choice=card and selected(deck,card.name)
+  local card=baseCover(self,deck)
+  if deck and not deck.coverCard and deck.faceCommander then local name=type(deck.faceCommander)=='table'and deck.faceCommander.name or deck.faceCommander;if type(name)=='string'and name~=''then card={name=name}end end
+  local choice=card and selected(deck,card.name)
   if choice then card.selectedPrintingId=choice.printingId end
   return card
  end

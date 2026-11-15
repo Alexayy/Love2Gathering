@@ -20,7 +20,9 @@ local function option(v,choice,width)
 end
 function UI.toolbar(v,w,h)
     local S,m=v.S,v.m
-    v:window('match-toolbar',w-278,10,262,34,nil,{AllowFocus=false})
+    local prompt=m.prompt and m:prompt();local undo=not m.replay and prompt and prompt.undoChoice
+    local toolbarW=undo and 298 or 262
+    v:window('match-toolbar',w-toolbarW-16,10,toolbarW,34,nil,{AllowFocus=false})
     local buttons={
         {m.roomConnectionId and 'Room' or 'Lobby','home',function() if m.roomConnectionId then m:showRooms() else m.page='lobby' end end},
         {'Settings','settings',function() m.settingsOpen=not m.settingsOpen end},
@@ -30,6 +32,7 @@ function UI.toolbar(v,w,h)
         {'Replay library','replay',function() m:showReplays() end},
         {m.replay and 'Close replay' or 'Concede match',m.replay and 'close' or 'concede',function() if m.replay then m:closeReplay() else m.confirmConcede=true end end},
     }
+    if undo then table.insert(buttons,1,{undo.label or'Undo last mana action','undo',function()m:answerChoice(undo)end,nil,m.actionBusy or m.priorityBusy})end
     for i,item in ipairs(buttons) do if i>1 then S.SameLine() end;iconButton(v,item[1],item[2],item[3],item[4],item[5],28) end
     S.EndWindow()
     if not m.replay and m.api.status then
@@ -46,8 +49,9 @@ function UI.toolbar(v,w,h)
 end
 function UI.priority(v,w,h)
     local m,S=v.m,v.S;if m.replay or not m.game or m.game.running==false then return end
+    local prompt=m:prompt();local extra=prompt and prompt.undoChoice and 36 or 0
     local state=m.game.priority or {};local options=m:priorityOptions()
-    v:window('priority-mode',w-356,10,70,34,nil,{AllowFocus=false})
+    v:window('priority-mode',w-356-extra,10,70,34,nil,{AllowFocus=false})
     iconButton(v,options.autoPass and 'Automatic priority · click for full control' or 'Full control · click for automatic priority',options.autoPass and 'play' or 'pause',function() m:toggleAutoPass() end,not options.autoPass,m.priorityBusy,28)
     S.SameLine()
     iconButton(v,'Choose combat step stops','settings',function() v.combatStopsOpen=not v.combatStopsOpen end,v.combatStopsOpen,false,28)
@@ -243,21 +247,34 @@ end
 function UI.endMatch(v,w,h)
     local m,S=v.m,v.S;local game=m.game
     if m.replay or not game or game.running~=false then return end
-    local title='Match complete'
-    for _,player in ipairs(game.players or {})do if player.human or player.isLocal then
-        if player.won then title='Victory'elseif player.lost then title='Defeat'end;break
-    end end
-    local pw=math.min(500,w-70);v:window('match-complete',(w-pw)/2,math.max(120,h/2-100),pw,200,title)
+    local outcome=require('app.outcome').state(m);local duel=outcome and outcome.mode=='duel'
+    local title=outcome and outcome.title or game.error and game.error~=json.null and'Match interrupted'or'Match stopped'
+    local pw=math.min(500,w-70);local request=m.room and m.room.rematchRequest
+    local height=request and 268 or 204
+    v:window('match-complete',(w-pw)/2,duel and math.max(120,math.min(h-height-24,h/2+35))or math.max(120,h/2-100),pw,height,not duel and title or nil,{AutoSizeContent=false,BgColor={.025,.04,.06,.96}})
     if game.error and game.error~=json.null then S.Textf(tostring(game.error),{W=pw-34,Color=v.r.colors.gold});S.NewLine()end
     local width=pw-34;local allowed=m.canRematch and m:canRematch()or false
-    if m.roomConnectionId and not allowed then
+    if request and request.gameId==game.gameId then
+        local approved=false;for _,id in ipairs(request.approvedSeatIds or{})do if id==m.roomParticipantId then approved=true end end
+        if request.requesterId==m.roomParticipantId or approved then
+            S.Textf('Waiting for the other players to accept the rematch…',{W=width,Color=v.r.colors.gold});S.NewLine()
+            if request.requesterId==m.roomParticipantId and S.Button('Cancel rematch request',{W=width,H=38,Disabled=m.roomBusy})then m:cancelRematch(request.id)end
+        else
+            S.Textf((request.requesterName or'Player')..' is asking for a rematch',{W=width,Color=v.r.colors.accent});S.NewLine()
+            if S.Button('Accept rematch',{W=(width-12)/2,H=38,Disabled=m.roomBusy})then m:respondRematch(true,request.id)end;S.SameLine({Pad=12})
+            if S.Button('Decline',{W=(width-12)/2,H=38,Disabled=m.roomBusy})then m:respondRematch(false,request.id)end
+        end
+    elseif m.room and m.room.phase=='starting'then S.Text('Starting the rematch…',{Color=v.r.colors.gold})
+    elseif m.roomConnectionId and not allowed then
         if S.Button('Return to room',{W=width,H=38})then m:showRooms()end
-    elseif S.Button('Rematch',{W=width,H=38,Disabled=not allowed or m.gameBusy})then m:rematch()end
+    elseif S.Button(m.roomConnectionId and'Request rematch'or'Rematch',{W=width,H=44,Disabled=not allowed or m.gameBusy or m.roomBusy})then m:rematch()end
     S.NewLine()
     if S.Button('Main menu',{W=width,H=38,Disabled=m.gameBusy})then if m.goMain then m:goMain()end end
     S.EndWindow()
 end
 function UI.build(v,w,h)
+    local outcome=require('app.outcome').state(v.m)
+    if outcome and outcome.mode=='duel'then UI.endMatch(v,w,h);return end
     UI.toolbar(v,w,h);UI.priority(v,w,h);UI.log(v,w,h);UI.stack(v,w,h)
     if v.m.replay then CardChoices.build(v,w,h,nil);UI.replayControls(v,w,h) else UI.prompt(v,w,h) end
     UI.endMatch(v,w,h)

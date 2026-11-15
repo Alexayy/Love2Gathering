@@ -10,7 +10,7 @@ end
 function Model.new()
     local self=setmetatable({api=API.new(),page='decks',decks={},format='Modern',selectedDeck=nil,search='',searchFormat='All',searchColor='All',searchColors={},searchColorExact=false,searchType='',cards={},total=0,offset=0,searchTimer=0.1,
         settings=copy(defaults),catalogHealth={},engineHealth={},healthTimer=0,pollTimer=0,searchSort='Name',searchSet='All',sets={},searchLimit=12,deckSort='Name',validation=nil,
-        art={},byName={},lookupPending={},artPending=0,toasts={},botDeckId=nil,botDeckIds={},commanderPlayers=4,playerDeckId=nil,playerName='Planeswalker',game=nil,gameBusy=false,selectedSection='main',promptOrder={},orderPrompt=nil},Model)
+        art={},byName={},lookupPending={},artPending=0,toasts={},botDeckId=nil,botDeckIds={},commanderPlayers=4,commanderDamage=true,playerDeckId=nil,playerName='Planeswalker',game=nil,gameBusy=false,selectedSection='main',promptOrder={},orderPrompt=nil},Model)
     return self
 end
 function Model:toast(message,bad)
@@ -100,7 +100,7 @@ function Model:searchCards()
     self:request('catalog','GET',path,nil,function(data,err)
         if version~=self.searchVersion then return end
         self.searchBusy=false;self.searchError=err
-        if data then self.cards=data.cards or {};self.total=data.total or #self.cards;for _,card in ipairs(self.cards) do self:rememberCard(card)end end
+        if data then self.cards=data.cards or {};self.total=data.total or #self.cards;self.searchFilterInfo={formatId=data.formatId,snapshotFilterAvailable=data.snapshotFilterAvailable,snapshotLegalityChecked=data.snapshotLegalityChecked,nativeValidationRequired=data.nativeValidationRequired};for _,card in ipairs(self.cards) do self:rememberCard(card)end end
     end)
 end
 function Model:refreshSets()
@@ -122,6 +122,7 @@ function Model:setSearchLimit(limit)
 end
 function Model:cardData(card)
     if not card then return nil end
+    if card.hidden or card.faceDown then return card end
     if card.oracle_text or card.image_uris then return card end
     local name=card.name or card.displayName
     if not name then return card end
@@ -130,7 +131,7 @@ function Model:cardData(card)
         local data=copy(self.byName[name])
         -- Catalog IDs select images; native IDs select game objects. Keep both.
         data.objectId=card.id
-        for _,key in ipairs({'power','toughness','damage','counters','printing','currentRules','keywords','abilityIcons','permanent','ownerId','controllerId','token','isToken','colors','subtypes','tokenSourceId','tokenSourceName','tokenTemplate','copySourceCard','mutate','attachedToId','attachedToPlayerId','attachmentIds','linkedExile','attacking','blocking'})do
+        for _,key in ipairs({'power','toughness','damage','counters','printing','currentRules','keywords','abilityIcons','permanent','ownerId','controllerId','token','isToken','colors','subtypes','supertypes','tokenSourceId','tokenSourceName','tokenTemplate','copySourceCard','mutate','attachedToId','attachedToPlayerId','attachmentIds','linkedExile','attacking','blocking'})do
             if card[key]~=nil then data[key]=card[key]end
         end
         return data
@@ -375,7 +376,7 @@ function Model:startGame()
     if self.replay then self:closeReplay() end
     self.gameBusy=true;self.answeredPrompt=nil;self.orderPrompt=nil;self.promptOrder={};self.actionBusy=false
     if self.api.setNativeSession then self.api:setNativeSession(nil)end
-    local body={format=deck.format,playerName=self.playerName,deck=deck,settings=self.settings,priority=self:priorityOptions(),startingSeatId=self.practiceStartingSeatId or'dice',recordingPort=self.api.catalogPort or tonumber(os.getenv('LOVE2GATHERING_CATALOG_PORT')) or 17370}
+    local body={format=deck.format,playerName=self.playerName,deck=deck,settings=self.settings,commanderDamage=self.commanderDamage~=false,priority=self:priorityOptions(),startingSeatId=self.practiceStartingSeatId or'dice',recordingPort=self.api.catalogPort or tonumber(os.getenv('LOVE2GATHERING_CATALOG_PORT')) or 17370}
     body.profile=self:profileOptions();body.profile.name=body.playerName
     if count==1 then body.botDeck=bots[1].deck else body.bots=bots end
     self:request('engine','POST','/session/start',body,function(data)
@@ -387,9 +388,9 @@ function Model:startGame()
     end)
 end
 function Model:canRematch()
-    if self.replay or not self.game or self.game.running~=false or self.gameBusy then return false end
+    if self.replay or self.storageLocationBlocked or not self.game or self.game.running~=false or self.gameBusy then return false end
     if self.roomConnectionId then
-        return self.room and self.room.phase=='playing' and self.room.hostId==self.roomParticipantId and self.room.config.kind=='constructed' and self.room.canRematch==true
+        return self.room and self.room.phase=='playing' and self.room.config.kind=='constructed' and self.room.canRematch==true and not self.room.rematchRequest
     end
     return self.lastMatchRequest~=nil
 end
@@ -480,6 +481,7 @@ function Model:concede()
     end)
 end
 function Model:prompt()
+    if self.game and self.game.running==false then return nil end
     if self.replay or self.gameBusy or self.concedePending then return nil end
     if self.game and self.game.execution and(self.game.execution.stopRequested or self.game.execution.concedeRequested)then return nil end
     local p=self.game and self.game.prompt
@@ -546,4 +548,11 @@ require('app.image_packs').install(Model)
 require('app.playmats').install(Model)
 require('app.builder_colors').install(Model)
 require('app.card_printings').install(Model)
+require('app.game_art').install(Model)
+require('app.activity').install(Model)
+require('app.outcome').install(Model)
+require('app.native_capabilities').install(Model)
+require('app.bot_draft').install(Model)
+require('app.deck_support').install(Model)
+require('app.input_delivery').install(Model)
 return Model

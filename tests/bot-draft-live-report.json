@@ -1,0 +1,76 @@
+{
+  "passed": true,
+  "scope": "Real desktop gateway, one human plus seven native bot draft seats, real packs/picks, native bot Limited deck builds, submitted human pool instances, actual first-round paired games. No synthetic state, rules, direct coordinator access, or acquired assets.",
+  "acceptedHumanPicks": 45,
+  "botCount": 7,
+  "poolSizes": [
+    45,
+    45,
+    45,
+    45,
+    45,
+    45,
+    45,
+    45
+  ],
+  "firstOfferedPack": {
+    "packSize": 15,
+    "packNumber": 1,
+    "pickNumber": 1
+  },
+  "nativeGameCount": 4,
+  "nativeGameId": "96ecb1a5-8a1b-4419-a780-f1f4ef4d0e3c",
+  "botDeckSize": 40,
+  "allCreatedConnectionsClosed": true,
+  "seconds": 23.513,
+  "checks": [
+    "Installed gateway advertises native bot support and eight-seat capacity",
+    "Booster procedure is actually offered by installed engine",
+    "One human plus seven native bots fill and ready the actual private room",
+    "The human completes45 actual offered picks across three native packs",
+    "A used pick token cannot select from another pack",
+    "All seven native bots finish45-card pools and submit native-validated Limited decks",
+    "Bot public status never reveals their private pack, pool, deck or selection",
+    "Human builder receives native40-card minimum and offered basic lands",
+    "Native Limited accepts exact drafted instances plus offered basics and retains selection",
+    "All eight validated decks enable actual native pairing",
+    "Actual paired Limited game loads the submitted human40-card deck and full private hand",
+    "The actual native bot deck is playable and its hand remains hidden",
+    "Eight-seat native Swiss produces four actual first-round game pairings"
+  ],
+  "build": {
+    "kind": "staged offline Maven packaged bridge",
+    "jarSha256": "6b88b83130c7c3209068c87fd8cbb4479f509d17551f5b894d737c330619cb4a",
+    "buildManifest": ".runtime/client-recovery-bridge-build.json",
+    "engineRevision": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+    "nativeSourcesSha256": {
+      "bridge/src/love2gathering/CardPrintingProjection.java": "6bf741294903bc6823355efb67f195f5e982ace59ff9b3872c0636c736660427",
+      "bridge/src/love2gathering/CombatPromptMetadata.java": "fd81ebc721b0419702c9ce4e46bca8c9747a11548590017e13e4db84f5c8a069",
+      "bridge/src/love2gathering/CommanderHistoryWatcher.java": "c9f9919919c1345ba17cfdc81d74607a75bc8570d73cc6a5914774d19054e724",
+      "bridge/src/love2gathering/DraftSession.java": "785e34c386cfea189265735ed037fcdc3edba34a6c98a6072ae48fecddf4d044",
+      "bridge/src/love2gathering/EngineBridge.java": "bffe1d9913178359391bfe6b01051f8f1b51d79dde0d2e4db1ea4053c4ce9180",
+      "bridge/src/love2gathering/LimitedFreeForAll.java": "8f40ecb7a63347f5990893e1b4ea72f3898e7ee9c9871e25344ef77807252989",
+      "bridge/src/love2gathering/MergedProjection.java": "8ace1bcb977d613d99e6cec27ed12adaf29c0994c6d74e77ea319e6b758e7742",
+      "bridge/src/love2gathering/MultiplayerBridge.java": "e7ec3e359c74b648b2158504ce5f3f77da6a092a8f14f46f4b547e42aff6ad71",
+      "bridge/src/love2gathering/NativeCapabilities.java": "979684dcd2567b3b5a298088295b5e432a4648171aa62048538f397135cf65aa",
+      "bridge/src/love2gathering/NativeInputQueue.java": "ee38e526e5ad29a56bfcd9adb6d8a5e11498cc7efa720a99f977e2937dfcc552",
+      "bridge/src/love2gathering/NativeProjection.java": "3c3445fa4af579a4a3b717b2f8583939fe82e62072d1c3ed3b654d62da39b9b6",
+      "bridge/src/love2gathering/PresentationGames.java": "1e1021e3803f8685f963771cdc6e25476e194041976f16029e0bd65fca0c8eb5",
+      "bridge/src/love2gathering/PriorityController.java": "d7e7556bfe3decdd0e969d1f177de82f0aab80409fb4907ac20b78a2f8b8f6b0",
+      "bridge/src/love2gathering/PromptContext.java": "d9febaecb18457fb2769defe09f48d211e00e0987b72f6ec53d2827971700094",
+      "bridge/src/love2gathering/ReplayRecorder.java": "181cdcbd9c71cf54fde7a6d8da86ce753060108d90ebe87e77032f94675fe419",
+      "bridge/src/love2gathering/RoomSeat.java": "9eb20c34d83c57bc7561db4cec684e52c3a6cecd47ad64e4d0d3dbf81e296bc6",
+      "bridge/src/love2gathering/StartingOrder.java": "86283e0d2a0050984d6f38dc68d653df80e2aa46adb24da4ece0b2e7081907cb"
+    }
+  },
+  "sourceSha256": {
+    "tests/bot_draft_live.py": "5f64b886c84d509ae7e59532da4ae3e1a3e9ecf2d669aceb8738844b8343623a",
+    "service/rooms.py": "552848efaba010d24444650365609bf29b3847f7879b5eef6936bc347555853e"
+  },
+  "ownedServicesCleanup": {
+    "catalog": true,
+    "engine": true,
+    "gateway": true
+  },
+  "runDirectory": "/tmp/love2gathering-mechanics-20261115T210431Z-aced8240"
+}

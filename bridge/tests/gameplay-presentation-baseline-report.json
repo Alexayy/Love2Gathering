@@ -1,0 +1,43 @@
+{
+  "status": "expected-fail",
+  "baselineCommit": "8bf8367dc9562874b91f0566beda5fdd34961170",
+  "jar": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/bridge/target/xmage-bridge-1.0.0.jar",
+  "jarSha256": "4ccf1df13945a58835485662d55954045cdfa466320ec657d4d0ad83950e04e7",
+  "watchdog": {
+    "cpuSeconds": 8.8,
+    "diskBytes": 1666,
+    "exitCode": 1,
+    "log": "/tmp/love2gathering-mechanics-gameplay-vx94vpvt/baseline/process.log",
+    "ownedProcessIdentities": [
+      {
+        "birthTicks": 6542328,
+        "cpuTicks": 874,
+        "pid": 361756,
+        "ppid": 361701,
+        "processGroup": 361756,
+        "rssBytes": 696758272,
+        "state": "S",
+        "threads": 21
+      }
+    ],
+    "ownedProcessTerminated": true,
+    "peakRssBytes": 696758272,
+    "recovery": null,
+    "sharedServiceDiskBytes": 0,
+    "status": "fail",
+    "threadDumps": [],
+    "wallSeconds": 4.339,
+    "watchdogReason": null
+  },
+  "fixture": {
+    "passed": false,
+    "failure": "java.lang.AssertionError: Native individual-attacker prompt exposes attacker role",
+    "checks": [
+      {
+        "passed": false,
+        "message": "Native individual-attacker prompt exposes attacker role"
+      }
+    ]
+  },
+  "scope": "Retained prechange runtime lacks explicit attacker role. Native individual UUID support was already present; no claim that native attack legality was broken."
+}

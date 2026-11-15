@@ -3,8 +3,8 @@
 local json=require('lib.json');local clock=0;local scenarioName='launcher-build';local ledger={};local queue={}
 local function health(service)
  if service=='catalog'then
-  if scenarioName=='metadata-missing'then return{status='ok',ready=false,apiVersion=14,index={state='error',error='Fixture: configured local card metadata is missing'},storage={dataDirectory='/tmp/isolated-startup-fixture'}},nil,200 end
-  return{status='ok',ready=true,apiVersion=14,index={state='ready',cards=12},storage={dataDirectory='/tmp/isolated-startup-fixture'}},nil,200
+  if scenarioName=='metadata-missing'then return{status='ok',ready=false,apiVersion=15,index={state='error',error='Fixture: configured local card metadata is missing'},storage={dataDirectory='/tmp/isolated-startup-fixture'}},nil,200 end
+  return{status='ok',ready=true,apiVersion=15,index={state='ready',cards=12},storage={dataDirectory='/tmp/isolated-startup-fixture'}},nil,200
  elseif service=='engine'then
   if scenarioName=='bridge-offline'then return nil,'Fixture: bridge unavailable',503 end
   return{engine='XMage',ok=true},nil,200

@@ -1,0 +1,71 @@
+{
+  "captures": [
+    "collection-scale1.png",
+    "details-scale1.png",
+    "picker-grid-scale1.png",
+    "picker-details-scale1.png",
+    "collection-scale1.25.png",
+    "details-scale1.25.png",
+    "picker-grid-scale1.25.png",
+    "picker-details-scale1.25.png"
+  ],
+  "checks": [
+    "All425 official set mappings exist in the unchanged supplied font",
+    "Full commander tile stays inside logical viewport at scale 1",
+    "Anikthea cached full scan displays complete aspect with no crop needed at scale 1",
+    "Actual preconstructed header draws its supplied Commander Masters glyph",
+    "Unavailable card implementation status overlays the tile",
+    "Unavailable collection tile remains inspectable but its Use action is disabled",
+    "Actual details list names both unimplemented cards",
+    "Unavailable archived list remains editable for repair",
+    "Actual player-deck button opens lobby card picker",
+    "Expanded set group contains actual unavailable product button",
+    "Unavailable lobby tile opens details without selecting or closing picker",
+    "Lobby support details show exact unavailable card names",
+    "Back returns to bounded deck grid",
+    "Implemented deck still selects through normal exact source callback",
+    "Full commander tile stays inside logical viewport at scale 1.25",
+    "Anikthea cached full scan displays complete aspect with no crop needed at scale 1.25",
+    "Actual preconstructed header draws its supplied Commander Masters glyph",
+    "Unavailable card implementation status overlays the tile",
+    "Unavailable collection tile remains inspectable but its Use action is disabled",
+    "Actual details list names both unimplemented cards",
+    "Unavailable archived list remains editable for repair",
+    "Actual player-deck button opens lobby card picker",
+    "Expanded set group contains actual unavailable product button",
+    "Unavailable lobby tile opens details without selecting or closing picker",
+    "Lobby support details show exact unavailable card names",
+    "Back returns to bounded deck grid",
+    "Implemented deck still selects through normal exact source callback",
+    "Visible cover metadata is shared across frames rather than requested repeatedly"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/deck-cover?name=Anikthea%2C%20Hand%20of%20Erebos&deckId=precon-covered"
+    },
+    {
+      "method": "GET",
+      "path": "/deck-cover?name=Anikthea%2C%20Hand%20of%20Erebos&deckId=precon-missing"
+    },
+    {
+      "method": "GET",
+      "path": "/precons/precon-missing"
+    },
+    {
+      "method": "GET",
+      "path": "/deck-cover?name=Anikthea%2C%20Hand%20of%20Erebos&deckId=own"
+    }
+  ],
+  "scope": "Actual L\u00d6VE/Slab clicks, Collection and lobby popup at UI scales1/1.25. Genuine cached Anikthea normal JPEG read-only copied into isolated fixture. Controlled registry/product metadata, no native match, writes or network acquisition.",
+  "sourceSha256": {
+    "app/collection.lua": "ec6be2a4d5263b7df45337a1bb7156c21ea61a5b6a73cb7aea6e423b208dfa9b",
+    "app/collection_ui.lua": "559a8357ad02c288687b385739e29dea93d7f18ae2cb7e5bbc3dd8e2c02dee50",
+    "app/deck_picker.lua": "1d843c0ad397abb41c67f5e376090d44bbd5293defb52663aa4c131a77d8cf82",
+    "app/deck_support.lua": "631c75f956d4c1f2ffb57bbaf06bed6e62f45750b2d251eb9f29a70c6d288507",
+    "app/deck_support_ui.lua": "298a74aa3d96d3adb34e2d8cab0a22516e759b17c141dae99cd15c4298f22f5e",
+    "app/set_icons.lua": "5124a059f43b7136db61ff8a543a317757d45bc67d6b1a6ffdc1ce429216408b",
+    "assets/keyrune/sets.lua": "6e4d3bfea662fc9f15bdceffc21283571157779927c55d443c5a7b48b262fe9a",
+    "app/card_printings.lua": "a10cbcabfe608d4a49de0a798c06185beb5c322ee60edaf8efc25ec6ddfddaf7"
+  }
+}

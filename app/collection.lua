@@ -1,7 +1,10 @@
 local API=require('app.api')
 local json=require('lib.json')
 local Collection={formats={'All','Modern','Standard','Pioneer','Commander','Archive'}}
-local playable={Modern=true,Standard=true,Pioneer=true,Commander=true}
+local function playable(m,format)
+    if m.playFormats then for _,id in ipairs(m:playFormats())do if id==format then return true end end;return false end
+    return format=='Modern'or format=='Standard'or format=='Pioneer'or format=='Commander'
+end
 local function cacheTime()return love and love.timer and love.timer.getTime()or os.clock()end
 local function cachedProduct(m,key)
     local cache=m.lobbyProductCache;local entry=cache and cache.entries[key]
@@ -27,6 +30,33 @@ function Collection.sections(m)
 end
 function Collection.install(Model)
     local find,open=Model.findDeck,Model.openDeck
+    function Model:deckCoverArt(deck,options)
+        local card=deck and(deck.cover or self:deckCoverCard(deck))
+        if type(card)=='string'then card={name=card}end
+        if not card or not card.name then return nil end
+        if not(self.catalogHealth and self.catalogHealth.deckCovers)then
+            return self:getArt(card,true,'art_crop',options)or self:getArt(card,true,'normal',options)
+        end
+        local store=self.catalogHealth.storage or{};local context=table.concat({tostring(self.api.catalogPort),self.catalogHealth.catalogSource or'',store.dataDirectory or''},'|')
+        local printing=card.selectedPrintingId or(card.printingExact and card.printing_id)or''
+        local source=deck.sourceDeckId or deck.id or'';local key=table.concat({context,source,card.name,printing},'\31')
+        self.deckCoverMetadata=self.deckCoverMetadata or{};local cache=self.deckCoverMetadata;local entry=cache[key];local now=cacheTime()
+        if entry and not entry.pending and now-(entry.at or 0)>60 then cache[key]=nil;entry=nil end
+        if not entry and(self.deckCoverMetadataPending or 0)<4 then
+            entry={pending=true,at=now};cache[key]=entry;self.deckCoverMetadataPending=(self.deckCoverMetadataPending or 0)+1
+            local path='/deck-cover?name='..API.escape(card.name)..'&deckId='..API.escape(source)
+            if printing~=''then path=path..'&printing='..API.escape(printing)end
+            self:request('catalog','GET',path,nil,function(data,problem)
+                self.deckCoverMetadataPending=math.max(0,(self.deckCoverMetadataPending or 1)-1)
+                if cache[key]~=entry then return end
+                entry.pending=false;entry.at=cacheTime();entry.data=data;entry.error=problem
+            end,true)
+            local count=0;for _ in pairs(cache)do count=count+1 end
+            while count>64 do local oldest,at;for candidate,value in pairs(cache)do if candidate~=key and not value.pending and(not at or value.at<at)then oldest,at=candidate,value.at end end;if not oldest then break end;cache[oldest]=nil;count=count-1 end
+        end
+        if entry and entry.data and entry.data.card then return self:getArt(entry.data.card,true,entry.data.kind or'art_crop',options)end
+        return nil
+    end
     function Model:findDeck(id)
         local deck=find(self,id);if deck then return deck end
         for _,starter in ipairs(self.starterDecks or{})do if starter.id==id then return starter end end
@@ -101,7 +131,7 @@ function Collection.install(Model)
         local state=Collection.sections(self);state[key]=not state[key];self.uiLayoutTimer=.4
     end
     function Model:setCollectionFormat(value)
-        self.collectionFormat=value;if playable[value]then self.format=value end
+        self.collectionFormat=value;if playable(self,value)then self.format=value end
         self.preconVersion=(self.preconVersion or 0)+1;self.preconError=nil
         self.preconOffset=0;self.preconTimer=0;self.selectedDeck=nil;self.collectionScrollReset=true
     end
@@ -180,8 +210,8 @@ function Collection.install(Model)
     function Model:forkCollectionDeck(deck,format,callback,confirmed)
         if self.collectionForkBusy then return end
         local auxiliary=(deck.counts and((deck.counts.planes or 0)+(deck.counts.schemes or 0))or 0)+#(deck.planes or{})+#(deck.schemes or{})
-        if not playable[format or deck.format]or(auxiliary>0 and not confirmed)then
-            self.archiveCopy={deck=deck,format=playable[format or deck.format]and(format or deck.format)or self.format,callback=callback,auxiliary=auxiliary>0};return
+        if not playable(self,format or deck.format)or(auxiliary>0 and not confirmed)then
+            self.archiveCopy={deck=deck,format=playable(self,format or deck.format)and(format or deck.format)or self.format,callback=callback,auxiliary=auxiliary>0};return
         end
         self.collectionForkBusy=true
         local page,selection,generation,revision=self.page,self.selectedDeck,self.editGeneration or 0,self.deckRevision or 0

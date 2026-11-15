@@ -143,7 +143,7 @@ final class DraftSession {
         List<Map<String,Object>> cubeOptions=new ArrayList<>();
         cubes().forEach((code,clazz)->{try{DraftCube c=clazz.getConstructor().newInstance();cubeOptions.add(map("code",code,"name",c.getName(),"size",c.getCubeCards().size()));}catch(Exception ignored){}});
         List<Map<String,Object>> timings=Arrays.stream(DraftOptions.TimingOption.values()).filter(t->t!=DraftOptions.TimingOption.NONE).map(t->map("id",t.name(),"label",t.getName())).collect(Collectors.toList());
-        return map("profiles",profiles,"pairings",Arrays.asList(map("id","swiss","label","Swiss"),map("id","elimination","label","Single elimination")),
+        return map("supported",true,"botSupport",true,"minPlayers",type("booster","swiss").getMinPlayers(),"maxPlayers",type("booster","swiss").getMaxPlayers(),"profiles",profiles,"pairings",Arrays.asList(map("id","swiss","label","Swiss"),map("id","elimination","label","Single elimination")),
             "sets",Sets.getInstance().values().stream().filter(ExpansionSet::hasBoosters).sorted(Comparator.comparing(ExpansionSet::getName)).map(s->map("code",s.getCode(),"name",s.getName())).collect(Collectors.toList()),
             "cubes",cubeOptions,"customCube",true,"timings",timings,"basicLands",basics(),"deckProfiles",Collections.singletonList(map("id","Limited","label","Limited","minDeckSize",new Limited().getDeckMinSize())),"repositoryReady",repositoryReady);
     }

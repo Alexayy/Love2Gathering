@@ -6,9 +6,9 @@ local UI={}
 function UI.layout(w,h)
     local margin,gap=26,16;local width=w-margin*2
     local setup=math.max(360,math.min(480,width*.40))
-    return {setup={x=margin,y=158,w=setup,h=h-184},
-        seats={x=margin+setup+gap,y=158,w=width-setup-gap,h=h-184},
-        invite={x=margin,y=100,w=width,h=45}}
+    return {setup={x=margin,y=176,w=setup,h=h-202},
+        seats={x=margin+setup+gap,y=176,w=width-setup-gap,h=h-202},
+        invite={x=margin,y=100,w=width,h=58}}
 end
 local function identity(item)return type(item)=='table'and(item.id or item.code or item.value)or item end
 local function label(item)
@@ -61,8 +61,9 @@ end
 local function setup(v,width,height)
     local S,m=v.S,v.m;local setup=m.roomSetup;local caps=m.roomCapabilities or {};local game=caps.game or {};local draft=caps.draft or {}
     Shared.heading(v,'Create a private table','network',width);S.NewLine()
-    S.BeginListBox('room-create-fields',{W=width,H=height-120})
-    local inner=width-16
+    S.BeginListBox('room-create-fields',{W=width,H=height-132})
+    S.Indent(14);S.NewLine(.4)
+    local inner=width-46
     S.Text('Your name',{Color=v.r.colors.muted})
     if S.Input('room-name',{Text=setup.playerName,W=inner,H=30,Align='left'})then setup.playerName=S.GetInputText()end
     S.NewLine();S.Text('Room name',{Color=v.r.colors.muted})
@@ -76,6 +77,10 @@ local function setup(v,width,height)
     S.NewLine()
     if setup.kind=='constructed'then
         choice(v,'room-format','Format',setup.format,game.formats,inner,function(value)setup.format=value;Rooms.fitSetup(m)end)
+        if setup.format=='Commander'then
+            S.NewLine()
+            if S.CheckBox(setup.commanderDamage~=false,'Commander damage (21)',{Tooltip='Native per-commander combat damage tracking and 21-damage loss. The host chooses this house-rule option before creating the room.'})then setup.commanderDamage=setup.commanderDamage==false end
+        end
     else
         local d=setup.draft
         choice(v,'room-draft-mode','Draft',d.mode,draft.modes,inner,function(value)d.mode=value;Rooms.fitSetup(m)end)
@@ -98,7 +103,7 @@ local function setup(v,width,height)
     S.NewLine();info(v,'Only people with your invitation code can join. Add bot seats after creating the room.',inner)
     S.NewLine();S.Image('room-starting-dice',{Image=v.r.assets:iconImage('dice',22,v.r.colors.gold),W=22,H=22});S.SameLine({CenterY=true});info(v,'Starting player: server 2d6 roll. Tied leaders roll again.',inner-32)
     if m.roomCapabilityError then S.NewLine();info(v,m.roomCapabilityError,inner,v.r.colors.gold)end
-    S.EndListBox();S.NewLine()
+    S.NewLine(.4);S.Unindent(14);S.EndListBox();S.NewLine()
     if Shared.button(v,m.roomBusy and 'Creating…'or'Create invite room','network',width,38,{Disabled=m.roomBusy or not m.roomCapabilities or m.roomCapabilitiesBusy})then m:hostRoom()end
 end
 local function ownMember(m)
@@ -109,29 +114,32 @@ local function members(v,width,height)
     local draftSeats={};for _,seat in ipairs(m.roomDraft and m.roomDraft.players or {})do draftSeats[seat.seatId or seat.id]=seat end
     Shared.heading(v,'Seats · '..count..' / '..tostring((room.config or {}).maxPlayers or '?'),'players',width);S.NewLine()
     S.BeginListBox('room-member-list',{W=width,H=height-66})
+    S.Indent(14);S.NewLine(.4);local inner=width-46
     for index,member in ipairs(room.members or {})do
         S.PushID('room-member-'..member.id)
         local draftSeat=draftSeats[member.id];local forfeited=draftSeat and draftSeat.forfeited
         local tint=member.id==m.roomParticipantId and v.r.colors.accent or(member.bot or forfeited)and v.r.colors.purple or v.r.colors.text
-        S.Image('avatar',{Image=v.r.assets:iconImage((member.bot or forfeited)and'bot'or'player',23,tint),W=23,H=23});S.SameLine()
+        S.Image('avatar',{Image=v.r.assets:iconImage((member.bot or forfeited)and'bot'or'player',23,tint),W=23,H=23});S.SameLine({Pad=10,CenterY=true})
         local suffix=member.id==room.hostId and' · host'or''
-        S.Textf(v.r:fit(member.name..suffix,width-130,16,1),{W=width-130,Color=tint});S.SameLine()
+        S.Textf(v.r:fit(member.name..suffix,inner-78,16,1),{W=inner-78,Color=tint});S.SameLine({Pad=10,CenterY=true})
         S.Image('ready',{Image=v.r.assets:iconImage(member.ready and'check'or'pause',20,member.ready and v.r.colors.accent or v.r.colors.muted),W=20,H=20})
-        info(v,member.bot and'XMage bot'or forfeited and'Left the table'or member.connected==false and'Disconnected · seat retained'or'Connected',width-30,member.connected==false and v.r.colors.gold or v.r.colors.muted)
-        if forfeited then info(v,'Left · XMage completes this draft seat',width-30,v.r.colors.gold)
-        elseif draftSeat and room.phase=='drafting'then info(v,(draftSeat.picking and'Choosing'or'Waiting')..' · '..tostring(draftSeat.poolCount or 0)..' picked',width-30)end
-        if member.deckName then info(v,member.deckName,width-30)end
+        S.NewLine(.4);info(v,member.bot and'XMage bot'or forfeited and'Left the table'or member.connected==false and'Disconnected · seat retained'or'Connected',inner,member.connected==false and v.r.colors.gold or v.r.colors.muted)
+        if forfeited then info(v,'Left · XMage completes this draft seat',inner,v.r.colors.gold)
+        elseif draftSeat and room.phase=='drafting'then info(v,(draftSeat.picking and'Choosing'or'Waiting')..' · '..tostring(draftSeat.poolCount or 0)..' picked',inner)end
+        if member.deckName then info(v,member.deckName,inner)end
         S.Separator();S.NewLine();S.PopID()
     end
-    if m.roomDraft and m.roomDraft.tournament then S.NewLine();Shared.tournament(v,m.roomDraft,width-24)end
-    S.EndListBox()
+    if m.roomDraft and m.roomDraft.tournament then S.NewLine();Shared.tournament(v,m.roomDraft,inner)end
+    S.NewLine(.4);S.Unindent(14);S.EndListBox()
 end
 local function connected(v,width,height)
     local S,m=v.S,v.m;local room=m.room;local config=room.config or {};local own=ownMember(m);local host=room.hostId==m.roomParticipantId
     Shared.heading(v,room.name or config.name or 'Private table','network',width);S.NewLine()
-    S.BeginListBox('room-your-seat',{W=width,H=math.max(130,height-250)})
-    local inner=width-16
+    local rematch=room.rematchRequest
+    S.BeginListBox('room-your-seat',{W=width,H=math.max(110,height-282-(rematch and 100 or 0))})
+    S.Indent(14);S.NewLine(.4);local inner=width-46
     info(v,config.kind=='draft'and'Draft table'or tostring(config.format or 'Constructed')..' table',inner,v.r.colors.accent)
+    if config.format=='Commander'then S.NewLine(.4);info(v,config.commanderDamage==false and'Commander damage: disabled (house rule)'or'Commander damage: tracked · 21 combat damage',inner)end
     if room.phase=='starting'then S.NewLine();info(v,'XMage is preparing the table…',inner,v.r.colors.accent)end
     S.NewLine()
     if config.kind~='draft'and room.phase=='lobby'then
@@ -148,7 +156,19 @@ local function connected(v,width,height)
         if Shared.button(v,'Add bot','plus',(inner-8)/2,32,{Disabled=m.roomBusy or humans+bots>=(config.maxPlayers or math.huge)})then m:setRoomBots(bots+1)end
     end
     if m.roomError then S.NewLine();info(v,m.roomError,inner,v.r.colors.gold)end
-    S.EndListBox();S.NewLine()
+    S.NewLine(.4);S.Unindent(14);S.EndListBox();S.NewLine()
+    if rematch and m.game and rematch.gameId==m.game.gameId then
+        local approved=rematch.requesterId==m.roomParticipantId
+        for _,id in ipairs(rematch.approvedSeatIds or{})do if id==m.roomParticipantId then approved=true end end
+        info(v,approved and'Waiting for rematch confirmation…'or(rematch.requesterName or'Player')..' is asking for a rematch',width,v.r.colors.gold);S.NewLine()
+        if not approved then
+            if Shared.button(v,'Accept rematch','check',(width-8)/2,34,{Disabled=m.roomBusy})then m:respondRematch(true,rematch.id)end;S.SameLine()
+            if Shared.button(v,'Decline','close',(width-8)/2,34,{Disabled=m.roomBusy})then m:respondRematch(false,rematch.id)end
+        elseif rematch.requesterId==m.roomParticipantId then
+            if Shared.button(v,'Cancel rematch request','close',width,34,{Disabled=m.roomBusy})then m:cancelRematch(rematch.id)end
+        end
+        S.NewLine()
+    end
     if room.phase=='lobby'then
         if Shared.button(v,own and own.ready and'Not ready'or'Ready','check',width,35,{Active=own and own.ready,Disabled=m.roomBusy or not own or m.roomDisconnected})then m:setRoomReady(not own.ready)end
         if host then S.NewLine();if Shared.button(v,config.kind=='draft'and'Start draft'or'Start match','play',width,38,{Disabled=m.roomBusy or m.roomDisconnected or room.canStart==false})then m:startRoom()end end
@@ -169,9 +189,9 @@ function UI.build(v,w,h)
     local S,m=v.S,v.m;Rooms.fitSetup(m);local l=UI.layout(w,h)
     v:window('room-invite',l.invite.x,l.invite.y,l.invite.w,l.invite.h,nil,{AutoSizeContent=false})
     if m.room then
-        local width=l.invite.w-180
-        S.Input('invite-code',{Text=m.room.inviteCode or '',ReadOnly=true,W=width,H=28,Align='left',Tooltip='Share this single invitation code'})
-        S.SameLine();if Shared.button(v,'Copy code','copy',132,29)then m:copyRoomCode()end
+        local width=l.invite.w-194
+        S.Input('invite-code',{Text=m.room.inviteCode or '',ReadOnly=true,W=width,H=34,Align='left',Tooltip='Share this single invitation code'})
+        S.SameLine({Pad=14,CenterY=true});if Shared.button(v,'Copy code','copy',132,34)then m:copyRoomCode()end
     else Shared.heading(v,'Rooms · invite code only','network',l.invite.w-30,v.r.colors.accent)end
     S.EndWindow()
     v:window('room-setup',l.setup.x,l.setup.y,l.setup.w,l.setup.h)

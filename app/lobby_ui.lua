@@ -5,11 +5,15 @@ local function button(v,label,icon,width,height,opts)
     return v.S.Button(label,opts)
 end
 function UI.build(v,w,h)
+    if v.m.lobbyMode=='draft'then return require('app.bot_draft_ui').build(v,w,h)end
     local S,m=v.S,v.m;local gap=18;local width=w-56;local setupW=math.min(width*.59,math.max(590,width*.52));local nameW=width-setupW-gap
-    v:window('lobby-setup',28,100,setupW,154,nil,{AutoSizeContent=false})
-    S.Text('Format and seats',{Color=v.r.colors.accent});S.NewLine()
+    local setupH=m.format=='Commander'and 206 or 166;local decksTop=118+setupH
+    v:window('lobby-setup',28,100,setupW,setupH,nil,{AutoSizeContent=false})
+    S.Text('Format and seats',{Color=v.r.colors.accent});S.SameLine({Pad=20,CenterY=true})
+    if button(v,'Draft with bots','pack',math.min(210,setupW-240),28,{Disabled=m.gameBusy})then m:openBotDraft()end
+    S.NewLine()
     local rowX,rowY=S.GetCursorPos({Absolute=true});local formatW=math.min(205,setupW-320)
-    v:combo('format',m.format,{'Modern','Standard','Pioneer','Commander'},formatW,function(value)m:setLobbyFormat(value)end)
+    v:combo('format',m.format,m.playFormats and m:playFormats()or{'Modern','Standard','Pioneer','Commander'},formatW,function(value)m:setLobbyFormat(value)end)
     if m.format=='Commander'then
         for i,count in ipairs({2,4,5,6})do
             S.SetCursorPos(rowX+formatW+12+(i-1)*72,rowY,{Absolute=true})
@@ -22,14 +26,18 @@ function UI.build(v,w,h)
     for i=1,m:lobbyPlayerCount()do local label=i==1 and'You go first'or'Bot '..(i-1)..' goes first';choices[#choices+1]=label;ids[#ids+1]=i==1 and'local'or'bot-'..(i-1);if m.practiceStartingSeatId==ids[#ids]then selected=label end end
     if selected=='Roll 2d6'then m.practiceStartingSeatId='dice'end
     v:combo('practice-starting-player',selected,choices,math.min(330,setupW-75),function(value)for i,label in ipairs(choices)do if value==label then m.practiceStartingSeatId=ids[i]end end end)
+    if m.format=='Commander'then
+        S.NewLine()
+        if S.CheckBox(m.commanderDamage~=false,'Commander combat damage (21)',{Tooltip='XMage tracks combat damage from each commander. Disable for a house-rule practice game without the 21-damage loss condition.'})then m.commanderDamage=m.commanderDamage==false end
+    end
     S.EndWindow()
     v:window('lobby-name',28+setupW+gap,100,nameW,104,nil,{AutoSizeContent=false})
     S.Text('Your name',{Color=v.r.colors.accent});S.NewLine()
     if S.Input('playerName',{Text=m.playerName,W=nameW-30,H=36,Align='left',Tooltip='Name for this match'})then m.playerName=S.GetInputText()end
     S.EndWindow()
-    v:window('lobby-decks',28,272,width,h-358)
+    v:window('lobby-decks',28,decksTop,width,h-decksTop-86)
     local columns=w>=1600 and 3 or 2;local tileW=(width-42-(columns-1)*18)/columns
-    S.BeginListBox('lobby-seats',{W=width-30,H=h-392})
+    S.BeginListBox('lobby-seats',{W=width-30,H=math.max(100,h-decksTop-120)})
     S.BeginLayout('lobby-seat-columns',{Columns=columns,AlignX='left',AlignY='top'})
     local count=m:lobbyPlayerCount()
     for i=1,count do

@@ -1,5 +1,6 @@
 local Layout=require('app.layout')
 local Camera=require('app.table_camera')
+local Presentation=require('app.card_presentation')
 local Multi={}
 local function within(v,x,y) return v and x>=v.x and y>=v.y and x<=v.x+v.w and y<=v.y+v.h end
 Multi.within=within
@@ -34,16 +35,15 @@ local function seat(r,player,index,c,Table)
     love.graphics.rectangle('fill',c.x+8,c.y+9,6,c.h-18,2,2)
     love.graphics.setLineWidth(2);love.graphics.rectangle('line',c.x+2,c.y+2,c.w-4,c.h-4,6,6)
     r:drawAvatar(player,c.x+18,c.y+15,34)
-    r:strong(r:fit(player.name or 'Player',350,20,1),c.x+60,c.y+18,20,tint,350)
+    r:strong(r:fit(player.name or 'Player',350,24,1),c.x+60,c.y+15,24,tint,350)
     r:priorityBadge(player,c.x+c.w-310,c.y+67,180,22)
     if active then r.assets:iconSymbol('turn',c.x+420,c.y+22,20,C.gold) end
-    if player.lost or player.left then r:text('OUT',c.x+460,c.y+23,13,C.muted) end
     r.assets:iconSymbol('life',c.x+c.w-108,c.y+19,23,tint)
-    r:strong(player.life,c.x+c.w-82,c.y+10,32,tint,66,'center')
+    r:strong(player.life,c.x+c.w-82,c.y+5,44,tint,74,'center')
     local playerBox=r:screenRect({x=c.x+18,y=c.y+12,w=c.w-36,h=60})
     if within(r.multiplayerView,playerBox.x+playerBox.w/2,playerBox.y+playerBox.h/2)then r.playerRects[player.id]=playerBox end
     r:hit({x=c.x+18,y=c.y+12,w=c.w-36,h=44,kind='player',card={id=player.id,name=player.name},focusIndex=index,
-        tooltip=player.name..' · '..tostring(player.life)..' life\n'..tostring(player.handCount or 0)..' in hand · '..tostring(player.libraryCount or 0)..' in library'..(selected and' · legal target'or' · click to focus')})
+        tooltip=Presentation.playerTooltip(player,m.game.commanderDamageEnabled)..(selected and' · legal target'or' · click to focus'),commanderDetails=true})
     r.assets:iconSymbol('library',c.x+24,c.y+66,28,tint)
     r:strong(player.libraryCount or 0,c.x+58,c.y+66,20,C.text)
     r:hit({x=c.x+22,y=c.y+62,w=78,h=38,kind='library-zone',libraryPlayerId=player.id,action=function()m:openLibrary(player.id)end,tooltip=player.name..' · library: '..tostring(player.libraryCount or 0)..' · inspect the entitled top card'})
@@ -56,7 +56,7 @@ local function seat(r,player,index,c,Table)
     end
     local commands=player.command or {}
     for i,card in ipairs(commands) do
-        r:drawCard(card,c.x+24,c.y+142+(i-1)*166,108,151,{kind='command',animate=true})
+        r:drawCard(card,c.x+24,c.y+142+(i-1)*183,118.8,166.32,{kind='command',animate=true})
     end
     r.assets:iconSymbol('commander',c.x+43,c.y+91,19,C.gold)
     Table.field(r,player,c.x+168,c.y+140,c.w-334,c.h-190-(player.human and 108 or 0),not player.human)
@@ -65,10 +65,17 @@ local function seat(r,player,index,c,Table)
     zone(r,player,'exile','exile',zx,c.y+202,122)
     if m:libraryTop(player)then Table.library(r,player,zx,c.y+270,122)end
     require('app.board_fx').playerAuras(r,player,c.x+174,c.y+104)
+    r:commanderSummary(player,c.x+410,c.y+104,c.w-440,14)
     local mx=c.x+410
     for _,symbol in ipairs({'W','U','B','R','G','C'}) do
         local n=(player.mana or {})[symbol] or 0
         if n>0 then r.assets:mana(symbol,mx,c.y+69,18);r:text(n,mx+21,c.y+70,12,C.text);mx=mx+48 end
+    end
+    if Presentation.eliminated(player)then
+        love.graphics.push('all');love.graphics.setColor(.005,.009,.015,.76);love.graphics.rectangle('fill',c.x+3,c.y+3,c.w-6,c.h-6,6,6)
+        r:strong('OUT',c.x+30,c.y+c.h*.41,52,C.muted,c.w-60,'center')
+        r:strong(player.left==true and'LEFT MATCH'or'ELIMINATED',c.x+30,c.y+c.h*.41+62,22,C.muted,c.w-60,'center')
+        love.graphics.pop()
     end
 end
 function Multi.draw(r,L,w,h,Table)

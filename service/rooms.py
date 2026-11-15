@@ -173,6 +173,7 @@ class Room:
         self.next_round_payload = None
         self.round_index = 0
         self.rematch_index = 0
+        self.rematch_request = None
         self.start_payload = None
         self.pair_payloads = {}
         self.pair_attempts = {}
@@ -187,9 +188,14 @@ class Room:
 
     def public(self):
         now = time.monotonic()
+        if self.rematch_request and self.rematch_request['deadline'] <= now:
+            self.rematch_request = None
+            self.changed()
         return {'id': self.id, 'revision': self.revision, 'hostId': self.host_id,
                 'name': self.config['name'], 'phase': self.phase, 'inviteCode': self.code,
                 'config': copy.deepcopy(self.config), 'error': self.error,
+                'rematchRequest': ({key: copy.deepcopy(value) for key, value in self.rematch_request.items()
+                                    if key != 'deadline'} | {'remainingSeconds': max(0, int(self.rematch_request['deadline'] - now))}) if self.rematch_request else None,
                 'members': [{'id': p.id, 'name': p.name, 'bot': p.bot, 'ready': p.ready,
                              'profile': copy.deepcopy(p.profile),
                              'connected': p.bot or (not p.left and now - p.last_seen < 20),
@@ -220,7 +226,8 @@ class Registry:
         if isinstance(game, list): game = {'formats': game}
         if game is offered:
             bounds = {item.get('format') or item.get('id'): item for item in offered.get('games', [])}
-            game = {'formats': [dict(bounds.get(item, bounds.get('Constructed', {})), id=item, label=item)
+            details = [item for item in offered.get('formatDetails', []) if isinstance(item, dict) and item.get('supported') is True and item.get('id') != 'Limited']
+            game = {'formats': details or [dict(bounds.get(item, bounds.get('Constructed', {})), id=item, label=item)
                                 for item in offered.get('formats', []) if item != 'Limited'],
                     'maxPlayers': max((item.get('maxPlayers', 2) for item in bounds.values()), default=10)}
         draft = offered.get('draft') or self.engine.call('GET', '/draft/options')
@@ -295,6 +302,10 @@ class Registry:
             maximum = selected.get('maxPlayers', caps['game'].get('maxPlayers', 10) if fmt == 'Commander' else 2)
             config['maxPlayers'] = integer(value.get('maxPlayers', 4 if fmt == 'Commander' else 2), minimum, maximum, 'Game seats')
             config['format'] = fmt
+            commander_damage = value.get('commanderDamage', True)
+            if not isinstance(commander_damage, bool):
+                raise RoomError('Commander damage must be enabled or disabled')
+            config['commanderDamage'] = commander_damage if fmt == 'Commander' else True
         return config
 
     def create(self, value):
@@ -372,15 +383,14 @@ class Registry:
             public = room.public()
             public['canStart'] = member.id == room.host_id and room.phase in ('lobby', 'building') and len(room.members) == room.config['maxPlayers'] and all(p.ready for p in room.members.values())
             public['canNextRound'] = member.id == room.host_id and room.phase == 'playing' and room.config['kind'] == 'draft' and bool(room.games) and all(p.get('finished') for p in room.games.values())
-            public['canRematch'] = member.id == room.host_id and room.phase == 'playing' and room.config['kind'] == 'constructed' and bool(game) and game.get('running') is False and not game.get('error') and all(not p.left and p.ready for p in room.members.values())
+            public['canRematch'] = room.phase == 'playing' and room.config['kind'] == 'constructed' and bool(game) and game.get('running') is False and not game.get('error') and all(not p.left and p.ready for p in room.members.values())
             return {'room': public, 'participantId': member.id, 'draft': draft, 'game': game}
 
     def mutate(self, room, member, command, value):
         if room.closed:
             if command == 'leave': return {'left': True}
             raise RoomError('The host has closed this room', 410)
-        if command == 'rematch':
-            self.owner(room, member)
+        if command in ('rematch', 'rematch-response', 'rematch-cancel'):
             with room.lock:
                 if room.config['kind'] != 'constructed' or room.phase != 'playing' or any(p.left or not p.ready for p in room.members.values()):
                     raise RoomError('Rematch requires the original ready players in a completed constructed room', 409)
@@ -389,6 +399,38 @@ class Registry:
                 result = self.engine.call('GET', '/multiplayer/result?gameId=' + quote(assignment['gameId']))
                 if result.get('running') is not False or result.get('error'):
                     raise RoomError('Wait for the native match to finish before a rematch', 409)
+                request = room.rematch_request
+                if request and request['deadline'] <= time.monotonic():
+                    room.rematch_request = request = None;room.changed()
+                if command == 'rematch':
+                    if request:
+                        if request['requesterId'] != member.id:
+                            raise RoomError('A player already requested a rematch. Accept or decline that request.', 409)
+                        return self.envelope(room, member, private=False)
+                    humans = [p.id for p in room.members.values() if not p.bot and not p.left]
+                    if len(humans) > 1:
+                        room.rematch_request = {'id': secrets.token_urlsafe(12), 'gameId': assignment['gameId'],
+                            'requesterId': member.id, 'requesterName': member.name,
+                            'approvedSeatIds': [member.id], 'deadline': time.monotonic() + 90}
+                        room.changed()
+                        return self.envelope(room, member, private=False)
+                else:
+                    if not request or value.get('requestId') != request['id'] or request['gameId'] != assignment['gameId']:
+                        raise RoomError('This rematch request is no longer active', 409)
+                    if command == 'rematch-cancel':
+                        if request['requesterId'] != member.id: raise RoomError('Only the requester can cancel this request', 403)
+                        room.rematch_request = None;room.changed()
+                        return self.envelope(room, member, private=False)
+                    if not isinstance(value.get('accept'), bool): raise RoomError('Accept must be true or false')
+                    if request['requesterId'] == member.id: raise RoomError('Waiting for the other players to respond', 409)
+                    if not value['accept']:
+                        room.rematch_request = None;room.changed()
+                        return self.envelope(room, member, private=False)
+                    if member.id not in request['approvedSeatIds']: request['approvedSeatIds'].append(member.id)
+                    humans = [p.id for p in room.members.values() if not p.bot and not p.left]
+                    if not all(seat in request['approvedSeatIds'] for seat in humans):
+                        room.changed();return self.envelope(room, member, private=False)
+                room.rematch_request = None
                 room.phase = 'starting';room.rematch_index += 1;room.changed()
             def restart(target):
                 for match in list(target.games.values()):
@@ -443,6 +485,7 @@ class Registry:
                 if room.draft_id:
                     self.engine.call('POST', '/draft/forfeit', {'draftId': room.draft_id, 'seatId': member.id})
                 with room.lock:
+                    room.rematch_request = None
                     if room.phase == 'lobby':
                         room.members.pop(member.id)
                     else:
@@ -559,6 +602,7 @@ class Registry:
                 if room.closed: return
                 if room.start_payload is None:
                     room.start_payload = {'format': room.config['format'], 'seats': seats,
+                        'commanderDamage': room.config.get('commanderDamage', True),
                         'recordingPort': self.recording_port, 'recordingSeatId': room.host_id,
                         'idempotencyKey': room.id + ':constructed:' + str(room.rematch_index)}
             result = self.engine.call('POST', '/multiplayer/start', room.start_payload)

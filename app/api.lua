@@ -49,12 +49,12 @@ local function dispatchArt(self)
     end
     -- A worker keeps its slot until the main thread has consumed its decoded
     -- response. This bounds queued CPU images as well as simultaneous HDD reads.
-    for _,lane in ipairs({'catalogSelectedMetadata','catalogSelectedMetadata2','artSelected','artSelected2','art','art2'})do
+    for _,lane in ipairs({'catalogSelectedMetadata','catalogSelectedMetadata2','artSelected','artSelected2','catalogHandMetadata','artHand','artHand2','art','art2'})do
         local busy=false;for _,detail in pairs(self.pendingDetails)do if detail.worker==lane then busy=true;break end end
         if not busy then
             for index,item in ipairs(self.artQueue)do
                 local detail=self.pendingDetails[item.id]
-                local priority=lane:match('^catalogSelected')and'selectedMetadata'or lane:match('^artSelected')and'selected'or'visible'
+                local priority=lane:match('^catalogSelected')and'selectedMetadata'or lane:match('^artSelected')and'selected'or lane=='catalogHandMetadata'and'handMetadata'or lane:match('^artHand')and'hand'or'visible'
                 if detail and(detail.priority or'visible')==priority then
                     table.remove(self.artQueue,index)
                     detail.worker=lane;detail.dispatched=love.timer.getTime();detail.queued=false
@@ -76,6 +76,7 @@ function API:setRoomSession(session)
 end
 function API:request(service,method,path,body,callback,binary,options)
     options=options or{}
+    local requestPath=path
     self.artQueue=self.artQueue or{};self.imageMetrics=self.imageMetrics or{count=0,queueSeconds=0,httpSeconds=0,decodeSeconds=0,callbackSeconds=0}
     assert(self.workers[service],'Unknown local service: '..tostring(service))
     local routes={['/session/state']='game/state',['/session/action']='game/action',['/session/priority']='game/priority',['/session/replay/save']='game/replay/save'}
@@ -103,7 +104,11 @@ function API:request(service,method,path,body,callback,binary,options)
     -- A read blocked on the GAME thread must not hold that seat's concession
     -- behind the same socket. Ordinary game actions keep their ordered lane.
     local lane=control and(service..'Control')or service
-    if service=='art'then lane=nil
+    if service=='engine'and method=='GET'and path=='/session/state'then lane='engineState'
+    elseif service=='engine'and method=='GET'and path=='/health'then lane='engineHealth'
+    elseif service=='room'and method=='GET'and guarded and requestPath=='/session/state'then lane='roomState'
+    elseif service=='engine'and method=='GET'and path:match('^/capabilities')then lane='engineMetadata'
+    elseif service=='art'then lane=nil
     elseif service=='catalog'then
         if path:match('^/storage/')or path:match('^/downloads/')then lane='catalogMaintenance'
         elseif method=='POST'and path=='/art/download'then lane='catalogFetch'
@@ -132,13 +137,13 @@ function API:request(service,method,path,body,callback,binary,options)
         end
     end
     local port=(service=='catalog'or service=='art')and self.catalogPort or service=='room'and self.roomPort or self.enginePort
-    local queued=service=='art'or options.priority=='selectedMetadata'
+    local queued=service=='art'or options.priority=='selectedMetadata'or options.priority=='handMetadata'
     local active=not queued and(self.workers[lane]or worker(self,lane,port,service))or nil
     self.nextId=self.nextId+1
     self.pending[self.nextId]=callback or function() end
     self.pendingService[self.nextId]=service
     local priority=options.priority or(path:find('priority=selected',1,true)and'selected'or nil)
-    self.pendingDetails[self.nextId]={worker=not queued and lane or nil,service=service,started=love.timer.getTime(),control=control,readKey=readKey,group=group,orderedWrite=service=='catalog'and lane=='catalog'and method~='GET',priority=priority,isCurrent=options.isCurrent,queued=queued}
+    self.pendingDetails[self.nextId]={worker=not queued and lane or nil,service=service,path=requestPath,started=love.timer.getTime(),control=control,readKey=readKey,group=group,orderedWrite=service=='catalog'and lane=='catalog'and method~='GET',priority=priority,isCurrent=options.isCurrent,queued=queued}
     if readKey then self.inflight[readKey]=self.nextId end
     self.routes[self.nextId]=guarded and self.routeGeneration or nil
     -- Channel tables do not preserve metatables, so serialize arrays here.
@@ -158,7 +163,7 @@ function API:request(service,method,path,body,callback,binary,options)
 end
 function API:update()
     local names={};for name in pairs(self.workers)do names[#names+1]=name end
-    table.sort(names,function(a,b)if a==b then return false end;local ap,bp=a:match('^artSelected')~=nil,b:match('^artSelected')~=nil;if ap~=bp then return ap end;return a<b end)
+    table.sort(names,function(a,b)if a==b then return false end;local ap,bp=a:match('^artSelected')and 0 or a:match('^artHand')and 1 or 2,b:match('^artSelected')and 0 or b:match('^artHand')and 1 or 2;if ap~=bp then return ap<bp end;return a<b end)
     local imageCount,imageBytes=0,0
     for _,name in ipairs(names)do local worker=self.workers[name]
         local result=worker.deferred or worker.output:pop();worker.deferred=nil
@@ -201,11 +206,12 @@ function API:update()
 end
 function API:imageDiagnostics()
     local result={};for key,value in pairs(self.imageMetrics)do result[key]=value end
-    result.queued=#self.artQueue;result.visibleInFlight=0;result.selectedInFlight=0;result.selectedMetadataInFlight=0
+    result.queued=#self.artQueue;result.visibleInFlight=0;result.selectedInFlight=0;result.selectedMetadataInFlight=0;result.handInFlight=0;result.handMetadataInFlight=0
     for _,detail in pairs(self.pendingDetails)do if detail.service=='art'and not detail.queued then
-        local key=detail.priority=='selected'and'selectedInFlight'or'visibleInFlight';result[key]=result[key]+1
+        local key=detail.priority=='selected'and'selectedInFlight'or detail.priority=='hand'and'handInFlight'or'visibleInFlight';result[key]=result[key]+1
     end end
     for _,detail in pairs(self.pendingDetails)do if detail.priority=='selectedMetadata'and not detail.queued then result.selectedMetadataInFlight=result.selectedMetadataInFlight+1 end end
+    for _,detail in pairs(self.pendingDetails)do if detail.priority=='handMetadata'and not detail.queued then result.handMetadataInFlight=result.handMetadataInFlight+1 end end
     return result
 end
 function API:status(service)

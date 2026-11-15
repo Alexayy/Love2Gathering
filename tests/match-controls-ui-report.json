@@ -1,0 +1,269 @@
+{
+  "captures": [
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/cancel-return-minimum.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/native-undo-minimum.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/outcome-win-minimum.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/outcome-loss-minimum.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/outcome-draw-minimum.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/rematch-incoming-minimum.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/rematch-waiting-minimum.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/cancel-return-scaled.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/native-undo-scaled.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/outcome-win-scaled.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/outcome-loss-scaled.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/outcome-draw-scaled.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/rematch-incoming-scaled.png",
+    "/tmp/love2gathering-match-controls-ui-MqYUCw/rematch-waiting-scaled.png"
+  ],
+  "checks": [
+    "Actual main left press starts the offered hand drag: minimum",
+    "Right press cancels locally and returns the ghost to the exact original hand anchor: minimum",
+    "Cancellation preserves the hand card and sends no native action: minimum",
+    "Both late releases after cancel cannot cast, inspect or begin a pan: minimum",
+    "Idle right-click still inspects the exact hand card: minimum",
+    "Idle multiplayer right-click still inspects a visible card: minimum",
+    "Idle right-drag still pans the table without inspecting: minimum",
+    "Actual Undo last mana action control stays inside the scaled viewport",
+    "Native undo metadata exposes an enabled actual toolbar button: minimum",
+    "The actual Undo toolbar image has visible icon pixels rather than a blank raster: minimum",
+    "Undo remains clear of the priority-mode window and its last stop control: minimum",
+    "Undo submits only the exact native undo response and prompt/game identity: minimum",
+    "Pending native action disables the undo button: minimum",
+    "A pending disabled undo cannot submit again: minimum",
+    "A prompt without native undo permission exposes no undo control: minimum",
+    "Actual Rematch control stays inside the scaled viewport",
+    "Actual Main menu control stays inside the scaled viewport",
+    "The terminal win view locks result controls and hides the stale native prompt/old toolbar: minimum",
+    "Completed duel retires unbuilt concede/combat/committing-choice modal locks: minimum",
+    "The actual result Rematch remains clickable after an opponent finishes during retained gameplay modals: minimum",
+    "Actual Rematch control stays inside the scaled viewport",
+    "Actual Main menu control stays inside the scaled viewport",
+    "The terminal loss view locks result controls and hides the stale native prompt/old toolbar: minimum",
+    "Actual Rematch control stays inside the scaled viewport",
+    "Actual Main menu control stays inside the scaled viewport",
+    "The terminal draw view locks result controls and hides the stale native prompt/old toolbar: minimum",
+    "Actual practice Rematch repeats the retained match setup once: minimum",
+    "Actual Main menu leaves the finished game for Decks: minimum",
+    "Actual Request rematch control stays inside the scaled viewport",
+    "Actual PvP Request rematch uses the room coordinator instead of practice game start: minimum",
+    "Actual Accept rematch control stays inside the scaled viewport",
+    "Actual Decline control stays inside the scaled viewport",
+    "Actual accept submits the current request ID and a true response: minimum",
+    "Actual decline submits the same request ID with false: minimum",
+    "The requester gets waiting/cancel controls instead of self-acceptance: minimum",
+    "Actual cancel addresses only the pending rematch request: minimum",
+    "Actual main left press starts the offered hand drag: scaled",
+    "Right press cancels locally and returns the ghost to the exact original hand anchor: scaled",
+    "Cancellation preserves the hand card and sends no native action: scaled",
+    "Both late releases after cancel cannot cast, inspect or begin a pan: scaled",
+    "Idle right-click still inspects the exact hand card: scaled",
+    "Idle multiplayer right-click still inspects a visible card: scaled",
+    "Idle right-drag still pans the table without inspecting: scaled",
+    "Actual Undo last mana action control stays inside the scaled viewport",
+    "Native undo metadata exposes an enabled actual toolbar button: scaled",
+    "The actual Undo toolbar image has visible icon pixels rather than a blank raster: scaled",
+    "Undo remains clear of the priority-mode window and its last stop control: scaled",
+    "Undo submits only the exact native undo response and prompt/game identity: scaled",
+    "Pending native action disables the undo button: scaled",
+    "A pending disabled undo cannot submit again: scaled",
+    "A prompt without native undo permission exposes no undo control: scaled",
+    "Actual Rematch control stays inside the scaled viewport",
+    "Actual Main menu control stays inside the scaled viewport",
+    "The terminal win view locks result controls and hides the stale native prompt/old toolbar: scaled",
+    "Completed duel retires unbuilt concede/combat/committing-choice modal locks: scaled",
+    "The actual result Rematch remains clickable after an opponent finishes during retained gameplay modals: scaled",
+    "Actual Rematch control stays inside the scaled viewport",
+    "Actual Main menu control stays inside the scaled viewport",
+    "The terminal loss view locks result controls and hides the stale native prompt/old toolbar: scaled",
+    "Actual Rematch control stays inside the scaled viewport",
+    "Actual Main menu control stays inside the scaled viewport",
+    "The terminal draw view locks result controls and hides the stale native prompt/old toolbar: scaled",
+    "Actual practice Rematch repeats the retained match setup once: scaled",
+    "Actual Main menu leaves the finished game for Decks: scaled",
+    "Actual Request rematch control stays inside the scaled viewport",
+    "Actual PvP Request rematch uses the room coordinator instead of practice game start: scaled",
+    "Actual Accept rematch control stays inside the scaled viewport",
+    "Actual Decline control stays inside the scaled viewport",
+    "Actual accept submits the current request ID and a true response: scaled",
+    "Actual decline submits the same request ID with false: scaled",
+    "The requester gets waiting/cancel controls instead of self-acceptance: scaled",
+    "Actual cancel addresses only the pending rematch request: scaled"
+  ],
+  "modes": [
+    {
+      "logical": [
+        1120,
+        720
+      ],
+      "physical": [
+        1120,
+        720
+      ],
+      "renderScale": 1,
+      "uiScale": 1
+    },
+    {
+      "logical": [
+        1152,
+        720
+      ],
+      "physical": [
+        1440,
+        900
+      ],
+      "renderScale": 0.75,
+      "uiScale": 1.25
+    }
+  ],
+  "requests": [
+    {
+      "body": {
+        "expectedGameId": "SYNTHETIC-MATCH-CONTROLS-2",
+        "promptId": 700,
+        "type": "undo",
+        "value": true
+      },
+      "method": "POST",
+      "path": "/session/action",
+      "service": "engine"
+    },
+    {
+      "body": {
+        "botDeckId": "synthetic-bot-deck",
+        "format": "Modern",
+        "playerDeckId": "synthetic-player-deck",
+        "players": 2
+      },
+      "method": "POST",
+      "path": "/session/start",
+      "service": "engine"
+    },
+    {
+      "body": {
+        "botDeckId": "synthetic-bot-deck",
+        "format": "Modern",
+        "playerDeckId": "synthetic-player-deck",
+        "players": 2
+      },
+      "method": "POST",
+      "path": "/session/start",
+      "service": "engine"
+    },
+    {
+      "body": {},
+      "method": "POST",
+      "path": "/client/rooms/synthetic-connection/rematch",
+      "service": "room"
+    },
+    {
+      "body": {
+        "accept": true,
+        "requestId": "synthetic-request"
+      },
+      "method": "POST",
+      "path": "/client/rooms/synthetic-connection/rematch-response",
+      "service": "room"
+    },
+    {
+      "body": {
+        "accept": false,
+        "requestId": "synthetic-request"
+      },
+      "method": "POST",
+      "path": "/client/rooms/synthetic-connection/rematch-response",
+      "service": "room"
+    },
+    {
+      "body": {
+        "requestId": "synthetic-request"
+      },
+      "method": "POST",
+      "path": "/client/rooms/synthetic-connection/rematch-cancel",
+      "service": "room"
+    },
+    {
+      "body": {
+        "expectedGameId": "SYNTHETIC-MATCH-CONTROLS-2",
+        "promptId": 700,
+        "type": "undo",
+        "value": true
+      },
+      "method": "POST",
+      "path": "/session/action",
+      "service": "engine"
+    },
+    {
+      "body": {
+        "botDeckId": "synthetic-bot-deck",
+        "format": "Modern",
+        "playerDeckId": "synthetic-player-deck",
+        "players": 2
+      },
+      "method": "POST",
+      "path": "/session/start",
+      "service": "engine"
+    },
+    {
+      "body": {
+        "botDeckId": "synthetic-bot-deck",
+        "format": "Modern",
+        "playerDeckId": "synthetic-player-deck",
+        "players": 2
+      },
+      "method": "POST",
+      "path": "/session/start",
+      "service": "engine"
+    },
+    {
+      "body": {},
+      "method": "POST",
+      "path": "/client/rooms/synthetic-connection/rematch",
+      "service": "room"
+    },
+    {
+      "body": {
+        "accept": true,
+        "requestId": "synthetic-request"
+      },
+      "method": "POST",
+      "path": "/client/rooms/synthetic-connection/rematch-response",
+      "service": "room"
+    },
+    {
+      "body": {
+        "accept": false,
+        "requestId": "synthetic-request"
+      },
+      "method": "POST",
+      "path": "/client/rooms/synthetic-connection/rematch-response",
+      "service": "room"
+    },
+    {
+      "body": {
+        "requestId": "synthetic-request"
+      },
+      "method": "POST",
+      "path": "/client/rooms/synthetic-connection/rematch-cancel",
+      "service": "room"
+    }
+  ],
+  "scope": "Actual production main mouse callbacks, L\u00d6VE/Slab controls and scaled rendering with synthetic native-shaped hand/payment/result/room requests. Mock loopback transport only; no native legality, network, user cache or live game.",
+  "sourceSha256": {
+    "application-main.lua": "0a709427e3aa91010dfcf28309c329e8939beb5959f28e258e73c4906f07ca2d",
+    "app/drag_cancel.lua": "51075771de532683ffeabcdc6ac322bb85c187b5959ba08830792a15f242d6ea",
+    "app/outcome.lua": "49cd889a00b31a9ff68a605821dc5f18f85ab63fbdab7b9c452b514143fc8ed5",
+    "app/match_ui.lua": "efd82f9b3fca8d912dd0eeab4ea60d62be68b74ba05972c26b3346c2ce841806",
+    "app/renderer.lua": "5d6cb46312352f8b7d97b80eaab707913d3d84394e953489ff3c506153527273",
+    "app/model.lua": "f888d0a96571947ef23dff08faedaec3f34321074ab8855aa0519c996e8549a0",
+    "app/rooms.lua": "d563028eaafc513412117af1b925484b8a8636832381a51431a458c0c5afef95",
+    "app/view.lua": "b8d47c49ccc25ef8581fa75892b2f15fc84f475b96cfd8018a9fdd07956c8b53",
+    "app/assets.lua": "b8510ede93126011ea65ee3e4f8e76e9d24e4290b02a87ac5465d2e89bee4212",
+    "lib/Slab/Internal/UI/Region.lua": "b968685c4127a250906b3b76b60f97b3c2802aaa60c64bece426e25072b9ad4f",
+    "assets/kenney/runtime/enhancements.lua": "1fcd3acb131d9037b63f126cdafd5e4a3911bb04e0a0129c475a71ba52a2ce60",
+    "assets/kenney/runtime/loading.lua": "fbae554d3a03fe4e22eb21904242b0985c40d05515d2bb9f11040f42a3631f68",
+    "assets/kenney/runtime/manifest.lua": "26da5e80c9646fea54da4d3f2abf1ef0dade88ff33ce68a5220b76f119fe820f",
+    "assets/kenney/runtime/window_actions.lua": "c027c78e5ce3ab370036ab5d92082fca0186a87fceaa6d7252ff5e3ba22c037c",
+    "assets/kenney/runtime/icons/arrow_counterclockwise.png": "b9eeaef1c13da76de40fc22b5df08003f65b82de2453a9d59c3dbf9999f98e43",
+    "tests/match_controls_ui.lua": "b93a903f1bdb6fe1f5c7ff459bb9711f14ffea6c7c7661864620dc73b78a00fa"
+  }
+}

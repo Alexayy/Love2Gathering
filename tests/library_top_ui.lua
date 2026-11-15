@@ -69,7 +69,8 @@ local function scenario()
 
   local noAction=clone(source);noAction.prompt.actionable={};adopt(noAction);wait(.1);before=#actions;click(assert(hit('library-top',player.id)))
   check(#actions==before and m.inspectCard and m.inspectCard.id==top.id,'Visible top with an empty native actionable list opens details without playing: '..name)
-  click(buttons['Close details']);adopt(clone(source));wait(.1);click(assert(hit('library-zone',player.id)))
+  click(buttons['Close details']);adopt(clone(source));wait(.1);local zoneActions=#actions;click(assert(hit('library-zone',player.id)))
+  check(#actions==zoneActions,'Opening the library grid cannot select the image under its opening gesture: '..name)
   check(m.zoneView and#m.zoneView.cards==1 and m.zoneView.cards[1].id==top.id,'Library control opens a top-only live zone: '..name)
   shot(name..'-library-zone');click(assert(rows[top.id]));check(#actions==before+1 and not m.zoneView,'Actual entitled zone row sends the native action: '..name)
 
@@ -101,7 +102,7 @@ function love.load()
  local Cursor=require('lib.Slab.Internal.Core.Cursor');local Window=require('lib.Slab.Internal.UI.Window');local scopes={};local push,pop=S.PushID,S.PopID
  S.PushID=function(id)scopes[#scopes+1]=id;return push(id)end;S.PopID=function()scopes[#scopes]=nil;return pop()end
  local function bounds()local x,y,w,h=Cursor.GetItemBounds();x,y=Window.TransformPoint(x,y);return{x=x,y=y,w=w,h=h}end
- local button=S.Button;S.Button=function(label,opts)local result=button(label,opts);buttons[label]=bounds();return result end
+ local button=S.Button;S.Button=function(label,opts)local result=button(label,opts);buttons[label]=bounds();local id=tostring(scopes[#scopes]or''):match('^zone%-card%-(.*)$');if id then rows[id]=bounds()end;return result end
  local selectable=S.TextSelectable;S.TextSelectable=function(label,opts)local result=selectable(label,opts);local id=tostring(scopes[#scopes]or''):match('^zone%-card%-(.*)$');if id then rows[id]=bounds()end;return result end
  runner=coroutine.create(scenario)
 end

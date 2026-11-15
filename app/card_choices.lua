@@ -3,6 +3,8 @@
 local json=require('lib.json')
 local Layout=require('app.layout')
 local Assets=require('app.assets')
+local Combat=require('app.combat_choices')
+local Presentation=require('app.card_presentation')
 local Window
 local UI={cache={},clock=0}
 local function actualChoice(choice)return type(choice)=='table'and choice~=json.null and choice.id~=nil end
@@ -10,7 +12,36 @@ local function id(card)return tostring(card.choiceId or card.id)end
 local function contains(box,x,y)return box and x>=box.x and y>=box.y and x<=box.x+box.w and y<=box.y+box.h end
 local function response(card)local value=card.value;if value==nil then value=card.choiceId or card.id end;return {id=card.choiceId or card.id,responseType=card.responseType or'uuid',value=value}end
 local function nativeCards(panel)
-    local cards={};for _,card in ipairs(panel.cards or {})do if card.id and not card.hidden and not card.faceDown then cards[#cards+1]=card end end;return cards
+    local cards={};for _,original in ipairs(panel.cards or{})do
+        local card=Presentation.peek(original)
+        if card.id and not card.hidden and not card.faceDown then
+            if card~=original then for _,key in ipairs({'choiceId','responseType','value','selected','selectable'})do if original[key]~=nil then card[key]=original[key]end end end
+            cards[#cards+1]=card
+        end
+    end;return cards
+end
+function UI.displayCards(panel,query)
+    local cards={};query=tostring(query or''):lower()
+    for index,card in ipairs(nativeCards(panel))do if query==''or tostring(card.name or''):lower():find(query,1,true)then cards[#cards+1]={card=card,index=index}end end
+    if tostring(panel.zone or''):upper()=='LIBRARY'and panel.stage~='order'then
+        local function basic(card)
+            local kind=card.type_line or(type(card.printing)=='table'and card.printing.type_line)or card.type or card.cardType or'';if type(kind)=='table'then kind=table.concat(kind,' ')end
+            local supertypes=card.supertypes or(type(card.printing)=='table'and card.printing.supertypes)or{}
+            local declared=false;if type(supertypes)=='table'then for _,supertype in ipairs(supertypes)do if tostring(supertype):lower()=='basic'then declared=true end end end
+            kind=tostring(kind):lower();return(declared or kind:find('basic',1,true)~=nil)and kind:find('land',1,true)~=nil
+        end
+        table.sort(cards,function(a,b)local x,y=basic(a.card),basic(b.card);if x~=y then return x end;return a.index<b.index end)
+    end
+    local out={};for _,entry in ipairs(cards)do out[#out+1]=entry.card end;return out
+end
+function UI.selectable(m,card,prompt)
+    if card.hidden or card.faceDown or card.selectable==false then return false end
+    if(card.responseType or'uuid')=='uuid'and prompt and type(prompt.actionable)=='table'then
+        local target=response(card).value
+        for _,candidate in ipairs(prompt.actionable)do if tostring(candidate)==tostring(target)then return true end end
+        return false
+    end
+    return true
 end
 function UI.state(panel)
     local state={identity=tostring(panel.interactionId),kind=panel.kind,cards={},rows={top={},bottom={},graveyard={},offered={}},committing=false}
@@ -49,11 +80,13 @@ function UI.nextResponse(state,prompt)
     end
 end
 local function image(v,card,w,h)
-    local data=v.m:cardData(card)or card;local art=v.m:getArt(data,true);if art then return art end
+    local hidden=card.hidden or card.faceDown
+    if not hidden then local data=v.m:cardData(card)or card;local art=v.m:getArt(data,true);if art then return art end end
+    if hidden then card={id='hidden-card',name='Face-down card',hidden=true}end
     local key=table.concat({Assets.rasterEpoch,tostring(v.r.fonts[12]),card.name or'',card.manaCost or'',tostring(card.rules or''),tostring(card.type or''),tostring(card.power or''),tostring(card.toughness or''),tostring(card.damage or''),tostring(card.tapped or false),json.encode(card.counters or{}),w,h,Layout.scale},'\31')
     UI.clock=UI.clock+1;local cached=UI.cache[key]
     if cached then cached.used=UI.clock;return cached.image end
-    local canvas=Assets.rasterize(w*Layout.scale,h*Layout.scale,function()love.graphics.scale(Layout.scale);v.r:drawCard(card,0,0,w,h,{noHit=true})end)
+    local canvas=Assets.rasterize(w*Layout.scale,h*Layout.scale,function()love.graphics.scale(Layout.scale);v.r:drawCard(card,0,0,w,h,{noHit=true,back=hidden,angle=0})end)
     UI.cache[key]={image=canvas,used=UI.clock};local count=0;for _ in pairs(UI.cache)do count=count+1 end
     if count>64 then local oldest,used;for k,item in pairs(UI.cache)do if not used or item.used<used then oldest,used=k,item.used end end;UI.cache[oldest]=nil end
     return canvas
@@ -68,7 +101,9 @@ local function button(v,label,icon,w,action,disabled)
 end
 local function card(v,object,w,h,zone,index,clip,immediate)
     local S=v.S;local x,y=S.GetCursorPos({Absolute=true});local sx,sy=Window.TransformPoint(x,y)
-    S.PushID('native-card-'..id(object));local clicked=S.Button(object.name or'Card',{W=w,H=h,Image={Image=image(v,object,w,h)},Tooltip=(object.name or'Card')..' · right-click to inspect',Active=object.selected==true,Disabled=v.m.actionBusy or object.selectable==false})
+    local selecting=zone=='offered'or zone=='top'or zone=='bottom'or zone=='graveyard'
+    local allowed=not selecting or UI.selectable(v.m,object,v.m:prompt())
+    S.PushID('native-card-'..id(object));local clicked=S.Button(object.name or'Card',{W=w,H=h,Image={Image=image(v,object,w,h),Color=not allowed and{.36,.36,.36,.85}or nil},Tooltip=(object.name or'Card')..(allowed and' · right-click to inspect'or' · unavailable for this action · right-click to inspect'),Active=object.selected==true,Disabled=v.m.actionBusy or not allowed})
     local hit=clipped({x=sx,y=sy,w=w,h=h},clip);hit.card=object;hit.id=id(object);hit.zone=zone;hit.index=index
     v.cardChoiceHits[#v.cardChoiceHits+1]=hit
     if S.IsControlHovered()then
@@ -107,7 +142,7 @@ local function lookedAt(v)
 end
 function UI.prefersBoard(m,prompt)
     if not prompt then return false end
-    if prompt.combat and(prompt.combat.role=='blockers'or prompt.combat.role=='block_target')then return true end
+    if prompt.combat and(prompt.combat.role=='attackers'or prompt.combat.role=='blockers'or prompt.combat.role=='block_target')then return true end
     if prompt.cardPanel and prompt.cardPanel.kind=='board'then return true end
     if prompt.cardPanel and prompt.cardPanel.kind~='select'then return false end
     if prompt.type~='pick_target'then return false end
@@ -119,6 +154,37 @@ function UI.prefersBoard(m,prompt)
         count=count+1
     end end
     return count>0
+end
+function UI.currentModal(v,prompt)
+    local m=v.m
+    if m.page~='table'or m.replay or m.settingsOpen or m.inspectCard or m.zoneView or m.confirmConcede or v.combatStopsOpen then return nil end
+    if v.r and require('app.dice').busy(v.r)then return nil end
+    local amount=Combat.current(v,prompt);if amount then return amount end
+    if UI.prefersBoard(m,prompt)then return nil end
+    local panel=prompt and prompt.cardPanel
+    if panel and UI.supports(panel)and#nativeCards(panel)>0 then return'native-card-choices'end
+    if not prompt and m.actionBusy and v.cardChoiceState and v.cardChoiceState.committing and v.cardChoiceState.gameId==(m.game and m.game.gameId)then return'native-card-choices'end
+    if prompt and type(prompt.pile1)=='table'and type(prompt.pile2)=='table'then
+        local count=0;for _,choice in ipairs(prompt.choices or{})do if choice.responseType=='boolean'then count=count+1 end end
+        if count>=2 then return'native-card-piles'end
+    end
+    if lookedAt(v)then return'looked-at-cards'end
+end
+function UI.modalKey(v,prompt,window)
+    window=window or UI.currentModal(v,prompt);if not window then return nil end
+    if window=='looked-at-cards'then local look=lookedAt(v);return look and(window..':'..look.key)or nil end
+    local promptId=prompt and prompt.id
+    if not promptId and window==Combat.window then promptId=v.combatChoiceState and v.combatChoiceState.prompt.id end
+    if not promptId and window=='native-card-choices'then promptId=v.cardChoiceState and v.cardChoiceState.lastAnswered end
+    return table.concat({window,tostring(v.m.game and v.m.game.gameId),tostring(promptId)},':')
+end
+function UI.escape(v)
+    local window=UI.currentModal(v,v.m:prompt());if not window then return false end
+    if window=='looked-at-cards'then local look=lookedAt(v);if look then v.lookDismissed[look.key]=true end end
+    v.cardChoiceDrag=nil;v.combatChoiceDrag=nil;require('lib.Slab.Internal.UI.Region').ClearHotInstance();v.S.SetInputFocus(nil)
+    -- Required native decisions stay open; only an offered Cancel button can
+    -- send an actual cancellation. Escape never invents an engine answer.
+    return true
 end
 function UI.supports(panel)
     if not panel then return false end
@@ -149,8 +215,19 @@ end
 local function boardChoice(v,w,prompt)
     local S,m=v.S,v.m;local pw=math.min(690,w-100)
     local combat=prompt.combat
-    v:window('board-card-choice',(w-pw)/2,108,pw,combat and 180 or 110,combat and'Combat choices'or'Choose on the battlefield')
-    S.Textf(prompt.message or'Select a highlighted legal card',{W=pw-34,Color=v.r.colors.text});S.NewLine()
+    local individuals={};local chosen={}
+    if combat then
+        for _,key in ipairs(combat.selectedAttackerIds or{})do chosen[tostring(key)]=true end
+        for _,choice in ipairs(prompt.choices or{})do if choice.responseType=='uuid'then
+            local value=choice.value~=nil and choice.value or choice.id;local object=choice.card
+            if type(object)~='table'or object==json.null then
+                for _,player in ipairs(m.game and m.game.players or{})do for _,candidate in ipairs(player.battlefield or{})do if tostring(candidate.id)==tostring(value)then object=candidate end end end
+            end
+            if type(object)=='table'and object~=json.null and not object.hidden and not object.faceDown then individuals[#individuals+1]={choice=choice,card=object,selected=chosen[tostring(value)]or choice.selected==true}end
+        end end
+    end
+    v:window('board-card-choice',(w-pw)/2,108,pw,combat and(#individuals>0 and 330 or 190)or 110,combat and'Combat choices'or'Choose on the battlefield')
+    S.Textf(v.r:fit(prompt.message or'Select a highlighted legal card',pw-34,16,2),{W=pw-34,Color=v.r.colors.text});S.NewLine()
     if combat then
         local hint=combat.message or combat.hint
         if not hint then
@@ -164,12 +241,25 @@ local function boardChoice(v,w,prompt)
         end
         local counts=UI.combatCounts(m.game,combat)
         if #counts>0 then hint=table.concat(counts,' · ')..(hint and(' · '..hint)or'')end
+        local provisional=combat.declarationConfirmed==false and(combat.role=='attackers'and'Attacks provisional · Done confirms.'or'Blocks provisional · Done confirms.')
+        if provisional then S.Text(provisional,{Color=v.r.colors.gold});S.NewLine()end
         if hint then S.PushFont(v.r.fonts[14]);S.Textf(v.r:fit(tostring(hint),pw-34,14,2),{W=pw-34,Color=v.r.colors.muted});S.PopFont();S.NewLine()end
         if v.combatToastPrompt~=prompt.id then
             v.combatToastPrompt=prompt.id
             m:toast(v.r:fit(tostring(hint or prompt.message or'Choose from the highlighted native combat options'),620,12,2))
             local toast=m.toasts and m.toasts[#m.toasts];if toast then toast.ttl=3 end
         end
+    end
+    if#individuals>0 then
+        S.BeginListBox('individual-combat-cards',{W=pw-34,H=116})
+        for index,entry in ipairs(individuals)do
+            if index>1 then S.SameLine({Pad=8})end
+            S.PushID('individual-combat-'..tostring(entry.choice.id))
+            local disabled=m.actionBusy or entry.choice.selectable==false or not m:canSelect(entry.choice.value~=nil and entry.choice.value or entry.choice.id)
+            if S.Button(entry.card.name or'Card',{W=76,H=106,Image={Image=image(v,entry.card,76,106),Color=disabled and{.36,.36,.36,.85}or nil},Active=entry.selected,Disabled=disabled,Tooltip=(entry.card.name or'Card')..(entry.selected and' · selected provisionally'or' · choose this card')})then m:answerChoice(entry.choice)end
+            S.PopID()
+        end
+        S.EndListBox();S.NewLine()
     end
     local controls={};for _,c in ipairs(prompt.choices or {})do if c.responseType~='uuid'then controls[#controls+1]=c end end
     for index,c in ipairs(controls)do
@@ -202,7 +292,9 @@ end
 function UI.build(v,w,h,prompt)
     Window=Window or require('lib.Slab.Internal.UI.Window')
     local m,S=v.m,v.S;v.cardChoiceHits={};v.cardChoiceDrops={};m.choiceHover=nil
-    if m.replay or m.settingsOpen then v.cardChoiceDrag=nil;return false end
+    if m.replay or m.settingsOpen then v.cardChoiceDrag=nil;v.combatChoiceDrag=nil;return false end
+    if v.r and require('app.dice').busy(v.r)then v.cardChoiceDrag=nil;v.combatChoiceDrag=nil;return true end
+    if Combat.build(v,w,h,prompt)then return true end
     if not prompt and v.cardChoiceState and v.cardChoiceState.committing and m.actionBusy then return true end
     if UI.prefersBoard(m,prompt)then v.cardChoiceState=nil;v.cardChoiceDrag=nil;boardChoice(v,w,prompt);return true end
     if piles(v,w,h,prompt)then v.cardChoiceState=nil;v.cardChoiceDrag=nil;return true end
@@ -231,8 +323,8 @@ function UI.build(v,w,h,prompt)
             if answer then state.lastAnswered=prompt.id;m:answerChoice(answer);return true end
         end
         local pw=math.min(980,w-70);local cw=math.max(70,math.min(142,math.floor((pw-58)/math.min(6,math.max(3,#(panel.cards or {})))),math.floor((h-400)/2/1.4)));local ch=math.floor(cw*1.4)
-        local ph=arrange and math.min(h-115,ch*2+285)or math.min(h-140,480)
-        v:window('native-card-choices',(w-pw)/2,math.max(78,(h-ph)/2),pw,ph,panel.kind=='scry'and'Scry'or panel.kind=='surveil'and'Surveil'or'Choose a card')
+        local ph=arrange and math.min(h-115,ch*2+285)or math.min(h-115,620)
+        v:window('native-card-choices',(w-pw)/2,math.max(78,(h-ph)/2),pw,ph,panel.kind=='scry'and'Scry'or panel.kind=='surveil'and'Surveil'or'Choose a card',{BgColor={.025,.04,.06,.98}})
         if v.cardChoiceDrag and Window.IsObstructed(v.cardChoiceDrag.startX,v.cardChoiceDrag.startY)then v.cardChoiceDrag=nil end
         local inner=select(1,S.GetWindowSize())-42
         S.Textf(v.r:fit(state.error or prompt.message or'Choose from the offered cards',inner,16,2),{W=inner,Color=state.error and v.r.colors.gold or v.r.colors.text});S.NewLine()
@@ -242,9 +334,20 @@ function UI.build(v,w,h,prompt)
             row(v,destination,destination=='bottom'and'Bottom'or'Graveyard',state,inner,ch+14,cw,ch)
             button(v,state.committing and'Applying native choices…'or'Confirm','check',inner,function()state.committing=true;state.error=nil end,m.actionBusy or m.priorityBusy or state.committing)
         else
-            local x,y=S.GetCursorPos({Absolute=true});x,y=Window.TransformPoint(x,y);local clip={x=x,y=y,w=inner,h=ph-105}
-            S.BeginListBox('native-select-cards',{W=inner,H=ph-105});local cols=math.max(1,math.floor((inner-20)/(cw+12)))
-            for index,c in ipairs(nativeCards(panel))do if(index-1)%cols~=0 then S.SameLine({Pad=8})elseif index>1 then S.NewLine()end;card(v,c,cw,ch,'offered',index,clip,function(chosen)m:answerChoice(response(chosen))end)end
+            if S.Input('native-card-search',{Text=state.query or'',W=inner,H=34,Align='left',Tooltip='Search only the cards visible for this choice'})then state.query=S.GetInputText();state.offset=0 end;S.NewLine()
+            local displayed=UI.displayCards(panel,state.query);local listH=math.max(ch+14,ph-215);local cols=math.max(1,math.floor((inner-20)/(cw+12)))
+            local pageSize=math.min(24,cols*math.max(1,math.floor(listH/(ch+12))))
+            state.offset=math.max(0,math.min(state.offset or 0,math.max(0,math.floor((#displayed-1)/pageSize)*pageSize)))
+            if S.Button('Previous visible cards',{W=168,H=28,Disabled=state.offset==0})then state.offset=math.max(0,state.offset-pageSize)end
+            S.SameLine();if S.Button('Next visible cards',{W=168,H=28,Disabled=state.offset+pageSize>=#displayed})then state.offset=state.offset+pageSize end
+            S.SameLine();S.Text((#displayed==0 and'0'or(state.offset+1)..'–'..math.min(#displayed,state.offset+pageSize))..' / '..#displayed);S.NewLine()
+            local x,y=S.GetCursorPos({Absolute=true});x,y=Window.TransformPoint(x,y);local clip={x=x,y=y,w=inner,h=listH}
+            S.BeginListBox('native-select-cards',{W=inner,H=listH})
+            for position=state.offset+1,math.min(#displayed,state.offset+pageSize)do local index=position-state.offset;local c=displayed[position]
+                if(index-1)%cols~=0 then S.SameLine({Pad=8})elseif index>1 then S.NewLine()end
+                card(v,c,cw,ch,'offered',position,clip,function(chosen)if UI.selectable(m,chosen,m:prompt())then m:answerChoice(response(chosen))end end)
+            end
+            if#displayed==0 then S.Text('No matching visible cards.',{Color=v.r.colors.muted})end
             S.EndListBox();S.NewLine()
             if actualChoice(panel.doneChoice)then button(v,panel.doneChoice.label or'Done','check',inner,function()m:answerChoice(panel.doneChoice)end,m.actionBusy)end
         end
@@ -262,30 +365,38 @@ function UI.build(v,w,h,prompt)
     S.EndListBox();S.NewLine();button(v,'Close','close',inner,function()v.lookDismissed[look.key]=true end,false);S.EndWindow();return false
 end
 function UI.press(v,x,y,mouseButton)
-    if v.m.page~='table'or v.m.replay or v.m.settingsOpen or v.m.inspectCard or v.m.zoneView or v.m.confirmConcede then return false end
+    if v.m.game and v.m.game.running==false then return false end
+    if v.m.page~='table'or v.m.replay or v.m.settingsOpen or v.m.inspectCard or v.m.zoneView or v.m.confirmConcede or v.combatStopsOpen then return false end
+    if v.r and require('app.dice').busy(v.r)then return false end
+    if Combat.press(v,x,y,mouseButton)then return true end
     for i=#(v.cardChoiceHits or {}),1,-1 do local hit=v.cardChoiceHits[i]
         if contains(hit,x,y)then
             if mouseButton==2 then v.m.inspectCard=hit.card;return true end
-            if mouseButton==1 and hit.card.selectable~=false and v.cardChoiceState and not v.cardChoiceState.committing and(hit.zone=='top'or hit.zone=='bottom'or hit.zone=='graveyard')then
-                v.cardChoiceDrag={hit=hit,startX=x,startY=y,x=x,y=y};return true
+            if mouseButton==1 and not v.m.actionBusy and hit.card.selectable~=false and v.cardChoiceState and v.cardChoiceState.gameId==(v.m.game and v.m.game.gameId)and not v.cardChoiceState.committing and(hit.zone=='top'or hit.zone=='bottom'or hit.zone=='graveyard')then
+                v.cardChoiceDrag={hit=hit,startX=x,startY=y,x=x,y=y,state=v.cardChoiceState};return true
             end
         end
     end
     return false
 end
 function UI.move(v,x,y)
+    if Combat.move(v,x,y)then return true end
     local drag=v.cardChoiceDrag;if not drag then return false end
     drag.x,drag.y=x,y;drag.moved=drag.moved or math.abs(x-drag.startX)+math.abs(y-drag.startY)>5;return true
 end
 function UI.release(v,x,y,mouseButton)
+    if Combat.release(v,x,y,mouseButton)then return true end
     local drag=v.cardChoiceDrag;if mouseButton~=1 or not drag then return false end
     v.cardChoiceDrag=nil;v.cardChoiceConsumed=true
+    local prompt=v.m:prompt();local panel=prompt and prompt.cardPanel
+    if v.m.page~='table'or v.m.replay or v.m.settingsOpen or v.m.inspectCard or v.m.zoneView or v.m.confirmConcede or v.m.actionBusy or v.combatStopsOpen or v.cardChoiceState~=drag.state or drag.state.gameId~=(v.m.game and v.m.game.gameId)or not panel or tostring(panel.interactionId or prompt.id)~=drag.state.identity then return true end
     if drag.moved then for _,drop in ipairs(v.cardChoiceDrops or {})do if contains(drop,x,y)then
         local index=math.floor((x-(drop.originX or drop.x))/drop.cardW)+1;UI.place(v.cardChoiceState,drag.hit.id,drop.zone,index);break
     end end end
     return true
 end
 function UI.draw(v)
+    Combat.draw(v)
     local drag=v.cardChoiceDrag;if v.m.page~='table'or v.m.replay or v.m.settingsOpen or v.m.inspectCard or not drag or not drag.moved then return end
     love.graphics.push('all');love.graphics.setColor(1,1,1,.85);local art=image(v,drag.hit.card,110,154);love.graphics.draw(art,drag.x-55,drag.y-77,0,110/art:getWidth(),154/art:getHeight());love.graphics.pop()
 end

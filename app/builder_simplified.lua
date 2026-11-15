@@ -44,7 +44,7 @@ function Simple.build(v,w,h)
     if m.previewCard then m:getBuilderPreviewArt(m.previewCard)end
     local L=Simple.layout(w,h,m.simpleBuilderSplitRatio);m:setSearchLimit(L.pageSize)
     v:window('simple-deck-controls',L.controls.x,L.controls.y,L.controls.w,L.controls.h,nil,{AutoSizeContent=false,Border=6})
-    v:combo('simple-deck-format',deck.format,{'Modern','Standard','Pioneer','Commander'},150,function(value)m:changeDeckFormat(value)end)
+    v:combo('simple-deck-format',deck.format,m.playFormats and m:playFormats()or{'Modern','Standard','Pioneer','Commander'},150,function(value)m:changeDeckFormat(value)end)
     S.SameLine({Pad=12});if button(v,m.dirty and'Save *'or'Save','save',96,36)then m:saveDeck()end
     S.SameLine({Pad=12});if button(v,'Validate','check',108,36)then m:validateDeck()end
     S.SameLine({Pad=12});if button(v,'Preview','search',100,36)then local card=m.previewCard or m.cards[1];if card then m:selectBuilderArtwork(card);m.inspectCard=card end end
@@ -69,7 +69,7 @@ function Simple.build(v,w,h)
         if button(v,({main='Main',commander='Commander',sideboard='Sideboard'})[zone]..' '..m.count(deck,zone),({main='library',commander='commander',sideboard='cards'})[zone],152,34,{Active=m.selectedSection==zone})then m.selectedSection=zone;m.simpleDeckScroll=0 end
     end
     S.SameLine({Pad=20})
-    local text=m.mutationBusy and'Checking addition…'or m.lastBuilderError or(m.validation and(m.validation.saveAllowed and(m.validation.draft and'Incomplete deck'or'Deck check passed')or'Deck needs corrections'))or''
+    local text=m.mutationBusy and'Checking addition…'or m.lastBuilderError or(m.validation and(m.validation.saveAllowed and(m.validation.snapshotLegalityChecked==false and'XMage validation required'or m.validation.draft and'Incomplete deck'or'Deck check passed')or'Deck needs corrections'))or''
     S.Text(v.r:fit(text,math.max(200,L.deckToolbar.w-#zones*160-70),13,1),{Color=m.lastBuilderError and v.r.colors.gold or v.r.colors.muted})
     S.EndWindow();filters(v,w,h)
 end

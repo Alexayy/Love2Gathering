@@ -1,0 +1,1669 @@
+{
+  "scope": "Actual prepared preconstructed deck/packet source and genuine installed native class-resource registry, scanned asynchronously against temporary SQLite only. Implementation coverage does not prove format legality. No acquisition or user writes.",
+  "registrySha256": "7f8d86359c6a89de280047146d7b6ac2c4a4a4d091d11f2f466831d06bdb4705",
+  "engineRevision": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+  "registryRevision": "7cf259392f80a020a1561d859f4525388539582141b8bef2605ceaaeca520020",
+  "nativeNameCount": 32796,
+  "productCount": 1794,
+  "availableCount": 1668,
+  "unavailableCount": 126,
+  "seconds": 0.656,
+  "anikthea": {
+    "name": "Enduring Enchantments",
+    "state": "ready"
+  },
+  "unavailable": [
+    {
+      "id": "precon-049372441dd7043349b6",
+      "name": "Red",
+      "missingNames": [
+        "Abstract Iguanart",
+        "Boomstacker",
+        "Common Iguana",
+        "Goblin Haberdasher",
+        "Goblin S.W.A.T. Team",
+        "Infinity Elemental",
+        "Pointy Finger of Doom",
+        "Stet, Draconic Proofreader",
+        "Underdome",
+        "Yet Another Aether Vortex"
+      ],
+      "fingerprint": "34d8ff209c43d402dc29165dd56cb026608a1e4adc8b49a0bf64eb1cd6f754d6"
+    },
+    {
+      "id": "precon-05d04ac32ffb005ec5e5",
+      "name": "Planechase Anthology Planes",
+      "missingNames": [
+        "Academy at Tolaria West",
+        "Agyrem",
+        "Akoum",
+        "Aretopolis",
+        "Astral Arena",
+        "Bant",
+        "Bloodhill Bastion",
+        "Celestine Reef",
+        "Chaotic Aether",
+        "Cliffside Market",
+        "Edge of Malacol",
+        "Eloren Wilds",
+        "Feeding Grounds",
+        "Fields of Summer",
+        "Furnace Layer",
+        "Gavony",
+        "Glen Elendra",
+        "Glimmervoid Basin",
+        "Goldmeadow",
+        "Grand Ossuary",
+        "Grixis",
+        "Grove of the Dreampods",
+        "Hedron Fields of Agadeem",
+        "Horizon Boughs",
+        "Immersturm",
+        "Interplanar Tunnel",
+        "Isle of Vesuva",
+        "Izzet Steam Maze",
+        "Jund",
+        "Kessig",
+        "Kharasha Foothills",
+        "Kilnspire District",
+        "Krosa",
+        "Lair of the Ashen Idol",
+        "Lethe Lake",
+        "Llanowar",
+        "Minamo",
+        "Mirrored Depths",
+        "Morphic Tide",
+        "Mount Keralia",
+        "Murasa",
+        "Mutual Epiphany",
+        "Naar Isle",
+        "Naya",
+        "Nephalia",
+        "Norn's Dominion",
+        "Onakke Catacomb",
+        "Orochi Colony",
+        "Orzhova",
+        "Otaria",
+        "Panopticon",
+        "Planewide Disaster",
+        "Pools of Becoming",
+        "Prahv",
+        "Quicksilver Sea",
+        "Raven's Run",
+        "Reality Shaping",
+        "Sanctum of Serra",
+        "Sea of Sand",
+        "Selesnya Loft Gardens",
+        "Shiv",
+        "Skybreen",
+        "Sokenzan",
+        "Spatial Merging",
+        "Stairs to Infinity",
+        "Stensia",
+        "Stronghold Furnace",
+        "Takenuma",
+        "Talon Gates",
+        "Tazeem",
+        "Tember City",
+        "The Aether Flues",
+        "The Dark Barony",
+        "The Eon Fog",
+        "The Fourth Sphere",
+        "The Great Forest",
+        "The Hippodrome",
+        "The Maelstrom",
+        "The Zephyr Maze",
+        "Time Distortion",
+        "Trail of the Mage-Rings",
+        "Truga Jungle",
+        "Turri Island",
+        "Undercity Reaches",
+        "Velis Vel",
+        "Windriddle Palaces"
+      ],
+      "fingerprint": "96fe71d6ae9386911a6e4b6c7a295168818ba7360fe5fca0daf28011d401562d"
+    },
+    {
+      "id": "precon-06e536b41b8a4d532d83",
+      "name": "Paradox Power",
+      "missingNames": [
+        "Besieged Viking Village",
+        "Fixed Point in Time",
+        "Kerblam! Warehouse",
+        "North Pole Research Base",
+        "Psychic Paper",
+        "River Song's Diary",
+        "Singing Towers of Darillium",
+        "Stormcage Containment Facility",
+        "Temple of Atropos",
+        "The Dining Car",
+        "The Doctor's Childhood Barn",
+        "The Drum, Mining Facility",
+        "The Foretold Soldier"
+      ],
+      "fingerprint": "e56d777e9e0a1fa67afbdb4ebe166564ff09b578874579dc5d10d92727cf7de5"
+    },
+    {
+      "id": "precon-09042da5d3637292d9ab",
+      "name": "Doom Prevails",
+      "missingNames": [
+        "Archnemesis",
+        "Doom's Time Platform",
+        "Extract Power",
+        "Glorious Purpose",
+        "Helmut Zemo, Mastermind",
+        "Iron Monger, Sadistic Tycoon",
+        "Klaw, Master of Sound",
+        "Living Laser",
+        "Molecule Man",
+        "Puppet Master, String Puller",
+        "Typhoid Mary, Fractured",
+        "Ultron, Unlimited"
+      ],
+      "fingerprint": "bbc272113e85eca38444d89e86c725fef13f44137ec8d15a7003f8715b315669"
+    },
+    {
+      "id": "precon-0dd94549676304b64ad4",
+      "name": "Elven 1",
+      "missingNames": [
+        "Lothlórien Lookout"
+      ],
+      "fingerprint": "4fe2bc7a00909e7a2d862ec3033401a9a69a7bbc5d2b20325de3c93f761540e7"
+    },
+    {
+      "id": "precon-10cd09b4e1edd6ada1ef",
+      "name": "Gondor: Green-White",
+      "missingNames": [
+        "Dúnedain Blade"
+      ],
+      "fingerprint": "c741978b52cc4fa722f656c23db74a3458eded60254ec558e80d6ce28207e7a8"
+    },
+    {
+      "id": "precon-1274985c25da09d09b81",
+      "name": "Blink",
+      "missingNames": [
+        "Silver Surfer, Cosmic Voyager"
+      ],
+      "fingerprint": "b973fd3928386b73317483e3a5fe5a3eb8b85ab7c7386df358600070b1862a10"
+    },
+    {
+      "id": "precon-1322d090c37c4c1fd069",
+      "name": "Jump Scare!",
+      "missingNames": [
+        "Chaos Is My Plaything",
+        "I Am Untouchable",
+        "Kneel Before My Legions",
+        "Mine Is the Only Truth",
+        "My Laughter Echoes",
+        "Power Without Equal",
+        "You Are Unworthy of Mercy",
+        "You Will Know True Suffering",
+        "Your Own Face Mocks You",
+        "Your Plans Mean Nothing"
+      ],
+      "fingerprint": "3af3a9a005862b91735ab7b69ff5dc966018c16ebf773f3c7174cc81362d4bb6"
+    },
+    {
+      "id": "precon-1563f7996fc813d1d09c",
+      "name": "Exiler",
+      "missingNames": [
+        "Jötun Grunt"
+      ],
+      "fingerprint": "7aece68cab158108516812853be46db97de00dc306df1366a75702445ae91745"
+    },
+    {
+      "id": "precon-16fa37e7934a2c17fc4d",
+      "name": "Widowmaker - Advanced Deck",
+      "missingNames": [
+        "Sleight of Mind"
+      ],
+      "fingerprint": "948073769e7550cebdc6594b425d24fd3f71e36126745c10a07a4330d218f951"
+    },
+    {
+      "id": "precon-1815aff5eb5481eca5dc",
+      "name": "Odds and Ends",
+      "missingNames": [
+        "Exchange of Words",
+        "Space Beleren"
+      ],
+      "fingerprint": "58f4f990707168523f660931771a9a813f124106333c6abc4cb779dce2b23553"
+    },
+    {
+      "id": "precon-188eb837d25d4e62706a",
+      "name": "The Ruinous Powers Collector's Edition",
+      "missingNames": [
+        "Khârn the Betrayer"
+      ],
+      "fingerprint": "a0ccb56c1f29c1eaffb2511c73b7a1661a4759eed32b11a6f1eb6b33ff7caeb5"
+    },
+    {
+      "id": "precon-1a007a90d7866111c809",
+      "name": "White",
+      "missingNames": [
+        "Adorable Kitten",
+        "AWOL",
+        "Emcee",
+        "Flavor Judge",
+        "Frankie Peanuts",
+        "GO TO JAIL",
+        "Humming-",
+        "Knight of the Hokey Pokey",
+        "Look at Me, I'm R&D",
+        "Look at Me, I'm the DCI",
+        "Old Guard",
+        "Ordinary Pony",
+        "Staying Power",
+        "Strutting Turkey",
+        "Sword of Dungeons & Dragons",
+        "Syr Cadian, Knight Owl",
+        "Underdome"
+      ],
+      "fingerprint": "bec8bba971bcd152768e7edb09aebc82284894e1db9e0c1e03379ab87e40fb37"
+    },
+    {
+      "id": "precon-1ae3c2452edfe992cccd",
+      "name": "Savage Stompdown",
+      "missingNames": [
+        "Ekundu Cyclops"
+      ],
+      "fingerprint": "bf5ef77b9caf5a45f6a3a1d64e26350a0775af0d99d0e685fa52eabc6dee8b3d"
+    },
+    {
+      "id": "precon-1d50b83cc8f612c3560f",
+      "name": "Dandân Deck",
+      "missingNames": [
+        "Crystal Spray",
+        "Dandân",
+        "Magical Hack"
+      ],
+      "fingerprint": "c95a1326a0274dba966f8ee0348f9ca29510f1fab0fe2b5ada2013e09ef417f7"
+    },
+    {
+      "id": "precon-204c79a7ea5309ddda8e",
+      "name": "Strike Force",
+      "missingNames": [
+        "Academy at Tolaria West",
+        "Agyrem",
+        "Glimmervoid Basin",
+        "Izzet Steam Maze",
+        "Naar Isle",
+        "Otaria",
+        "Shiv",
+        "Skybreen",
+        "Sokenzan",
+        "Stronghold Furnace"
+      ],
+      "fingerprint": "af2d7a7b7981f7ab72c9c93ee188ec55a46e56d572ee1a3de15af8afb827710c"
+    },
+    {
+      "id": "precon-28a96b62ccb2a1aac394",
+      "name": "Assemble The Doomsday Machine",
+      "missingNames": [
+        "All in Good Time",
+        "Behold the Power of Destruction",
+        "Embrace My Diabolical Vision",
+        "Feed the Machine",
+        "I Delight in Your Convulsions",
+        "I Know All, I See All",
+        "Ignite the Cloneforge!",
+        "Introductions Are in Order",
+        "My Genius Knows No Bounds",
+        "Nothing Can Stop Me Now",
+        "Realms Befitting My Majesty",
+        "The Iron Guardian Stirs",
+        "The Pieces Are Coming Together",
+        "Your Fate Is Thrice Sealed",
+        "Your Puny Minds Cannot Fathom"
+      ],
+      "fingerprint": "907108b5736ab735d5bca11950d03c9a7eca707dedb39880f1159fb6cb905b7f"
+    },
+    {
+      "id": "precon-28ca4697a01eaebb31c3",
+      "name": "Avengers Assemble Collector's Edition",
+      "missingNames": [
+        "Hawkeye, Avenging Archer",
+        "Hercules, Olympian Hero",
+        "Heroic Sacrifice",
+        "Love on the Battlefield",
+        "Photon, Mighty Marvel"
+      ],
+      "fingerprint": "a44b5b5d5051c4a97fafca5f67f8572859c514d084fa3b26f6b7af9972ea4d59"
+    },
+    {
+      "id": "precon-28d52b180801d4d27d95",
+      "name": "Mordor: Black-Red",
+      "missingNames": [
+        "Grishnákh, Brash Instigator",
+        "Mauhúr, Uruk-hai Captain",
+        "The Balrog, Flame of Udûn",
+        "Uglúk of the White Hand"
+      ],
+      "fingerprint": "3c9c16886077ab6a2c6b27c99c853e03d84e636b9a0c0b8156502d7a39b203f6"
+    },
+    {
+      "id": "precon-29e317054c7f16798dba",
+      "name": "Savage Lands",
+      "missingNames": [
+        "Sauron, Dino Devotee"
+      ],
+      "fingerprint": "42662fecb4f99f5a50fbbcd43f55895c00e724dfa439dcf5a06559aa7fdde6b5"
+    },
+    {
+      "id": "precon-31b4b8d338237fbc8961",
+      "name": "Arcane Aggression",
+      "missingNames": [
+        "Ghitu Embercoiler"
+      ],
+      "fingerprint": "4be9bf06264dbae5445abc2aae2daf14b0d9ed715512ccf6b28658df580404d9"
+    },
+    {
+      "id": "precon-356311a73b7c6fd0d8c0",
+      "name": "Dominaria United Welcome Booster",
+      "missingNames": [
+        "Tura Kennerüd, Skyknight"
+      ],
+      "fingerprint": "9e5e6bfbe56f36768ec32f5f443eea7024aee4cd021b7a9c7e41543622c342c0"
+    },
+    {
+      "id": "precon-35dbb225d5f54a206094",
+      "name": "Avengers Assemble",
+      "missingNames": [
+        "Hawkeye, Avenging Archer",
+        "Hercules, Olympian Hero",
+        "Heroic Sacrifice",
+        "Love on the Battlefield",
+        "Photon, Mighty Marvel"
+      ],
+      "fingerprint": "a44b5b5d5051c4a97fafca5f67f8572859c514d084fa3b26f6b7af9972ea4d59"
+    },
+    {
+      "id": "precon-392a74c0821628200d22",
+      "name": "Elven 2",
+      "missingNames": [
+        "Lothlórien Lookout"
+      ],
+      "fingerprint": "551f7c647ba46db999f6012441c9c54f243db036708058059ae0dd3c67daeecb"
+    },
+    {
+      "id": "precon-39e56566d1c86156e642",
+      "name": "Tinker Time",
+      "missingNames": [
+        "Ghirapur",
+        "Glimmervoid Basin",
+        "Isle of Vesuva",
+        "New Argive",
+        "Planewide Disaster",
+        "Selesnya Loft Gardens",
+        "Stronghold Furnace",
+        "Ten Wizards Mountain",
+        "The Western Cloud",
+        "The Wilds"
+      ],
+      "fingerprint": "789677759461d427cf885eb5fe75bd0a2ad64959d4772333ef0ce9c78e9656c7"
+    },
+    {
+      "id": "precon-39f91cec7640a136ebc4",
+      "name": "Svend Geertsen - Green Stompy",
+      "missingNames": [
+        "Ghazbán Ogre"
+      ],
+      "fingerprint": "8e5efa547b660e33283f4fd8a89950760341a60b62503619c4cbcca9497fac0f"
+    },
+    {
+      "id": "precon-3a7a5fb9f62fec9cb216",
+      "name": "Tricksters",
+      "missingNames": [
+        "Impossible Man",
+        "Kid Loki",
+        "Loki, Lord of Misrule",
+        "Quantum Reduction"
+      ],
+      "fingerprint": "a9faadaffdd73a753075b1c1dab71ee1179db2666d1bf7f5a38da287f9fe08dd"
+    },
+    {
+      "id": "precon-3c2f9c3e27c1dc82ff19",
+      "name": "Mordor 2",
+      "missingNames": [
+        "Gríma Wormtongue"
+      ],
+      "fingerprint": "c225e301130e8800eb34c0d09a64bc255174ff45098e8d92039b6b3fce2cd6bb"
+    },
+    {
+      "id": "precon-3cd01c9173c2061827b8",
+      "name": "The Slivers",
+      "missingNames": [
+        "Ertai's Meddling"
+      ],
+      "fingerprint": "4105024f62461dd0f3fc544e4be84bcbad2baae3c76cb60a12d214f305b419e1"
+    },
+    {
+      "id": "precon-3d3bcc1a19e16d146cc4",
+      "name": "The Hosts of Mordor",
+      "missingNames": [
+        "Grishnákh, Brash Instigator",
+        "Gríma, Saruman's Footman",
+        "Lord of the Nazgûl",
+        "Troll of Khazad-dûm"
+      ],
+      "fingerprint": "5dce2e4152074188b2967f08155cb172d087b6c5692557293fa399bf83bb3741"
+    },
+    {
+      "id": "precon-3e8e47d40811c74b6f96",
+      "name": "We Are the Borg",
+      "missingNames": [
+        "Assimilate the Wounded",
+        "Assimilation Assessor",
+        "Borg Incursion",
+        "Deliver from Chaos",
+        "Extraction Integrant",
+        "Gift of Perfection",
+        "Hugh, First of Many",
+        "Queen's Diamond",
+        "Seven of Nine, Tertiary Adjunct",
+        "Shore Leave Planet",
+        "The Best of Both Worlds",
+        "The Borg Queen",
+        "Transwarp Hub",
+        "Võx, Child of the Collective"
+      ],
+      "fingerprint": "a8c5df2431410ca64ddaa4d3ca4ea9eb2a6a8d48c4bb4cfa7992c764e161ac7c"
+    },
+    {
+      "id": "precon-3f63cad66b1b856b2dd4",
+      "name": "Sylvan Wisdom",
+      "missingNames": [
+        "Arwen Undómiel",
+        "Lothlórien Lookout"
+      ],
+      "fingerprint": "73ce859977805204c6d56c41cf26a7d0d74473e76b9f2d60880c6082286f8235"
+    },
+    {
+      "id": "precon-3fd61dedba5bad961ad2",
+      "name": "Savage Salvagers",
+      "missingNames": [
+        "Diminished Returner",
+        "Gixian Recycler"
+      ],
+      "fingerprint": "cd17440bad8340c90df283e7ece53c07c2f7cdc0c5dbd5625999f1042e2bd9ad"
+    },
+    {
+      "id": "precon-404d132a4ac84bb51ca2",
+      "name": "Charging Ahead",
+      "missingNames": [
+        "Tomakul Phoenix"
+      ],
+      "fingerprint": "ae3c89674dfa38a63b7f84b423b3a526f72e79aa83e3c353a00279249062ff0b"
+    },
+    {
+      "id": "precon-43b30267cd04be8cce11",
+      "name": "Savage Auras",
+      "missingNames": [
+        "Akoum",
+        "Aretopolis",
+        "Astral Arena",
+        "Chaotic Aether",
+        "Edge of Malacol",
+        "Grove of the Dreampods",
+        "Kessig",
+        "Onakke Catacomb",
+        "Planewide Disaster",
+        "Talon Gates"
+      ],
+      "fingerprint": "501d1fc265fceaa3056e244ac8cab14207506a158b9ee6c4a6c3728e2b47f80a"
+    },
+    {
+      "id": "precon-44c40e9922b1da734e52",
+      "name": "Enchantress Rubinia",
+      "missingNames": [
+        "Illusionary Mask"
+      ],
+      "fingerprint": "e5a9442b55115ffc8dce776a9c2a7edbe171ad64e54cc4188ecc87a495f23099"
+    },
+    {
+      "id": "precon-4941edd02b9c75190368",
+      "name": "Geniuses",
+      "missingNames": [
+        "Kid Loki",
+        "Reed Richards, Smartest Man"
+      ],
+      "fingerprint": "7cfe4206f5ae37ee51ffb4795924a3cfd76cf7d033853bbf3129cc361e8d6a55"
+    },
+    {
+      "id": "precon-49e6f373fc60eef9cd98",
+      "name": "Doom Prevails Collector's Edition",
+      "missingNames": [
+        "Archnemesis",
+        "Doom's Time Platform",
+        "Extract Power",
+        "Glorious Purpose",
+        "Helmut Zemo, Mastermind",
+        "Iron Monger, Sadistic Tycoon",
+        "Klaw, Master of Sound",
+        "Living Laser",
+        "Molecule Man",
+        "Puppet Master, String Puller",
+        "Typhoid Mary, Fractured",
+        "Ultron, Unlimited"
+      ],
+      "fingerprint": "bbc272113e85eca38444d89e86c725fef13f44137ec8d15a7003f8715b315669"
+    },
+    {
+      "id": "precon-4a1990812d32bf2edcf0",
+      "name": "Federation Fleet",
+      "missingNames": [
+        "Ambassador K'Ehleyr",
+        "B'Elanna Torres, Scrapper",
+        "Cmdr. Troi, Outgoing Empath",
+        "Ensign Harry Kim, Operations",
+        "Ezri Dax, Newly Joined",
+        "Julian Bashir, Frontier Doctor",
+        "Kes, Evolving Telepath",
+        "Reg Barclay, Fidgety Fantasist",
+        "Seven of Nine, Tertiary Adjunct",
+        "Tuvok, Chief Tactical Officer",
+        "U.S.S. Enterprise-C, Time-Tossed",
+        "U.S.S. Stargazer, Here and There",
+        "Unification"
+      ],
+      "fingerprint": "a267869bef8012e3b3669f6c988b2978ae9da70694aa4e26b4280376f4e34896"
+    },
+    {
+      "id": "precon-4cc9fd337f3b8a224884",
+      "name": "Analyzed",
+      "missingNames": [
+        "Quantum Reduction",
+        "Virtual Assistant"
+      ],
+      "fingerprint": "a93ff38d1e69ff578a96289ffdcac5a575e8fe2b323f55652a6b89d2c3afa443"
+    },
+    {
+      "id": "precon-4d70739d1b8a018edcb7",
+      "name": "Scrapyard Sacrifice",
+      "missingNames": [
+        "Fallaji Antiquarian"
+      ],
+      "fingerprint": "10f06b8bcfb40e047b65c0c40e2d0f08f964d7c10385e8079e0d1ab2986b3447"
+    },
+    {
+      "id": "precon-519de1aa1c6bf1623ff7",
+      "name": "Counterargument",
+      "missingNames": [
+        "Political Triumph"
+      ],
+      "fingerprint": "83e9ac8e62c9e761f032a350206259c76a09cdc49b96a3402abf89f5c04bac4c"
+    },
+    {
+      "id": "precon-5481c603f9772d9e15be",
+      "name": "Face the Hydra",
+      "missingNames": [
+        "Disorienting Glower",
+        "Distract the Hydra",
+        "Grown from the Stump",
+        "Hydra Head",
+        "Hydra's Impenetrable Hide",
+        "Neck Tangle",
+        "Noxious Hydra Breath",
+        "Ravenous Brute Head",
+        "Savage Vigor Head",
+        "Shrieking Titan Head",
+        "Snapping Fang Head",
+        "Strike the Weak Spot",
+        "Swallow the Hero Whole",
+        "Torn Between Heads",
+        "Unified Lunge"
+      ],
+      "fingerprint": "5877fa5069d673314d6cb7e627eb38ac13e47f0beb46e0daea15b5f74153ff56"
+    },
+    {
+      "id": "precon-55137b75a62476ecca87",
+      "name": "Marauders 2",
+      "missingNames": [
+        "Grishnákh, Brash Instigator"
+      ],
+      "fingerprint": "1f5a06bcec0f30ac0d144a54e96de01a361f171e0340eff6618d2cadd1b58d42"
+    },
+    {
+      "id": "precon-5749bef5dff3b2c0c92d",
+      "name": "Scorch The World With Dragonfire",
+      "missingNames": [
+        "All Shall Smolder in My Wake",
+        "Approach My Molten Realm",
+        "I Bask in Your Silent Awe",
+        "I Delight in Your Convulsions",
+        "Introductions Are in Order",
+        "Know Naught but Fire",
+        "Look Skyward and Despair",
+        "My Crushing Masterstroke",
+        "My Wish Is Your Command",
+        "Realms Befitting My Majesty",
+        "The Fate of the Flammable",
+        "Tooth, Claw, and Tail",
+        "Which of You Burns Brightest?",
+        "Your Fate Is Thrice Sealed",
+        "Your Puny Minds Cannot Fathom"
+      ],
+      "fingerprint": "574eb39a8e3b7fcde90ff530d41746dc4bb344d2919cb8ba4a3b124947b6f4d1"
+    },
+    {
+      "id": "precon-574e994a1531bd223c02",
+      "name": "Endless Punishment",
+      "missingNames": [
+        "Fear My Authority",
+        "I Call for Slaughter",
+        "I Will Savor Your Agony",
+        "My Crushing Masterstroke",
+        "No Secret Is Hidden from Me",
+        "Reality Is Mine to Control",
+        "Running Is Useless",
+        "Séance Board",
+        "When Will You Learn?",
+        "You Exist Only to Amuse",
+        "Your Nightmares Are Delicious"
+      ],
+      "fingerprint": "fc847dc06c945766d693830803a14094ae77fa77d18dd37fb3b460b44b30a46f"
+    },
+    {
+      "id": "precon-58e7b9a154786295ea59",
+      "name": "Green",
+      "missingNames": [
+        "Bronze Calendar",
+        "Entirely Normal Armchair",
+        "Half-Squirrel, Half-",
+        "Mother Kangaroo",
+        "Pippa, Duchess of Dice",
+        "Slaying Mantis",
+        "Spirit of the Season",
+        "Squirrel Farm",
+        "Surgeon General Commander",
+        "Underdome",
+        "Who // What // When // Where // Why",
+        "Wild Crocodile"
+      ],
+      "fingerprint": "3cb158881f46a02ea1fcd19f2afeeb5f9c0a2a1714c8836a2272b1e12ef3b0ca"
+    },
+    {
+      "id": "precon-5a365819551274ed0d1c",
+      "name": "Growing Threat",
+      "missingNames": [
+        "Esper",
+        "Ketria",
+        "Naktamun",
+        "Nyx",
+        "Panopticon",
+        "Spatial Merging",
+        "The Aether Flues",
+        "The Great Forest",
+        "The Pit",
+        "Undercity Reaches"
+      ],
+      "fingerprint": "236e86a761deb341e49381d9c717298837e91597f71e194d49fa471afe0fca30"
+    },
+    {
+      "id": "precon-5e5d3cbf6102c6bf9e6e",
+      "name": "Snowscape",
+      "missingNames": [
+        "Legions of Lim-Dûl"
+      ],
+      "fingerprint": "061f3dc5224c7bc6b5da5d98a3d009eba6f9ec45181db858061e5aa85ad71e5c"
+    },
+    {
+      "id": "precon-5fd0868da2b54cd5eb3d",
+      "name": "Multiverse Reforged",
+      "missingNames": [
+        "Dack Fayden, Helping Hand",
+        "Jace, Multiverse Architect",
+        "Jhoira, Weatherlight Corsair",
+        "Teferi's Reproach"
+      ],
+      "fingerprint": "c8b4846e661b80f026939622e84e3e348af2977bc59e33314cdc83a49a4e7da1"
+    },
+    {
+      "id": "precon-60b2c69d52acaef8f29b",
+      "name": "Political Puppets",
+      "missingNames": [
+        "Jötun Grunt"
+      ],
+      "fingerprint": "59172d0f945ae2bebc317b8d2d109f6eadf7414bdd314eafd8c39ecb0d899b5e"
+    },
+    {
+      "id": "precon-61ba225f36a2c9f82e17",
+      "name": "Riders of Rohan",
+      "missingNames": [
+        "Gilraen, Dúnedain Protector",
+        "Théoden, King of Rohan",
+        "Éomer, King of Rohan",
+        "Éowyn, Shieldmaiden"
+      ],
+      "fingerprint": "a8a391dc82f9e70c78d354793a97aad3d21cd65a9a67c42c0004ab95225da037"
+    },
+    {
+      "id": "precon-64224d38ab410d0d958c",
+      "name": "Growing Hope",
+      "missingNames": [
+        "Benalish Knight-Counselor",
+        "Sylvan Smite"
+      ],
+      "fingerprint": "0f0b3b87e20873844302783ea35916bc80af1023440f5f21f753e2bb869e2162"
+    },
+    {
+      "id": "precon-6605ba363b610a1c3b5c",
+      "name": "Defeat a God",
+      "missingNames": [
+        "Dance of Flame",
+        "Dance of Panic",
+        "Ecstatic Piper",
+        "Impulsive Charge",
+        "Impulsive Destruction",
+        "Impulsive Return",
+        "Maddened Oread",
+        "Pheres-Band Revelers",
+        "Rip to Pieces",
+        "Rollicking Throng",
+        "Serpent Dancers",
+        "Wild Maenads",
+        "Xenagos Ascended",
+        "Xenagos's Scorn",
+        "Xenagos's Strike"
+      ],
+      "fingerprint": "a10aa2c418784b5d2159864963ec62f255e963d022fc72cdd1c89ed442580501"
+    },
+    {
+      "id": "precon-66b947081f3ebe7d05d2",
+      "name": "Zombie Empire",
+      "missingNames": [
+        "Cliffside Market",
+        "Fields of Summer",
+        "Grixis",
+        "Lethe Lake",
+        "Pools of Becoming",
+        "Raven's Run",
+        "Sea of Sand",
+        "The Aether Flues",
+        "The Dark Barony",
+        "The Fourth Sphere"
+      ],
+      "fingerprint": "8b95d2c5d4002a465ebcc3646e66d1f423af722da478053af05cbb10c76fa583"
+    },
+    {
+      "id": "precon-6c290e13a050e36cb682",
+      "name": "Leonardo",
+      "missingNames": [
+        "Hamato Ninpō"
+      ],
+      "fingerprint": "a20c3857784930af278280f90ecf3c514e8921fa9ad82dedca9d8640fab04acc"
+    },
+    {
+      "id": "precon-6c6aade47f7e59ce0e90",
+      "name": "White Deck",
+      "missingNames": [
+        "Dúnedain Blade"
+      ],
+      "fingerprint": "f69cd3aeeb8765d5b48ca258df1c34c569054c6c9e42c6f786d090f014e11dcf"
+    },
+    {
+      "id": "precon-6ca3b735db4b2bd7348f",
+      "name": "Family Matters",
+      "missingNames": [
+        "Zinnia, Valley's Voice"
+      ],
+      "fingerprint": "42dfaca268f9816525e442da9376d64fff6f19e0d19e2417be90ea2e86fd2828"
+    },
+    {
+      "id": "precon-71b21d5bb4e85e7be085",
+      "name": "Metallic Dreams",
+      "missingNames": [
+        "Bant",
+        "Goldmeadow",
+        "Krosa",
+        "Minamo",
+        "Panopticon",
+        "Sanctum of Serra",
+        "The Eon Fog",
+        "The Hippodrome",
+        "The Maelstrom",
+        "Undercity Reaches"
+      ],
+      "fingerprint": "4fff2bf24dd1c20d6ac432d0575d73161b673e94e59376da791c2af9de991bc1"
+    },
+    {
+      "id": "precon-788202b56b63e3965f32",
+      "name": "Mortals 1",
+      "missingNames": [
+        "Éowyn, Lady of Rohan"
+      ],
+      "fingerprint": "0997c12da206fad6038752ad6ad9ba65577555a3ee8cc7a0d796345bbd8cddb0"
+    },
+    {
+      "id": "precon-7ab96b2df83cd0716d60",
+      "name": "Ancient Arsenal",
+      "missingNames": [
+        "Surtr, Fiery Jötun"
+      ],
+      "fingerprint": "1c6e11b5f97f9a52c90cfacb6ccc812bf7b13743482553d90f280d8c561f6c79"
+    },
+    {
+      "id": "precon-7ba60dc219d5d311718a",
+      "name": "Death Toll",
+      "missingNames": [
+        "Choose Your Champion",
+        "Dark Wings Bring Your Downfall",
+        "I Am Never Alone",
+        "My Tendrils Run Deep",
+        "My Will Is Irresistible",
+        "My Wings Enfold All",
+        "Plots That Span Centuries",
+        "Rot Like the Scum You Are",
+        "Winter, Cynical Opportunist",
+        "You Live Only Because I Will It",
+        "Your Mistake Is My Triumph"
+      ],
+      "fingerprint": "f1cb788ef1b4b1d09c8645b74ae12ec0b50907e9298f3765dff5776f6aefdffd"
+    },
+    {
+      "id": "precon-7f3f418af3be1b376a42",
+      "name": "Radiant's Revenge - Enhanced Deck",
+      "missingNames": [
+        "Dandân"
+      ],
+      "fingerprint": "b8d99ed6298d83b6b371535770e012a37e0d022eddeaeb20cb191a5c9f910e24"
+    },
+    {
+      "id": "precon-82febb2248a69ed3322d",
+      "name": "Tricky Terrain",
+      "missingNames": [
+        "Desert Warfare"
+      ],
+      "fingerprint": "0ac4ce6b4bd2a9951fc9c40a5454d2588644710e1f89225efc96bbf78ac99c5f"
+    },
+    {
+      "id": "precon-84b3a68d2ae68ae0f212",
+      "name": "Divine Convocation",
+      "missingNames": [
+        "Enigma Ridges",
+        "Gavony",
+        "Hedron Fields of Agadeem",
+        "Krosa",
+        "Norn's Seedcore",
+        "Reality Shaping",
+        "Stensia",
+        "Strixhaven",
+        "The Fertile Lands of Saulvinia",
+        "Valor's Reach"
+      ],
+      "fingerprint": "52442cc3fe4aef4dd8637b40aad977a1560307013f3beb8797011dba07ecd5bb"
+    },
+    {
+      "id": "precon-84d1936d3be227ef3db5",
+      "name": "Blue Deck",
+      "missingNames": [
+        "Lórien Revealed"
+      ],
+      "fingerprint": "d6e22f1d6b9a5e8f84dd4da2dc4b0f31c355a241b4bebecc0652f93bde3e5ba3"
+    },
+    {
+      "id": "precon-857f47df39b988cf1962",
+      "name": "Timey-Wimey",
+      "missingNames": [
+        "Amy's Home",
+        "Bad Wolf Bay",
+        "Human—Time Lord Meta-Crisis",
+        "Lake Silencio",
+        "New New York",
+        "Ood Sphere",
+        "Pompeii",
+        "Prime Minister's Cabinet Room",
+        "Psychic Paper",
+        "The Lux Foundation Library",
+        "The Moment",
+        "The Pandorica",
+        "The War Doctor",
+        "Two Streams Facility"
+      ],
+      "fingerprint": "9a44c06fe6d02a3914b2a888778fd78150ff06e19b399c4f6081c8f3fb792c66"
+    },
+    {
+      "id": "precon-878ea4886048c33b5d4b",
+      "name": "Eternal Bargain",
+      "missingNames": [
+        "Lim-Dûl's Vault"
+      ],
+      "fingerprint": "fd97dc1279f90d0bce92bc6fe28398c954935848ecdfe9da9e6e91ece651111c"
+    },
+    {
+      "id": "precon-8c4c29a766ac2aab627c",
+      "name": "Incredible",
+      "missingNames": [
+        "Hulk's Thunderclap"
+      ],
+      "fingerprint": "fe79403f7e000bad5dff88577ffdd24e62d615846f7387c9f5fc0b2a4b664c06"
+    },
+    {
+      "id": "precon-8daf6c8aec4579a62578",
+      "name": "Speedy",
+      "missingNames": [
+        "Pick Up the Pace",
+        "Whirlwind, Killer Cyclone"
+      ],
+      "fingerprint": "11e45580e780e13d235981f258ddcbcf26950cf32894ddb9eda63dfcb229a732"
+    },
+    {
+      "id": "precon-90fb9915c27cf50c7db1",
+      "name": "Atlantis",
+      "missingNames": [
+        "Quantum Reduction"
+      ],
+      "fingerprint": "b561d4a26664de564e7660e85c293bfafe3295e58258b1f453bf5bcea5a025e2"
+    },
+    {
+      "id": "precon-9331988352af8ee68cbe",
+      "name": "March of the Machine Welcome Booster",
+      "missingNames": [
+        "Tura Kennerüd, Skyknight"
+      ],
+      "fingerprint": "3a0717c281853eccaeb4daa4bc5e842a627d35e9c6b9d873ca7e30a67fd68e1d"
+    },
+    {
+      "id": "precon-93730afb6290ece7dc4d",
+      "name": "The Ruinous Powers",
+      "missingNames": [
+        "Khârn the Betrayer"
+      ],
+      "fingerprint": "a0ccb56c1f29c1eaffb2511c73b7a1661a4759eed32b11a6f1eb6b33ff7caeb5"
+    },
+    {
+      "id": "precon-95202dea8ad4beb89c58",
+      "name": "Green Deck",
+      "missingNames": [
+        "Galion, Elvenking's Butler",
+        "Lothlórien Lookout",
+        "Woodland Weavemaster"
+      ],
+      "fingerprint": "8bd02c39e41f1590c76c51901c4afc393e650e8acf8da9a46906e56498af4d62"
+    },
+    {
+      "id": "precon-953123e0035dc5d63556",
+      "name": "Federation Fleet Collector's Edition",
+      "missingNames": [
+        "Ambassador K'Ehleyr",
+        "B'Elanna Torres, Scrapper",
+        "Cmdr. Troi, Outgoing Empath",
+        "Ensign Harry Kim, Operations",
+        "Ezri Dax, Newly Joined",
+        "Julian Bashir, Frontier Doctor",
+        "Kes, Evolving Telepath",
+        "Reg Barclay, Fidgety Fantasist",
+        "Seven of Nine, Tertiary Adjunct",
+        "Tuvok, Chief Tactical Officer",
+        "U.S.S. Enterprise-C, Time-Tossed",
+        "U.S.S. Stargazer, Here and There",
+        "Unification"
+      ],
+      "fingerprint": "a267869bef8012e3b3669f6c988b2978ae9da70694aa4e26b4280376f4e34896"
+    },
+    {
+      "id": "precon-95af0bf9f010687cffe1",
+      "name": "Agents of S.H.I.E.L.D.",
+      "missingNames": [
+        "Nick Fury, Spymaster",
+        "Strategic Intervention"
+      ],
+      "fingerprint": "9d6666bdf581181c1292aba80927e873c2c8b0a29f304721fe87d2751802acc5"
+    },
+    {
+      "id": "precon-9a2cf979af7ddbb0702d",
+      "name": "Miracle Worker",
+      "missingNames": [
+        "A Premonition of Your Demise",
+        "Aminatou, Veil Piercer",
+        "Behold the Power of Destruction",
+        "Choose Your Demise",
+        "I Am Duskmourn",
+        "My Champion Stands Supreme",
+        "My Followers Ascend",
+        "My Wealth Will Bury You",
+        "Only I Know What Awaits",
+        "Time Bends to My Will",
+        "You Cannot Hide from Me"
+      ],
+      "fingerprint": "25d9eb601a3280525dee5a8764aa8917dd554591fcb5778b2c46b92bb44122f9"
+    },
+    {
+      "id": "precon-9a8f2bedbf5c7d8a44a2",
+      "name": "Young Avengers",
+      "missingNames": [
+        "Hulkling, Young Avenger"
+      ],
+      "fingerprint": "e1293d799f0320bc52510cc6ae0117df0306d53d76d57736ffa828affc25a15c"
+    },
+    {
+      "id": "precon-9b3ac4c09bd1f076e713",
+      "name": "Wakanda Forever",
+      "missingNames": [
+        "Everett K. Ross, Hapless Attaché"
+      ],
+      "fingerprint": "469a0a75fa1f6e5006aaf77a17985c4d4deff0f4cc4f4e6639f3ee7db3714b0c"
+    },
+    {
+      "id": "precon-9d16ad16f5074919dcf6",
+      "name": "Wild-Eyed Frenzy",
+      "missingNames": [
+        "Ogre Enforcer"
+      ],
+      "fingerprint": "88585d5911ce1390078ca17cb7e5f5f97aaa7df0f9e0e099dcec1958ce4657d7"
+    },
+    {
+      "id": "precon-a3075616787e839cc786",
+      "name": "Blast from the Past",
+      "missingNames": [
+        "Antarctic Research Base",
+        "Caught in a Parallel Universe",
+        "Coal Hill School",
+        "Gardens of Tranquil Repose",
+        "Spectrox Mines",
+        "Susan Foreman",
+        "TARDIS Bay",
+        "The Cave of Skulls",
+        "The Cheetah Planet",
+        "The Pyramid of Mars",
+        "UNIT Headquarters"
+      ],
+      "fingerprint": "dd805665e762c5dbefd60e953ee4a6a5cfd801f10cfe6f54a3cfb6e257fd25cd"
+    },
+    {
+      "id": "precon-a8cf1037295c70e2b829",
+      "name": "Cavalry Charge",
+      "missingNames": [
+        "Inys Haen",
+        "Littjara",
+        "Mutual Epiphany",
+        "Orochi Colony",
+        "Paliano",
+        "Sokenzan",
+        "The Caldaia",
+        "Truga Jungle",
+        "Turri Island",
+        "Unyaro"
+      ],
+      "fingerprint": "e5c33d7c141459bb55a527fd019eb941642301bebc58b120a8830bdebce3a28d"
+    },
+    {
+      "id": "precon-aa4f009e067c6dcb3d8f",
+      "name": "Bring About The Undead Apocalypse",
+      "missingNames": [
+        "A Display of My Dark Power",
+        "Choose Your Champion",
+        "Dance, Pathetic Marionette",
+        "Every Hope Shall Vanish",
+        "I Delight in Your Convulsions",
+        "Introductions Are in Order",
+        "Mortal Flesh Is Weak",
+        "My Undead Horde Awakens",
+        "Only Blood Ends Your Nightmares",
+        "Realms Befitting My Majesty",
+        "Rotted Ones, Lay Siege",
+        "Surrender Your Thoughts",
+        "The Dead Shall Serve",
+        "Your Fate Is Thrice Sealed",
+        "Your Puny Minds Cannot Fathom"
+      ],
+      "fingerprint": "6810f0edcce840a5e6f730bd7feebcb5a6d5d14a0bca29ef6bd0bfcdf2cd3faa"
+    },
+    {
+      "id": "precon-ab00476bbc60609f8678",
+      "name": "Grave Secrets",
+      "missingNames": [
+        "Reezug, the Bonecobbler",
+        "Vesuvan Mist"
+      ],
+      "fingerprint": "b1999f5aac4c8900e8ba1581d932724be27d97afbf24c4237d92deb3d185823e"
+    },
+    {
+      "id": "precon-adc4ee06b7c03fd33cfe",
+      "name": "Thor",
+      "missingNames": [
+        "Mjölnir's Might",
+        "Molten Lavamancer"
+      ],
+      "fingerprint": "d875657628375210e73878be62376c8128f22c343692446b82b493d625f22532"
+    },
+    {
+      "id": "precon-b4f1c8136cf9b9ebfb6f",
+      "name": "Night Of The Ninja",
+      "missingNames": [
+        "Bloodhill Bastion",
+        "Gavony",
+        "Glen Elendra",
+        "Interplanar Tunnel",
+        "Kharasha Foothills",
+        "Morphic Tide",
+        "Norn's Dominion",
+        "Quicksilver Sea",
+        "Takenuma",
+        "The Zephyr Maze"
+      ],
+      "fingerprint": "a5ed6ca08765417c42cce6172601389d154697ba1d31f7a08bb2d2d89dbe4cc0"
+    },
+    {
+      "id": "precon-b4fb5b024d5bc69e63ba",
+      "name": "Marauders 1",
+      "missingNames": [
+        "Grishnákh, Brash Instigator"
+      ],
+      "fingerprint": "047d48ea542e70fabeb143d4cddbf99b69318de301af804b2ba63141bc34a806"
+    },
+    {
+      "id": "precon-b9ccdbafdcfe41db3640",
+      "name": "Cunning 2",
+      "missingNames": [
+        "Lórien Revealed"
+      ],
+      "fingerprint": "6aec13ed1788a3c9612f78497cb24cc105c3a4874c8c694042ad06a9b95ffdb5"
+    },
+    {
+      "id": "precon-bae7b49ad0860b21d3d0",
+      "name": "The Fantastic Four Collector's Edition",
+      "missingNames": [
+        "Cosmic Crucible",
+        "Dragon Man, Reformed Robot",
+        "First Family",
+        "Galactus, Devourer of Worlds",
+        "H.E.R.B.I.E., Lovable Robot",
+        "Lockjaw, Slobbering Teleporter",
+        "Negative Zone Portal",
+        "Power Pack",
+        "Willie Lumpkin, Postman"
+      ],
+      "fingerprint": "d15bddf14239c7bf9887370b4872aaeb2e93bbd2f94c88540082f220bc8937a6"
+    },
+    {
+      "id": "precon-bcc584809b562a8a06cb",
+      "name": "Journey 1",
+      "missingNames": [
+        "Dúnedain Rangers"
+      ],
+      "fingerprint": "e9c84aa8640dd11d511ae55af872520294e2ffc0ea5b5792ab2c9efccdcf034b"
+    },
+    {
+      "id": "precon-bfa1f709b7318baa55c8",
+      "name": "Pym Particles",
+      "missingNames": [
+        "Quantum Reduction"
+      ],
+      "fingerprint": "6de6464018bdfa275e01224065057675a148beeab769e732c9b19efe3f525ac1"
+    },
+    {
+      "id": "precon-bfa224f928049980367b",
+      "name": "Archenemy Nicol Bolas",
+      "missingNames": [
+        "A Reckoning Approaches",
+        "Because I Have Willed It",
+        "Behold My Grandeur",
+        "Bow to My Command",
+        "Choose Your Demise",
+        "Delight in the Hunt",
+        "Every Dream a Nightmare",
+        "For Each of You, a Gift",
+        "Know Evil",
+        "Make Yourself Useful",
+        "My Forces Are Innumerable",
+        "My Laughter Echoes",
+        "No One Will Hear Your Cries",
+        "Pay Tribute to Me",
+        "Power Without Equal",
+        "The Mighty Will Fall",
+        "There Is No Refuge",
+        "This World Belongs to Me",
+        "What's Yours Is Now Mine",
+        "When Will You Learn?"
+      ],
+      "fingerprint": "5d26b6f724c7a6269e9316bd0718abf70bd563b1b37e07e59d6e2ee8499b3501"
+    },
+    {
+      "id": "precon-bfae65f9f85cfe0cc93b",
+      "name": "High-Flying Valor",
+      "missingNames": [
+        "By Elspeth's Command",
+        "Patchplate Resolute"
+      ],
+      "fingerprint": "95310bb438ef12c172d1d575a0d20e671223310ecf98a8a791a2fdd9666aff0a"
+    },
+    {
+      "id": "precon-c4581a1e85bc0899b34b",
+      "name": "Wakanda Forever Collector's Edition",
+      "missingNames": [
+        "Everett K. Ross, Hapless Attaché"
+      ],
+      "fingerprint": "469a0a75fa1f6e5006aaf77a17985c4d4deff0f4cc4f4e6639f3ee7db3714b0c"
+    },
+    {
+      "id": "precon-c49266366eb5372538b4",
+      "name": "Blood Rites",
+      "missingNames": [
+        "Bartolomé del Presidio",
+        "Clavileño, First of the Blessed"
+      ],
+      "fingerprint": "a1b44a178a6495a52436a0a47b57a4255fd7b1f03ca87cba9f14eb53f27eb66b"
+    },
+    {
+      "id": "precon-c5aa3c003b4247ce88d2",
+      "name": "Riders 2",
+      "missingNames": [
+        "Éomer of the Riddermark"
+      ],
+      "fingerprint": "465c60fa8d9e5af2650f7fbc60f4be2b1a5ff9b924b3627eb32043105081e0e3"
+    },
+    {
+      "id": "precon-caea36d575e65d7e20af",
+      "name": "Rebel Armory",
+      "missingNames": [
+        "Bladehold Cleaver",
+        "Hexgold Sledge",
+        "Kemba's Outfitter"
+      ],
+      "fingerprint": "261e0799de6fd387ce80fbb2f9ac399286945404267a3548f7c8edc1fe9fd075"
+    },
+    {
+      "id": "precon-cb36ce883315bb383c59",
+      "name": "Masters of Evil",
+      "missingNames": [
+        "Aplan Mortarium",
+        "Bowie Base One",
+        "City of the Daleks",
+        "Cyber Conversion",
+        "Cybership",
+        "Dalek Intensive Care",
+        "Death in Heaven",
+        "Don't Blink",
+        "Doomsday Confluence",
+        "Hotel of Fears",
+        "Missy",
+        "Mondassian Colony Ship",
+        "Rassilon, the War President",
+        "The Cyber-Controller",
+        "The Doctor's Tomb",
+        "The Matrix of Time",
+        "The Moonbase",
+        "Unleash the Flux"
+      ],
+      "fingerprint": "3b5a949aadce535da529329bdf73969492a369fa468075c5647eb804244c1e05"
+    },
+    {
+      "id": "precon-cc3c878095b3e3e91831",
+      "name": "Tricky Terrain Collector's Edition",
+      "missingNames": [
+        "Desert Warfare"
+      ],
+      "fingerprint": "0ac4ce6b4bd2a9951fc9c40a5454d2588644710e1f89225efc96bbf78ac99c5f"
+    },
+    {
+      "id": "precon-cc48e8d9a8f2eea311b0",
+      "name": "Call for Backup",
+      "missingNames": [
+        "Bloodhill Bastion",
+        "Chaotic Aether",
+        "Grove of the Dreampods",
+        "Jund",
+        "Kharasha Foothills",
+        "Megaflora Jungle",
+        "Riptide Island",
+        "The Golden City of Orazca",
+        "The Great Aerie",
+        "Towashi"
+      ],
+      "fingerprint": "52cfb65de69e5ca78b0ac5a1111a2cab0c09205a4ed77dd6717a0b80e1a1de50"
+    },
+    {
+      "id": "precon-cc9c13e7a3ea102ab6f2",
+      "name": "Landing Party Collector's Edition",
+      "missingNames": [
+        "Chief Montgomery Scott",
+        "Colossal Clone Master",
+        "Janice Rand, Essential Aide",
+        "Lieutenant Nyota Uhura",
+        "Lt. Arex, Ever-Adapting",
+        "Merciful Mandate",
+        "Pavel Chekov, First Posting",
+        "Planet Killer",
+        "S.S. Botany Bay",
+        "Shore Leave Planet",
+        "T'Pring, Never Parted",
+        "The Guardian of Forever",
+        "U.S.S. Farragut, Bold Explorer"
+      ],
+      "fingerprint": "a63f78589d52f550996fdcdd0eb37ba9f21687c11669ba2d90216d722f2f8163"
+    },
+    {
+      "id": "precon-cd435ad3d083edbd5a0d",
+      "name": "Fate Blaster",
+      "missingNames": [
+        "Dandân"
+      ],
+      "fingerprint": "3402052477f24816da7541ae75b0eb95a34e3d1574f474deb2b4e01281b03d48"
+    },
+    {
+      "id": "precon-d0d58c643129a3924e75",
+      "name": "Elemental Thunder",
+      "missingNames": [
+        "Eloren Wilds",
+        "Feeding Grounds",
+        "Immersturm",
+        "Isle of Vesuva",
+        "Llanowar",
+        "Murasa",
+        "Naya",
+        "The Great Forest",
+        "Turri Island",
+        "Velis Vel"
+      ],
+      "fingerprint": "ecab80804ce3c5dcd26357c413af75f249569d3ee5d6e736df3a4ed503310e74"
+    },
+    {
+      "id": "precon-d0fdc2fc3814390a4e32",
+      "name": "Black",
+      "missingNames": [
+        "Acornelia, Fashionable Filcher",
+        "Bat-",
+        "Dirty Rat",
+        "Duh",
+        "Enter the Dungeon",
+        "Hoisted Hireling",
+        "Infernal Spawn of Infernal Spawn of Evil",
+        "Infernius Spawnington III, Esq.",
+        "Skull Saucer",
+        "Stinging Scorpion",
+        "Underdome"
+      ],
+      "fingerprint": "2b0433d233b6365a57810e6617e63df37a442353f3127e307f7bcf7a4bec9251"
+    },
+    {
+      "id": "precon-d3373a4e7d78fe390a5b",
+      "name": "Ultron",
+      "missingNames": [
+        "Robot Domination"
+      ],
+      "fingerprint": "534b91360cb5cb6d0a620626f61b7eca96126bf7c5ec63642d3101adadf6e53f"
+    },
+    {
+      "id": "precon-d419c364356e53d1958f",
+      "name": "Mordor 1",
+      "missingNames": [
+        "Nazgûl"
+      ],
+      "fingerprint": "2e6f6630058286d9693fd7c89e48d80826032092e15eaa31b21890097650d3d9"
+    },
+    {
+      "id": "precon-d41c42df77812196bd3d",
+      "name": "Elven Council",
+      "missingNames": [
+        "Círdan the Shipwright",
+        "Haldir, Lórien Lieutenant",
+        "Lothlórien Blade",
+        "Lórien Revealed",
+        "Song of Eärendil"
+      ],
+      "fingerprint": "6a43c98aba423ab1185a83f3e68a7f07839559dd13723ac89287960ab7fd67da"
+    },
+    {
+      "id": "precon-d4b1f560451697b899c6",
+      "name": "Klingon Fury Collector's Edition",
+      "missingNames": [
+        "Alexander, Ship's Fool",
+        "Ambassador K'Ehleyr",
+        "Grilka, Widowed Warrior",
+        "Kang, Suspicious Captain",
+        "Merciful Mandate",
+        "Qo'noS Quartermaster",
+        "Right of Vengeance",
+        "Sins of the Father",
+        "The Promise of Kahless"
+      ],
+      "fingerprint": "ccbba6ec0451cbf45f751327cac821df6d63359f412db267853147d62e1ee6f6"
+    },
+    {
+      "id": "precon-da2f9c84c7302152757f",
+      "name": "Black Deck",
+      "missingNames": [
+        "Troll of Khazad-dûm"
+      ],
+      "fingerprint": "92ea3db9f2e4dfed4c76039a0a4dff709be3fe066743debc429c8c44041d8390"
+    },
+    {
+      "id": "precon-da41279e0aea60529cf6",
+      "name": "Riders 1",
+      "missingNames": [
+        "Éomer of the Riddermark"
+      ],
+      "fingerprint": "34ca60f45e4c027d29b4ef1c2564aa1383575fe8983a3c3b6424522d7b13cdda"
+    },
+    {
+      "id": "precon-da78f850ec59e3f0284c",
+      "name": "Landing Party",
+      "missingNames": [
+        "Chief Montgomery Scott",
+        "Colossal Clone Master",
+        "Janice Rand, Essential Aide",
+        "Lieutenant Nyota Uhura",
+        "Lt. Arex, Ever-Adapting",
+        "Merciful Mandate",
+        "Pavel Chekov, First Posting",
+        "Planet Killer",
+        "S.S. Botany Bay",
+        "Shore Leave Planet",
+        "T'Pring, Never Parted",
+        "The Guardian of Forever",
+        "U.S.S. Farragut, Bold Explorer"
+      ],
+      "fingerprint": "a63f78589d52f550996fdcdd0eb37ba9f21687c11669ba2d90216d722f2f8163"
+    },
+    {
+      "id": "precon-da82bc089f6a1afda4aa",
+      "name": "Chaos Reigns",
+      "missingNames": [
+        "Grand Ossuary",
+        "Hedron Fields of Agadeem",
+        "Mount Keralia",
+        "Mutual Epiphany",
+        "Nephalia",
+        "Orzhova",
+        "Time Distortion",
+        "Trail of the Mage-Rings",
+        "Truga Jungle",
+        "Windriddle Palaces"
+      ],
+      "fingerprint": "ec42b6364a75152b0eb9f3092d2f8b82853048dc67273cbe7011d49370af7fec"
+    },
+    {
+      "id": "precon-dec359fc5a45270c2697",
+      "name": "Battle the Horde",
+      "missingNames": [
+        "Altar of Mogis",
+        "Consuming Rage",
+        "Descend on the Prey",
+        "Intervention of Keranos",
+        "Massacre Totem",
+        "Minotaur Goreseeker",
+        "Minotaur Younghorn",
+        "Mogis's Chosen",
+        "Phoberos Reaver",
+        "Plundered Statue",
+        "Reckless Minotaur",
+        "Refreshing Elixir",
+        "Touch of the Horned God",
+        "Vitality Salve"
+      ],
+      "fingerprint": "3a67d1b36799f383014301a84f761e9268d32cf72817ed819c90151bf168ab52"
+    },
+    {
+      "id": "precon-e93f39adce3d68896dfc",
+      "name": "Finkel",
+      "missingNames": [
+        "Lim-Dûl's High Guard"
+      ],
+      "fingerprint": "1dee04ac80ba41df5790d8022609f93439dfdc71188d6ef2f53ffb815df99d97"
+    },
+    {
+      "id": "precon-e9f956a7c4c0ded4a369",
+      "name": "Primordial Hunger",
+      "missingNames": [
+        "Furnace Layer",
+        "Jund",
+        "Kilnspire District",
+        "Lair of the Ashen Idol",
+        "Orochi Colony",
+        "Prahv",
+        "Reality Shaping",
+        "Selesnya Loft Gardens",
+        "Spatial Merging",
+        "Stensia"
+      ],
+      "fingerprint": "b9f5e021ccba0f5976205726ca68cfef50b4820f9e80a3022d053cd10cc83f0c"
+    },
+    {
+      "id": "precon-eaae6cfcaa4fe2fea974",
+      "name": "Revenant Recon",
+      "missingNames": [
+        "Eye of Duskmantle"
+      ],
+      "fingerprint": "c6b4e435123741d7890b562c9847e8c1ec9465e619126fadfa96942b3e73b3da"
+    },
+    {
+      "id": "precon-eab66edb4a995bf84ceb",
+      "name": "Blue",
+      "missingNames": [
+        "Alexander Clamilton",
+        "Avatar of Me",
+        "B.O.B. (Bevy of Beebles)",
+        "Carnivorous Death-Parrot",
+        "Cheatyface",
+        "Chicken à la King",
+        "Common Courtesy",
+        "Magic Word",
+        "Mer Man",
+        "Richard Garfield, Ph.D.",
+        "Rings a Bell",
+        "Topsy Turvy",
+        "Underdome",
+        "Wall of Fortune",
+        "Water Gun Balloon Game"
+      ],
+      "fingerprint": "358eaaf19d1e833df43b2481c897d7fa996d8caf9083fc33b2af1f161d6802b6"
+    },
+    {
+      "id": "precon-f1b8cb39bde418b391e0",
+      "name": "Conniving",
+      "missingNames": [
+        "Kid Loki"
+      ],
+      "fingerprint": "fb94ce23b32b8609fd040240a7ac2e00b9b124bff951a5e235eac9409ca23b27"
+    },
+    {
+      "id": "precon-f2f34d792325a01562fb",
+      "name": "The Fantastic Four",
+      "missingNames": [
+        "Cosmic Crucible",
+        "Dragon Man, Reformed Robot",
+        "First Family",
+        "Galactus, Devourer of Worlds",
+        "H.E.R.B.I.E., Lovable Robot",
+        "Lockjaw, Slobbering Teleporter",
+        "Negative Zone Portal",
+        "Power Pack",
+        "Willie Lumpkin, Postman"
+      ],
+      "fingerprint": "d15bddf14239c7bf9887370b4872aaeb2e93bbd2f94c88540082f220bc8937a6"
+    },
+    {
+      "id": "precon-f5bb9e282c892a68568f",
+      "name": "Scarlet",
+      "missingNames": [
+        "Molten Lavamancer"
+      ],
+      "fingerprint": "9b574018d637e7e701364144a5c4f6c69d23257d8e3a8cb8fe94f98491260d08"
+    },
+    {
+      "id": "precon-f607b4a92049b8624fbd",
+      "name": "Kjeldoran Cunning",
+      "missingNames": [
+        "Jötun Grunt",
+        "Jötun Owl Keeper"
+      ],
+      "fingerprint": "dddab30d9bc5ed492c725698c35ca49b8644251911f938ffb88616910c94300c"
+    },
+    {
+      "id": "precon-faa14d686e9848a9a8ab",
+      "name": "Trample Civilization Underfoot",
+      "missingNames": [
+        "Every Last Vestige Shall Rot",
+        "Evil Comes to Fruition",
+        "I Call on the Ancient Magics",
+        "I Delight in Your Convulsions",
+        "Into the Earthen Maw",
+        "Introductions Are in Order",
+        "May Civilization Collapse",
+        "Nature Demands an Offering",
+        "Nature Shields Its Own",
+        "Realms Befitting My Majesty",
+        "Roots of All Evil",
+        "The Very Soil Shall Shake",
+        "Your Fate Is Thrice Sealed",
+        "Your Puny Minds Cannot Fathom",
+        "Your Will Is Not Your Own"
+      ],
+      "fingerprint": "859ef399b1943be4f5f6ffe2b791fafc02b1605839da5deb84f25b7f1ea835f2"
+    },
+    {
+      "id": "precon-fc154bff060e37c3997e",
+      "name": "We Are the Borg Collector's Edition",
+      "missingNames": [
+        "Assimilate the Wounded",
+        "Assimilation Assessor",
+        "Borg Incursion",
+        "Deliver from Chaos",
+        "Extraction Integrant",
+        "Gift of Perfection",
+        "Hugh, First of Many",
+        "Queen's Diamond",
+        "Seven of Nine, Tertiary Adjunct",
+        "Shore Leave Planet",
+        "The Best of Both Worlds",
+        "The Borg Queen",
+        "Transwarp Hub",
+        "Võx, Child of the Collective"
+      ],
+      "fingerprint": "a8c5df2431410ca64ddaa4d3ca4ea9eb2a6a8d48c4bb4cfa7992c764e161ac7c"
+    },
+    {
+      "id": "precon-ff35be72290887195c10",
+      "name": "Legions of Phyrexia",
+      "missingNames": [
+        "March Toward Perfection"
+      ],
+      "fingerprint": "0b75315a948ea5e9797766c89b6e4651bd8ec66270825daa69538bd72d809f88"
+    },
+    {
+      "id": "precon-ff460f31bf119ba8478e",
+      "name": "Exit from Exile",
+      "missingNames": [
+        "Durnan of the Yawning Portal"
+      ],
+      "fingerprint": "fae5cce395a08b5722b6c4aee56269524b09358b1dc2399714d10b72a639d196"
+    },
+    {
+      "id": "precon-ffb3ba92f726d714e62f",
+      "name": "Klingon Fury",
+      "missingNames": [
+        "Alexander, Ship's Fool",
+        "Ambassador K'Ehleyr",
+        "Grilka, Widowed Warrior",
+        "Kang, Suspicious Captain",
+        "Merciful Mandate",
+        "Qo'noS Quartermaster",
+        "Right of Vengeance",
+        "Sins of the Father",
+        "The Promise of Kahless"
+      ],
+      "fingerprint": "ccbba6ec0451cbf45f751327cac821df6d63359f412db267853147d62e1ee6f6"
+    }
+  ],
+  "cachedResults": 1743
+}

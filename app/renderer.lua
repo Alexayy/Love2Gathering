@@ -4,6 +4,7 @@ local Table=require('app.table')
 local RichText=require('app.richtext')
 local Text=require('app.utf8_text')
 local Board=require('app.board_fx')
+local Presentation=require('app.card_presentation')
 local utf8=require('utf8')
 local Renderer={};Renderer.__index=Renderer
 local C={bg={.026,.036,.060},panel={.055,.073,.106},line={.15,.21,.28},text={.90,.94,.98},muted={.46,.56,.66},accent={.28,.89,.72},purple={.62,.48,.96},red={1,.39,.40},gold={.98,.74,.34}}
@@ -36,9 +37,25 @@ function Renderer:strong(text,x,y,size,tint,width,align)
     if width then love.graphics.printf(text,0,0,width,align or'left')else love.graphics.print(text,0,0)end
     love.graphics.pop()
 end
+function Renderer:outlinedStrong(text,x,y,size,tint,outline,width)
+    for _,offset in ipairs({{-2,0},{2,0},{0,-2},{0,2},{-1.5,-1.5},{1.5,-1.5},{-1.5,1.5},{1.5,1.5}})do
+        self:strong(text,x+offset[1],y+offset[2],size,outline,width,'center')
+    end
+    self:strong(text,x,y,size,tint,width,'center')
+end
 function Renderer:playerColor(player)return Board.color(self,player)end
 function Renderer:drawPermanent(card,x,y,w,h,options)return Board.layers(self,card,x,y,w,h,options)end
 function Renderer:priorityBadge(player,x,y,w,height)return Board.priority(self,player,x,y,w,height)end
+function Renderer:commanderSummary(player,x,y,w,size)
+    local enabled=(self.model.game or{}).commanderDamageEnabled
+    local summary=Presentation.commanderDamageSummary(player,enabled)
+    if not summary then return end
+    local tint=enabled and C.gold or C.muted
+    self.assets:iconSymbol('commander',x,y+1,14,tint)
+    self:strong(self:fit(summary,w-19,size or 11,1),x+19,y,size or 11,tint,w-19)
+    self:hit({x=x,y=y-2,w=w,h=20,kind='player',card={id=player.id,name=player.name},
+        tooltip=Presentation.playerTooltip(player,enabled),commanderDetails=true})
+end
 function Renderer:drawAvatar(player,x,y,size)
     local m=self.model;local profile=player and m.profileForPlayer and m:profileForPlayer(player)or m.profile or{}
     local density=Layout.scale*(Layout.renderScale or 1)*(self.worldTransform and self.worldTransform.scale or 1)*(love.window and love.window.getDPIScale and love.window.getDPIScale()or 1)
@@ -147,8 +164,29 @@ function Renderer:iconLabel(icon,label,x,y,w,h,size,tint,iconSize)
     self.assets:iconSymbol(icon,x,y+(h-iconSize)/2,iconSize,tint)
     self:text(label,x+iconSize+8,y+(h-self.fonts[size]:getHeight())/2+require('app.fonts').textOffset(self.fonts[size],label),size,tint,w-iconSize-8)
 end
+function Renderer:cardHeader(card,data,x,y,w,h)
+    local cost=Presentation.manaCost(card,data);local iconSize=w<100 and 13 or 16
+    local layout=RichText.layout(self,cost,4096,{size=12,iconSize=iconSize,iconGap=1})
+    local costW=0;for _,run in ipairs(layout.runs)do costW=math.max(costW,run.x+run.w)end
+    local damageReserve=(tonumber(card.damage)or 0)>0 and w<100 and 17 or 0
+    local inline=costW==0 or costW<=w-16-damageReserve-math.min(60,w*.38)
+    local compact=h<100;local headerH=inline and 24 or(compact and 36 or 42)
+    rect(x+1,y+1,w-2,headerH,{.015,.023,.04,.96},4)
+    local nameW=w-12-damageReserve-(inline and costW>0 and costW+5 or 0)
+    self:strong(self:fit(card.name or data.name or'Card',nameW,14,1),x+6,y+4,14,C.text,nameW)
+    if costW>0 then
+        local scale=inline and 1 or math.min(1,(w-10)/costW)
+        local costX=inline and(x+w-6-damageReserve-costW)or(x+(w-costW*scale)/2)
+        local costY=inline and(y+(24-iconSize)/2+1)or(y+(compact and 21 or 24))
+        love.graphics.push();love.graphics.translate(costX,costY);love.graphics.scale(scale)
+        RichText.draw(self,cost,0,0,costW,{layout=layout});love.graphics.pop()
+    end
+    return headerH
+end
 function Renderer:drawCard(card,x,y,w,h,options)
-    options=options or {};options.back=options.back or card.hidden
+    options=options or {};options.back=options.back or card.hidden or card.faceDown
+    local boardCard=options.kind=='permanent'or options.kind=='attachment'or options.kind=='command'
+    local publicFaceDown=card.faceDown==true and(boardCard or options.fullImage==true)
     local angle=options.angle or (card.tapped and math.pi/2 or 0)
     if options.animate and card.id then
         local key=(self.worldTransform and 'world:' or 'screen:')..card.id;local target={x=x,y=y,w=w,h=h,angle=angle};local pose=self.poses[key]
@@ -165,6 +203,7 @@ function Renderer:drawCard(card,x,y,w,h,options)
     if self.drag and self.drag.card and self.drag.card.id==card.id and not options.noHit then return end
     love.graphics.push();love.graphics.translate(x+w/2,y+h/2);love.graphics.rotate(angle)
     local bx,by=-w/2,-h/2
+    local headerH=24
     rect(bx+3,by+5,w,h,{.005,.009,.016,.6},7)
     if options.back then
         if not self.assets.cardBack or not self.assets:cardBack(bx,by,w,h,self.model.settings.cardBackStyle)then
@@ -181,6 +220,7 @@ function Renderer:drawCard(card,x,y,w,h,options)
         end
         rect(bx-2,by-2,w+4,h+4,selectable and C.accent or { .21,.25,.32 },7)
         if img then color({1,1,1});love.graphics.draw(img,bx,by,0,w/img:getWidth(),h/img:getHeight())
+            if boardCard then headerH=self:cardHeader(card,data,bx,by,w,h)end
         elseif options.imageOnly then
             rect(bx,by,w,h,{.075,.095,.13},6)
             local size=h<180 and 10 or 12;local icon=math.min(w*.32,36)
@@ -194,8 +234,9 @@ function Renderer:drawCard(card,x,y,w,h,options)
             if colors[1]=='G' then tint=C.accent elseif colors[1]=='R' then tint=C.red elseif colors[1]=='U' then tint={.28,.58,.94} elseif colors[1]=='W' then tint=C.gold end
             rect(bx+5,by+26,w-10,h*.39,{tint[1]*.33,tint[2]*.33,tint[3]*.33},3)
             color(tint,.5);love.graphics.circle('line',0,by+26+h*.20,w*.21)
-            local nameSize=w<100 and 10 or 12
-            self:strong(self:fit(data.name or card.name or'Unknown',w-14,nameSize,2),bx+7,by+6,nameSize,C.text,w-14)
+            local nameSize=boardCard and 14 or(w<100 and 10 or 12)
+            if boardCard then headerH=self:cardHeader(card,data,bx,by,w,h)
+            else self:strong(self:fit(data.name or card.name or'Unknown',w-14,nameSize,2),bx+7,by+6,nameSize,C.text,w-14)end
             self:text(self:fit(data.type_line or card.type or '',w-12,10,2),bx+6,by+h*.57,10,C.muted,w-12)
             if w>=180 then
                 local text=data.oracle_text or card.rules or ''
@@ -205,28 +246,27 @@ function Renderer:drawCard(card,x,y,w,h,options)
                 -- split native punctuation or a multibyte translated name.
                 RichText.draw(self,text,bx+7,by+h*.68,w-14,{size=10,iconSize=11,color=C.text,maxLines=3})
             end
-                local cost=data.mana_cost or card.manaCost or '';if cost~='' then self.assets:mana(cost,bx+7,by+h-19,13) end
+                local cost=data.mana_cost or card.manaCost or '';if cost~=''and not boardCard then self.assets:mana(cost,bx+7,by+h-19,13) end
         end
-        if not options.imageOnly and card.power and card.toughness and (tostring(data.type_line or card.type or ''):lower():find('creature',1,true) or card.power~='0' or card.toughness~='0') then
-            local badgeW=math.min(w-4,math.max(45,w*.32));local size=w>=100 and 16 or 13
-            rect(bx+w-badgeW-1,by+h-27,badgeW,26,{.025,.045,.075,.98},4)
-            self:strong(tostring(card.power)..'/'..tostring(card.toughness),bx+w-badgeW,by+h-24,size,C.text,badgeW-2,'center')
-        end
-        if card.damage and tonumber(card.damage) and tonumber(card.damage)>0 then rect(bx,by+h-22,28,21,C.red,4);self:text(card.damage,bx,by+h-20,12,C.text,28,'center') end
+    end
+    -- Only native public battlefield fields may decorate an anonymous back.
+    -- Hidden hands/piles do not gain overlays from mere card visibility.
+    if not options.back or publicFaceDown then
         if card.attacking then
             color(C.red);love.graphics.setLineWidth(3);love.graphics.rectangle('line',bx-3,by-3,w+6,h+6,6,6)
             self.assets:iconSymbol('attack',bx+w-22,by+5,20,C.red)
         end
         local traits=require('app.card_traits').entries(card)
-        if#traits>0 and not options.imageOnly then
-            local icon=math.max(12,math.min(21,w*.16));local capacity=math.max(1,math.floor((w-10)/(icon+3)));local count=math.min(capacity,#traits)
-            local ty=by+h*.26
+        local hasCounters=false;for _,value in pairs(type(card.counters)=='table'and card.counters or{})do if(type(value)=='table'and tonumber(value.count or value.amount)or tonumber(value)or 0)~=0 then hasCounters=true;break end end
+        if#traits>0 and not options.imageOnly and(h>=170 or not hasCounters)then
+            local icon=h<170 and 16 or math.max(16,math.min(26,w*.20));local capacity=math.max(1,math.floor((w-10)/(icon+4)));local count=math.min(capacity,#traits)
+            local ty=by+(h<170 and headerH+3 or math.max(headerH+26,h*.26))
             rect(bx+3,ty-2,count*(icon+3)+4,icon+4,{.018,.03,.05,.94},3)
             for i=1,count do local entry=traits[i];local tx=bx+5+(i-1)*(icon+3)
                 if entry.icon then self.assets:iconSymbol(entry.icon,tx,ty,icon,entry.gained and C.gold or C.text)end
             end
-            if(traits[1].gained or not traits[1].icon)and w>=96 then
-                local size=w>=180 and 14 or 11
+            if(traits[1].gained or not traits[1].icon)and w>=96 and h>=170 then
+                local size=w>=180 and 16 or 14
                 rect(bx+3,ty+icon+4,w-6,size+7,{.10,.065,.02,.97},3)
                 self:strong(self:fit(traits[1].label,w-12,size,1),bx+6,ty+icon+7,size,C.gold,w-12)
             end
@@ -238,19 +278,63 @@ function Renderer:drawCard(card,x,y,w,h,options)
             end
             table.sort(labels,function(a,b)return a.name<b.name end)
             if #labels>0 then
-                local bh=math.min(40,20*#labels);rect(bx,by+h*.47,w,bh,{.10,.055,.18,.98},3)
-                for i=1,math.min(2,#labels)do
-                    local entry=labels[i];local cy=by+h*.47+(i-1)*20+1
+                local compact=h<170;local tight=h<100 and headerH>24;local rowH=compact and(tight and 16 or 20)or 26;local count=math.min(compact and 1 or 2,#labels);local counterY=compact and headerH+1 or h*.47
+                rect(bx,by+counterY,w,rowH*count,{.10,.055,.18,.98},3)
+                for i=1,count do
+                    local entry=labels[i];local cy=by+counterY+(i-1)*rowH+1;local size=compact and(tight and 11 or 12)or 14
                     if self.model.settings.counterStyle=='Dice'and self.assets.counterBadge then
-                        self.assets:counterBadge(entry.count,bx+3,cy,18,'Dice',C.gold)
-                        self:strong(self:fit(entry.name,w-29,12,1),bx+26,cy+2,12,C.gold,w-29)
-                    else self:strong(self:fit(tostring(entry.count)..': '..entry.name,w-8,12,1),bx+4,cy+2,12,C.gold,w-8)end
+                        self.assets:counterBadge(entry.count,bx+3,cy,compact and(tight and 14 or 18)or 23,'Dice',C.gold)
+                        local tx=compact and(tight and 20 or 24)or 30
+                        self:strong(self:fit(entry.name,w-tx-3,size,1),bx+tx,cy+2,size,C.gold,w-tx-3)
+                    else self:strong(self:fit(tostring(entry.count)..': '..entry.name,w-8,size,1),bx+4,cy+2,size,C.gold,w-8)end
                 end
             end
         end
     end
+    local stats=not options.imageOnly and Presentation.stats(card)
+    if stats and(not card.hidden or publicFaceDown)then
+        local badgeW=math.min(w-4,math.max(51,w*.39));local size=w>=100 and 20 or 16
+        local tight=h<100 and headerH>24;local badgeH=tight and 26 or 30;local statsY=by+h-badgeH+2
+        rect(bx+w-badgeW-1,by+h-badgeH-1,badgeW,badgeH,{.015,.025,.045,.98},4)
+        if stats.damage>0 and stats.remaining~=nil then
+            local prefix=tostring(card.power)..'/'
+            local defense=tostring(stats.remaining)
+            local font=self.assets.titleFont and self.assets:titleFont(size,self.model.settings)or self.bold
+            local start=bx+w-badgeW+((badgeW-2)-font:getWidth(prefix..defense))/2
+            self:strong(prefix,start,statsY,size,C.text)
+            self:strong(defense,start+font:getWidth(prefix),statsY,size,C.red)
+        else self:strong(stats.shown,bx+w-badgeW,statsY,size,C.text,badgeW-2,'center')end
+        if stats.damage>0 then
+            if w>=100 then
+                rect(bx+1,by+h-31,39,30,{.23,.035,.045,.98},4)
+                self:strong(tostring(stats.damage),bx+2,by+h-27,18,C.red,37,'center')
+            else
+                rect(bx+w-19,by+2,17,21,{.23,.035,.045,.98},3)
+                self:strong(tostring(stats.damage),bx+w-18,by+5,12,C.red,15,'center')
+            end
+        end
+    end
+    local commander=boardCard and(self.boardCommanders or{})[card.id]
+    if commander and not card.hidden then
+        rect(bx+1,by+h-55,w-2,23,{.09,.055,.025,.98},3)
+        self.assets:iconSymbol('commander',bx+4,by+h-52,17,C.gold)
+        local cost=type(commander.additionalTax)=='table'and commander.additionalTax.manaCost
+        local showCost=w>=100 and type(cost)=='string'and cost~=''
+        self:strong('C'..tostring(commander.commandZonePlays or 0)..' D'..tostring(commander.deaths or 0),bx+24,by+h-52,14,C.gold,w-(showCost and 53 or 27),'center')
+        if showCost then RichText.draw(self,cost,bx+w-27,by+h-52,24,{size=14,iconSize=17,color=C.gold,maxLines=1})end
+    end
+    local status=boardCard and Board.cardStatus and Board.cardStatus(self,card)
+    if status then
+        color(status.confirmed and C.accent or C.gold);love.graphics.setLineWidth(4)
+        love.graphics.rectangle('line',bx-4,by-4,w+8,h+8,6,6)
+        if h>=170 then
+            local sy=by+math.max(27,headerH+2)
+            rect(bx+2,sy,w-4,22,{.025,.035,.045,.98},3)
+            self:strong(self:fit(status.label,w-9,12,1),bx+4,sy+3,12,status.confirmed and C.accent or C.gold,w-8,'center')
+        else self.assets:iconSymbol('block',bx+3,by+3,16,status.confirmed and C.accent or C.gold)end
+    end
     love.graphics.pop()
-    if not options.noHit then self:hit({x=x,y=y,w=w,h=h,angle=angle,card=card,kind=options.kind or 'card',section=options.section,index=options.index,clip=options.clip}) end
+    if not options.noHit then self:hit({x=x,y=y,w=w,h=h,angle=angle,card=card,kind=options.kind or 'card',section=options.section,index=options.index,clip=options.clip,tooltip=stats and stats.label}) end
 end
 function Renderer:drawNav(w)
     rect(0,0,w,82,{.042,.054,.080},0);color(C.line);love.graphics.line(0,82,w,82)
@@ -260,9 +344,11 @@ end
 function Renderer:drawDecks(w,h)require('app.collection_ui').draw(self,w,h)end
 function Renderer:inputBlocked()
     local m,v=self.model,self.view
+    local outcome=require('app.outcome').state(m)
+    if outcome and outcome.mode=='duel'and outcome.terminal then return true end
     local dice=package.loaded['app.dice']
     return (dice and dice.busy(self))or m.storageLocationConfirm or m.storageFolderDialog or m.imagePackFileDialog or m.settingsOpen or m.zoneView or m.deleteConfirm or m.inspectCard or m.galleryInspect or m.confirmConcede or m.archiveCopy or m.storagePurgePreview or m.cardPrintingPicker or m.tokenPicker
-        or v and(v.setPicker or v.brandMenu or v.deckSelection or v.themeColorEdit or v.combatStopsOpen or m.page=='builder'and(v.builderPopup or v.builderFiltersOpen))
+        or v and(v.cardChoiceModal or v.setPicker or v.brandMenu or v.deckSelection or v.themeColorEdit or v.combatStopsOpen or m.page=='builder'and(v.builderPopup or v.builderFiltersOpen))
         or not v and self.blockBuilderDrop
 end
 function Renderer:drawBuilder(w,h)
@@ -290,6 +376,16 @@ function Renderer:pile(label,count,cards,x,y,back)
     self:hit({x=x,y=y,w=60,h=84,kind='zone',cards=cards or {},label=label})
 end
 function Renderer:drawTable(w,h) Table.draw(self,w,h) end
+function Renderer:drawOutcome(w,h)
+    local state=require('app.outcome').state(self.model)
+    if not state or state.mode~='duel'or not state.terminal then return end
+    local tint=state.outcome=='win'and C.accent or state.outcome=='loss'and C.red or C.gold
+    rect(0,0,w,h,{.009,.016,.028,.94},0)
+    self:panel(math.max(20,w*.14),math.max(90,h*.22),w-math.max(20,w*.14)*2,h*.55,{tint[1]*.08,tint[2]*.08,tint[3]*.08,.92})
+    self.assets:iconSymbol(state.outcome=='win'and'commander'or state.outcome=='loss'and'concede'or'replay',w/2-28,h*.5-146,56,tint)
+    self:strong(state.title or'Match ended',30,h*.5-70,52,tint,w-60,'center')
+    if state.detail then self:text(self:fit(state.detail,w-100,16,2),50,h*.5-1,16,C.muted,w-100,'center')end
+end
 function Renderer:drawOrdering(w,h,prompt)
     local choices=self.model.promptOrder;local bw=Layout.table(w,h).board.w;local panelW=math.min(bw-80,math.max(350,#choices*151+24))
     if self.lastOrderPrompt~=prompt.id then self.lastOrderPrompt=prompt.id;self.orderScroll=0 end
@@ -321,21 +417,25 @@ function Renderer:drawPreview(w,h)
     if hit and hit.tooltip and (not hit.card or hit.kind=='player' or hit.kind=='seat-focus')and not self.drag then
         local tooltip=Text.clean(hit.tooltip)
         local x,y=Layout.mouse();local width=math.min(380,self.fonts[13]:getWidth(tooltip)+24)
-        local _,lines=self.fonts[13]:getWrap(tooltip,width-24);local height=math.min(160,#lines*18+18)
+        local _,lines=self.fonts[13]:getWrap(tooltip,width-24);local height=math.min(hit.commanderDetails and h-16 or 160,#lines*18+18)
         x=math.max(8,math.min(w-width-8,x+16));y=math.max(8,math.min(h-height-8,y+20))
-        self:panel(x,y,width,height,'dark');self:text(tooltip,x+12,y+8,13,C.text,width-24);return
+        self:panel(x,y,width,height,'dark')
+        love.graphics.push('all');Layout.clip(x+4,y+4,width-8,height-8);self:text(tooltip,x+12,y+8,13,C.text,width-24);love.graphics.pop();return
     end
     if self.drag or self.panGesture or not hit or not hit.card or hit.kind=='pile' or hit.kind=='player' or hit.kind=='hand' then return end
     if self.model.page=='builder'and self.model.settings.builderLayout~='Simplified'then return end
     local card=self.model:cardData(hit.card);if not card then return end
     local mx,my=Layout.mouse();local pw=244;local ph=342
-    local x=mx> w/2 and math.max(15,mx-pw-20) or math.min(w-pw-20,mx+25);local y=math.max(85,math.min(h-ph-70,my-ph/2))
-    self:drawCard(hit.card,x,y,pw,ph,{noHit=true,angle=0,fullImage=true})
+    local x=mx> w/2 and math.max(15,mx-pw-20) or math.min(w-pw-20,mx+25);local y=math.max(85,math.min(h-ph-140,my-ph/2))
+    self:drawCard(Presentation.peek(hit.card),x,y,pw,ph,{noHit=true,angle=0,fullImage=true})
     local owner=(self.boardPlayers or{})[hit.card.ownerId];local controller=(self.boardPlayers or{})[hit.card.controllerId]
-    if owner or controller then
-        self:panel(x,y+ph+3,pw,50,'dark')
+    local stats=Presentation.stats(hit.card);local commander=(self.boardCommanders or{})[hit.card.id]
+    if owner or controller or stats or commander then
+        self:panel(x,y+ph+3,pw,commander and 128 or(stats and 94 or 70),'dark')
         self:text('Owner · '..(owner and owner.name or'Unknown'),x+7,y+ph+8,12,owner and self:playerColor(owner)or C.muted,pw-14)
         if controller and controller~=owner then self:text('Controller · '..controller.name,x+7,y+ph+27,12,self:playerColor(controller),pw-14)end
+        if stats then self:text(self:fit(stats.label,pw-14,14,2),x+7,y+ph+46,14,stats.damage>0 and C.red or C.muted,pw-14)end
+        if commander then RichText.draw(self,Presentation.commanderLabel(commander),x+7,y+ph+(stats and 77 or 45),pw-14,{size=12,iconSize=14,color=C.gold,maxLines=2})end
     end
     local attached=(self.boardAttached or{})[hit.card.id]or{}
     local linked=hit.card.linkedExile or{}
@@ -372,6 +472,7 @@ function Renderer:draw()
     elseif self.model.page=='builder' then self:drawBuilder(w,h)
     elseif self.model.page=='table' then self:drawTable(w,h)end
     Board.links(self);require('app.storage').drawProgress(self,w,h)
+    if self.model.page=='table'then self:drawOutcome(w,h)end
     -- Positions are a presentation cache, not an archive of every native
     -- object ever created. Keep current poses and a short transition grace.
     for key,pose in pairs(self.poses)do if(self.poseFrame-(pose.seenFrame or 0))>2 then self.poses[key]=nil end end
@@ -425,7 +526,8 @@ function Renderer:mousepressed(x,y,button,clicks)
 end
 function Renderer:inspectHitCard(hit)
     if hit.kind=='library-top'then return self.model:inspectLibraryTop(hit.libraryPlayerId,hit.card.id,hit.libraryGameId)end
-    self:selectPreviewCard(hit.card);self.model.inspectCard=hit.card;return true
+    local card=Presentation.peek(hit.card)
+    self:selectPreviewCard(card);self.model.inspectCard=card;return true
 end
 function Renderer:selectPreviewCard(card)
     if self.model.page=='builder'and self.model.selectBuilderArtwork then self.model:selectBuilderArtwork(card)
@@ -472,6 +574,8 @@ function Renderer:mousereleased(x,y,button)
     self.dragPos=nil
 end
 function Renderer:drawForeground()
+    local outcome=require('app.outcome').state(self.model)
+    if outcome and outcome.mode=='duel'and outcome.terminal then return end
     Board.foreground(self)
     if self.drag and self.drag.card and self.dragPos then
         self:drawCard(self.drag.card,self.dragPos.x-77,self.dragPos.y-108,154,216,{noHit=true,imageOnly=self.drag.kind=='search'})
@@ -484,6 +588,16 @@ function Renderer:drawForeground()
     end
     if self.model.settings.particles~=false and not self.model.settings.reducedMotion then self.assets:drawParticles() end
     if not self:inputBlocked()then local w,h=Layout.dimensions();self:drawPreview(w,h)end
+    local state=self.model.activityState and self.model:activityState()
+    if state and state.busy==true then
+        local w,h=Layout.dimensions();local mx,my=Layout.mouse();local x,y=math.min(w-26,mx+19),math.min(h-26,my+20)
+        self.assets:loadingCircle(x,y,20,love.timer.getTime(),C.gold,self.model.settings.reducedMotion or self.model.settings.animations==false)
+        if(tonumber(state.elapsed)or 0)>=.8 then
+            local label=tostring(state.label or'Waiting for a response')..' · '..string.format('%.1fs',tonumber(state.elapsed)or 0)
+            local width=math.min(350,self.fonts[12]:getWidth(label)+22);local tx=math.max(8,math.min(w-width-8,x+26));local ty=math.max(8,math.min(h-36,y))
+            self:panel(tx,ty,width,32,'dark');self:text(self:fit(label,width-18,12,1),tx+9,ty+9,12,C.gold,width-18)
+        end
+    end
 end
 function Renderer:wheelmoved(dx,dy)
     if self.uiHovered or self:inputBlocked()then return end

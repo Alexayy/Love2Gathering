@@ -113,7 +113,7 @@ function Startup:update(dt)
                 self.polling=self.polling-1
                 if not problem and(not code or code<400)then
                     self[service]=data
-                    if service=='catalog'and data and data.apiVersion~=nil and(not tonumber(data.apiVersion)or tonumber(data.apiVersion)<14)then
+                    if service=='catalog'and data and data.apiVersion~=nil and(not tonumber(data.apiVersion)or tonumber(data.apiVersion)<15)then
                         self.error='This catalog service is from an older client. Restart with the updated launcher.';self.errorKind='incompatibleCatalog';self.allowOffline=false
                         self:check('catalog','error',self.error)
                     end

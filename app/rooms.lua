@@ -13,7 +13,7 @@ local function find(items,id)
     for _,item in ipairs(items or {})do if value(item)==id then return item end end
 end
 local function init(m)
-    m.roomSetup=m.roomSetup or {name='Friends table',playerName=m.playerName or 'Planeswalker',kind='constructed',format=m.format or 'Commander',maxPlayers=4,draft={sets=json.array(),randomSets=json.array()}}
+    m.roomSetup=m.roomSetup or {name='Friends table',playerName=m.playerName or 'Planeswalker',kind='constructed',format=m.format or 'Commander',maxPlayers=4,commanderDamage=true,draft={sets=json.array(),randomSets=json.array()}}
     m.roomInviteInput=m.roomInviteInput or '';m.roomPollTimer=m.roomPollTimer or 0;m.roomGeneration=m.roomGeneration or 0
 end
 local function path(m,suffix)return '/client/rooms/'..API.escape(m.roomConnectionId)..(suffix or '')end
@@ -105,6 +105,11 @@ function Rooms.install(Model)
         if data.connectionId then self.roomConnectionId=data.connectionId end
         self.roomParticipantId=data.participantId or self.roomParticipantId
         self.room=incoming;self.roomError=nil;self.roomDisconnected=false
+        local rematch=incoming.rematchRequest
+        if rematch and rematch.id~=self.roomRematchNotice then
+            self.roomRematchNotice=rematch.id
+            if rematch.requesterId~=self.roomParticipantId then self:toast((rematch.requesterName or'A player')..' is asking for a rematch')end
+        end
         if data.capabilities then self.roomCapabilities=data.capabilities end
         local oldDraft=self.roomDraft;local draft=data.draft
         if oldDraft and draft and oldDraft.id==draft.id and oldDraft.revision and draft.revision and draft.revision<oldDraft.revision then draft=oldDraft end
@@ -166,7 +171,7 @@ function Rooms.install(Model)
         end,true)
         return true
     end
-    function Model:connectRoom(join,config)
+    function Model:connectRoom(join,config,callback)
         init(self);if self.roomBusy or self.roomConnectionId then return false end
         config=copy(config);config.settings=copy(self.settings or {})
         if self.profileOptions then
@@ -181,6 +186,7 @@ function Rooms.install(Model)
             self.roomBusy=false
             if data and data.connectionId then self:applyRoomSnapshot(data,generation,1);self.roomPollTimer=0
             else self.roomError=err or 'Could not connect to the room'end
+            if callback then callback(data,err or self.roomError)end
         end,true)
         return true
     end
@@ -213,13 +219,24 @@ function Rooms.install(Model)
             if callback then callback(data,err,details)end
         end)
     end
-    function Model:setRoomReady(ready)return self:roomMutation('/ready',{ready=ready==true})end
+    function Model:setRoomReady(ready,callback)return self:roomMutation('/ready',{ready=ready==true},callback)end
+    function Model:respondRematch(accept,requestId)
+        local request=self.room and self.room.rematchRequest
+        if type(accept)~='boolean'or not request or request.id~=requestId or request.requesterId==self.roomParticipantId then return false end
+        if not self.game or self.game.gameId~=request.gameId or self.game.running~=false then return false end
+        return self:roomMutation('/rematch-response',{requestId=request.id,accept=accept})
+    end
+    function Model:cancelRematch(requestId)
+        local request=self.room and self.room.rematchRequest
+        if not request or request.id~=requestId or request.requesterId~=self.roomParticipantId then return false end
+        return self:roomMutation('/rematch-cancel',{requestId=request.id})
+    end
     function Model:selectRoomDeck(id)
         local deck=self:findDeck(id);if not deck then return false end
         self.roomDeckId=id
         return self:roomMutation('/deck',{deck=copy(deck)})
     end
-    function Model:setRoomBots(count)return self:roomMutation('/bots',{count=math.max(0,math.floor(tonumber(count)or 0))})end
+    function Model:setRoomBots(count,callback)return self:roomMutation('/bots',{count=math.max(0,math.floor(tonumber(count)or 0))},callback)end
     function Model:startRoom()if self.storageLocationBlocked then self:toast('Restart or cancel the storage location change before starting a match.',true);return false end;return self:roomMutation('/start',{})end
     function Model:nextRoomRound()return self:roomMutation('/next-round',{})end
     function Model:leaveRoom()

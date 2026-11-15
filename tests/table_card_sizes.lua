@@ -22,9 +22,9 @@ local function field(count)
  return p
 end
 local function oldDuel(height)
- local hand=math.max(116,math.min(140,height*.15));local available=((height-hand-46-260)/2)-14
- local land=math.min(128,math.max(66,height*.12),available,(available-12)/2)
- return land,math.min(157,available-land-12)
+ local hand=math.max(116,math.min(140,height*.15))*1.05;local available=((height-hand-14-250)/2)-14
+ local land=math.min(128*1.07,math.max(66,height*.12*1.07),available,(available-12)/2)
+ return land,math.min(157*1.1,available-land-12)
 end
 local function drawn(r,id)for _,box in ipairs(r.cards)do if box.card.id==id then return box end end;error('Missing fixture card '..id)end
 for _,size in ipairs({{1120,720},{1440,900},{2560,1080}})do
@@ -65,6 +65,6 @@ end
 physicalW,physicalH=2560,1080;Layout.setScale(1)
 for _,count in ipairs({1,7,35})do
  local r=renderer(true);Table.field(r,field(count),168,140,706,462,false)
- check(near(drawn(r,'land-1').h,154*1.1)and near(drawn(r,'creature-1').h,196*1.1),'World lands and nonlands grow10percent without camera scaling')
+ check(near(drawn(r,'land-1').h,154*1.21)and near(drawn(r,'creature-1').h,196*1.21),'World lands and nonlands grow10percent without camera scaling')
 end
 print('Table card sizing geometry: '..checks..' checks (synthetic presentation only)')

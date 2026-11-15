@@ -2,8 +2,8 @@
 import json
 import re
 import uuid
+from formats import FORMATS, profile as format_profile
 
-FORMATS = {"modern", "standard", "pioneer", "commander"}
 ID = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$")
 DEFAULT_SETTINGS = {"manualTriggers": False, "autoMana": True, "showCardArt": True, "localArtworkOnly": True, "artworkMemoryMiB":256,
     "resolution": "Desktop", "windowMode": "Borderless", "vsync": True, "msaa": 0,
@@ -32,9 +32,9 @@ class StorageSchema:
         if not isinstance(deck["name"], str) or not 1 <= len(deck["name"].strip()) <= 120:
             raise ValueError("Deck name must contain 1 to 120 characters")
         deck["name"] = deck["name"].strip()
-        if not isinstance(deck["format"], str) or deck["format"].lower() not in FORMATS:
+        if not isinstance(deck["format"], str):
             raise ValueError("Unsupported deck format")
-        deck["format"] = deck["format"].capitalize()
+        deck["format"] = format_profile(deck['format'])['id']
         cover = value.get("coverCard")
         if cover is not None:
             if not isinstance(cover, str) or not 1 <= len(cover.strip()) <= 300:

@@ -1,5 +1,7 @@
 local Layout=require('app.layout')
 local Collection=require('app.collection')
+local SetIcons=require('app.set_icons')
+local SupportUI=require('app.deck_support_ui')
 local UI={}
 local function tint(c,a)love.graphics.setColor(c[1],c[2],c[3],a or c[4]or 1)end
 local function match(m,deck)
@@ -15,14 +17,14 @@ end
 local function tile(r,m,d,x,y,size,L)
     local C=r.colors;local selected=m.selectedDeck==d.id
     r:panel(x,y,size,size,selected and'accent'or'dark')
-    local cover=d.cover or(m.deckCoverCard and m:deckCoverCard(d))
-    if type(cover)=='string'then cover={name=cover}end
-    local art=cover and m:getArt(cover,true,'art_crop')
+    local support=SupportUI.status(m,d)
     local artH=size-91
+    local art=m:deckCoverArt(d,require('app.image_hints').forSize(size-10,artH))
     if art then
         local scale=math.min((size-10)/art:getWidth(),artH/art:getHeight())
         tint({1,1,1});love.graphics.draw(art,x+(size-art:getWidth()*scale)/2,y+5+(artH-art:getHeight()*scale)/2,0,scale,scale)
     else r.assets:iconSymbol('library',x+size/2-23,y+artH/2-18,46,C.muted)end
+    SupportUI.overlay(r,support,x+4,y+4,size-8,artH)
     tint({.015,.025,.045},.9);love.graphics.rectangle('fill',x+4,y+size-86,size-8,82,3,3)
     r:strong(r:fit(d.name or'Deck',size-24,16,2),x+12,y+size-81,16,C.text,size-24)
     local commander=d.faceCommander or(d.commander and d.commander[1]and d.commander[1].name)
@@ -36,14 +38,16 @@ local function tile(r,m,d,x,y,size,L)
     local count=d.cardCount or d.mainCount or(d.counts and((d.counts.main or 0)+(d.counts.commander or 0)))or(m.count(d,'main')+m.count(d,'commander'))
     r:text(tostring(count)..' cards',x+size-83,y+size-22,11,C.muted,71,'right')
     if selected then r.assets:iconSymbol('check',x+size-26,y+10,18,C.accent)end
-    r:hit({x=x,y=y,w=size,h=size,kind='deck',deck=d,clip={x=L.x,y=L.y,w=L.w,h=L.h},action=function()m:selectCollectionDeck(d)end,tooltip=d.name})
+    r:hit({x=x,y=y,w=size,h=size,kind='deck',deck=d,clip={x=L.x,y=L.y,w=L.w,h=L.h},action=function()m:selectCollectionDeck(d)end,tooltip=d.name..' · '..SupportUI.label(support)})
 end
-local function title(r,m,key,label,count,y,L,depth)
+local function title(r,m,key,label,count,y,L,depth,setCode)
     local C=r.colors;local x=L.x+(depth or 0)*14;local width=L.w-(depth or 0)*14
     local closed=Collection.sections(m)[key]==true
     r.assets:control(x,y,width,44,closed and'dark'or'accent')
     r.assets:iconSymbol(closed and'expand'or'collapse',x+10,y+11,22,C.accent)
-    r:strong(label,x+43,y+12,18,C.text,width-110)
+    if setCode then SetIcons.draw(r.assets,setCode,x+40,y+11,23,C.gold,m.settings)end
+    local inset=setCode and 74 or 43
+    r:strong(label,x+inset,y+12,18,C.text,width-inset-67)
     r:strong(tostring(count or 0),x+width-66,y+13,16,C.muted,48,'right')
     r:hit({x=x,y=y,w=width,h=44,clip={x=L.x,y=L.y,w=L.w,h=L.h},action=function()m:toggleCollectionSection(key)end,kind='collection-section',section=key})
     return closed
@@ -83,7 +87,7 @@ function UI.draw(r,w,h)
             sets[expansion][#sets[expansion]+1]=d
         end
         for _,expansion in ipairs(order)do
-            local folded=title(r,m,'set:'..expansion,expansion,#sets[expansion],y,L,1);y=y+54
+            local folded=title(r,m,'set:'..expansion,expansion,#sets[expansion],y,L,1,sets[expansion][1].set);y=y+54
             if not folded then grid(sets[expansion])end
         end
         if #order==0 then r:text(m.preconsBusy and'Loading preconstructed decks…'or m.preconError or'No matching preconstructed decks',L.x+14,y+5,14,C.muted,L.w-28);y=y+60 end
@@ -103,7 +107,10 @@ function UI.build(v,w,h)
     if S.Button('Next precons',{Image={Image=v.r.assets:iconImage('next',18)},W=30,H=28,Disabled=m.preconsBusy or(m.preconOffset or 0)+24>=(m.preconsTotal or 0),Tooltip='Next preconstructed page'})then m:pagePrecons(1)end
     S.SameLine();S.Text(tostring(math.min((m.preconOffset or 0)+24,m.preconsTotal or 0))..'/'..tostring(m.preconsTotal or 0),{Color=v.r.colors.muted});S.EndWindow()
     v:window('collection-formats',L.sideX,101,L.sideW,77)
-    local formats={'All'};for _,entry in ipairs(m.preconStats and m.preconStats.formats or{})do formats[#formats+1]=entry.id end;formats[#formats+1]='Archive'
+    local formats={'All'};local seen={All=true}
+    for _,id in ipairs(m.playFormats and m:playFormats()or{'Modern','Standard','Pioneer','Commander'})do if not seen[id]then formats[#formats+1]=id;seen[id]=true end end
+    for _,entry in ipairs(m.preconStats and m.preconStats.formats or{})do if not seen[entry.id]then formats[#formats+1]=entry.id;seen[entry.id]=true end end
+    if not seen.Archive then formats[#formats+1]='Archive'end
     v:combo('historical-format',Collection.format(m),formats,L.sideW-30,function(value)m:setCollectionFormat(value)end)
     if S.Button('Deck products',{W=(L.sideW-38)/2,H=27,Active=m.preconCategory~='packet',Tooltip='Complete preconstructed deck products'})then m.preconCategory='deck';m.preconTimer=0;m.preconOffset=0 end
     S.SameLine();if S.Button('Packets',{W=(L.sideW-38)/2,H=27,Active=m.preconCategory=='packet',Tooltip='Jumpstart and other partial-deck packets'})then m.preconCategory='packet';m:setCollectionFormat('All')end
@@ -114,15 +121,16 @@ function UI.build(v,w,h)
     if d.expansion or d.setName then S.Textf(d.expansion or d.setName,{W=L.sideW-42,Color=v.r.colors.muted})end
     if d.productType then S.Textf(d.productType,{W=L.sideW-42,Color=v.r.colors.muted})end
     S.Textf(tostring(d.historicalFormat or d.format or'Archive')..(d.format=='Archive'and' · original format'or''),{W=L.sideW-42,Color=v.r.colors.gold})
-    local actionW=L.sideW-42
+    local actionW=L.sideW-42;local support=SupportUI.status(m,d)
     if S.Button('Edit deck',{Image={Image=v.r.assets:buttonImage('edit','Edit deck',actionW,32)},W=actionW,H=32,Disabled=m.collectionForkBusy or m.preconDetailBusy})then m:openDeck(d)end
-    if S.Button('Use in lobby',{Image={Image=v.r.assets:buttonImage('play','Use in lobby',actionW,32)},W=actionW,H=32,Disabled=m.collectionForkBusy or m.preconDetailBusy})then m:useCollectionDeck(d)end
+    if S.Button('Use in lobby',{Image={Image=v.r.assets:buttonImage('play','Use in lobby',actionW,32)},W=actionW,H=32,Disabled=m.collectionForkBusy or m.preconDetailBusy or support.state=='unavailable',Tooltip=SupportUI.label(support)})then m:useCollectionDeck(d)end
     if d.origin=='user'then
         if S.Button('Token artwork',{Image={Image=v.r.assets:buttonImage('gallery','Token artwork',actionW,30)},W=actionW,H=30})then m:showTokenSettings(d.id)end
         if S.Button('Duplicate',{W=(actionW-8)/2,H=29})then m:duplicateDeck(d)end;S.SameLine()
         if S.Button('Delete',{W=(actionW-8)/2,H=29})then m.deleteConfirm=d end
     end
     S.NewLine();S.BeginListBox('collection-description',{W=actionW,H=math.max(80,L.h-280)})
+    SupportUI.details(v,support,actionW-16);S.NewLine()
     if m.preconDetailBusy then S.Text('Loading deck…',{Color=v.r.colors.muted})end
     if d.readOnly then S.Textf('Editing creates a copy in My Decks.',{W=actionW-16,Color=v.r.colors.muted});S.NewLine()end
     local generated=(d.productType or'')..' — '..(d.expansion or'')..'; original product list, current legality unverified.'
@@ -140,9 +148,9 @@ function UI.modals(v,w,h)
     local m,S=v.m,v.S;local copy=m.archiveCopy;if not copy then return end
     v:window('archive-copy',w/2-250,h/2-150,500,300,'Copy to My Decks')
     S.Textf(copy.deck.name or'Preconstructed deck',{W=466});S.NewLine()
-    S.Textf('Choose a supported format for your copy. Historical product lists may need changes before they are legal today.',{W=466,Color=v.r.colors.muted});S.NewLine()
+    S.Textf('Choose an installed format for your copy. Historical and custom formats still require native XMage validation.',{W=466,Color=v.r.colors.muted});S.NewLine()
     if copy.auxiliary then S.Textf('Planes and schemes stay in the original product. This constructed copy uses its main deck, sideboard and commanders.',{W=466,Color=v.r.colors.gold});S.NewLine()end
-    v:combo('archive-format',copy.format,{'Modern','Standard','Pioneer','Commander'},466,function(value)copy.format=value end)
+    v:combo('archive-format',copy.format,m.playFormats and m:playFormats()or{'Modern','Standard','Pioneer','Commander'},466,function(value)copy.format=value end)
     S.NewLine()
     if S.Button('Create copy',{W=226,H=34,Disabled=m.collectionForkBusy})then m.archiveCopy=nil;m:forkCollectionDeck(copy.deck,copy.format,copy.callback or function(deck)m:openDeck(deck)end,true)end
     S.SameLine();if S.Button('Cancel',{W=226,H=34})then m.archiveCopy=nil end

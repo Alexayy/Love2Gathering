@@ -29,6 +29,9 @@ from downloads import DownloadManager
 from maintenance import StorageMaintenance, operation_lock
 from storage_locations import StorageLocations
 from image_packs import ImagePacks
+from engine_support import EngineSupport
+from deck_covers import cover as deck_cover
+from formats import PROFILES
 
 PROJECT = Path(__file__).resolve().parent.parent
 
@@ -41,6 +44,7 @@ def make_handler(catalog, storage, location_manager=None):
     maintenance = StorageMaintenance(storage)
     locations = location_manager or StorageLocations(storage)
     image_packs = ImagePacks(catalog, storage)
+    engine_support = EngineSupport(storage)
     storage_health = storage.health()
     @contextmanager
     def image_lock(key):
@@ -144,6 +148,21 @@ def make_handler(catalog, storage, location_manager=None):
             path = unquote(url.path).rstrip("/") or "/"
             query = parse_qs(url.query)
             param = lambda key, default="": query.get(key, [default])[0]
+            if path == '/formats' and method == 'GET':
+                self.respond(200,{'formats':list(PROFILES.values()),'nativeValidationRequired':True});return
+            if path == '/engine-support/registry' and method == 'POST':
+                if not self.local_storage_control():return
+                self.respond(202, engine_support.register(self.read_json()));return
+            if path == '/engine-support/status' and method == 'GET':
+                self.respond(200, engine_support.status());return
+            if path == '/engine-support/decks' and method == 'POST':
+                if not self.local_storage_control():return
+                body=self.read_json()
+                if not isinstance(body,dict)or set(body)!={'ids'}:raise ValueError('Choose deck identities to check')
+                self.respond(200, engine_support.batch(body['ids']));return
+            if path == '/deck-cover' and method == 'GET':
+                if catalog.status()['state']!='ready':self.respond(503,{'error':'Card index is not ready'});return
+                self.respond(200,deck_cover(catalog,storage,param('name'),param('printing'),param('deckId')));return
             if path=='/playmat-art'and method=='GET':
                 self.respond(200,lookup_playmat(catalog,storage,param('name'),param('seed')));return
             if path=='/storage/image-packs/status'and method=='GET':
@@ -200,8 +219,9 @@ def make_handler(catalog, storage, location_manager=None):
                 self.respond(200, {"status": "ok", "ready": progress["state"] == "ready",
                                    "index": progress, "source": catalog.source.name,
                                    "catalogSource": str(catalog.source.resolve()), "version": 3,
-                                   "apiVersion": 14, "schemaVersion": int(SCHEMA_VERSION),
+                                   "apiVersion": 15, "schemaVersion": int(SCHEMA_VERSION),
                                    "imageVariants":storage.thumbnails.status()if hasattr(storage,'thumbnails')else{'available':False},
+                                   "deckSupport":{'available':True,'version':1},"deckCovers":True,
                                    "storage": storage_status, "userStore": storage_status})
                 return
             if path == "/ui-layout":
@@ -251,12 +271,16 @@ def make_handler(catalog, storage, location_manager=None):
             if path == '/precons/stats' and method == 'GET':
                 self.respond(200,storage.precon_stats());return
             if path == '/precons' and method == 'GET':
-                self.respond(200,storage.precons(param('q'),param('format'),param('set'),param('type'),param('category','deck'),min(60,max(1,int(param('limit','24')))),max(0,int(param('offset','0')))));return
+                page=storage.precons(param('q'),param('format'),param('set'),param('type'),param('category','deck'),min(60,max(1,int(param('limit','24')))),max(0,int(param('offset','0'))))
+                engine_support.decorate(page['decks']);self.respond(200,page);return
             if path.startswith('/precons/') and method == 'GET':
-                deck=storage.get_precon(path[len('/precons/'):]);self.respond(200 if deck else 404,deck or {'error':'Preconstructed deck not found'});return
+                deck=storage.get_precon(path[len('/precons/'):])
+                if deck:engine_support.decorate([deck])
+                self.respond(200 if deck else 404,deck or {'error':'Preconstructed deck not found'});return
             if path == "/decks":
                 if method == "GET":
                     decks = storage.list_decks(param('origin') or None)
+                    engine_support.decorate(decks)
                     if catalog.status()['state'] == 'ready':
                         for deck in decks: deck['colorIdentity'] = catalog.deck_colors(deck)
                     self.respond(200, {"decks": decks})
@@ -452,7 +476,9 @@ def make_handler(catalog, storage, location_manager=None):
     Handler.maintenance=maintenance
     Handler.locations=locations
     Handler.image_packs=image_packs
+    Handler.engine_support=engine_support
     def close_managers():
+        engine_support.close()
         image_packs.close()
         locations.close()
         maintenance.close()

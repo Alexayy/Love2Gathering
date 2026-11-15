@@ -83,7 +83,7 @@ local function upload(m,body,decoded,token)
 end
 function Artwork.image(m,field,pendingField,key,path,limit,cacheLimit,localOnly,options)
     options=options or{}
-    local originalKey=key;local thumbnail=options.variant=='thumb';local selected=options.priority=='selected'
+    local originalKey=key;local thumbnail=options.variant=='thumb';local selected=options.priority=='selected'or options.priority=='hand'
     local function parameter(value)path=path..(path:find('?',1,true)and'&'or'?')..value end
     if thumbnail then key=key..'-thumb';parameter('variant=thumb')end
     if selected then parameter('priority=selected')end
@@ -106,7 +106,7 @@ function Artwork.image(m,field,pendingField,key,path,limit,cacheLimit,localOnly,
     end
     -- Selected work has a separate bounded API lane; an old visible lookup must
     -- never prevent the explicit request from upgrading Cache only to network.
-    if not selected and m[pendingField]>=limit then return entry and entry.image,'loading'end
+    if options.priority=='hand'and m[pendingField]>=2 or not selected and m[pendingField]>=limit then return entry and entry.image,'loading'end
     local previous=entry
     entry={pending=true,state=previous and previous.image and'ready'or'loading',image=previous and previous.image,bytes=previous and previous.bytes,used=time,localOnly=localOnly,selectionToken=options.selectionToken,isCurrent=options.isCurrent};touch(m,entry);cache[key]=entry;m[pendingField]=m[pendingField]+1
     m.api:request('art','GET',path,nil,function(body,err,code,decoded,timings,meta)
@@ -153,7 +153,8 @@ function Artwork.get(m,card,force,kind,localOnly,options)
     local path='/art/'..API.escape(data.id)..'?face='..face..'&kind='..API.escape(imageKind)..'&network='..(offline and'0'or'1')
     if data.printing_id then path=path..'&printing='..API.escape(data.printing_id)end
     if data.printingExact or data.tokenImageId then path=path..'&exact=1'end
-    return Artwork.image(m,'art',options.priority=='selected'and'selectedArtPending'or'artPending',key,path,force and 6 or 4,nil,offline,options)
+    local pending=options.priority=='selected'and'selectedArtPending'or options.priority=='hand'and'handArtPending'or'artPending'
+    return Artwork.image(m,'art',pending,key,path,force and 6 or 4,nil,offline,options)
 end
 Artwork.identity=identity
 function Artwork.cached(m,card,kind)

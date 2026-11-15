@@ -303,7 +303,9 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
         value['id']='deck-'+uuid.uuid4().hex[:16]
         if name is not None:value['name']=name
         if format_name is not None:value['format']=format_name
-        if str(value.get('format','')).lower() not in FORMATS:raise ValueError('Choose Commander, Modern, Standard or Pioneer for the editable copy; the original product is an unvalidated archive')
+        from formats import profile as format_profile
+        try:value['format']=format_profile(value.get('format',''))['id']
+        except ValueError:raise ValueError('Choose an installed constructed format for the editable copy; the original product remains an unvalidated archive')
         value['sourceDeck']={'id':source['id'],'name':source['name'],'origin':source.get('origin','user')}
         return self.validate_deck(value)
 

@@ -1,7 +1,7 @@
 -- Reusable local set filtering. Selecting a set never selects an edition or
 -- applies a deck edit; the current owner's callback controls its filter only.
 local utf8=require('utf8')
-local Picker={};local tiles={};local clock,opening=0,0;local runeFont,runeEpoch
+local Picker={};local tiles={};local clock,opening=0,0
 local function value(option)if type(option)=='function'then return option()end;return option end
 local function lower(code)
     if code>=65 and code<=90 or code>=0xC0 and code<=0xD6 or code>=0xD8 and code<=0xDE then return code+32 end
@@ -32,7 +32,7 @@ end
 function Picker.open(v,options)
     Picker.close(v);releaseInput(v)
     opening=opening+1
-    local state={id=options.id or'sets',token='set-picker-'..opening,owner=options.owner,title=options.title or'Choose a set',items=options.items or{},busy=options.busy,error=options.error,selected=tostring(options.selected or''):lower(),onSelect=options.onSelect,isCurrent=options.isCurrent,query='',page=0,focus=true}
+    local state={id=options.id or'sets',token='set-picker-'..opening,owner=options.owner,title=options.title or'Choose a set',items=options.items or{},allowAll=options.allowAll~=false,busy=options.busy,error=options.error,selected=tostring(options.selected or''):lower(),onSelect=options.onSelect,isCurrent=options.isCurrent,query='',page=0,focus=true}
     v.setPicker=state;return state
 end
 function Picker.filter(v,query)
@@ -44,7 +44,7 @@ function Picker.items(v)
     local source=value(state.items)or{}
     if state.source~=source or state.sourceCount~=#source or not state.filtered then
         state.source=source;state.sourceCount=#source
-        local query=Picker.fold(state.query);local result={{code='',name='All sets',all=true}};local seen={}
+        local query=Picker.fold(state.query);local result=state.allowAll and{{code='',name='All sets',all=true}}or{};local seen={}
         for _,item in ipairs(source)do
             local code=tostring(item.code or''):lower();local name=tostring(item.name or code:upper())
             if code~=''and not seen[code]and(query==''or Picker.fold(name..' '..code):find(query,1,true))then
@@ -58,7 +58,7 @@ end
 function Picker.select(v,code,expected)
     local state=Picker.current(v);if not state then return false end
     if expected and state~=expected then return false end
-    code=tostring(code or''):lower();local found=code==''
+    code=tostring(code or''):lower();local found=code==''and state.allowAll
     for _,item in ipairs(Picker.items(v))do if item.code==code then found=true;break end end
     if not found then return false end
     if state.onSelect then state.onSelect(code)end
@@ -66,18 +66,7 @@ function Picker.select(v,code,expected)
     return true
 end
 local function icon(v,code,x,y,size,color)
-    -- Only THB has a retained, verified Keyrune mapping (ASSET_GUIDE.md).
-    -- Unknown sets use the supplied collection icon and their explicit code.
-    if code=='thb'then
-        local Assets=require('app.assets');local epoch=Assets.rasterContext();local density=math.max(1,Assets.uiRasterScale(v.m.settings));local signature=epoch..':'..density
-        if runeEpoch~=signature then
-            runeEpoch=signature;local ok,font=pcall(love.graphics.newFont,'assets/keyrune/keyrune.ttf',size,'normal',density)
-            runeFont=ok and font or false;if runeFont then runeFont:setFilter('linear','linear')end
-        end
-        local glyph=utf8.char(0xE961)
-        if runeFont and runeFont:hasGlyphs(glyph)then love.graphics.setFont(runeFont);love.graphics.setColor(color);love.graphics.print(glyph,x+(size-runeFont:getWidth(glyph))/2,y+(size-runeFont:getHeight())/2);return end
-    end
-    v.r.assets:iconSymbol('collection',x,y,size,color)
+    require('app.set_icons').draw(v.r.assets,code,x,y,size,color,v.m.settings)
 end
 local function tile(v,item,width,height,selected)
     local Assets=require('app.assets');local epoch=Assets.rasterContext();local scale=Assets.uiRasterScale(v.m.settings);local C=v.r.colors
@@ -98,9 +87,10 @@ function Picker.build(v,w,h)
     local state=Picker.current(v);if not state then return false end
     local S,r=v.S,v.r;local pw,ph=math.min(1000,w-64),math.min(800,h-64);local inner=pw-40;local gridH=math.max(150,ph-256)
     local columns=math.max(2,math.min(5,math.floor((inner-12)/180)));local rows=math.max(1,math.min(4,math.floor((gridH-12)/140)));local pageSize=columns*rows
-    local perPage=math.max(1,pageSize-1);local items=Picker.items(v);local pages=math.max(1,math.ceil((#items-1)/perPage))
+    local pinned=state.allowAll and 1 or 0
+    local perPage=math.max(1,pageSize-pinned);local items=Picker.items(v);local pages=math.max(1,math.ceil((#items-pinned)/perPage))
     if not state.initialShown and not state.interacted and state.query==''then
-        for index,item in ipairs(items)do if item.code==state.selected then state.page=math.max(0,math.floor((index-2)/perPage));state.initialShown=true;break end end
+        for index,item in ipairs(items)do if item.code==state.selected then state.page=math.max(0,math.floor((index-1-pinned)/perPage));state.initialShown=true;break end end
     end
     state.page=math.max(0,math.min(state.page,pages-1));state.pageSize=pageSize
     local C=r.colors;v:window('set-picker',(w-pw)/2,(h-ph)/2,pw,ph,nil,{Layer='Dialog',BgColor={C.panel[1],C.panel[2],C.panel[3],1}})
@@ -108,24 +98,25 @@ function Picker.build(v,w,h)
     S.PushFont(r.fonts[22]);S.Textf(r:fit(state.title,inner-110,22,1),{W=inner-110,Color=C.accent});S.PopFont();S.SameLine()
     if button('Close set picker',{W=100,H=34,Image={Image=r.assets:buttonImage('close','Close',100,34)},Tooltip='Keep the current set filter'})then Picker.close(v);S.EndWindow();return true end
     S.NewLine()
-    if S.Input('set-picker-search',{Text=state.query,W=inner,H=38,Align='left',Tooltip='Search set names or set codes'})then Picker.filter(v,S.GetInputText());items=Picker.items(v);pages=math.max(1,math.ceil((#items-1)/perPage))end
+    if S.Input('set-picker-search',{Text=state.query,W=inner,H=38,Align='left',Tooltip='Search set names or set codes'})then Picker.filter(v,S.GetInputText());items=Picker.items(v);pages=math.max(1,math.ceil((#items-pinned)/perPage))end
     if state.focus then S.SetInputFocus('set-picker-search');state.focus=nil end
     S.NewLine()
     local busy,error=value(state.busy),value(state.error)
-    local matched=#items-1
+    local matched=#items-pinned
     S.Textf(error and r:fit(error,inner,16,1)or(busy and'Loading sets…'or tostring(matched)..(matched==1 and' matching set'or' matching sets')),{W=inner,Color=error and C.gold or C.muted,Tooltip=error});S.NewLine()
     S.BeginListBox('set-picker-grid',{W=inner,H=gridH})
     local ox,oy=S.GetCursorPos({Absolute=true})
     local width=math.floor((inner-24-(columns-1)*12)/columns);local height=128
     -- Keep All sets reachable even when the active set opens on a later page.
-    local visible={items[1]};for index=state.page*perPage+2,math.min(#items,(state.page+1)*perPage+1)do visible[#visible+1]=items[index]end
+    local visible={};if pinned==1 then visible[1]=items[1]end
+    for index=state.page*perPage+pinned+1,math.min(#items,(state.page+1)*perPage+pinned)do visible[#visible+1]=items[index]end
     for localIndex,item in ipairs(visible)do
         local offset=((localIndex-1)%columns)*(width+12);S.Indent(offset);S.SetCursorPos(ox+offset,oy+math.floor((localIndex-1)/columns)*(height+12),{Absolute=true})
         local selected=item.code==state.selected
         if button('set-tile-'..(item.all and'all-sets'or item.code),{W=width,H=height,Active=selected,Image={Image=tile(v,item,width-4,height-4,selected)},Tooltip=item.all and'Clear the set filter'or(item.name..' · '..item.code:upper())})then Picker.select(v,item.code,state)end
         S.Unindent(offset)
     end
-    if #items==1 and not busy and not error then S.NewLine();S.Textf('No sets match this search.',{W=inner-24,Color=C.muted})end
+    if matched==0 and not busy and not error then S.NewLine();S.Textf('No sets match this search.',{W=inner-24,Color=C.muted})end
     S.EndListBox();S.NewLine()
     if button('Previous sets',{W=130,H=34,Disabled=state.page==0,Image={Image=r.assets:buttonImage('previous','Previous',130,34)}})then state.page=state.page-1;state.interacted=true end
     S.SameLine();S.Text(tostring(state.page+1)..' / '..pages,{Color=C.muted});S.SameLine()

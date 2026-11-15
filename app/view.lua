@@ -91,45 +91,7 @@ function View:modals(w,h)
         if S.Button('Cancel',{W=210,H=32}) then m.deleteConfirm=nil end
         S.EndWindow()
     end
-    if m.zoneView then
-        local zone=m.zoneView
-        self:window('zone-view',w/2-270,155,540,h-260,zone.label)
-        if S.Button('Close zone',{W=510,H=28}) then m.zoneView=nil
-        else
-            if zone.libraryPlayerId then S.Textf('Only the visible top card is shown. A highlighted card can be played or chosen for the current prompt.',{W=510,Color=C.muted});S.NewLine()end
-            if S.Input('zone-search',{Text=zone.query or'',W=510,H=30,Align='left',Tooltip='Find an entitled card by name or native object ID'})then zone.query=S.GetInputText();zone.offset=0 end
-            local entries={};local query=(zone.query or''):lower()
-            for index,card in ipairs(zone.cards)do
-                if query==''or tostring(card.name or card.label or''):lower():find(query,1,true)or tostring(card.id or''):lower():find(query,1,true)then entries[#entries+1]={card=card,index=index}end
-            end
-            local pageSize=math.max(5,math.min(25,math.floor((h-430)/28)))
-            zone.offset=math.max(0,math.min(zone.offset or 0,math.max(0,math.floor((#entries-1)/pageSize)*pageSize)))
-            if S.Button('Previous cards',{W=140,H=28,Disabled=zone.offset==0})then zone.offset=math.max(0,zone.offset-pageSize)end
-            S.SameLine();if S.Button('Next cards',{W=140,H=28,Disabled=zone.offset+pageSize>=#entries})then zone.offset=zone.offset+pageSize end
-            S.SameLine();S.Text((#entries==0 and'0'or(zone.offset+1)..'–'..math.min(#entries,zone.offset+pageSize))..' / '..#entries)
-            for position=zone.offset+1,math.min(#entries,zone.offset+pageSize)do
-                local entry=entries[position];local card=entry.card;local caption='#'..entry.index..' '..plain(card.name or card.label)
-                if not card.hidden then
-                    if card.power~=nil and card.toughness~=nil and(not zone.libraryPlayerId or tostring(card.type_line or card.type or''):lower():find('creature',1,true))then caption=caption..' · '..tostring(card.power)..'/'..tostring(card.toughness)end
-                    if card.tapped then caption=caption..' · tapped'end
-                    if tonumber(card.damage)and tonumber(card.damage)>0 then caption=caption..' · damage '..card.damage end
-                    local names={};for name,count in pairs(card.counters or{})do if tonumber(count)and tonumber(count)~=0 then names[#names+1]=name end end;table.sort(names)
-                    for _,name in ipairs(names)do caption=caption..' · '..name..' '..tostring(card.counters[name])end
-                end
-                S.PushID('zone-card-'..tostring(card.id or entry.index))
-                local selected=S.TextSelectable(caption,{W=510,Color=m:canSelect(card.id)and C.accent or nil,Tooltip=caption..'\nNative object '..tostring(card.id or entry.index)})
-                S.PopID()
-                if selected then
-                    if m:selectCard(card) then m.zoneView=nil
-                    elseif zone.libraryPlayerId then m:inspectLibraryTop(zone.libraryPlayerId,card.id,zone.libraryGameId)
-                    else m.previewCard=card;m.inspectCard=card end
-                    break
-                end
-            end
-            if #entries==0 then S.Text(#zone.cards==0 and(zone.libraryPlayerId and'The top card is not currently visible.'or'This zone is empty.')or'No matching cards.',{Color=C.muted})end
-        end
-        S.EndWindow()
-    end
+    if m.zoneView then require('app.zone_ui').build(self,w,h)else self.zoneUiOpening=nil end
     if m.inspectCard then
         self:window('inspect-card',w/2-185,110,370,h-180,'Card details')
         if S.Button('Close details',{W=340,H=27}) then m.inspectCard=nil
@@ -153,7 +115,9 @@ function View:modals(w,h)
                 if S.Button('Show current rules',{W=340,H=32})then self.inspectCurrentRules=not self.inspectCurrentRules end
                 if self.inspectCurrentRules then RichText.slab(self,'inspected-current-rules',card.currentRules,340,{size=16,color=C.gold})end
             end
-            if m.inspectCard.power and m.inspectCard.toughness then S.Text('Current '..m.inspectCard.power..'/'..m.inspectCard.toughness,{Color=C.gold})end
+            local context=m.inspectCard.faceDownContext
+            if context then S.Textf('Face-down on the battlefield'..(context.nativePT and' · native P/T '..context.nativePT or'')..' · '..tostring(context.damage or 0)..' damage marked',{W=340,Color=C.gold})
+            else local stats=require('app.card_presentation').stats(m.inspectCard);if stats then S.Textf(stats.label,{W=340,Color=C.gold})end end
             local merged=m.inspectCard.mutate
             if type(merged)=='table'and type(merged.components)=='table'and#merged.components>0 then
                 if self.inspectMutateHostId~=m.inspectCard.id then self.inspectMutateHostId=m.inspectCard.id;self.inspectMutateComponentId=nil end
@@ -189,6 +153,10 @@ function View:modals(w,h)
     require('app.set_picker').build(self,w,h)
 end
 function View:build()
+    if self.inputPage~=self.m.page then
+        require('lib.Slab.Internal.UI.Region').ClearHotInstance();self.S.SetInputFocus(nil)
+        self.inputPage=self.m.page
+    end
     if self.m.refreshLibraryViews then self.m:refreshLibraryViews()end
     local w,h=Layout.dimensions()
     local storageVisible=(self.m.page=='settings'or self.m.settingsOpen)and self.settingsTab=='Storage'and(self.m.storageSection or'cleanup')or false
@@ -200,12 +168,34 @@ function View:build()
     self.storageRegionVisible=storageVisible
     if self.deckSelection and self.deckSelection.openPage and self.deckSelection.openPage~=self.m.page then require('app.deck_picker').close(self)end
     require('app.set_picker').current(self)
+    local outcome=self.m.page=='table'and require('app.outcome').state(self.m)
+    local completedDuel=outcome and outcome.mode=='duel'
+    local endedGame=self.m.page=='table'and self.m.game and self.m.game.running==false and not self.m.replay
+    if endedGame then
+        -- These gameplay windows are no longer built after completion. Retire
+        -- their locks even if the opponent finished while they were open.
+        self.m.confirmConcede=false;self.combatStopsOpen=false
+    end
+    local Choices=require('app.card_choices');local choicePrompt=self.m.prompt and self.m:prompt()or nil
+    self.cardChoiceModal=not endedGame and Choices.currentModal(self,choicePrompt)or nil
+    local choiceKey=Choices.modalKey(self,choicePrompt,self.cardChoiceModal)
+    if self.cardChoiceModalKey~=choiceKey then
+        -- Input focus and hot scrolling belong to one native decision. An
+        -- asynchronous prompt/game change must retire the hidden controls.
+        require('lib.Slab.Internal.UI.Region').ClearHotInstance();self.S.SetInputFocus(nil)
+        self.cardChoiceModalKey=choiceKey
+    end
     local lock=self.setPicker and'set-picker'or self.m.storageLocationConfirm and'storage-location-confirm'or self.themeColorEdit and'ColorPicker'or self.m.storagePurgePreview and'storage-purge-confirm'or self.m.cardPrintingPicker and'card-printing-picker'or self.m.tokenPicker and'token-art-picker'or self.brandMenu and'app-brand-menu'or self.deckSelection and'choose-deck-tiles'
         or self.m.settingsOpen and'settings'or self.m.inspectCard and'inspect-card'or self.m.zoneView and'zone-view'
         or self.m.galleryInspect and'gallery-inspect'or self.m.deleteConfirm and'delete-deck'or self.m.archiveCopy and'archive-copy'
         or self.m.confirmConcede and'concede-confirm'or self.combatStopsOpen and'combat-step-stops'
+        or completedDuel and'match-complete'
+        or self.cardChoiceModal
         or self.m.page=='builder'and(self.builderPopup and'builder-choice-popup'or self.builderFiltersOpen and'simplified-more-filters')
     local Window=require('lib.Slab.Internal.UI.Window')
+    if self.inputLock~=(lock or nil)then
+        require('lib.Slab.Internal.UI.Region').ClearHotInstance();self.S.SetInputFocus(nil)
+    end
     if lock then Window.SetStackLock(lock);self.inputLock=lock
     elseif self.inputLock then Window.SetStackLock(nil);self.inputLock=nil end
     self.S.PushFont(self.r.fonts[16])

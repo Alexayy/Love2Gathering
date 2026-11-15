@@ -42,7 +42,7 @@ local function scenario()
    if count>2 then
     r.tableCamera:focus(3,true);wait(.08)
     check(r.tableCamera.zoom==1,'Card growth does not change the camera zoom')
-    local box=assert(hit('p1-creature-2'));check(math.abs(box.h-196*1.1)<.01,'World battlefield card grows10percent')
+    local box=assert(hit('p1-creature-2'));check(math.abs(box.h-196*1.21)<.01,'World battlefield card grows10percent')
     point(box.x+box.w/2,box.y+box.h/2);check(r.hover and r.hover.card.id==box.card.id,'World enlarged card is hit in projected coordinates')
     r:mousepressed(box.x+box.w/2,box.y+box.h/2,2,1);r:mousereleased(box.x+box.w/2,box.y+box.h/2,2)
     check(m.inspectCard and m.inspectCard.id==box.card.id,'World enlarged card right-click preserves native object identity');m.inspectCard=nil

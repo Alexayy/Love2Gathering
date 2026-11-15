@@ -1,0 +1,463 @@
+{
+  "status": "pass",
+  "generatedUtc": "2026-11-15T21:18:07.432596+00:00",
+  "sourceRevision": "8bf8367dc9562874b91f0566beda5fdd34961170",
+  "scope": "This follow-up only; older uncommitted gameplay presentation preserved. No commit/push. Independent native/service/live-game/UI scopes are named per gate.",
+  "serviceSuite": {
+    "status": "pass",
+    "tests": 278,
+    "log": "/tmp/love2gathering-mechanics-client-service-passed.log",
+    "logSha256": "98a2f710d618206f207514241755ba33101ebe392a63736ce7f19927704331ae"
+  },
+  "modelSuites": {
+    "passed": true,
+    "tests": [
+      {
+        "test": "frontend_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/frontend_model.log",
+        "testSha256": "e09bc4f7d253a171e1560bf1d727ae76a5fcd728b532064ba8ca7ed6cfa8e56c"
+      },
+      {
+        "test": "builder_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/builder_model.log",
+        "testSha256": "e81c8e6818db8c6729b5bcf67dc2541dd554721842608fb6b67dae8b3f5f2cec"
+      },
+      {
+        "test": "builder_layout",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/builder_layout.log",
+        "testSha256": "bbb21085370d4a59f9b7c9cfd417ca3d92e8d37a4eecd103eb3879c4c04fe0a4"
+      },
+      {
+        "test": "replay_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/replay_model.log",
+        "testSha256": "86cb3092fbcfc09b225a925bb773c383743e0bc5caa8cddd7aec9ae973a54f29"
+      },
+      {
+        "test": "json_codec",
+        "exitCode": 0,
+        "seconds": 0.615,
+        "log": "/tmp/love2gathering-mechanics-client-models/json_codec.log",
+        "testSha256": "7a797b6c507d6ea9c162082462d66b2e3367e16af8567306d5dcee93e7543504"
+      },
+      {
+        "test": "rooms_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/rooms_model.log",
+        "testSha256": "fcbf11aab817ff8812224041489e253afcd523238505d9a8decaa1cc22e3d859"
+      },
+      {
+        "test": "api_rooms",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/api_rooms.log",
+        "testSha256": "266cdcc12adc41600ea847e2d6a35b15d131c88ed77db5096233cc8c14c4ade5"
+      },
+      {
+        "test": "table_camera",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/table_camera.log",
+        "testSha256": "99c68ea9c46427cd1319dbd0319a4094e8733cbb7c51eb09e3b8a93a7809b8d5"
+      },
+      {
+        "test": "priority_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/priority_model.log",
+        "testSha256": "16400a8196b9e74b79d5ee0c042055aba9f29715cf54be138fadc53e7787983b"
+      },
+      {
+        "test": "gallery_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/gallery_model.log",
+        "testSha256": "b296a3a7fa66f6810033146f40b75bce73bee73ff54677cc9fdcf5e488d7ceee"
+      },
+      {
+        "test": "artwork_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/artwork_model.log",
+        "testSha256": "8c1e6e58556dc8d5f691d7d909b3982004f8dd7e9dece731fdcdab58b0a463b6"
+      },
+      {
+        "test": "card_traits",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/card_traits.log",
+        "testSha256": "660738f62d9a82a93bb25fbcc53e107f4b0b41ab4726b3909c425afa54e845c9"
+      },
+      {
+        "test": "deck_picker_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/deck_picker_model.log",
+        "testSha256": "5663192f2a6ad9cfc5310169cb3b860e8fcd3731f86f332cf97e6dab0e23e91c"
+      },
+      {
+        "test": "duplicate_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/duplicate_model.log",
+        "testSha256": "f70a8fa72a531cf74ad618180733a3530b78321efff37f7dbf46a889331319cb"
+      },
+      {
+        "test": "modal_input",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/modal_input.log",
+        "testSha256": "f06da49808ab9c3817d4d25831f109f5bc22e4899ce1e5aeae8690ad2055b2ad"
+      },
+      {
+        "test": "stack_presentation",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/stack_presentation.log",
+        "testSha256": "645741cb62b7f23b38cbec6c85a1d89c71aaea1fed2c5cf44edb9283bd5ad20c"
+      },
+      {
+        "test": "library_model",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/library_model.log",
+        "testSha256": "21f3229483848499c5bd0efdd75fec6acb8aff552c9bd9c42f8329c815f10ba8"
+      },
+      {
+        "test": "collection_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/collection_model.log",
+        "testSha256": "8dd22a711d331355c03a1cbddd1da4ca7fc5aa6ff266187a98c464c9605643ca"
+      },
+      {
+        "test": "profile_model",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/profile_model.log",
+        "testSha256": "743b9802250e95a26948ae5a562736f2eb499479769daeae1013f15e8875069e"
+      },
+      {
+        "test": "board_fx",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/board_fx.log",
+        "testSha256": "be63eb03c97127fa3c980f82331f0ce88f8264560a74a046b539225205518533"
+      },
+      {
+        "test": "card_choices",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/card_choices.log",
+        "testSha256": "11e942ae4b44a58f4abafa9e696d4bead419643d61606ac275e27c53c82049f2"
+      },
+      {
+        "test": "keywords",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/keywords.log",
+        "testSha256": "c67e6d6f082f3de4c2f15d8870e008b06345dc98a60623d4a7d0a5691fc6977e"
+      },
+      {
+        "test": "card_presentation",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/card_presentation.log",
+        "testSha256": "3e78270386ac2fd523c54c024eade20fa9be250ab9d67448e177c5f4bdc6f3e1"
+      },
+      {
+        "test": "choice_panels_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/choice_panels_model.log",
+        "testSha256": "5c86d8661f3d0dc4f6a6941f90ff05ef3ac9406a8bd5ed2769c255975924cf7c"
+      },
+      {
+        "test": "game_art_model",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "log": "/tmp/love2gathering-mechanics-client-models/game_art_model.log",
+        "testSha256": "aff10040a16d4c17ef1ec036f42acefbddbfa6c3160bdf0d25cfea590b4c9976"
+      },
+      {
+        "test": "deck_support_model",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/deck_support_model.log",
+        "testSha256": "d31238333e5e58f7a589e3fcf14fdfb92d4feeee69a9361981380693c521b253"
+      },
+      {
+        "test": "client_features_model",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/client_features_model.log",
+        "testSha256": "b92eb6993773ba03046c3afcc231ceac91ff5113da7322fc44493f99eafa764c"
+      },
+      {
+        "test": "api_lanes",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/api_lanes.log",
+        "testSha256": "fefc3a6ed0a7283fdd273ce68a837e2b5f152e29993ecfad5e5d493d8ec97cc4"
+      },
+      {
+        "test": "set_picker_model",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/set_picker_model.log",
+        "testSha256": "9493ad16c16423fe7de3263e03e0ca054f08bed2b964b7faed577d6f366abe68"
+      },
+      {
+        "test": "table_card_sizes",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "log": "/tmp/love2gathering-mechanics-client-models/table_card_sizes.log",
+        "testSha256": "22f26fcf80930c6b5fcbbd69aa6736cc6889caaac12554f33ba59826a7d22c9f"
+      }
+    ]
+  },
+  "gates": [
+    {
+      "name": "native-input-recovery",
+      "status": "pass",
+      "checks": 38,
+      "report": "bridge/tests/native-recovery-report.json",
+      "reportSha256": "ff0b28497f3e9c0e4e7160e71f51f3066e8f547a3b34298c6cb30c108d1ebed8",
+      "scope": "Real pinned XMage deterministic opening state; equipment, mixed-zone Serenity ETB, native undo, stale delivery, capabilities; actual durable replay HTTP retry"
+    },
+    {
+      "name": "native-gameplay-regression",
+      "status": "pass",
+      "checks": 52,
+      "report": "bridge/tests/gameplay-presentation-report.json",
+      "reportSha256": "dfa699be5428c9f356d401bf33647afc06f81e01be7386936eb6f4f6a5470991",
+      "scope": "Real pinned XMage deterministic combat/face-down/commander fixture"
+    },
+    {
+      "name": "native-extra-regressions",
+      "status": "pass",
+      "checks": 4,
+      "report": "bridge/tests/client-recovery-regressions-report.json",
+      "reportSha256": "73fc0480df00f3c716e2586e4b25a5933941234360aec42763b780e3e4784e30",
+      "scope": "Existing Priority, Concession, NativeView, CardPrinting fixture groups, same Maven payload"
+    },
+    {
+      "name": "actual-rematch-games",
+      "status": "pass",
+      "checks": 18,
+      "report": "tests/room-rematch-live-report.json",
+      "reportSha256": "a3ab1bfc1104778c97a33db1bc29683ff5ac3f860a10ba9b2fce76da8b47394b",
+      "scope": "Two actual human native games completed by concession through owned gateway; consent, privacy, old-game fences and SQLite outcomes"
+    },
+    {
+      "name": "actual-bot-draft",
+      "status": "pass",
+      "checks": 13,
+      "report": "tests/bot-draft-live-report.json",
+      "reportSha256": "ace963a9bb20eab7db25947c4a86456b6300dfa29a231c970304b91d159fb86a",
+      "scope": "One human and seven native bots, all45 picks, seven native-valid bot decks, human40-card pool submission, four real tournament pairings"
+    },
+    {
+      "name": "actual-http-worker-lanes",
+      "status": "pass",
+      "checks": 24,
+      "report": "tests/api-read-lanes-report.json",
+      "reportSha256": "9ecfa6a4b528a37ee1382c5b6b09cc7d9545f8854e0c9a641dd58f706051fe7c",
+      "scope": "Actual headless L\u00d6VE request workers and owned delayed HTTP server; not a native game"
+    },
+    {
+      "name": "match-controls-ui",
+      "status": "pass",
+      "checks": 72,
+      "report": "tests/match-controls-ui-report.json",
+      "reportSha256": "5a1802f12804c82cbe6f83682d9922be136b8133cde79f62c8f3af13473d3857",
+      "scope": "Actual saved main callbacks and Slab clicks/pixels at minimum and scaled sizes, synthetic native-shaped state/API replies"
+    },
+    {
+      "name": "bot-draft-ui",
+      "status": "pass",
+      "checks": 110,
+      "report": "tests/bot-draft-ui-report.json",
+      "reportSha256": "66f7cfd064c2cc22a76c538ac6356d105c39201209d4bf688f566b7093be65e1",
+      "scope": "Actual Lobby controls, read-only-combo wheel scrolling, native-shaped options, exact ordered DTOs; synthetic API replies"
+    },
+    {
+      "name": "table-feedback-ui",
+      "status": "pass",
+      "checks": 57,
+      "report": "tests/table-feedback-ui-report.json",
+      "reportSha256": "9802bdb89dae4a3848ea4f3bb1966870c3bff68c91bf143ddfbed7669feab68b",
+      "scope": "Actual renderer/cached JPEG pixels with synthetic game states, three resolutions/scales"
+    },
+    {
+      "name": "deck-support-ui",
+      "status": "pass",
+      "checks": 28,
+      "report": "tests/deck-support-ui-report.json",
+      "reportSha256": "764df5d214541ed20c62f7411ad4a6e5281abd8f822636cdd4a788c08f3a25b2",
+      "scope": "Actual Collection/picker clicks at two scales, deterministic coverage replies"
+    },
+    {
+      "name": "startup-ui",
+      "status": "pass",
+      "checks": 22,
+      "report": "tests/startup-ui-report.json",
+      "reportSha256": "bf887f3061558fe250423a3d284b5215ab8c1553458b49dbdf2e794f584deadb",
+      "scope": "Actual preparation/bootstrap UI with synthetic service availability and curated resources, API15"
+    },
+    {
+      "name": "lobby-ui",
+      "status": "pass",
+      "checks": 30,
+      "artifact": "/tmp/love2gathering-lobby-ui-report.json",
+      "artifactSha256": "c04a16d41bf7e66b7fb8365518dba5937c373c58f066661c38b760ea78b55a3a",
+      "scope": "Synthetic lobby decks and intercepted native start; actual L\u00d6VE/Slab tile popup, six-seat scrolling, name-glyph pixels, fifth-bot selection and payload at UI scales 1/1.25; no native-game claims"
+    },
+    {
+      "name": "global-controls-ui",
+      "status": "pass",
+      "checks": 189,
+      "artifact": "/tmp/love2gathering-global-controls-ui-report.json",
+      "artifactSha256": "16c36ea74e62c3fb9fadf4c1b7376d1b116496c61884f2fc0198f13e26440430",
+      "scope": "Actual Model/Renderer/View/Preferences/Slab, native desktop mode/cursors and measured rendering; storage callback intercepted, no service or native-game calls"
+    },
+    {
+      "name": "assets-input-ui",
+      "status": "pass",
+      "checks": 33,
+      "artifact": "/tmp/l2g-assets-input-final.log",
+      "artifactSha256": "8c59285e087cd9239afac8e5f137a5002ab9a25bac7157cad7e29437ab1e89c9",
+      "scope": "Actual isolated L\u00d6VE assets/input"
+    },
+    {
+      "name": "quit-sqlite-chain",
+      "status": "pass",
+      "checks": 2,
+      "artifact": "/tmp/love2gathering-mechanics-client-quit.log",
+      "artifactSha256": "43c520a68bd63583625d3e8e27fed9fe4fe5d487676508e14763b6c4c2deb43e",
+      "scope": "Actual immediate client close and callback-chained SQLite save/reopen"
+    }
+  ],
+  "publication": {
+    "published": true,
+    "method": "atomic replacement; running JVMs keep their existing open JAR inode",
+    "oldJarSha256": "c920aacc2c56250648af085ad49effe8e9a82e5c1da44bbcda724247ab44c9ae",
+    "jarSha256": "6b88b83130c7c3209068c87fd8cbb4479f509d17551f5b894d737c330619cb4a",
+    "dependenciesIdentical": true,
+    "sourceVerified": true,
+    "engineGitlink": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+    "servicesStopped": false,
+    "mode": "0o644"
+  },
+  "engine": {
+    "headGitlink": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+    "indexGitlink": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+    "sourceStatus": "",
+    "gitmodulesSha256": "dbb62215e5a950872bfd32a8b84f0e2734977183b8c793032a2bde7b4bf656e9",
+    "sourceUnchanged": true
+  },
+  "implementationCoverage": {
+    "productsAndPackets": 1794,
+    "implemented": 1668,
+    "unavailable": 126,
+    "report": "service/tests/deck-support-actual-report.json"
+  },
+  "library": {
+    "bundledDecks": 20,
+    "uniqueCards": 506,
+    "errors": 0
+  },
+  "sourceSha256": {
+    "app/activity.lua": "e860c01ea4aed45b1743e98482dafb27f6052e914f687cf01941615498f1acdb",
+    "app/api.lua": "f991aaa506dbe9ec9a93b40662346515a857c26e20c1da29df4079428935b3fb",
+    "app/artwork.lua": "729bd681645817741207a4f02d2d8691c6ca39496ecddb6ba5d256377b0f9785",
+    "app/assets.lua": "b8510ede93126011ea65ee3e4f8e76e9d24e4290b02a87ac5465d2e89bee4212",
+    "app/board_fx.lua": "788a0a43e47d43b65095c7dc638baa6f935772057f86815e735be40ac8119f28",
+    "app/bot_draft.lua": "69636bc09de874c10aeacc7acc5ef7a4eb41a57bd9e510144c11e9d1703fdad8",
+    "app/bot_draft_ui.lua": "b09f52e4f931975b206fdd31c2ed4fd8a97e137b65cb54e24543ff41599f3a3f",
+    "app/builder.lua": "3a738a629e8bd6732359d48dfd0f1d3fcc2f2ac288ca53cd2d67a7e0dafa7d6a",
+    "app/builder_simplified.lua": "1e588103cbd1e83b465cdbddf8b698ae50087b128723b47c679ba15d4ad9aa8c",
+    "app/card_choices.lua": "4f9744926fd172a900141d62eafbd52e4b4670eeabc93ae1e91525405f31c611",
+    "app/card_presentation.lua": "4699b7608644daddc7dbf279bbebf057644b26fe43104891c7a872748c49be86",
+    "app/card_printings.lua": "a10cbcabfe608d4a49de0a798c06185beb5c322ee60edaf8efc25ec6ddfddaf7",
+    "app/collection.lua": "ec6be2a4d5263b7df45337a1bb7156c21ea61a5b6a73cb7aea6e423b208dfa9b",
+    "app/collection_ui.lua": "559a8357ad02c288687b385739e29dea93d7f18ae2cb7e5bbc3dd8e2c02dee50",
+    "app/combat_choices.lua": "b7323b79a9d1778ce31626348501dc84b470fc2490e43f50d8eaf1f01446f161",
+    "app/deck_picker.lua": "1d843c0ad397abb41c67f5e376090d44bbd5293defb52663aa4c131a77d8cf82",
+    "app/deck_support.lua": "631c75f956d4c1f2ffb57bbaf06bed6e62f45750b2d251eb9f29a70c6d288507",
+    "app/deck_support_ui.lua": "298a74aa3d96d3adb34e2d8cab0a22516e759b17c141dae99cd15c4298f22f5e",
+    "app/drag_cancel.lua": "51075771de532683ffeabcdc6ac322bb85c187b5959ba08830792a15f242d6ea",
+    "app/game_art.lua": "baff567f9feceb5cfb3e2383ce5358f4ae86364fb0e0c7646380b887dd3b741a",
+    "app/input_delivery.lua": "6c3d1c591253ee68d12bb548e342b643de4a0fdc6d79aacfa83f99cca2c7aed0",
+    "app/layout.lua": "99486d5ed93b53930c87f77a885323477b1ed3c80cea12b93fb1debf924c1b22",
+    "app/lobby_ui.lua": "4e334971bcaa005e7890cf9be14ba6459eb5b6d2f9877336e619e178b90e83b4",
+    "app/match_ui.lua": "efd82f9b3fca8d912dd0eeab4ea60d62be68b74ba05972c26b3346c2ce841806",
+    "app/model.lua": "f888d0a96571947ef23dff08faedaec3f34321074ab8855aa0519c996e8549a0",
+    "app/multiplayer_table.lua": "89879245f5ed1e0a0e4bf080d8e07dabbae4c3695e8908b1c4fc7732ac8e2532",
+    "app/native_capabilities.lua": "29dc3bd3edd2822fa95c593a346d7e4aef9e8bf5ff5821dc57121fa45d109284",
+    "app/navigation.lua": "3e644b5164c1c3bd36a5b57c5cd01810814c2fb8a328f0f9865adca2cec3f3fe",
+    "app/outcome.lua": "49cd889a00b31a9ff68a605821dc5f18f85ab63fbdab7b9c452b514143fc8ed5",
+    "app/renderer.lua": "5d6cb46312352f8b7d97b80eaab707913d3d84394e953489ff3c506153527273",
+    "app/room_ui.lua": "c53d2640ef57d6a8ef152d36b4c43b7159299c8ec0b5e223b7d8b494bede0457",
+    "app/rooms.lua": "d563028eaafc513412117af1b925484b8a8636832381a51431a458c0c5afef95",
+    "app/set_icons.lua": "5124a059f43b7136db61ff8a543a317757d45bc67d6b1a6ffdc1ce429216408b",
+    "app/set_picker.lua": "43e0971dbb8bc4598059e5486312c53c507d7bb615fb8cef8b8fb3c2db3b25cd",
+    "app/settings.lua": "7c2f7640fe7249902bb1aad171621e0018c495403760d0e963cc058d808cfd9a",
+    "app/startup.lua": "92c98a5deb278897e1829a6e5ebefddb1fa6da2189ea43f181bd411284ee1d11",
+    "app/table.lua": "b390ff210dfd709aea16672995cf7cc7f3180bf811c49ebe97d03d6345c2e605",
+    "app/view.lua": "b8d47c49ccc25ef8581fa75892b2f15fc84f475b96cfd8018a9fdd07956c8b53",
+    "app/zone_ui.lua": "e38655735e6e73d894c4b7e3b2b24f60c6d909c5b2efafc8306ab41ab210a4ff",
+    "assets/keyrune/sets-provenance.json": "e1740844c9cb4ada6453533ebaaa65bafd72f394af649e5f3e084a4b5e6bfef6",
+    "assets/keyrune/sets.lua": "6e4d3bfea662fc9f15bdceffc21283571157779927c55d443c5a7b48b262fe9a",
+    "bridge/src/love2gathering/CombatPromptMetadata.java": "fd81ebc721b0419702c9ce4e46bca8c9747a11548590017e13e4db84f5c8a069",
+    "bridge/src/love2gathering/CommanderHistoryWatcher.java": "c9f9919919c1345ba17cfdc81d74607a75bc8570d73cc6a5914774d19054e724",
+    "bridge/src/love2gathering/DraftSession.java": "785e34c386cfea189265735ed037fcdc3edba34a6c98a6072ae48fecddf4d044",
+    "bridge/src/love2gathering/EngineBridge.java": "bffe1d9913178359391bfe6b01051f8f1b51d79dde0d2e4db1ea4053c4ce9180",
+    "bridge/src/love2gathering/MultiplayerBridge.java": "e7ec3e359c74b648b2158504ce5f3f77da6a092a8f14f46f4b547e42aff6ad71",
+    "bridge/src/love2gathering/NativeCapabilities.java": "979684dcd2567b3b5a298088295b5e432a4648171aa62048538f397135cf65aa",
+    "bridge/src/love2gathering/NativeInputQueue.java": "ee38e526e5ad29a56bfcd9adb6d8a5e11498cc7efa720a99f977e2937dfcc552",
+    "bridge/src/love2gathering/NativeProjection.java": "3c3445fa4af579a4a3b717b2f8583939fe82e62072d1c3ed3b654d62da39b9b6",
+    "lib/Slab/Internal/UI/Region.lua": "b968685c4127a250906b3b76b60f97b3c2802aaa60c64bece426e25072b9ad4f",
+    "main.lua": "0a709427e3aa91010dfcf28309c329e8939beb5959f28e258e73c4906f07ca2d",
+    "run.sh": "af72d505026633d413258b7db18b0f8999f70ed0b6a6742f19020256aa1ba314",
+    "service/catalog.py": "accae695997e3ddc88a4932f0e5b78f6cdf34b6b35e57027cdf28f242c76fe1f",
+    "service/deck_covers.py": "22649a6d099d73cc3bc68d2bb8851fd474c9914c673898caf2c975554f0f4c5d",
+    "service/engine_support.py": "8be08d3107b5681b65ec03f96f475060f8638f5293d6c68ec5595d5490e79717",
+    "service/formats.py": "03b59910b98448befba59c479ac6d7ed35e3b9db51313a124661cbdd20aad1e9",
+    "service/rooms.py": "552848efaba010d24444650365609bf29b3847f7879b5eef6936bc347555853e",
+    "service/server.py": "b2c4bf51f5739ab4552eaad59d0a3e0c9277ee593056cd8eee2264120b27a4de",
+    "service/storage.py": "377956b8a6e02a5a7132b236b0d51efa4496c2af1e7e25e019ccd1402dc6b122",
+    "service/storage_schema.py": "7211d61adb171067c1b8664774e196a0360a983f4bb6dacdf65d883700257de4",
+    "service/validation.py": "e3aac222fae62b2c8555536c13ca5653f929d378ccbee1cc64facdad02a8d0f1"
+  },
+  "retainedFailures": [
+    {
+      "artifact": "bridge/tests/native-recovery-baseline-report.json",
+      "reason": "Actual delayed response opening and stale queued undo failures retained before their fixes"
+    },
+    {
+      "artifact": "/tmp/love2gathering-mechanics-client-service.log",
+      "reason": "Initial four obsolete API14 assertions updated to API15"
+    },
+    {
+      "artifact": "/tmp/love2gathering-mechanics-client-service-final.log",
+      "reason": "A one-line test assertion update temporarily introduced an indentation typo; corrected before final278-test run"
+    }
+  ],
+  "limitations": [
+    "Angel-specific rules failure did not reproduce; actual Serenity mixed-zone targeting passes. Generic native answer acknowledgement delay reproduced and fixed.",
+    "41 installed constructed validators;10 unavailable game-plugin variants remain excluded. New37 formats browse full catalog and require native validation, without guessed construction legality.",
+    "Implemented-card coverage reports class availability, not exhaustive correctness of every mechanic.",
+    "Undo uses only native reversible mana bookmarks; no arbitrary selection/turn rewind.",
+    "GUI synthetic projections do not establish full-game rules behavior. Live games are local loopback; WAN reachability and geographically separated multiplayer were not retested.",
+    "Bot UI report predates later terminal-only Model/View changes; final Match72 separately verifies those exact current terminal sources."
+  ]
+}

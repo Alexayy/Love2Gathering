@@ -1,7 +1,8 @@
 local Layout=require('app.layout')
 local Table={}
 local Board=require('app.board_fx')
-local handScale,fieldScale=1.05,1.10
+local Presentation=require('app.card_presentation')
+local handScale,fieldScale=1.05,1.21
 local function terrain(r,view,draw)
     local dx,dy=Board.worldOffset(r)
     r.worldTransform={x=dx,y=dy,scale=1,clip=view,shakeOnly=true}
@@ -12,10 +13,7 @@ end
 local function land(c) return tostring(c.type_line or c.type or ''):lower():find('land',1,true)~=nil end
 local phases=require('app.priority').groups
 local function activePhase(game,key)
-    local value=(tostring(game.step)..' '..tostring(game.phase)):upper():gsub(' ','_')
-    if key=='COMBAT' then return value:find('COMBAT',1,true) and not value:find('PRECOMBAT',1,true) and not value:find('POSTCOMBAT',1,true) end
-    if key=='END' then return value:find('END',1,true)~=nil and not value:find('END_COMBAT',1,true) and not value:find('POSTCOMBAT',1,true) end
-    return value:find(key,1,true)~=nil
+    return Presentation.phaseKey(game)==key
 end
 function Table.players(game)
     local human,bot
@@ -33,7 +31,7 @@ function Table.field(r,player,x,y,w,rowH,foe)
     local inWorld=r.worldTransform~=nil and not r.worldTransform.shakeOnly
     -- Duel rows share a bounded height. A smaller land target leaves the same
     -- visible growth for creatures near the transition to full-size rows.
-    local landScale=inWorld and fieldScale or 1.07
+    local landScale=inWorld and fieldScale or 1.177
     local landTarget=(inWorld and 154 or 128)*landScale
     local permanentTarget=(inWorld and 196 or 157)*fieldScale
     local landH=math.min(landTarget,math.max(66,(inWorld and 154 or height*.12)*landScale),available)
@@ -133,12 +131,18 @@ function Table.draw(r,w,h)
     r:text(yours and 'YOUR TURN' or (game.phase=='' and 'OPENING HAND' or r:fit(activeName,B.w*.32,18,1)),B.x+49,B.y+5,18,yours and C.accent or C.purple)
     local phase=game.step and game.step~='null' and game.step or 'Pregame'
     local phaseX=B.x+B.w*.39;local phaseW=math.max(100,w-392-phaseX)
-    r:text(phase,phaseX,B.y+7,16,C.text,phaseW,'center')
+    local phaseTint=yours and C.accent or C.gold
+    r:panel(phaseX,B.y+3,phaseW,25,{phaseTint[1]*.17,phaseTint[2]*.17,phaseTint[3]*.17,.98})
+    love.graphics.push('all');love.graphics.setColor(phaseTint);love.graphics.setLineWidth(2);love.graphics.rectangle('line',phaseX+.5,B.y+3.5,phaseW-1,24,4,4);love.graphics.pop()
+    r:strong(r:fit(phase,phaseW-12,16,1),phaseX+6,B.y+6,16,phaseTint,phaseW-12,'center')
     local chipW=(B.w-24-5*5)/6
     for i,item in ipairs(phases) do
         local x=B.x+12+(i-1)*(chipW+5);local active=activePhase(game,item.key)
         r:panel(x,L.phaseY,chipW,26,active and 'accent' or 'dark')
-        r:text(item.label,x+5,L.phaseY+4,12,active and C.accent or C.text,chipW-54,'center')
+        if active then
+            love.graphics.push('all');love.graphics.setColor(phaseTint);love.graphics.setLineWidth(2.5);love.graphics.rectangle('line',x+.5,L.phaseY+.5,chipW-1,25,4,4);love.graphics.rectangle('fill',x+4,L.phaseY+23,chipW-8,3);love.graphics.pop()
+            r:strong(item.label,x+5,L.phaseY+3,14,phaseTint,chipW-54,'center')
+        else r:text(item.label,x+5,L.phaseY+4,12,C.muted,chipW-54,'center')end
         for j,side in ipairs({'own','opponent'}) do
             local enabled=m:phaseStop(item,side);local sx=x+chipW-47+(j-1)*23
             local phaseLabel=item.key=='COMBAT'and'Beginning of combat'or item.label
@@ -152,18 +156,23 @@ function Table.draw(r,w,h)
     elseif human and enemy then
         local hx=B.x+20;local right=B.x+B.w-L.zoneW-18
         r:drawAvatar(enemy,hx,143,44)
-        r:strong(r:fit(enemy.name or'XMage Bot',122,16,1),hx+54,140,16,r:playerColor(enemy),122)
-        r:strong(enemy.life,hx+54,165,36,r:playerColor(enemy))
+        r:strong(r:fit(enemy.name or'XMage Bot',160,20,1),hx+54,136,20,r:playerColor(enemy),160)
+        r:strong(enemy.life,hx+54,161,44,r:playerColor(enemy))
         r.playerRects[enemy.id]={x=hx,y=140,w=180,h=75}
-        r:priorityBadge(enemy,hx,213,180,22)
+        local commanderTracking=Presentation.commanderDamageSummary(human,game.commanderDamageEnabled)~=nil
+        r:priorityBadge(enemy,hx,commanderTracking and 227 or 213,180,22)
+        if commanderTracking then r:commanderSummary(enemy,hx,207,180,11)end
         require('app.board_fx').playerAuras(r,enemy,hx+145,190)
-        r:hit({x=hx,y=140,w=180,h=75,kind='player',card={id=enemy.id,name=enemy.name},tooltip=enemy.name..' · '..tostring(enemy.life)..' life · '..tostring(enemy.handCount or 0)..' cards in hand'})
+        r:hit({x=hx,y=140,w=180,h=75,kind='player',card={id=enemy.id,name=enemy.name},tooltip=Presentation.playerTooltip(enemy,game.commanderDamageEnabled),commanderDetails=true})
         local backs=math.min(enemy.handCount or 0,16);local ew=math.min(87,(B.w-320)/math.max(1,math.min(backs,7)));local eh=ew*1.4
         local es=math.min(ew*.55,(B.w-340-ew)/math.max(1,backs-1));local start=B.x+(B.w-(backs-1)*es-ew)/2
         for i=1,backs do r:drawCard({},start+(i-1)*es,124,ew,eh,{back=true,noHit=true}) end
         terrain(r,L.viewport,function()
             Table.field(r,enemy,L.fieldX,L.enemyY,L.fieldW,L.rowH,true)
-            Table.field(r,human,L.fieldX,L.humanY,L.fieldW,L.rowH,false)
+            local commands=human.command or{};local commandW,commandH=83.6,117.04
+            local shown=math.min(#commands,2);local reserve=shown>0 and shown*(commandW+10)+8 or 0
+            for i=1,shown do r:drawCard(commands[i],L.fieldX+(i-1)*(commandW+10),L.humanY,commandW,commandH,{kind='command',animate=true})end
+            Table.field(r,human,L.fieldX+reserve,L.humanY,L.fieldW-reserve,L.rowH,false)
             love.graphics.setColor(C.line);love.graphics.line(L.fieldX,L.divider,B.x+B.w-132,L.divider)
         end)
         local zoneW=L.zoneW;local zoneH=zoneW*1.4+34
@@ -171,14 +180,16 @@ function Table.draw(r,w,h)
         local enemyLibrary=250;local humanLibrary=math.max(enemyLibrary+zoneH+14,L.humanY-10)
         Table.library(r,enemy,hx,enemyLibrary,zoneW)
         Table.library(r,human,hx,humanLibrary,zoneW)
-        local playerY=math.max(h-L.handH-15,humanLibrary+zoneW*1.4+40)
+        local extra=commanderTracking and 16 or 0
+        local playerY=math.max(h-L.handH-35-extra,humanLibrary+zoneW*1.4+34-extra)
         r:drawAvatar(human,hx,playerY+3,44)
-        r:strong(r:fit(human.name or'You',122,16,1),hx+54,playerY,16,C.accent,122)
-        r:strong(human.life,hx+54,playerY+22,36,C.accent)
+        r:strong(r:fit(human.name or'You',160,20,1),hx+54,playerY,20,C.accent,160)
+        r:strong(human.life,hx+54,playerY+24,44,C.accent)
         r.playerRects[human.id]={x=hx,y=playerY,w=180,h=76}
-        r:priorityBadge(human,hx,playerY+58,180,22)
+        r:priorityBadge(human,hx,playerY+(commanderTracking and 84 or 70),180,22)
+        if commanderTracking then r:commanderSummary(human,hx,playerY+67,180,11)end
         require('app.board_fx').playerAuras(r,human,hx+145,playerY-95)
-        r:hit({x=hx,y=playerY,w=180,h=76,kind='player',card={id=human.id,name=human.name},tooltip=human.name..' · '..tostring(human.life)..' life · '..tostring(human.handCount or 0)..' cards in hand'})
+        r:hit({x=hx,y=playerY,w=180,h=76,kind='player',card={id=human.id,name=human.name},tooltip=Presentation.playerTooltip(human,game.commanderDamageEnabled),commanderDetails=true})
         -- Graveyard/exile share a large clickable zone at shorter window heights.
         Table.pile(r,'Graveyard',nil,enemy.graveyard,right,enemyZone,zoneW)
         Table.pile(r,'Graveyard',nil,human.graveyard,right,ownZone,zoneW)
@@ -189,11 +200,11 @@ function Table.draw(r,w,h)
             r:button('Exile '..#(human.exile or {}),right,ownZone+zoneW*1.4+37,zoneW,30,function() m.zoneView={label='Your exile',cards=human.exile or {}} end)
         end
         r:button('Exile '..#(enemy.exile or {}),right,enemyZone-39,zoneW,30,function() m.zoneView={label='Opponent exile',cards=enemy.exile or {}} end)
-        if h<840 and #(human.command or {})>0 then
+        if #(human.command or {})>0 then
             local command=human.command
             r:button('Commander',hx,h-49,103,32,function() m.zoneView={label='Your command zone',cards=command} end,m:canSelect(command[1].id))
-        else for i,c in ipairs(human.command or {}) do r:drawCard(c,hx+(i-1)*78,h-127,76,106,{kind='command',animate=true}) end end
-        for i,c in ipairs(enemy.command or {}) do r:drawCard(c,L.fieldX+(i-1)*78,127,76,106,{kind='command',animate=true}) end
+        end
+        for i,c in ipairs(enemy.command or {}) do r:drawCard(c,L.fieldX+(i-1)*86,127,83.6,117.04,{kind='command',animate=true}) end
         local manaEntries={}
         for _,symbol in ipairs({'W','U','B','R','G','C'}) do local amount=(human.mana or {})[symbol] or 0;if amount>0 then manaEntries[#manaEntries+1]={symbol=symbol,amount=amount} end end
         local mx=B.x+(B.w-#manaEntries*42)/2;local my=L.fieldBottom-8
@@ -212,7 +223,8 @@ function Table.draw(r,w,h)
         r:hit({x=x,y=y,w=width,h=36,tooltip='Priority is held at your stop. Play a card, pass, or End Turn to continue.'})
     end
     if type(game.error)=='string' then r:text(game.error,L.fieldX,L.divider,16,C.red,L.fieldW) end
-    if game.running==false then
+    local outcome=require('app.outcome').state(m)
+    if game.running==false and not(outcome and outcome.mode=='duel'and outcome.terminal)then
         local x=B.x+B.w/2-235;local y=h/2-70
         r:panel(x,y,470,131,'accent');r:text('MATCH ENDED',x+20,y+21,28,C.accent,430,'center')
         r:text(human and (human.won and 'Victory' or human.lost and 'Defeat') or 'See the match log',x+20,y+73,22,C.text,430,'center')

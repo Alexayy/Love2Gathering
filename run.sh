@@ -73,7 +73,7 @@ try:
         data=json.load(response)
     assert data.get('status')=='ok' or data.get('engine')=='XMage'
     if sys.argv[2]=='catalog':
-        assert data.get('apiVersion',0)>=14
+        assert data.get('apiVersion',0)>=15
         assert data.get('storage',{}).get('dataDirectory')==sys.argv[3]
         assert data.get('storage',{}).get('separateCache',False)==bool(sys.argv[4])
         if sys.argv[4]:assert data.get('storage',{}).get('cacheDirectory')==sys.argv[4]

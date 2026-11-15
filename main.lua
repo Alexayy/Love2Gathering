@@ -75,10 +75,11 @@ function love.draw()
 end
 function love.mousepressed(x,y,button,touch,clicks)
     if startup and not startup.ready then startup:press(x,y,button);return end
+    if button==2 then local lx,ly=Layout.toLogical(x,y);if require('app.drag_cancel').cancel(renderer,view,lx,ly)then return end end
     Slab.OnMousePressed(x,y,button,touch,clicks)
     local lx,ly=Layout.toLogical(x,y)
     local choices=package.loaded['app.card_choices']
-    if choices and not renderer:inputBlocked()and choices.press(view,lx,ly,button)then return end
+    if choices and choices.press(view,lx,ly,button)then return end
     if not renderer:inputBlocked()and Storage.press(renderer,lx,ly,button)then return end
     if not renderer:inputBlocked()and Slab.IsVoidHovered() then
         renderer:mousepressed(lx,ly,button,clicks)
@@ -86,6 +87,7 @@ function love.mousepressed(x,y,button,touch,clicks)
 end
 function love.mousereleased(x,y,button,touch,clicks)
     if startup and not startup.ready then return end
+    if button==2 and renderer.dragCancelRight then renderer.dragCancelRight=nil;return end
     Slab.OnMouseReleased(x,y,button,touch,clicks);local lx,ly=Layout.toLogical(x,y)
     local choices=package.loaded['app.card_choices'];if choices and choices.release(view,lx,ly,button)then return end
     renderer:mousereleased(lx,ly,button)
@@ -107,6 +109,8 @@ function love.keypressed(key,scancode,isrepeat)
     if startup and not startup.ready then if key=='escape'then love.event.quit()end;return end
     Slab.OnKeyPressed(key,scancode,isrepeat)
     if key=='escape'then
+        if require('app.drag_cancel').cancel(renderer,view,Layout.mouse())then renderer.dragCancelRight=nil;return end
+        local choices=package.loaded['app.card_choices'];if choices and choices.escape and choices.escape(view)then return end
         if view.setPicker then require('app.set_picker').close(view);return end
         if model.imagePackFileDialog then model.imagePackCancelRequested=true;return end
         if model.cardPrintingPicker then model:closeCardPrintings();return end
