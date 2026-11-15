@@ -436,6 +436,7 @@ end
 	Return: None.
 --]]
 function Slab.Draw(options)
+	Region.EndFrame()
 	if Stats.IsEnabled() then
 		PrevStatsData = love.graphics.getStats(PrevStatsData)
 	end
@@ -1671,6 +1672,8 @@ end
 	items have been added.
 
 	Id: [String] A string uniquely identifying this list box within the context of the current window.
+	Options.AlwaysShowScrollBarY: [Boolean] Keep the vertical scrollbar visible, including while idle.
+	Options.ScrollStep: [Number] Optional logical content pixels per wheel notch (1–500).
 	Options: [Table] List of options controlling the behavior of the list box.
 		W: [Number] The width of the list box. If nil, a default value of 150 is used.
 		H: [Number] The height of the list box. If nil, a default value of 150 is used.

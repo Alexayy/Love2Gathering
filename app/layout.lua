@@ -16,9 +16,11 @@ function Layout.clip(x,y,w,h)
 end
 function Layout.table(w,h)
     local board={x=16,y=16,w=w-32,h=h-32}
-    local handH=math.max(116,math.min(140,h*.15))
-    local fieldTop=260
-    local fieldBottom=h-handH-46
+    local handH=math.max(116,math.min(140,h*.15))*1.05
+    -- Reclaim the gaps below command cards and above the fixed hand before
+    -- increasing card targets; compact duel rows must retain their separation.
+    local fieldTop=250
+    local fieldBottom=h-handH-14
     local rowH=(fieldBottom-fieldTop)/2
     local logW=math.min(400,w*.27)
     return {board=board,actions={x=w-334,y=132,w=318,h=146},log={x=w-logW-16,y=140,w=logW,h=170},

@@ -1,5 +1,6 @@
 -- Inline mana symbols in wrapped text. Layout coordinates are logical UI units.
 local utf8=require('utf8')
+local Text=require('app.utf8_text')
 local Assets=require('app.assets')
 local glyphs=require('assets.keyrune.glyphs')
 local RichText={cache={},clock=0,cacheLimit=96,pixelLimit=12*1024*1024}
@@ -7,7 +8,8 @@ local function clean(value)
     if type(value)=='table' then
         if value.message or value.text then value=value.message or value.text else local parts={};for _,item in ipairs(value)do parts[#parts+1]=tostring(item)end;value=table.concat(parts,'\n')end
     end
-    return tostring(value or ''):gsub('\r\n','\n'):gsub('\r','\n'):gsub('<[Bb][Rr]%s*/?>','\n'):gsub('<[^>]*>',''):gsub('&nbsp;',' '):gsub('&amp;','&'):gsub('&lt;','<'):gsub('&gt;','>'):gsub('&#39;',"'")
+    local text=tostring(value or ''):gsub('\r\n','\n'):gsub('\r','\n'):gsub('<[Bb][Rr]%s*/?>','\n'):gsub('<[^>]*>',''):gsub('&nbsp;',' '):gsub('&amp;','&'):gsub('&lt;','<'):gsub('&gt;','>'):gsub('&#39;',"'")
+    return Text.clean(text)
 end
 local function isMana(value)
     local key=value:upper():gsub('%s','')

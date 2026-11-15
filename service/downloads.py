@@ -5,7 +5,7 @@ requests and retains only bounded batches in memory; the plan lives in SQL.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import filelocks as fcntl
 import importlib.util
 import json
@@ -18,10 +18,14 @@ import time
 import uuid
 
 from replays import ConflictError, encode, now
+from image_io import ImageIOCancelled
 
 PROJECT = Path(__file__).resolve().parents[1]
 RESERVE_BYTES = 3 * 1024**3
 SIZE_SAMPLE_LIMIT = 512
+PLAN_BATCH_LIMIT = 256
+PLAN_YIELD_SECONDS = .005
+PRIORITY_LIMIT = 4096
 _spec = importlib.util.spec_from_file_location('love2gathering_image_downloader', PROJECT / 'scripts/download-card-images.py')
 _cli = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_cli)
@@ -72,6 +76,8 @@ def _options(value):
 class DownloadManager:
     def __init__(self, catalog, storage, *, fetcher_factory=None, disk_usage=shutil.disk_usage):
         self.catalog, self.storage = catalog, storage
+        enable=getattr(storage,'enable_thumbnails',None)
+        if enable is not None:enable()
         self.fetcher_factory = fetcher_factory or (lambda: _cli.Fetcher(.15, 3))
         self.disk_usage = disk_usage
         self.lock = threading.RLock()
@@ -83,13 +89,28 @@ class DownloadManager:
         self._init_sql()
         self._recover()
 
+    def _checkpoint(self):
+        coordinator=getattr(self.storage,'image_io',None)
+        if coordinator is not None:coordinator.checkpoint()
+
     def _init_sql(self):
+        # Once installed, opening another desktop must not reserve a writer
+        # merely to repeat CREATE IF NOT EXISTS during an active image job.
+        with self.storage.connection()as c:
+            tables={row[0]for row in c.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            indexes={row[0]for row in c.execute("SELECT name FROM sqlite_master WHERE type='index'")}
+            required={'image_download_state','image_download_items','image_download_mirrors'}
+            if required<=tables and {'image_download_pending','image_download_url','image_download_priority'}<=indexes and 'priority'in{row['name']for row in c.execute('PRAGMA table_info(image_download_items)')}:
+                return
         with self.storage.connection(write=True) as c:
             c.execute('CREATE TABLE IF NOT EXISTS image_download_state(id INTEGER PRIMARY KEY CHECK(id=1),payload TEXT NOT NULL)')
             c.execute('CREATE TABLE IF NOT EXISTS image_download_items(job_id TEXT NOT NULL,cache_key TEXT NOT NULL,ordinal INTEGER NOT NULL,url TEXT NOT NULL,kind TEXT NOT NULL,metadata TEXT NOT NULL,existing_key TEXT,mirror TEXT,mirror_bytes INTEGER NOT NULL DEFAULT 0,status TEXT NOT NULL DEFAULT \'pending\',PRIMARY KEY(job_id,cache_key))')
             c.execute('CREATE INDEX IF NOT EXISTS image_download_pending ON image_download_items(job_id,status,ordinal)')
             c.execute('CREATE INDEX IF NOT EXISTS image_download_url ON image_download_items(job_id,url,status)')
             c.execute('CREATE TABLE IF NOT EXISTS image_download_mirrors(cache_key TEXT PRIMARY KEY,path TEXT NOT NULL,bytes INTEGER NOT NULL)')
+            if 'priority' not in {row['name']for row in c.execute('PRAGMA table_info(image_download_items)')}:
+                c.execute('ALTER TABLE image_download_items ADD COLUMN priority INTEGER NOT NULL DEFAULT 0')
+            c.execute('CREATE INDEX IF NOT EXISTS image_download_priority ON image_download_items(job_id,status,priority DESC,ordinal)')
 
     def _state(self, c=None):
         if c is None:
@@ -122,6 +143,7 @@ class DownloadManager:
 
     def _recover(self):
         # Another desktop may own the worker. Never pause its durable state.
+        if self._state()['state']not in('scanning','downloading','pausing'):return
         try:
             with image_job_lock(self.storage.root):
                 with self.storage.connection(write=True) as c:
@@ -169,7 +191,14 @@ class DownloadManager:
     def _launch(self, target, state):
         def run():
             try:
-                target(state)
+                coordinator=getattr(self.storage,'image_io',None)
+                with coordinator.background(self.stop)if coordinator is not None else nullcontext():
+                    target(state)
+            except ImageIOCancelled:
+                # The cancellation event also wakes a worker yielding to a
+                # visible image. Persist its actual requested pause/cancel only
+                # after leaving the cancelled background scope.
+                self._requested_stop(state)
             except Exception as exc:
                 state.update(state='error', rateBytesPerSecond=0, error=str(exc),failed=state.get('failed',0)+1)
                 self._save(state)
@@ -258,16 +287,28 @@ class DownloadManager:
             return True
         return False
 
+    def _clear_plan_table(self,table,state=None):
+        # Both tables can contain a whole printing library. Never DELETE the
+        # complete plan in one transaction while the UI/replay also needs SQL.
+        if table not in('image_download_items','image_download_mirrors'):
+            raise ValueError('Unknown image plan table')
+        while True:
+            if state is not None and self._requested_stop(state):return False
+            with self.storage.connection(write=True)as c:
+                deleted=c.execute('DELETE FROM '+table+' WHERE rowid IN (SELECT rowid FROM '+table+' LIMIT ?)',(PLAN_BATCH_LIMIT,)).rowcount
+            if not deleted:return True
+            self.stop.wait(PLAN_YIELD_SECONDS)
+
     def _mirror_inventory(self,state=None):
         prepared = []
-        with self.storage.connection(write=True) as c:
-            c.execute('DELETE FROM image_download_mirrors')
+        if not self._clear_plan_table('image_download_mirrors',state):return False
         if (self.storage.image_library).is_symlink():return True
         for folder in ('full-cards', 'art-crops'):
             path = self.storage.image_library / folder
             if not path.is_dir() or path.is_symlink():
                 continue
             for entry in os.scandir(path):
+                self._checkpoint()
                 if not entry.is_file(follow_symlinks=False):
                     continue
                 try:
@@ -290,14 +331,14 @@ class DownloadManager:
 
     def _scan_worker(self, state):
         fingerprint = self._fingerprint()
-        with self.storage.connection(write=True) as c:
-            c.execute('DELETE FROM image_download_items')
+        if not self._clear_plan_table('image_download_items',state):return
         if not self._mirror_inventory(state):return
         options = state['options']
         batch = []
         ordinal = 0
         last = time.monotonic()
         for index, record in enumerate(_cli.read_metadata(self.catalog.source), 1):
+            if index%32==1:self._checkpoint()
             for job in _cli.image_jobs(record, options['fullSize']):
                 kind = job['metadata']['kind']
                 if kind not in options['kinds']:
@@ -321,9 +362,7 @@ class DownloadManager:
             return
         if self._fingerprint() != fingerprint:
             raise ValueError('Local metadata changed while scanning; scan again')
-        with self.storage.connection(write=True) as c:
-            self._refresh_mirrors(c,state['jobId'])
-            self._refresh_cached(c,state['jobId'],options['mirrors'])
+        if not self._refresh_plan(state):return
         # Sizing can touch cold BLOB-header pages. Commit plan changes first:
         # a WAL reader must never reserve the sole writer during that work.
         with self.storage.connection() as c:
@@ -337,13 +376,91 @@ class DownloadManager:
         self._save(state)
 
     @staticmethod
-    def _refresh_cached(c, job_id, mirrors=False):
-        c.execute("UPDATE image_download_items SET existing_key=COALESCE((SELECT cache_key FROM art_cache a WHERE a.cache_key=image_download_items.cache_key),(SELECT cache_key FROM art_cache a WHERE a.cache_key=CASE WHEN image_download_items.kind='normal' THEN substr(image_download_items.cache_key,1,length(image_download_items.cache_key)-length('-normal.jpg'))||'-large.jpg' END)) WHERE job_id=?", (job_id,))
-        c.execute("UPDATE image_download_items SET status=CASE WHEN existing_key IS NOT NULL AND ?=0 THEN 'cached' WHEN existing_key IS NOT NULL AND status='done' AND mirror IS NOT NULL THEN 'done' ELSE 'pending' END WHERE job_id=?", (int(mirrors),job_id))
+    def _refresh_cached(c, job_id, mirrors=False, keys=None):
+        where='job_id=?';params=(job_id,)
+        if keys is not None:
+            if not keys:return
+            where+=' AND cache_key IN ('+','.join('?'for _ in keys)+')';params+=tuple(keys)
+        c.execute("UPDATE image_download_items SET existing_key=COALESCE((SELECT cache_key FROM art_cache a WHERE a.cache_key=image_download_items.cache_key),(SELECT cache_key FROM art_cache a WHERE a.cache_key=CASE WHEN image_download_items.kind='normal' THEN substr(image_download_items.cache_key,1,length(image_download_items.cache_key)-length('-normal.jpg'))||'-large.jpg' END)) WHERE "+where,params)
+        c.execute("UPDATE image_download_items SET status=CASE WHEN existing_key IS NOT NULL AND ?=0 THEN 'cached' WHEN existing_key IS NOT NULL AND status='done' AND mirror IS NOT NULL THEN 'done' ELSE 'pending' END WHERE "+where,(int(mirrors),*params))
 
     @staticmethod
-    def _refresh_mirrors(c,job_id):
-        c.execute("UPDATE image_download_items SET mirror=(SELECT path FROM image_download_mirrors m WHERE m.cache_key=image_download_items.cache_key),mirror_bytes=COALESCE((SELECT bytes FROM image_download_mirrors m WHERE m.cache_key=image_download_items.cache_key),0) WHERE job_id=?",(job_id,))
+    def _refresh_mirrors(c,job_id,keys=None):
+        where='job_id=?';params=(job_id,)
+        if keys is not None:
+            if not keys:return
+            where+=' AND cache_key IN ('+','.join('?'for _ in keys)+')';params+=tuple(keys)
+        c.execute("UPDATE image_download_items SET mirror=(SELECT path FROM image_download_mirrors m WHERE m.cache_key=image_download_items.cache_key),mirror_bytes=COALESCE((SELECT bytes FROM image_download_mirrors m WHERE m.cache_key=image_download_items.cache_key),0) WHERE "+where,params)
+
+    def _refresh_plan(self,state):
+        """Release SQLite's sole writer between bounded cache-check batches.
+
+        A resumed full catalog can have hundreds of thousands of rows. One
+        whole-plan UPDATE starves settings/replay writers even in WAL mode.
+        The covering job/key primary index makes this a linear keyset walk.
+        """
+        after='';state['phase']='cache_check';state['checkedImages']=0;last=time.monotonic();self._save(state)
+        while True:
+            if self._requested_stop(state):return False
+            with self.storage.connection()as c:
+                keys=[row[0]for row in c.execute('SELECT cache_key FROM image_download_items WHERE job_id=? AND cache_key>? ORDER BY cache_key LIMIT ?',(state['jobId'],after,PLAN_BATCH_LIMIT))]
+            if not keys:break
+            with self.storage.connection(write=True)as c:
+                self._refresh_mirrors(c,state['jobId'],keys)
+                self._refresh_cached(c,state['jobId'],state['options']['mirrors'],keys)
+                c.execute('UPDATE image_download_items SET priority=0 WHERE job_id=? AND cache_key IN ('+','.join('?'for _ in keys)+') AND priority<>0',(state['jobId'],*keys))
+            after=keys[-1];state['checkedImages']+=len(keys)
+            if time.monotonic()-last>=.5:
+                self._save(state);last=time.monotonic()
+            # Let waiting foreground writers acquire SQLite between batches;
+            # immediately reentering BEGIN can otherwise starve their backoff.
+            self.stop.wait(PLAN_YIELD_SECONDS)
+        if not self._prioritize_decks(state):return False
+        state['phase']='download'
+        return True
+
+    def _prioritize_decks(self,state):
+        """Exact selections first, then one catalog printing per existing card.
+
+        This changes transfer order only. Deck quantities/edition preferences
+        stay unchanged, and a basic land never promotes all of its reprints.
+        """
+        names={};printings={};truncated=False
+        def name(value,priority):
+            nonlocal truncated
+            if not isinstance(value,str)or not value:return
+            if value not in names and len(names)>=PRIORITY_LIMIT:truncated=True;return
+            names[value]=max(priority,names.get(value,0))
+        def printing(value,priority):
+            nonlocal truncated
+            if not isinstance(value,str)or not _cli.PRINTING_ID.fullmatch(value):return
+            if value not in printings and len(printings)>=PRIORITY_LIMIT:truncated=True;return
+            printings[value]=max(priority,printings.get(value,0))
+        # Starter originals remain visible independently of legacy owned
+        # overrides/hidden bundled IDs; use their explicit collection contract.
+        decks=self.storage.list_decks('user')+self.storage.list_decks('starter')
+        for deck in decks:
+            name(deck.get('coverCard'),40)
+            for zone in('commander','main','sideboard'):
+                for entry in deck.get(zone,[]):name(entry.get('name'),40 if zone=='commander'else 20)
+            for selection in deck.get('printingSelections',[]):printing(selection.get('printingId'),60)
+        profile=self.storage.profile()
+        for slot in('avatar','playmat'):printing((profile.get(slot)or{}).get('printingId'),70)
+        if self.catalog.status().get('state')=='ready':
+            for index,(card_name,priority)in enumerate(names.items()):
+                if index%32==0 and self._requested_stop(state):return False
+                card=self.catalog.get(name=card_name)
+                if card:printing(card.get('printing_id'),priority)
+        items=list(printings.items());count=0
+        for start in range(0,len(items),32):
+            self._checkpoint()
+            if self._requested_stop(state):return False
+            with self.storage.connection(write=True)as c:
+                for identifier,priority in items[start:start+32]:
+                    keys=[identifier+'-'+str(face)+'-'+kind+'.jpg'for face in range(10)for kind in state['options']['kinds']]
+                    count+=c.execute('UPDATE image_download_items SET priority=max(priority,?) WHERE job_id=? AND cache_key IN ('+','.join('?'for _ in keys)+')',(priority,state['jobId'],*keys)).rowcount
+        state.update(prioritizedCards=len(names),prioritizedPrintings=len(printings),priorityImages=count,priorityTruncated=truncated)
+        return True
 
     def _estimate(self, c, state):
         job_id = state['jobId']
@@ -412,9 +529,7 @@ class DownloadManager:
     def _download_worker(self, state):
         job_id = state['jobId']
         if not self._mirror_inventory(state):return
-        with self.storage.connection(write=True) as c:
-            self._refresh_mirrors(c,job_id)
-            self._refresh_cached(c,job_id,state['options']['mirrors'])
+        if not self._refresh_plan(state):return
         with self.storage.connection() as c:
             state['scan']=self._estimate(c,state)
             state['processed']=c.execute("SELECT count(*)FROM image_download_items WHERE job_id=? AND status IN('cached','done')",(job_id,)).fetchone()[0]
@@ -422,13 +537,22 @@ class DownloadManager:
         if self._requested_stop(state):return
         self._save(state)
         fetcher = self.fetcher_factory()
+        try:self._transfer(state,fetcher)
+        finally:
+            close=getattr(fetcher,'close',None)
+            if close is not None:close()
+
+    def _transfer(self,state,fetcher):
+        job_id=state['jobId']
         started = time.monotonic()
         initial_bytes = state.get('bytesDownloaded',0)
+        local_burst=0
         while True:
+            self._checkpoint()
             if self._requested_stop(state):
                 return
             with self.storage.connection() as c:
-                row = c.execute("SELECT * FROM image_download_items WHERE job_id=? AND status='pending' ORDER BY ordinal LIMIT 1",(job_id,)).fetchone()
+                row = c.execute("SELECT * FROM image_download_items WHERE job_id=? AND status='pending' ORDER BY priority DESC,ordinal LIMIT 1",(job_id,)).fetchone()
                 if row is None:
                     total = state['scan']['total']
                     done = c.execute("SELECT count(*)FROM image_download_items WHERE job_id=? AND status IN('cached','done')",(job_id,)).fetchone()[0]
@@ -444,6 +568,7 @@ class DownloadManager:
                     state.update(state='paused',rateBytesPerSecond=0,error='Paused to retain at least 3 GiB free. Free space and resume to continue.')
                     self._save(state)
                     return
+                self._checkpoint()
                 data = fetcher.image(row['url'])
                 _cli.validate_image(data)
                 state['bytesDownloaded'] += len(data)
@@ -476,6 +601,9 @@ class DownloadManager:
                 state.update(processed=done,progress=done/state['scan']['total'] if state['scan']['total'] else 1,
                              rateBytesPerSecond=round((state['bytesDownloaded']-initial_bytes)/max(.1,time.monotonic()-started)))
                 self._save(state,c)
+            if not network:
+                local_burst+=1
+                if local_burst%16==0:self.stop.wait(PLAN_YIELD_SECONDS)
 
     def close(self):
         with self.lock:

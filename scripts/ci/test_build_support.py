@@ -157,7 +157,7 @@ class PayloadTests(unittest.TestCase):
                          'decks/starter.json', 'decks/preconstructed/README.md',
                          'decks/preconstructed/LICENSE-MTGJSON.txt', 'decks/preconstructed/manifest.json',
                          'bridge/target/xmage-bridge-1.0.0.jar', 'bridge/card-map.json',
-                         'scripts/download-card-images.py', 'assets/card-art/full-art-basics.json',
+                         'scripts/download-card-images.py', 'scripts/starter-image-pack.py', 'service/image_packs.py', 'assets/card-art/full-art-basics.json',
                          'assets/icons/thb.png', 'engine/mage/LICENSE.txt', 'README.md',
                          'assets/ASSET_GUIDE.md', 'assets/card-backs/README.md', 'packaging/runtime/launcher.py'):
                 path = root / name; path.parent.mkdir(parents=True, exist_ok=True); path.write_text('fixture')
@@ -171,6 +171,8 @@ class PayloadTests(unittest.TestCase):
             with patch.object(packager, 'ROOT', root), patch.object(packager, 'asset_paths', return_value=[]), \
                     patch.object(packager.subprocess, 'check_output', return_value='a' * 40), redirect_stdout(io.StringIO()):
                 payload = packager.common_payload(Path(tmp) / 'dist', source)
+            self.assertTrue((payload / 'scripts/starter-image-pack.py').is_file())
+            self.assertTrue((payload / 'service/image_packs.py').is_file())
             copied = payload / 'decks/preconstructed/catalog.jsonl.gz'
             self.assertEqual(copied.read_bytes(), catalog.read_bytes())
             manifest = json.loads((payload / 'payload-manifest.json').read_text())

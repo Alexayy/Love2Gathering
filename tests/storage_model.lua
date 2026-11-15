@@ -66,4 +66,6 @@ local legacy=Model.new();legacy.catalogHealth={ready=true,apiVersion=7};calls={}
 local idle=Model.new();idle:refreshDownloadStatus();respond(last('/downloads/status'),{state='idle',scan=json.null});idle:scanImageLibrary()
 check(#last('/downloads/scan').body.kinds==2,'A JSON-null idle plan retains both recommended image types by default')
 check(Storage.bytes(0)=='0 B'and Storage.bytes(1024)=='1.00 KiB','Byte summaries retain explicit units and zero values')
+local importing=Model.new();importing.imagePackStatus={state='importing'};importing.downloadStatus={state='paused',canResume=true};local before=#calls
+check(Storage.maintenanceBusy(importing)and not importing:imageDownloadCommand('resume')and#calls==before,'An active pack import blocks conflicting bulk resume and maintenance before sending HTTP')
 print('Storage model checks: '..checks..' passed')

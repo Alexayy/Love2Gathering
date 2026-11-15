@@ -2,6 +2,7 @@ local Layout=require('app.layout')
 local Assets=require('app.assets')
 local Table=require('app.table')
 local RichText=require('app.richtext')
+local Text=require('app.utf8_text')
 local Board=require('app.board_fx')
 local utf8=require('utf8')
 local Renderer={};Renderer.__index=Renderer
@@ -24,13 +25,15 @@ function Renderer.new(model)
     return self
 end
 function Renderer:text(text,x,y,size,tint,width,align)
+    text=Text.clean(text)
     love.graphics.setFont(self.fonts[size or 14]);color(tint or C.text)
-    if width then love.graphics.printf(tostring(text or ''),x,y,width,align or 'left') else love.graphics.print(tostring(text or ''),x,y) end
+    if width then love.graphics.printf(text,x,y,width,align or 'left') else love.graphics.print(text,x,y) end
 end
 function Renderer:strong(text,x,y,size,tint,width,align)
+    text=Text.clean(text)
     love.graphics.push();love.graphics.translate(x,y)
     love.graphics.setFont(self.assets.titleFont and self.assets:titleFont(size or 22,self.model.settings)or self.bold);color(tint or C.text)
-    if width then love.graphics.printf(tostring(text or ''),0,0,width,align or'left')else love.graphics.print(tostring(text or''),0,0)end
+    if width then love.graphics.printf(text,0,0,width,align or'left')else love.graphics.print(text,0,0)end
     love.graphics.pop()
 end
 function Renderer:playerColor(player)return Board.color(self,player)end
@@ -38,8 +41,10 @@ function Renderer:drawPermanent(card,x,y,w,h,options)return Board.layers(self,ca
 function Renderer:priorityBadge(player,x,y,w,height)return Board.priority(self,player,x,y,w,height)end
 function Renderer:drawAvatar(player,x,y,size)
     local m=self.model;local profile=player and m.profileForPlayer and m:profileForPlayer(player)or m.profile or{}
-    local art=m.profileArt and m:profileArt(profile.avatar)
-    if not art and player and player.avatarCard then art=m:getArt(player.avatarCard,true,'art_crop')end
+    local density=Layout.scale*(Layout.renderScale or 1)*(self.worldTransform and self.worldTransform.scale or 1)*(love.window and love.window.getDPIScale and love.window.getDPIScale()or 1)
+    local options={variant=size*density<=256 and'thumb'or nil}
+    local art=m.profileArt and m:profileArt(profile.avatar,nil,options)
+    if not art and player and player.avatarCard then art=m:getArt(player.avatarCard,true,'art_crop',options)end
     local tint=player and self:playerColor(player)or C.accent
     self:panel(x,y,size,size,'dark')
     if art then
@@ -96,7 +101,7 @@ function Renderer:update(dt)
     Board.update(self,dt)
 end
 function Renderer:fit(text,width,size,lines)
-    local _,wrapped=self.fonts[size]:getWrap(tostring(text or ''),width)
+    local _,wrapped=self.fonts[size]:getWrap(Text.clean(text),width)
     if #wrapped<=lines then return table.concat(wrapped,'\n') end
     local out={};for i=1,lines do out[i]=wrapped[i] end
     while #out[lines]>0 and self.fonts[size]:getWidth(out[lines]..'…')>width do
@@ -123,6 +128,7 @@ function Renderer:hit(hit)
 end
 function Renderer:panel(x,y,w,h,style) self.assets:panel(x,y,w,h,style) end
 function Renderer:button(label,x,y,w,h,action,active,options)
+    label=Text.clean(label)
     options=options or{}
     local mx,my=Layout.mouse();local hot=mx>=x and mx<=x+w and my>=y and my<=y+h
     self.assets:control(x,y,w,h,active and 'accent' or 'dark')
@@ -136,6 +142,7 @@ function Renderer:button(label,x,y,w,h,action,active,options)
     self:hit({x=x,y=y,w=w,h=h,action=action,tooltip=options.tooltip or label})
 end
 function Renderer:iconLabel(icon,label,x,y,w,h,size,tint,iconSize)
+    label=Text.clean(label)
     size=size or 16;iconSize=iconSize or size+3;tint=tint or C.text
     self.assets:iconSymbol(icon,x,y+(h-iconSize)/2,iconSize,tint)
     self:text(label,x+iconSize+8,y+(h-self.fonts[size]:getHeight())/2+require('app.fonts').textOffset(self.fonts[size],label),size,tint,w-iconSize-8)
@@ -165,7 +172,9 @@ function Renderer:drawCard(card,x,y,w,h,options)
         end
     else
         local data=self.model:cardData(card) or card
-        local img=self.model:getArt(data,options.imageOnly)
+        local density=Layout.scale*(Layout.renderScale or 1)*(self.worldTransform and self.worldTransform.scale or 1)*(love.window and love.window.getDPIScale and love.window.getDPIScale()or 1)
+        local variant=not options.fullImage and w*density<=256 and'thumb'or nil
+        local img=self.model:getArt(data,options.imageOnly,nil,{variant=variant})
         local selectable=options.selectable or self.model:canSelect(card.id)
         if selectable then
             rect(bx-5,by-5,w+10,h+10,{C.accent[1],C.accent[2],C.accent[3],.17},9)
@@ -176,7 +185,7 @@ function Renderer:drawCard(card,x,y,w,h,options)
             rect(bx,by,w,h,{.075,.095,.13},6)
             local size=h<180 and 10 or 12;local icon=math.min(w*.32,36)
             self.assets:iconSymbol('image',-icon/2,by+h*.14,icon,C.muted)
-            local status=self.model.artworkLabel and self.model:artworkLabel(data)or'Artwork unavailable'
+            local status=self.model.artworkLabel and self.model:artworkLabel(data,nil,{variant=variant})or'Artwork unavailable'
             self:text(self:fit(status,w-14,size,2),bx+7,by+h*.46,size,C.muted,w-14,'center')
             self:text(self:fit(data.name or'',w-14,size,2),bx+7,by+h-size*2-12,size,C.text,w-14,'center')
         else
@@ -192,7 +201,8 @@ function Renderer:drawCard(card,x,y,w,h,options)
                 local text=data.oracle_text or card.rules or ''
                 if type(text)=='table' then text=table.concat(text,'\n') end
                 text=tostring(text):gsub('<[^>]+>','')
-                if #text>100 then text=text:sub(1,97)..'...' end
+                -- maxLines clips complete text/mana runs; a byte prefix can
+                -- split native punctuation or a multibyte translated name.
                 RichText.draw(self,text,bx+7,by+h*.68,w-14,{size=10,iconSize=11,color=C.text,maxLines=3})
             end
                 local cost=data.mana_cost or card.manaCost or '';if cost~='' then self.assets:mana(cost,bx+7,by+h-19,13) end
@@ -251,8 +261,8 @@ function Renderer:drawDecks(w,h)require('app.collection_ui').draw(self,w,h)end
 function Renderer:inputBlocked()
     local m,v=self.model,self.view
     local dice=package.loaded['app.dice']
-    return (dice and dice.busy(self))or m.storageLocationConfirm or m.storageFolderDialog or m.settingsOpen or m.zoneView or m.deleteConfirm or m.inspectCard or m.galleryInspect or m.confirmConcede or m.archiveCopy or m.storagePurgePreview or m.cardPrintingPicker or m.tokenPicker
-        or v and(v.brandMenu or v.deckSelection or v.themeColorEdit or v.combatStopsOpen or m.page=='builder'and(v.builderPopup or v.builderFiltersOpen))
+    return (dice and dice.busy(self))or m.storageLocationConfirm or m.storageFolderDialog or m.imagePackFileDialog or m.settingsOpen or m.zoneView or m.deleteConfirm or m.inspectCard or m.galleryInspect or m.confirmConcede or m.archiveCopy or m.storagePurgePreview or m.cardPrintingPicker or m.tokenPicker
+        or v and(v.setPicker or v.brandMenu or v.deckSelection or v.themeColorEdit or v.combatStopsOpen or m.page=='builder'and(v.builderPopup or v.builderFiltersOpen))
         or not v and self.blockBuilderDrop
 end
 function Renderer:drawBuilder(w,h)
@@ -303,22 +313,24 @@ function Renderer:drawOrdering(w,h,prompt)
 end
 function Renderer:drawPreview(w,h)
     local hit=self.model.stackHover or self.model.logHover or self.model.choiceHover or self.hover
+    if hit and hit.kind=='library-top'and not self.model:libraryTopCurrent(hit.libraryPlayerId,hit.card.id,hit.libraryGameId)then return end
     if hit and hit.sourceCard and not hit.card then hit={card=hit.sourceCard,kind='stack'}end
     if self.model.settings.showTooltips==false then return end
     if self.uiHovered and not(self.model.stackHover or self.model.logHover or self.model.choiceHover)then return end
     if love.mouse.isDown(1)and(self.model.choiceHover or self.model.stackHover or self.model.logHover)then return end
     if hit and hit.tooltip and (not hit.card or hit.kind=='player' or hit.kind=='seat-focus')and not self.drag then
-        local x,y=Layout.mouse();local width=math.min(380,self.fonts[13]:getWidth(hit.tooltip)+24)
-        local _,lines=self.fonts[13]:getWrap(hit.tooltip,width-24);local height=math.min(160,#lines*18+18)
+        local tooltip=Text.clean(hit.tooltip)
+        local x,y=Layout.mouse();local width=math.min(380,self.fonts[13]:getWidth(tooltip)+24)
+        local _,lines=self.fonts[13]:getWrap(tooltip,width-24);local height=math.min(160,#lines*18+18)
         x=math.max(8,math.min(w-width-8,x+16));y=math.max(8,math.min(h-height-8,y+20))
-        self:panel(x,y,width,height,'dark');self:text(hit.tooltip,x+12,y+8,13,C.text,width-24);return
+        self:panel(x,y,width,height,'dark');self:text(tooltip,x+12,y+8,13,C.text,width-24);return
     end
     if self.drag or self.panGesture or not hit or not hit.card or hit.kind=='pile' or hit.kind=='player' or hit.kind=='hand' then return end
     if self.model.page=='builder'and self.model.settings.builderLayout~='Simplified'then return end
     local card=self.model:cardData(hit.card);if not card then return end
     local mx,my=Layout.mouse();local pw=244;local ph=342
     local x=mx> w/2 and math.max(15,mx-pw-20) or math.min(w-pw-20,mx+25);local y=math.max(85,math.min(h-ph-70,my-ph/2))
-    self:drawCard(hit.card,x,y,pw,ph,{noHit=true,angle=0})
+    self:drawCard(hit.card,x,y,pw,ph,{noHit=true,angle=0,fullImage=true})
     local owner=(self.boardPlayers or{})[hit.card.ownerId];local controller=(self.boardPlayers or{})[hit.card.controllerId]
     if owner or controller then
         self:panel(x,y+ph+3,pw,50,'dark')
@@ -387,21 +399,23 @@ end
 function Renderer:mousepressed(x,y,button,clicks)
     self:mousemoved(x,y)
     local hit=self.hover;if self:inputBlocked()then return end
+    if hit and hit.kind=='library-top'and not self.model:libraryTopCurrent(hit.libraryPlayerId,hit.card.id,hit.libraryGameId)then return end
     if button==2 and self.model.page=='table' and (not hit or hit.kind~='hand') and require('app.multiplayer_table').within(self.multiplayerView,x,y) then
         self.panGesture={startX=x,startY=y,x=x,y=y,hit=hit};return
     end
     if not hit then return end
-    if button==2 and hit.card then self.model.previewCard=hit.card;self.model.inspectCard=hit.card;return end
+    if button==2 and hit.card then self:inspectHitCard(hit);return end
     if button~=1 then return end
     if hit.kind=='builder-divider'then self.builderResize={offset=y-hit.split};return end
     if hit.action then
         self:sound('click');hit.action()
         if clicks==2 and hit.deck then self.model:openDeck(hit.deck) end
-    elseif self.model.replay and hit.card and hit.kind~='player' then self.model.inspectCard=hit.card
+    elseif self.model.replay and hit.card and hit.kind~='player' then self:inspectHitCard(hit)
+    elseif hit.kind=='library-top'and not self.model:canSelect(hit.card.id)then self:inspectHitCard(hit)
     elseif hit.kind=='builder-card'then
-        self.model.previewCard=hit.card
+        self:selectPreviewCard(hit.card)
         if clicks==2 then self.model:addCard(hit.card,hit.section or self.model.selectedSection,-1)end
-    elseif hit.kind=='search' or hit.kind=='hand' or hit.kind=='permanent' or hit.kind=='command' or hit.kind=='order' then
+    elseif hit.kind=='search' or hit.kind=='hand' or hit.kind=='permanent' or hit.kind=='command' or hit.kind=='order'or hit.kind=='library-top' then
         if hit.kind=='search' and clicks==2 then self.model:addCard(hit.card);return end
         self.drag=hit;self.dragStart={x,y};self.dragPos={x=x,y=y};self.dragPage=self.model.page;self.dragEditorGeneration=self.model.editGeneration
     elseif hit.kind=='player' then
@@ -409,18 +423,27 @@ function Renderer:mousepressed(x,y,button,clicks)
         elseif hit.focusIndex and self.tableCamera then self.tableCamera:focus(hit.focusIndex) end
     elseif hit.kind=='zone' then self.model.zoneView={label=hit.label,cards=hit.cards} end
 end
+function Renderer:inspectHitCard(hit)
+    if hit.kind=='library-top'then return self.model:inspectLibraryTop(hit.libraryPlayerId,hit.card.id,hit.libraryGameId)end
+    self:selectPreviewCard(hit.card);self.model.inspectCard=hit.card;return true
+end
+function Renderer:selectPreviewCard(card)
+    if self.model.page=='builder'and self.model.selectBuilderArtwork then self.model:selectBuilderArtwork(card)
+    else self.model.previewCard=card end
+end
 function Renderer:mousereleased(x,y,button)
     if button==1 and self.builderResize then self:mousemoved(x,y);self.builderResize=nil;return end
     if button==2 and self.panGesture then
         self:mousemoved(x,y)
         local pan=self.panGesture;self.panGesture=nil
         if not pan.moved and pan.hit and pan.hit.card and pan.hit.kind~='player' then
-            self.model.previewCard=pan.hit.card;self.model.inspectCard=pan.hit.card
+            self:inspectHitCard(pan.hit)
         end
         return
     end
     if button~=1 or not self.drag then return end
     local d=self.drag;self.drag=nil
+    if d.kind=='library-top'and not self.model:libraryTopCurrent(d.libraryPlayerId,d.card.id,d.libraryGameId)then self.dragPos=nil;return end
     local distance=math.abs(x-self.dragStart[1])+math.abs(y-self.dragStart[2]);local w,h=Layout.dimensions()
     local accepted=false
     if d.kind=='search' then
@@ -429,7 +452,7 @@ function Renderer:mousereleased(x,y,button)
         if current and not self:inputBlocked()and distance>8 and drop and x>=drop.x and x<=drop.x+drop.w and y>=drop.y and y<=drop.y+drop.h then
             self.model:addCard(d.card);accepted=true
             self:burst('click',drop.x+drop.w/2,math.min(y,drop.y+80),9)
-        else self.model.previewCard=d.card end
+        elseif current then self:selectPreviewCard(d.card)end
     elseif d.kind=='order'and not self:inputBlocked()and(not self.dragPage or self.dragPage==self.model.page)then
         local target
         for _,hit in ipairs(self.hits) do if hit.kind=='order' and inside(hit,x,y) then target=hit.index end end
@@ -463,7 +486,7 @@ function Renderer:drawForeground()
     if not self:inputBlocked()then local w,h=Layout.dimensions();self:drawPreview(w,h)end
 end
 function Renderer:wheelmoved(dx,dy)
-    if self.uiHovered or self.model.settingsOpen or self.model.zoneView or self.model.inspectCard then return end
+    if self.uiHovered or self:inputBlocked()then return end
     local x,y=Layout.mouse();local w,h=Layout.dimensions();local p=self.model:prompt()
     if self.model.page=='decks' and x<w-350 and y>180 then self.deckScroll=math.max(0,math.min(self.deckScrollMax or 0,(self.deckScroll or 0)-dy*50))
     elseif self.model.page=='builder'and self.model.settings.builderLayout=='Simplified'then require('app.builder_simplified').wheel(self.model,self.simpleBuilderLayout or require('app.builder').layout(w,h,'Simplified',self.model.simpleBuilderSplitRatio),x,y,dy)

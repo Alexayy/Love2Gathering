@@ -46,7 +46,7 @@ local function seat(r,player,index,c,Table)
         tooltip=player.name..' · '..tostring(player.life)..' life\n'..tostring(player.handCount or 0)..' in hand · '..tostring(player.libraryCount or 0)..' in library'..(selected and' · legal target'or' · click to focus')})
     r.assets:iconSymbol('library',c.x+24,c.y+66,28,tint)
     r:strong(player.libraryCount or 0,c.x+58,c.y+66,20,C.text)
-    r:hit({x=c.x+22,y=c.y+62,w=78,h=38,tooltip=player.name..' · library: '..tostring(player.libraryCount or 0)})
+    r:hit({x=c.x+22,y=c.y+62,w=78,h=38,kind='library-zone',libraryPlayerId=player.id,action=function()m:openLibrary(player.id)end,tooltip=player.name..' · library: '..tostring(player.libraryCount or 0)..' · inspect the entitled top card'})
     r.assets:iconSymbol('hand',c.x+116,c.y+66,28,tint)
     r:strong(player.handCount or #(player.hand or {}),c.x+150,c.y+66,20,C.text)
     r:hit({x=c.x+114,y=c.y+62,w=78,h=38,tooltip=player.name..' · hand: '..tostring(player.handCount or 0)})
@@ -63,6 +63,7 @@ local function seat(r,player,index,c,Table)
     local zx=c.x+c.w-144
     zone(r,player,'graveyard','graveyard',zx,c.y+142,122)
     zone(r,player,'exile','exile',zx,c.y+202,122)
+    if m:libraryTop(player)then Table.library(r,player,zx,c.y+270,122)end
     require('app.board_fx').playerAuras(r,player,c.x+174,c.y+104)
     local mx=c.x+410
     for _,symbol in ipairs({'W','U','B','R','G','C'}) do

@@ -33,22 +33,21 @@ local function filters(v,w,h)
     v:combo('simple-sort',m.searchSort,{'Name','Color','Set'},inner,function(value)m.searchSort=value;m:searchChanged()end)
     S.NewLine();S.Text('Set',{Color=v.r.colors.muted})
     local selected='All sets';for _,set in ipairs(m.sets or{})do if set.code==m.searchSet then selected=set.name end end
-    if S.BeginComboBox('simple-set',{Selected=selected,W=inner,H=36})then
-        if S.TextSelectable('All sets')then m.searchSet='All';m:searchChanged()end
-        for _,set in ipairs(m.sets or{})do if S.TextSelectable(set.name..' ['..set.code:upper()..']')then m.searchSet=set.code;m:searchChanged()end end
-        S.EndComboBox()
-    end
+    S.PushID('simple-set')
+    if button(v,v.r:fit(selected,inner-60,16,1),'library',inner,36,{Tooltip='Search sets in a grid'})then require('app.builder').openSetFilter(v,'simple-set')end
+    S.PopID()
     S.NewLine();if button(v,'Reset filters','refresh',inner,36)then m:setSearchColor('All');m.searchType='';m.searchSet='All';m.searchSort='Name';m:searchChanged()end
     S.EndWindow()
 end
 function Simple.build(v,w,h)
     local S,m=v.S,v.m;local deck=m.editDeck;if not deck then return end
+    if m.previewCard then m:getBuilderPreviewArt(m.previewCard)end
     local L=Simple.layout(w,h,m.simpleBuilderSplitRatio);m:setSearchLimit(L.pageSize)
     v:window('simple-deck-controls',L.controls.x,L.controls.y,L.controls.w,L.controls.h,nil,{AutoSizeContent=false,Border=6})
     v:combo('simple-deck-format',deck.format,{'Modern','Standard','Pioneer','Commander'},150,function(value)m:changeDeckFormat(value)end)
     S.SameLine({Pad=12});if button(v,m.dirty and'Save *'or'Save','save',96,36)then m:saveDeck()end
     S.SameLine({Pad=12});if button(v,'Validate','check',108,36)then m:validateDeck()end
-    S.SameLine({Pad=12});if button(v,'Preview','search',100,36)then m.inspectCard=m.previewCard or m.cards[1]end
+    S.SameLine({Pad=12});if button(v,'Preview','search',100,36)then local card=m.previewCard or m.cards[1];if card then m:selectBuilderArtwork(card);m.inspectCard=card end end
     if m.showCardPrintings then S.SameLine({Pad=12});if button(v,'Choose art','gallery',128,36)then m:showCardPrintings(m.previewCard or m.cards[1],m.selectedSection)end end
     S.EndWindow()
     v:window('simple-search',L.search.x,L.search.y,L.search.w,L.search.h,nil,{AutoSizeContent=false,Border=6})
@@ -96,7 +95,7 @@ function Simple.draw(r,w,h)
         r:text(r:fit(card.name,L.cardW,12,1),x,L.grid.y+L.cardH+4,12,C.muted,L.cardW)
     end end
     if not m.catalogHealth.ready then r:text('Preparing card catalog…',L.grid.x,L.grid.y+20,18,C.muted,L.grid.w)
-    elseif#m.cards==0 then r:text(m.searchBusy and'Searching…'or'No matching cards',L.grid.x,L.grid.y+20,16,C.muted,L.grid.w)end
+    elseif#m.cards==0 then r:text(m.searchBusy and'Searching…'or m.searchError and('Search unavailable · '..m.searchError)or'No matching cards',L.grid.x,L.grid.y+20,16,C.muted,L.grid.w)end
     r:button('Previous',L.grid.x,L.pagerY,110,30,function()if m.offset>0 then m.offset=math.max(0,m.offset-m.searchLimit);m:searchCards()end end)
     r:button('Next',L.grid.x+L.grid.w-110,L.pagerY,110,30,function()if m.offset+m.searchLimit<m.total then m.offset=m.offset+m.searchLimit;m:searchCards()end end)
     r:text((m.total>0 and(m.offset+1)..'–'..math.min(m.offset+m.searchLimit,m.total)or'0')..' / '..m.total,L.grid.x+130,L.pagerY+7,13,C.muted,L.grid.w-260,'center')

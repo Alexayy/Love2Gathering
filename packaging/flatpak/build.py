@@ -8,10 +8,13 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import xml.etree.ElementTree as ET
 
 PROJECT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
+sys.path.insert(0,str(PROJECT/'packaging'))
+from python_dependencies import bundle_pillow
 APP_ID='io.github.Alexayy.Love2Gathering'
 RUNTIME_BRANCH='25.08'
 PERMISSIONS=['--share=network','--share=ipc','--socket=x11','--socket=wayland','--socket=pulseaudio','--device=dri','--filesystem=host']
@@ -23,12 +26,14 @@ def run(*args):
 
 def runtime_preflight(work):
     """Check the shipping Platform, not the more complete SDK used to build."""
-    command=['flatpak','build','--runtime','--env=LD_LIBRARY_PATH=/app/lib/love',str(work)]
+    command=['flatpak','build','--runtime','--env=LD_LIBRARY_PATH=/app/lib/love','--env=PYTHONPATH=/app/share/Love2Gathering/runtime/python-packages',str(work)]
     love=subprocess.check_output(command+['/app/share/Love2Gathering/runtime/love/bin/love','--version'],text=True).strip()
     if not love.startswith('LOVE 11.5'):
         raise ValueError('Packaged LÖVE 11.5 could not run in the Platform runtime')
     python=json.loads(subprocess.check_output(command+['python3','-c',
-        'import ctypes,json,sqlite3,ssl,sys;print(json.dumps({"python":sys.version.split()[0],"sqlite":sqlite3.sqlite_version,"ssl":ssl.OPENSSL_VERSION}))'],text=True))
+        'import ctypes,json,sqlite3,ssl,sys;from PIL import Image,features,__version__ as pillow;assert features.check_codec("jpg");print(json.dumps({"python":sys.version.split()[0],"sqlite":sqlite3.sqlite_version,"ssl":ssl.OPENSSL_VERSION,"pillow":pillow,"jpeg":True}))'],text=True))
+    if not python.get('pillow') or python.get('jpeg') is not True:
+        raise ValueError('Packaged Pillow JPEG support is unavailable in the shipping Platform')
     java=subprocess.check_output(command+['/app/share/Love2Gathering/runtime/java/bin/java','--version'],text=True).strip()
     if not re.match(r'(?:openjdk|java) 21(?:[.\s]|$)',java):
         raise ValueError('Packaged Java 21 could not run in the Platform runtime')
@@ -63,7 +68,8 @@ def build(payload,output,work,version):
     shutil.copy2(PROJECT/'packaging/runtime/launcher.py',installed/'launcher.py')
     (files/'bin').mkdir(parents=True,exist_ok=True)
     wrapper=files/'bin/love2gathering'
-    wrapper.write_text('#!/bin/sh\nexport LD_LIBRARY_PATH="/app/lib/love${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"\nexec python3 /app/share/Love2Gathering/launcher.py "$@"\n');wrapper.chmod(0o755)
+    wrapper.write_text('#!/bin/sh\nexport LD_LIBRARY_PATH="/app/lib/love${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"\nexport PYTHONPATH="/app/share/Love2Gathering/runtime/python-packages${PYTHONPATH:+:$PYTHONPATH}"\nexec python3 /app/share/Love2Gathering/launcher.py "$@"\n');wrapper.chmod(0o755)
+    pillow=bundle_pillow('flatpak-cp313',installed/'runtime/python-packages',PROJECT/'.tools/packaging-platform/downloads')
     binary=Path(shutil.which('love')or'/usr/bin/love')
     result=subprocess.run([str(binary),'--version'],check=True,capture_output=True,text=True)
     if not result.stdout.startswith('LOVE 11.5'):
@@ -72,7 +78,7 @@ def build(payload,output,work,version):
     # Freedesktop25.08 supplies SDL2/OpenAL/FreeType/etc. These three SONAMEs
     # are absent or changed there and remain alongside their original notices.
     names=['libmodplug.so.1','libluajit-5.1.so.2','libtheoradec.so.1']
-    ldd=subprocess.check_output(['ldd',str(binary)],text=True);provenance={'love':{'sha256':hashlib.sha256(binary.read_bytes()).hexdigest(),'version':result.stdout.strip()},'libraries':{}}
+    ldd=subprocess.check_output(['ldd',str(binary)],text=True);provenance={'love':{'sha256':hashlib.sha256(binary.read_bytes()).hexdigest(),'version':result.stdout.strip()},'libraries':{},'pillow':pillow}
     library_dir=files/'lib/love';library_dir.mkdir(parents=True)
     for name in names:
         source=next((Path(line.split('=>',1)[1].strip().split()[0])for line in ldd.splitlines()if line.strip().startswith(name+' =>')),None)

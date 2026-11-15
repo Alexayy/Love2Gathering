@@ -9,6 +9,17 @@ Priority.combatSteps={{label='Beginning of combat',steps={'BEGIN_COMBAT'}},{labe
     {label='After combat damage',steps={'COMBAT_DAMAGE'}},{label='End of combat',steps={'END_COMBAT'}}}
 local function copy(value) return json.decode(json.encode(value)) end
 local function contains(items,value) for _,item in ipairs(items or {}) do if item==value then return true end end;return false end
+function Priority.stopPresentation(model,group,side)
+    local state=(model.game or{}).priority or{}
+    local configured=type(state.stops)=='table'and type(state.stops[side])=='table'
+    local requested=model:phaseStop(group,side)
+    local enabled=false
+    if configured then for _,step in ipairs(group.steps)do if contains(state.stops[side],step)then enabled=true;break end end end
+    local pending=model.priorityBusy==true or state.pending==true
+    local status=pending and'pending'or(not configured or requested~=enabled)and'unconfirmed'or enabled and'on'or'off'
+    return{status=status,enabled=enabled,requested=requested,acknowledged=configured==true,pending=pending,
+        label='Before damage · '..(status=='on'and'ON'or status=='off'and'OFF'or status=='pending'and'WAIT'or'?')}
+end
 function Priority.install(Model)
     function Model:priorityOptions()
         local prefs=(self.uiLayout or {}).matchPrefs or {}

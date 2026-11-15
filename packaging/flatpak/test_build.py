@@ -15,7 +15,7 @@ builder=importlib.util.module_from_spec(spec);spec.loader.exec_module(builder)
 
 class FlatpakBuildTests(unittest.TestCase):
     def test_preflight_runs_platform_rather_than_sdk(self):
-        replies=['LOVE 11.5 (Mysterious Mysteries)',json.dumps({'python':'3.13.11','sqlite':'3.50.4','ssl':'OpenSSL 3'}),'openjdk 21.0.13 LTS\nOpenJDK Runtime','a'*64,'b'*64]
+        replies=['LOVE 11.5 (Mysterious Mysteries)',json.dumps({'python':'3.13.11','sqlite':'3.50.4','ssl':'OpenSSL 3','pillow':'13.0.0','jpeg':True}),'openjdk 21.0.13 LTS\nOpenJDK Runtime','a'*64,'b'*64]
         with patch.object(builder.subprocess,'check_output',side_effect=replies)as capture:
             info=builder.runtime_preflight(Path('/tmp/build'))
         calls=[call.args[0]for call in capture.call_args_list]
@@ -23,6 +23,14 @@ class FlatpakBuildTests(unittest.TestCase):
         self.assertIn('import ctypes,json,sqlite3,ssl,sys',calls[1][-1])
         self.assertEqual(info['commits'],{'platform':'a'*64,'sdk':'b'*64})
         self.assertEqual(info['python'],'3.13.11')
+        self.assertEqual(info['pillow'],'13.0.0');self.assertTrue(info['jpeg'])
+        self.assertIn('features.check_codec("jpg")',calls[1][-1])
+        self.assertIn('--env=PYTHONPATH=/app/share/Love2Gathering/runtime/python-packages',calls[1])
+
+    def test_pillow_import_without_a_verified_jpeg_codec_is_not_a_runtime_pass(self):
+        for result in ({'pillow':'13.0.0'},{'pillow':'13.0.0','jpeg':False},{}):
+            with self.subTest(result=result),patch.object(builder.subprocess,'check_output',side_effect=['LOVE 11.5',json.dumps(result)]):
+                with self.assertRaisesRegex(ValueError,'Pillow JPEG'):builder.runtime_preflight(Path('/tmp/build'))
 
     def test_missing_platform_dependency_aborts_before_publication(self):
         failure=subprocess.CalledProcessError(1,['flatpak','build','--runtime'])

@@ -1,7 +1,7 @@
 local API=require('app.api')
 local json=require('lib.json')
 local Model={};Model.__index=Model
-local defaults={manualTriggers=false,autoMana=true,showCardArt=true,localArtworkOnly=true,resolution='Desktop',windowMode='Borderless',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,titleFontFamily='Beleren',skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='Kenney',keywordReminders=true,fontFamily='Beleren',panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=true,builderLayout='Classic',presentationVersion=2,fontQuality='High',cursorScale=.55,boardImpactIntensity=.55,cardBackStyle='Arcane'}
+local defaults={manualTriggers=false,autoMana=true,showCardArt=true,localArtworkOnly=true,artworkMemoryMiB=256,resolution='Desktop',windowMode='Borderless',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,titleFontFamily='Beleren',skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='Kenney',keywordReminders=true,fontFamily='Beleren',panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=true,builderLayout='Classic',presentationVersion=2,fontQuality='High',cursorScale=.55,boardImpactIntensity=.55,cardBackStyle='Arcane'}
 local function copy(t) return json.decode(json.encode(t)) end
 local function errorText(body,err,code)
     if err then return err end
@@ -28,18 +28,20 @@ function Model:request(service,method,path,body,callback,quiet)
         elseif callback then callback(data) end
     end)
 end
-function Model:refreshDecks()
+function Model:refreshDecks(callback)
     local version=(self.deckRefreshVersion or 0)+1;self.deckRefreshVersion=version
-    self:request('catalog','GET','/decks',nil,function(data)
-        if not data or version~=self.deckRefreshVersion then return end
+    self:request('catalog','GET','/decks',nil,function(data,err)
+        if version~=self.deckRefreshVersion then return end
+        if not data then if callback then callback(nil,err)end;return end
         self.decks=data.decks or data
         for _,deck in ipairs(self.decks) do for _,zone in ipairs({'main','sideboard','commander'}) do deck[zone]=json.array(deck[zone] or {}) end end
         self:syncLobbyDecks()
+        if callback then callback(data)end
     end,true)
 end
 function Model:update(dt)
     self.api:update()
-    self:updateReplays(dt);self:updateUILayout(dt);self:updateGallery(dt);self:updateRooms(dt);self:updateLibrary(dt);self:updateCollection(dt);self:updateProfile(dt);self:updateStorage(dt);self:updateCardPrintings(dt)
+    self:updateReplays(dt);self:updateUILayout(dt);self:updateGallery(dt);self:updateRooms(dt);self:updateLibrary(dt);self:updateCollection(dt);self:updateProfile(dt);self:updateStorage(dt);self:updateImagePacks(dt);self:updateCardPrintings(dt)
     if self.validationTimer then self.validationTimer=self.validationTimer-dt;if self.validationTimer<=0 then self.validationTimer=nil;self:validateDeck() end end
     for i=#self.toasts,1,-1 do self.toasts[i].ttl=self.toasts[i].ttl-dt;if self.toasts[i].ttl<=0 then table.remove(self.toasts,i) end end
     self.healthTimer=self.healthTimer-dt
@@ -48,17 +50,8 @@ function Model:update(dt)
         self:request('catalog','GET','/health',nil,function(data,err)
             local wasReady=self.catalogHealth.ready
             self.catalogHealth=data or {error=err}
-            if data and not self.loaded then
-                self.loaded=true;self:refreshDecks();self:loadProfile()
-                self:request('catalog','GET','/settings',nil,function(settings) if settings then for k,v in pairs(settings) do self.settings[k]=v end;self.settingsLoaded=true end end,true)
-                self:request('catalog','GET','/ui-layout',nil,function(data)
-                    if data then
-                        self.uiLayout=data;self.uiLayoutVersion=(self.uiLayoutVersion or 0)+1
-                        local prefs=data.matchPrefs or {};self.logOpen=prefs.logOpen;self.stackOpen=prefs.stackOpen
-                    end
-                end,true)
-            end
-            if data and data.ready and not wasReady then self.searchTimer=0;self:refreshDecks() end
+            if data then self:beginStartupHydration()end
+            if data and data.ready and not wasReady then self.searchTimer=0 end
         end,true)
         self:request('engine','GET','/health',nil,function(data,err) self.engineHealth=data or {error=err} end,true)
     end
@@ -82,8 +75,20 @@ function Model:update(dt)
     end
 end
 function Model:searchChanged() self.offset=0;self.searchTimer=.23 end
+function Model:rememberCard(card)
+    if not card or not card.name then return end
+    self.nameCacheAge=self.nameCacheAge or{};self.nameCacheTick=(self.nameCacheTick or 0)+1
+    self.byName[card.name]=card;self.nameCacheAge[card.name]=self.nameCacheTick
+    local count=0;for _ in pairs(self.byName)do count=count+1 end
+    while count>512 do
+        local oldest,age
+        for name in pairs(self.byName)do local used=self.nameCacheAge[name]or 0;if name~=card.name and(not age or used<age)then oldest,age=name,used end end
+        if not oldest then break end
+        self.byName[oldest]=nil;self.nameCacheAge[oldest]=nil;count=count-1
+    end
+end
 function Model:searchCards()
-    local version=(self.searchVersion or 0)+1;self.searchVersion=version;self.searchBusy=true
+    local version=(self.searchVersion or 0)+1;self.searchVersion=version;self.searchBusy=true;self.searchError=nil
     local path='/cards?q='..API.escape(self.search)..'&limit='..self.searchLimit..'&offset='..self.offset..'&sort='..API.escape(self.searchSort:lower())
     if self.searchFormat~='All' then path=path..'&format='..API.escape(self.searchFormat:lower()) end
     if self.settings.builderLayout=='Simplified'then
@@ -92,15 +97,25 @@ function Model:searchCards()
     elseif self.searchColor~='All'then path=path..'&color='..API.escape(self.searchColor)end
     if self.searchType~='' then path=path..'&type='..API.escape(self.searchType) end
     if self.searchSet~='All' then path=path..'&set='..API.escape(self.searchSet) end
-    self:request('catalog','GET',path,nil,function(data)
+    self:request('catalog','GET',path,nil,function(data,err)
         if version~=self.searchVersion then return end
-        self.searchBusy=false
-        if data then self.cards=data.cards or {};self.total=data.total or #self.cards;for _,card in ipairs(self.cards) do self.byName[card.name]=card end end
+        self.searchBusy=false;self.searchError=err
+        if data then self.cards=data.cards or {};self.total=data.total or #self.cards;for _,card in ipairs(self.cards) do self:rememberCard(card)end end
     end)
 end
 function Model:refreshSets()
-    local path='/sets';if self.searchFormat~='All' then path=path..'?format='..API.escape(self.searchFormat:lower()) end
-    self:request('catalog','GET',path,nil,function(data) if data then self.sets=data.sets or {} end end,true)
+    self.setsVersion=(self.setsVersion or 0)+1;local version=self.setsVersion
+    local format,generation=self.searchFormat,self.editGeneration
+    if self.setsFormat~=format then self.sets={}end
+    self.setsBusy=true;self.setsError=nil
+    local path='/sets';if format~='All'then path=path..'?format='..API.escape(format:lower())end
+    self:request('catalog','GET',path,nil,function(data,err)
+        if version~=self.setsVersion then return end
+        self.setsBusy=false
+        if format~=self.searchFormat or generation~=self.editGeneration then return end
+        self.setsError=err
+        if data then self.sets=data.sets or{};self.setsFormat=format end
+    end,true)
 end
 function Model:setSearchLimit(limit)
     limit=math.max(1,math.floor(limit));if limit~=self.searchLimit then self.searchLimit=limit;self:searchChanged() end
@@ -111,6 +126,7 @@ function Model:cardData(card)
     local name=card.name or card.displayName
     if not name then return card end
     if self.byName[name] then
+        self.nameCacheAge=self.nameCacheAge or{};self.nameCacheTick=(self.nameCacheTick or 0)+1;self.nameCacheAge[name]=self.nameCacheTick
         local data=copy(self.byName[name])
         -- Catalog IDs select images; native IDs select game objects. Keep both.
         data.objectId=card.id
@@ -122,13 +138,63 @@ function Model:cardData(card)
     if (not self.lookupPending[name] or self.lookupPending[name]<love.timer.getTime()) and self.catalogHealth.ready then
         self.lookupPending[name]=love.timer.getTime()+30
         self:request('catalog','GET','/cards/by-name?name='..API.escape(name),nil,function(data)
-            if data then self.byName[name]=data.card or data;self.lookupPending[name]=nil end
+            if data then self:rememberCard(data.card or data);self.lookupPending[name]=nil end
         end,true)
     end
     return card
 end
-function Model:getArt(card,force,kind)
-    return require('app.artwork').get(self,card,force,kind)
+function Model:getArt(card,force,kind,options)
+    return require('app.artwork').get(self,card,force,kind,nil,options)
+end
+function Model:selectBuilderArtwork(card)
+    self.previewCard=card
+    self.builderArtSequence=(self.builderArtSequence or 0)+1
+    self.builderArtSelection={card=card,editor=self.editGeneration,token=self.builderArtSequence}
+    self:getBuilderPreviewArt(card)
+end
+function Model:getBuilderPreviewArt(card)
+    if self.cardPrintingPicker then return require('app.artwork').cached(self,card)end
+    local selection=self.builderArtSelection
+    if not selection or self.page~='builder'or selection.editor~=self.editGeneration or self.previewCard~=selection.card or card~=selection.card then return self:getArt(card,true)end
+    -- A selected name-only deck entry must not wait behind the ordinary card
+    -- list's lookups. Resolve its saved exact printing before asking for art.
+    local choice=not card.printingExact and self.cardPrintingSelection and self:cardPrintingSelection(card,nil,self.editDeck)
+    local printing=card.selectedPrintingId or choice and choice.printingId
+    local function active()
+        if self.cardPrintingPicker or self.page~='builder'or self.builderArtSelection~=selection or self.editGeneration~=selection.editor or self.previewCard~=selection.card then return false end
+        local chosen=not card.printingExact and self.cardPrintingSelection and self:cardPrintingSelection(card,nil,self.editDeck)
+        return(card.selectedPrintingId or chosen and chosen.printingId)==printing
+    end
+    local path,entry,cache
+    if printing and not(card.printingExact and card.printing_id==printing)then
+        self.printingMetadata=self.printingMetadata or{};cache=self.printingMetadata;entry=cache[printing]
+        if not(entry and entry.card)then path='/cards/'..API.escape(printing)..'?printing='..API.escape(printing)end
+    elseif not card.oracle_text and not card.image_uris and not self.byName[card.name]then
+        path='/cards/by-name?name='..API.escape(card.name);entry=selection.metadata
+    end
+    if path then
+        if not entry or entry.selectionToken~=selection.token or not entry.pending and(entry.retryAt or 0)<=love.timer.getTime()then
+            entry={pending=true,selectionToken=selection.token,isCurrent=active};if cache then cache[printing]=entry else selection.metadata=entry end
+            self.api:request('catalog','GET',path,nil,function(data,err,code)
+                if cache and cache[printing]~=entry then return end
+                if code==499 then if cache then cache[printing]=nil end;return end
+                entry.pending=false;entry.retryAt=love.timer.getTime()+30;entry.error=err or(code~=200 and'Card metadata unavailable'or nil)
+                if not err and code==200 and data then
+                    if cache then entry.card=data else self:rememberCard(data.card or data)end
+                end
+            end,false,{priority='selectedMetadata',selectionToken=selection.token..':'..(printing or card.name),isCurrent=active})
+        end
+        return nil,'catalog'
+    end
+    local Artwork=require('app.artwork');local chosen=card;if self.artworkCard then chosen=self:artworkCard(card)end
+    local key=chosen and Artwork.identity(self,chosen)
+    if not key then return nil,'catalog'end
+    local function current()
+        if self.cardPrintingPicker or self.page~='builder'or self.builderArtSelection~=selection or self.editGeneration~=selection.editor or self.previewCard~=selection.card then return false end
+        local value=selection.card;if self.artworkCard then value=self:artworkCard(value)end
+        return value and Artwork.identity(self,value)==key
+    end
+    return self:getArt(card,true,nil,{priority='selected',network=true,selectionToken=selection.token..':'..key,isCurrent=current})
 end
 function Model:findDeck(id) for _,d in ipairs(self.decks) do if d.id==id then return d end end end
 function Model:lobbyPlayerCount()
@@ -355,14 +421,56 @@ function Model:setGame(data)
     end
     if self.api.setNativeSession then self.api:setNativeSession(data.gameId)end
     self.game=data;self.gameConnectionError=nil
+    self:refreshLibraryViews()
     local prompt=data.prompt
     if type(prompt)=='table' and prompt~=json.null and self.orderPrompt~=prompt.id then
         self.orderPrompt=prompt.id;self.promptOrder={}
         for _,c in ipairs(prompt.choices or {}) do self.promptOrder[#self.promptOrder+1]=c end
     end
 end
+function Model:libraryTop(player)
+    if type(player)~='table'then
+        local id=player;player=nil
+        for _,candidate in ipairs(self.game and self.game.players or{})do if candidate.id==id then player=candidate;break end end
+    end
+    local card=player and player.libraryTop
+    -- Only an explicitly entitled native projection can expose a library card.
+    -- Owning the library, remembered artwork and Oracle text confer no access.
+    if type(card)~='table'or card==json.null or not card.id or card.hidden or card.faceDown then return nil end
+    return card
+end
+function Model:libraryTopCurrent(playerId,cardId,gameId)
+    local card=self:libraryTop(playerId)
+    return self.game~=nil and self.game.gameId==gameId and card~=nil and card.id==cardId
+end
+function Model:openLibrary(playerId)
+    local player
+    for _,candidate in ipairs(self.game and self.game.players or{})do if candidate.id==playerId then player=candidate;break end end
+    if not player then return false end
+    self.zoneView={label=(player.name or'Player')..' · Library',libraryPlayerId=playerId,libraryGameId=self.game.gameId,cards={}}
+    self:refreshLibraryViews();return true
+end
+function Model:inspectLibraryTop(playerId,cardId,gameId)
+    if not self:libraryTopCurrent(playerId,cardId,gameId)then return false end
+    local card=self:libraryTop(playerId)
+    self.inspectCard=card;self.libraryTopInspect={playerId=playerId,cardId=cardId,gameId=gameId,card=card}
+    return true
+end
+function Model:refreshLibraryViews()
+    local zone=self.zoneView
+    if zone and zone.libraryPlayerId then
+        local card=self.game and self.game.gameId==zone.libraryGameId and self:libraryTop(zone.libraryPlayerId)
+        zone.cards=card and{card}or{}
+    end
+    local inspect=self.libraryTopInspect
+    if inspect then
+        if self.inspectCard~=inspect.card then self.libraryTopInspect=nil
+        elseif not self:libraryTopCurrent(inspect.playerId,inspect.cardId,inspect.gameId)then self.inspectCard=nil;self.libraryTopInspect=nil
+        else local card=self:libraryTop(inspect.playerId);self.inspectCard=card;inspect.card=card end
+    end
+end
 function Model:concede()
-    if self.replay or self.concedePending or not self.game or not self.game.gameId then return end
+    if self.replay or self.concedePending or not self.game or self.game.running==false or not self.game.gameId then return end
     local gameId=self.game.gameId;local generation=self.api.routeGeneration
     self.concedePending=true
     self:request('engine','POST','/session/action',{type='concede',value=true,expectedGameId=gameId},function(data)
@@ -372,8 +480,8 @@ function Model:concede()
     end)
 end
 function Model:prompt()
-    if self.replay or self.gameBusy then return nil end
-    if self.game and self.game.execution and self.game.execution.stopRequested then return nil end
+    if self.replay or self.gameBusy or self.concedePending then return nil end
+    if self.game and self.game.execution and(self.game.execution.stopRequested or self.game.execution.concedeRequested)then return nil end
     local p=self.game and self.game.prompt
     -- A control command can be acknowledged before the GAME thread replaces
     -- its old projection. That priority ID must not be submitted a second time.
@@ -430,9 +538,11 @@ require('app.rooms').install(Model)
 require('app.library').install(Model)
 require('app.collection').install(Model)
 require('app.profile').install(Model)
+require('app.bootstrap').install(Model)
 require('app.artwork').install(Model)
 require('app.storage').install(Model)
 require('app.storage_locations').install(Model)
+require('app.image_packs').install(Model)
 require('app.playmats').install(Model)
 require('app.builder_colors').install(Model)
 require('app.card_printings').install(Model)

@@ -42,4 +42,22 @@ m=model();local protected={};for index=1,30 do s=popup(m);local d=m:cacheLobbyPr
 local count=0;for _ in pairs(m.lobbyPrecons)do count=count+1 end
 check(count==16 and m.lobbyPrecons[protected.id]and m.lobbyPrecons[m.playerDeckId],'Temporary deck cache stays at16 entries and protects selected human and bot decks')
 check(#calls==0,'Temporary selection and cache eviction issue no storage writes')
+local seconds=0;love.timer={getTime=function()return seconds end}
+m=model();s=popup(m);m:queryLobbyPrecons(s);calls[#calls].callback({decks={deck('warm')},total=1})
+local before=#calls;local reopened=popup(m);m:queryLobbyPrecons(reopened)
+check(#calls==before and not reopened.busy and reopened.precons[1].id=='warm','Reopening a recent product page uses its bounded local response cache immediately')
+reopened.precons[1].name='Changed locally';local isolated=popup(m);m:queryLobbyPrecons(isolated)
+check(isolated.precons[1].name=='warm','Cached product pages detach each popup array from earlier consumers')
+local otherFormat=popup(m,'Commander');m:queryLobbyPrecons(otherFormat)
+check(#calls==before+1 and otherFormat.busy,'Different formats never borrow a cached product page')
+seconds=121;local expired=popup(m);m:queryLobbyPrecons(expired)
+check(#calls==before+2 and expired.busy,'Expired pages request fresh source data')
+calls[#calls].callback({decks={deck('renewed')},total=1});m:queryLobbyPrecons(expired,true)
+check(#calls==before+3 and expired.busy,'Explicit retry bypasses even a warm cached page')
+m=model();s=popup(m);m:selectLobbyPrecon(s,{id='cached-detail'});calls[#calls].callback(deck('cached-detail'));before=#calls
+reopened=popup(m);m:selectLobbyPrecon(reopened,{id='cached-detail'})
+check(#calls==before and reopened.closed and m:findDeck(m.playerDeckId).sourceDeckId=='cached-detail','Repeated product selection reuses a recent full list without an extra detail load')
+m=model();for i=1,24 do s=popup(m);s.search='query'..i;m:queryLobbyPrecons(s);calls[#calls].callback({decks={deck('bounded-'..i)},total=1})end
+local entries,bytes=0,0;for _,entry in pairs(m.lobbyProductCache.entries)do entries=entries+1;bytes=bytes+#entry.body end
+check(entries==16 and bytes<=4*1024*1024,'Response cache retains at most16 entries and4MiB')
 print('Deck picker model checks: '..n..' passed')

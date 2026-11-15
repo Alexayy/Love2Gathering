@@ -19,7 +19,8 @@ chmod +x dist/Love2Gathering-2026.11.14-linux-x86_64.run
 ```
 
 The selected folder must be writable by the installing user. Install **Python
-3.10+ and LÖVE 11.5** through the distribution first; Java is included. No JDK,
+3.10+, Pillow 9.1+ with JPEG support and LÖVE 11.5** through the distribution
+first (`python3-pil` on Debian/Ubuntu, `python3-pillow` on RPM systems); Java is included. No JDK,
 Maven, Git checkout or XMage build is needed on the installed machine. The
 installer creates `~/.local/bin/love2gathering`, an application-menu `.desktop`
 entry and an optional Desktop shortcut (`--desktop-shortcut`). Paths with spaces
@@ -87,9 +88,19 @@ folders. Those permissions are recorded in `flatpak/build.py`.
 
 The installed launcher keeps generated indexes, engine working files and logs
 under writable user storage. It follows configured database/cache directories;
-new installations use a separate `images.sqlite`. Python bytecode generation is
+new installations use a separate `images.sqlite`. Windows and Flatpak privately
+bundle checksum-pinned Pillow wheels, including their native codecs/licenses;
+DEB/RPM declare the distribution dependency. Missing Pillow on a source or
+chosen-folder Linux launch leaves original card images available and reports
+that small-card image preparation is unavailable. The installed `--check`
+requires a working JPEG decoder. Python bytecode generation is
 disabled so launching does not populate the application folder. Installers do
 not run Purge, relocate saves, or remove user data during uninstall.
+
+Managed bulk downloads and image-pack imports yield to visible/selected image
+requests in their catalog process. A separately launched downloader CLI has its
+own I/O coordinator; it retains bounded SQL commits, WAL and the cross-process
+bulk-job lock, but does not receive another process's foreground priority signals.
 
 On first launch the splash indexes the supplied compressed metadata into the
 user's generated catalog. Subsequent starts reuse the index. Existing saved

@@ -218,14 +218,14 @@ function Library.install(Model)
         return nil
     end
     local baseGetArt=Model.getArt
-    if baseGetArt then function Model:getArt(card,force,kind)
+    if baseGetArt then function Model:getArt(card,force,kind,options)
         if not force and self.settings and self.settings.showCardArt==false then return nil end
         card=self:artworkCard(card);if not card then return nil end
         if card and(card.token or card.isToken)and not card.tokenImageId then
             local resolved=self:resolveTokenCard(card);if not resolved then return nil end
-            return baseGetArt(self,resolved,force,kind)
+            return baseGetArt(self,resolved,force,kind,options)
         end
-        return baseGetArt(self,card,force,kind)
+        return baseGetArt(self,card,force,kind,options)
     end end
     function Model:updateLibrary(dt)
         if self.page=='history'then self.historyTimer=(self.historyTimer or 5)-dt;if self.historyTimer<=0 then self.historyTimer=5;if not self.historyBusy then self:refreshHistory()end end end

@@ -1,4 +1,4 @@
--- Staged exact editions, with bounded local-only thumbnails.
+-- Staged exact editions; only an explicitly chosen candidate forces its image.
 local UI={}
 local Cursor=require('lib.Slab.Internal.Core.Cursor')
 local Draw=require('lib.Slab.Internal.Core.DrawCommands')
@@ -17,10 +17,8 @@ function UI.build(v,w,h)
  if S.Input('printing-search',{Text=p.query,W=searchW,H=36,Align='left',Tooltip='Filter this card’s editions by set, collector number, year or artist'})then m:filterCardPrintings(S.GetInputText())end
  S.SameLine()
  local selectedSet='All sets';for _,set in ipairs(p.sets)do if set.code==p.set then selectedSet=(set.code or''):upper()..' · '..set.name;break end end
- if S.BeginComboBox('printing-set',{Selected=r:fit(selectedSet,setW-50,16,1),W=setW,H=36,WinH=240,Tooltip='Editions of this card only'})then
-  if S.TextSelectable('All sets',{Selected=p.set==''})then m:filterCardPrintings(nil,'')end
-  for _,set in ipairs(p.sets)do if S.TextSelectable(r:fit((set.code or''):upper()..' · '..set.name,setW-20,16,1),{Selected=p.set==set.code,Tooltip=set.name})then m:filterCardPrintings(nil,set.code)end end
-  S.EndComboBox()
+ if S.Button('printing-set',{W=setW,H=36,Image={Image=r.assets:buttonImage('collection',r:fit(selectedSet,setW-50,16,1),setW,36,{font=r.fonts[14],iconSize=18})},Tooltip='Choose a set in a searchable grid'})then
+  require('app.set_picker').open(v,{id='printing-sets',owner=p,title='Choose a set for '..p.name,items=function()return p.sets end,selected=p.set,busy=function()return p.busy end,error=function()return p.error end,onSelect=function(code)m:filterCardPrintings(nil,code)end,isCurrent=function()return m.cardPrintingPicker==p and m.editDeck==p.deck and m.editGeneration==p.generation and m.page=='builder'end})
  end
  S.SameLine()
  local treatments={all='All treatments',extended='Extended art',borderless='Borderless',showcase='Showcase'}
@@ -30,7 +28,7 @@ function UI.build(v,w,h)
  end
  S.NewLine()
  local zoneName=({main='the main deck',commander='the command zone',sideboard='the sideboard'})[p.zone]or p.zone
- S.Textf('Choose an edition for every copy in '..zoneName..'. Missing cached images keep their exact edition; they are not replaced by another artwork.',{W=inner,Color=r.colors.muted})
+ S.Textf('Choose an edition for every copy in '..zoneName..'. Selecting a tile downloads its image if needed. Apply changes the deck; Cancel keeps its current edition.',{W=inner,Color=r.colors.muted})
  S.NewLine()
  -- Reserve title, wrapped guidance and footer rows at the largest body font.
  S.BeginListBox('card-printing-grid',{W=inner,H=math.max(130,ph-342)})
@@ -39,17 +37,18 @@ function UI.build(v,w,h)
  for index,item in ipairs(p.items)do
   local column=(index-1)%columns;local row=math.floor((index-1)/columns);local offset=column*(cw+gap)
   S.Indent(offset);S.SetCursorPos(ox+offset,oy+row*tileH,{Absolute=true});S.PushID(item.printing_id)
-  local active=p.selectedId==item.printing_id;local art=m:getArt(item,true)
+  local density=require('app.layout').scale*(love.window and love.window.getDPIScale and love.window.getDPIScale()or 1)
+  local active=p.selectedId==item.printing_id;local art,state=m:getCardPrintingArt(item,cw*density<=256 and'thumb'or nil)
   local tooltip=item.name..' · '..(item.set_name or item.set or'')..' #'..tostring(item.collector_number or'')..' · '..(item.artist or'')
   local options={W=cw,H=ch,Active=active,Tooltip=tooltip}
   if art then options.Image={Image=art,W=cw-8,H=ch-8}
-  else options.Image={Image=r.assets:buttonImage('gallery','Not cached',cw-8,ch-8,{font=r.fonts[14],iconSize=22})}end
+  else options.Image={Image=r.assets:buttonImage('gallery',state=='loading'and'Loading…'or'Not cached',cw-8,ch-8,{font=r.fonts[14],iconSize=22})}end
   if S.Button(item.name,options)then m:selectCardPrinting(item.printing_id)end
   if active then local x,y=Cursor.GetItemBounds();Draw.Rectangle('line',x+1,y+1,cw-2,ch-2,r.colors.accent,4,nil,3)end
   S.SetCursorPos(ox+offset,oy+row*tileH+ch+7,{Absolute=true})
   S.PushFont(r.fonts[12]);S.Textf((active and'Selected · 'or'')..(item.set or''):upper()..' #'..tostring(item.collector_number or''),{W=cw,Color=active and r.colors.accent or r.colors.text})
   S.Textf(r:fit(item.set_name or'',cw,12,1),{W=cw,Color=r.colors.muted})
-  S.Textf(r:fit(art and(item.artist or'')or'Image not cached',cw,12,1),{W=cw,Color=r.colors.muted});S.PopFont()
+  S.Textf(r:fit(art and(item.artist or'')or state=='loading'and'Loading artwork…'or'Image not cached',cw,12,1),{W=cw,Color=r.colors.muted});S.PopFont()
   S.PopID();S.Unindent(offset)
  end
  if #p.items==0 then S.Textf(p.error or(p.busy and'Loading editions…'or'No editions match these filters.'),{W=inner-24,Color=p.error and r.colors.gold or r.colors.muted})end

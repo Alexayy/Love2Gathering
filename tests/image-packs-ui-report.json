@@ -1,0 +1,121 @@
+{
+  "captures": [
+    "/tmp/love2gathering-image-packs-ui-navzzd/native-pack-browser.png",
+    "/tmp/love2gathering-image-packs-ui-navzzd/review-while-downloading.png",
+    "/tmp/love2gathering-image-packs-ui-navzzd/review-before-install.png",
+    "/tmp/love2gathering-image-packs-ui-navzzd/pack-import-progress.png",
+    "/tmp/love2gathering-image-packs-ui-navzzd/pack-installed.png",
+    "/tmp/love2gathering-image-packs-ui-navzzd/pack-inspection-error.png"
+  ],
+  "checks": [
+    "Native file picker blocks background client interactions",
+    "Production Escape closes only the file picker and releases its native modal lock",
+    "The Settings Browse button remains interactive after Escape closes the picker",
+    "The real file picker selects a local ZIP path",
+    "Browse neither inspects nor imports automatically",
+    "Inspect and asynchronous preview perform no install request",
+    "Preview stays available during bulk downloading while Install requires Pause",
+    "The preview clearly identifies incomplete Starter coverage",
+    "Clicking the disabled Install control does not submit a write",
+    "Only the explicit reviewed Install action starts the import",
+    "Bulk download Resume is disabled while pack images are being installed",
+    "The navbar loading circle and progress strip identify a local pack import",
+    "Completion keeps ready art and clears missing-image placeholders",
+    "Invalid archive diagnostics remain visible without a second install",
+    "Pack controls retain the supplied Beleren presentation"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/storage/image-packs/status",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "path": "/tmp/love2gathering-image-packs-ui-navzzd/fixtures/starter.zip"
+      },
+      "method": "POST",
+      "path": "/storage/image-packs/inspect",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/image-packs/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/image-packs/status",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "command": "pause"
+      },
+      "method": "POST",
+      "path": "/downloads/control",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/image-packs/status",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "jobId": "fixture-1"
+      },
+      "method": "POST",
+      "path": "/storage/image-packs/install",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/image-packs/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/image-packs/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/image-packs/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/status?refresh=1",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "path": "/tmp/love2gathering-image-packs-ui-navzzd/fixtures/broken.zip"
+      },
+      "method": "POST",
+      "path": "/storage/image-packs/inspect",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/image-packs/status",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/storage/image-packs/status",
+      "service": "catalog"
+    }
+  ],
+  "scope": "Actual L\u00d6VE/Slab native ZIP picker and input on delayed explicit pack previews/import/status; no user archive/cache writes; backend validation is separate",
+  "sourceSha256": {
+    "app/image_packs.lua": "c4ae8bc4c10ff72a7df07ac1b95d936289f718a5c4b99d431f9bba394ea5e4f5",
+    "app/settings.lua": "9e9b69a5a222b1680b154e8f8839ff49dbcfaf714f9f7e81b60ea7d618555443",
+    "app/model.lua": "2687594b5528548385fa5c6ea9dfceea1974fe2d6e0a180f4ae2effac42f3dd3",
+    "app/view.lua": "8a6f04905d4a4c08676c49d2fb2d05d6c3ecc143cd5525095347245b6213fe03",
+    "app/renderer.lua": "185ce9ef57e567c2f3454cb61e89cf9e5de030c67b55a03473ed293a322805d3",
+    "tests/image_packs_ui.lua": "015b669ea3e00943fbb05150804b18b6608c8c21c8174603a7ce95fbe6c8dc7a",
+    "main.lua": "cfab40c3631077ac05c42755b653481164228a41706ce6a9ac38cb14461f0da1"
+  }
+}

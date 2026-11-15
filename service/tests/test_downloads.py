@@ -42,6 +42,7 @@ class DownloadTests(unittest.TestCase):
 
     def tearDown(self):
         for manager in self.managers:manager.close()
+        self.storage.close_images()
         self.temp.cleanup()
 
     def manager_new(self):

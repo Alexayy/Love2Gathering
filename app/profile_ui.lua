@@ -24,11 +24,12 @@ local function tileImage(v,image,width,height,slot)
     UI.tileCache[key]=canvas;UI.tileOrder[#UI.tileOrder+1]=key;while#UI.tileOrder>32 do UI.tileCache[table.remove(UI.tileOrder,1)]=nil end;return canvas
 end
 local function preview(v,ref,id,width,height)
-    local S,m,r=v.S,v.m,v.r;local image=m:profileArt(ref)
+    local S,m,r=v.S,v.m,v.r
     local slot=id:find('avatar',1,true)and'avatar'or'playmat';local previewW=slot=='avatar'and height or width
+    local hint=require('app.image_hints').forSize(previewW,height);local image=m:profileArt(ref,nil,hint)
     S.NewLine();S.Image(id,{Image=tileImage(v,image,previewW,height,slot),W=previewW,H=height,Tooltip=ref and ref.name or'No illustration selected'})
     S.NewLine()
-    if ref and not image then S.Textf(Artwork.labels[m:profileArtState(ref)]or Artwork.labels.error,{W=width,Color=r.colors.muted});S.NewLine()end
+    if ref and not image then S.Textf(Artwork.labels[m:profileArtState(ref,hint)]or Artwork.labels.error,{W=width,Color=r.colors.muted});S.NewLine()end
 end
 function UI.build(v,w,h)
     local S,m,r=v.S,v.m,v.r;local l=UI.layout(w,h);local draft=m.profileDraft or m.profile or {name='Planeswalker'};local C=r.colors
@@ -74,8 +75,8 @@ function UI.build(v,w,h)
     for index,item in ipairs(m.profileItems or {})do
         local column=(index-1)%l.columns;local row=math.floor((index-1)/l.columns);local offset=column*(l.tileW+16)
         S.Indent(offset);S.SetCursorPos(originX+offset,originY+row*tileH,{Absolute=true})
-        local ref=Profile.reference(item);local image=m:profileArt(ref)
         local imageW=m.profileSlot=='avatar'and l.imageH or l.tileW
+        local ref=Profile.reference(item);local hint=require('app.image_hints').forSize(imageW,l.imageH);local image=m:profileArt(ref,nil,hint)
         local options={W=imageW,H=l.imageH,Tooltip='Use as '..m.profileSlot..' · '..(item.name or '')..' · '..(item.artist or '')}
         options.Image={Image=tileImage(v,image,imageW,l.imageH,m.profileSlot)}
         S.SetCursorPos(originX+offset+(l.tileW-imageW)/2,originY+row*tileH,{Absolute=true})
@@ -83,7 +84,7 @@ function UI.build(v,w,h)
         S.SetCursorPos(originX+offset,originY+row*tileH+l.imageH+8,{Absolute=true})
         S.Textf(r:fit(item.name or'',l.tileW,14,1),{W=l.tileW,Color=C.text})
         S.PushFont(r.fonts[12]);S.Textf(r:fit((item.artist or'')..' · '..(item.set_name or item.set or''),l.tileW,12,2),{W=l.tileW,Color=C.muted});S.PopFont()
-        if not image then S.PushFont(r.fonts[12]);S.Textf(Artwork.labels[m:profileArtState(ref)]or Artwork.labels.error,{W=l.tileW,Color=C.muted});S.PopFont()end
+        if not image then S.PushFont(r.fonts[12]);S.Textf(Artwork.labels[m:profileArtState(ref,hint)]or Artwork.labels.error,{W=l.tileW,Color=C.muted});S.PopFont()end
         S.Unindent(offset)
     end
     S.EndListBox();S.EndWindow()

@@ -79,6 +79,7 @@ jobs:
           python3 scripts/ci/test_build_support.py -v 2>&1 | tee build/ci/reports/build-support.log
           python3 scripts/ci/test_publish_release.py -v 2>&1 | tee build/ci/reports/publish-tests.log
           python3 scripts/ci/test_workflow.py -v 2>&1 | tee build/ci/reports/workflow-tests.log
+          python3 packaging/test_python_dependencies.py -v 2>&1 | tee build/ci/reports/python-dependencies.log
           python3 packaging/flatpak/test_build.py -v 2>&1 | tee build/ci/reports/flatpak-builder.log
           dbus-run-session -- python3 packaging/linux/test_installer.py -v 2>&1 | tee build/ci/reports/linux-installer.log
           dbus-run-session -- python3 packaging/flatpak/test_installer.py -v 2>&1 | tee build/ci/reports/flatpak-installer.log

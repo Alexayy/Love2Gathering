@@ -1,6 +1,7 @@
 """SQLite is authoritative for user data; legacy files remain untouched backups."""
 from contextlib import contextmanager
 import json
+import math
 from pathlib import Path
 import re
 import sqlite3
@@ -16,6 +17,8 @@ from precons import PreconStore
 from profiles import ProfileStore
 from maintenance import MaintenanceStore, operation_lock
 from paths import default_cache_dir
+from image_io import ImageIO
+from thumbnails import Thumbnails, schema as thumbnail_schema
 USER_SCHEMA_VERSION=1
 
 class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistoryStore,PreconStore,ProfileStore,MaintenanceStore):
@@ -23,6 +26,8 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
         self.root=Path(data_dir);self.bundled=Path(bundled_decks)
         self.root.mkdir(parents=True,exist_ok=True)
         self.database=self.root/'app.sqlite';self.lock=threading.RLock();self._bundle_signature=None
+        self.image_io=ImageIO(self.root);self.thumbnails=Thumbnails(self)
+        self._access_context=threading.local()
         selected_cache=cache_dir if cache_dir is not None else default_cache_dir(self.root)
         self.cache_root=Path(selected_cache).resolve()if selected_cache is not None else self.root
         self.separate_cache=selected_cache is not None
@@ -60,7 +65,7 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
                     CREATE TABLE IF NOT EXISTS replay_events(replay_id TEXT NOT NULL REFERENCES replays(id) ON DELETE CASCADE,sequence INTEGER NOT NULL,type TEXT NOT NULL,timestamp TEXT,payload TEXT NOT NULL,digest TEXT NOT NULL,PRIMARY KEY(replay_id,sequence));
                     CREATE INDEX IF NOT EXISTS replays_created ON replays(created_at DESC);
                     CREATE INDEX IF NOT EXISTS replay_frames ON replay_events(replay_id,type,sequence);
-                    INSERT OR IGNORE INTO meta VALUES('schema_version','1');'''+art_schema+'COMMIT;')
+                    INSERT OR IGNORE INTO meta VALUES('schema_version','1');'''+art_schema+(';'.join(thumbnail_schema())+';'if not self.separate_cache else '')+'COMMIT;')
                 c.execute("INSERT OR IGNORE INTO meta VALUES('storage_identity',?)",(str(uuid.uuid4()),));c.commit()
                 if self.separate_cache:
                     if c.execute("SELECT 1 FROM sqlite_master WHERE type='table'AND name='art_cache'").fetchone():
@@ -80,13 +85,60 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
             if previous.get('cursorStyle','System')=='System':changed['cursorStyle']='Kenney'
             for key,value in changed.items():c.execute('INSERT INTO settings VALUES (?,?) ON CONFLICT(key)DO UPDATE SET value=excluded.value',(key,encode(value)))
 
+    @contextmanager
+    def interactive_access(self,timeout=3):
+        """Bound SQLite writer waits for one foreground request, not workers.
+
+        A native outbox/background job may still wait the ordinary thirty
+        seconds. HTTP callers must respond before the client's socket timeout;
+        a busy response must never pretend an uncommitted save succeeded.
+        """
+        if isinstance(timeout,bool)or not isinstance(timeout,(int,float))or not math.isfinite(timeout)or timeout<=0:
+            raise ValueError('Interactive storage timeout must be positive')
+        previous=getattr(self._access_context,'deadline',None)
+        deadline=self._access_time()+timeout
+        self._access_context.deadline=min(previous,deadline)if previous is not None else deadline
+        try:yield
+        finally:
+            if previous is None:del self._access_context.deadline
+            else:self._access_context.deadline=previous
+
+    def _access_time(self):
+        paused=getattr(self._access_context,'external_started',None)
+        current=time.monotonic()if paused is None else paused
+        return current-getattr(self._access_context,'external_elapsed',0)
+
+    @contextmanager
+    def external_io(self):
+        """Exclude an external wait from this thread's foreground SQL budget.
+
+        Network time has its own timeout. It must not consume the remaining
+        writer-lock allowance before the downloaded image can be committed.
+        A logical clock preserves time already spent, including across nested
+        scopes and exceptions, without changing background SQLite waits.
+        """
+        if getattr(self._access_context,'deadline',None)is None or getattr(self._access_context,'external_started',None)is not None:
+            yield;return
+        started=time.monotonic();self._access_context.external_started=started
+        try:yield
+        finally:
+            self._access_context.external_elapsed=getattr(self._access_context,'external_elapsed',0)+max(0,time.monotonic()-started)
+            del self._access_context.external_started
+
+    def _busy_timeout_ms(self):
+        deadline=getattr(self._access_context,'deadline',None)
+        if deadline is None:return 30000
+        remaining=deadline-self._access_time()
+        if remaining<=0:raise sqlite3.OperationalError('Database is busy; foreground storage wait budget expired')
+        return max(1,min(30000,int(remaining*1000)))
+
     def _attach_cache(self,c,initialize=False):
         if not self.separate_cache:return
         if not self.cache_database.is_file():
             persisted=c.execute("SELECT value FROM main.meta WHERE key='image_cache_directory'").fetchone()
             if not initialize or persisted:raise ConflictError('Image cache is unavailable; reconnect its drive or prepare a verified location change before continuing')
         c.execute('ATTACH DATABASE ? AS images',(str(self.cache_database),))
-        c.execute('PRAGMA images.busy_timeout=30000')
+        c.execute('PRAGMA images.busy_timeout='+str(self._busy_timeout_ms()))
         c.execute('PRAGMA images.synchronous=FULL')
         if initialize:
             c.execute('PRAGMA images.journal_mode=WAL')
@@ -98,26 +150,33 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
             c.commit()
             c.execute("CREATE TABLE IF NOT EXISTS images.art_cache(cache_key TEXT PRIMARY KEY,content BLOB NOT NULL,mime TEXT NOT NULL,metadata TEXT NOT NULL,updated_at INTEGER NOT NULL)")
             c.execute("CREATE INDEX IF NOT EXISTS images.art_oracle_face_kind ON art_cache(json_extract(metadata,'$.oracleId'),CAST(json_extract(metadata,'$.face') AS INTEGER),json_extract(metadata,'$.kind'))")
+            for statement in thumbnail_schema('images.'):c.execute(statement)
             c.execute("INSERT INTO main.meta VALUES('image_cache_directory',?) ON CONFLICT(key)DO UPDATE SET value=excluded.value",(str(self.cache_root.resolve()),));c.commit()
 
     @contextmanager
-    def connection(self,write=False):
+    def connection(self,write=False,image=False):
         if self.relocation_active.is_set():raise ConflictError('Storage relocation is prepared or in progress; restart the application')
         try:current_stat=self.database.stat()
         except FileNotFoundError as exc:raise ConflictError('Storage is being activated; restart the application')from exc
         if hasattr(self,'_database_identity')and self._database_identity!=(current_stat.st_dev,current_stat.st_ino):raise ConflictError('Storage was replaced by a prepared copy; restart the application')
         if self.maintenance_active.is_set():
             raise ConflictError('Storage maintenance is in progress; try again when it finishes')
-        with operation_lock(self.root, blocking=False):
+        # Metadata keeps WAL's concurrent reader/writer behavior. Only actual
+        # image operations and explicitly marked bulk work share the HDD lane.
+        lane=self.image_io.operation(timeout=self._busy_timeout_ms()/1000,label='sql')if image or self.image_io.is_background()else self.image_io.measure('sql')
+        with lane,operation_lock(self.root, blocking=False):
             if self.maintenance_active.is_set():
                 raise ConflictError('Storage maintenance is in progress; try again when it finishes')
-            c=sqlite3.connect(self.database,timeout=30,isolation_level=None);c.row_factory=sqlite3.Row
-            c.execute('PRAGMA busy_timeout=30000');c.execute('PRAGMA foreign_keys=ON');c.execute('PRAGMA synchronous=FULL')
+            timeout=self._busy_timeout_ms()
+            c=sqlite3.connect(self.database,timeout=timeout/1000,isolation_level=None);c.row_factory=sqlite3.Row
             try:
+                c.execute('PRAGMA busy_timeout='+str(timeout));c.execute('PRAGMA foreign_keys=ON');c.execute('PRAGMA synchronous=FULL')
                 retired=c.execute("SELECT value FROM meta WHERE key='storage_relocated_to'").fetchone()
                 if retired:raise ConflictError('This storage was relocated; restart the application to use '+retired[0])
                 self._attach_cache(c)
-                if write:c.execute('BEGIN IMMEDIATE')
+                if write:
+                    c.execute('PRAGMA busy_timeout='+str(self._busy_timeout_ms()))
+                    c.execute('BEGIN IMMEDIATE')
                 yield c
                 if write:c.execute('COMMIT')
             except BaseException:
@@ -304,7 +363,7 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
 
     def get_art(self,cache_key,legacy_keys=()):
         self._check_art_key(cache_key)
-        with self.connection() as c:
+        with self.connection(image=True) as c:
             for key in (cache_key,*legacy_keys):
                 self._check_art_key(key)
                 row=c.execute('SELECT content FROM art_cache WHERE cache_key=?',(key,)).fetchone()
@@ -314,14 +373,49 @@ class Storage(StorageSchema,ReplayStore,ArtworkStore,TokenPreferences,HistorySto
             if self.art_mirror_import_allowed(key) and path.is_file() and path.stat().st_size<=3*1024*1024:
                 data=path.read_bytes()
                 if data.startswith(b'\xff\xd8'):
-                    with self.connection(write=True)as c:
+                    with self.connection(write=True,image=True)as c:
                         if not self.art_mirror_import_allowed(key,c):continue
                         c.execute("INSERT INTO art_cache VALUES (?,?,'image/jpeg',?,?) ON CONFLICT(cache_key)DO NOTHING",(cache_key,sqlite3.Binary(data),encode({'legacySource':'art/'+key}),now()))
                         row=c.execute('SELECT content FROM art_cache WHERE cache_key=?',(cache_key,)).fetchone()
+                        if row:self._art_source(c,cache_key,bytes(row[0]))
+                    if row:self.queue_thumbnail(cache_key)
                     return bytes(row[0]) if row else None
         return None
 
     def save_art(self,cache_key,data,metadata=None):
         self._check_art_key(cache_key)
         if not isinstance(data,bytes) or not 2<=len(data)<=3*1024*1024 or not data.startswith(b'\xff\xd8'):raise ValueError('Invalid JPEG artwork')
-        with self.connection(write=True) as c:c.execute("INSERT INTO art_cache VALUES (?,?,'image/jpeg',?,?) ON CONFLICT(cache_key) DO UPDATE SET content=excluded.content,metadata=excluded.metadata,updated_at=excluded.updated_at",(cache_key,sqlite3.Binary(data),encode(metadata or {}),now()))
+        with self.connection(write=True,image=True) as c:
+            c.execute("INSERT INTO art_cache VALUES (?,?,'image/jpeg',?,?) ON CONFLICT(cache_key) DO UPDATE SET content=excluded.content,metadata=excluded.metadata,updated_at=excluded.updated_at",(cache_key,sqlite3.Binary(data),encode(metadata or {}),now()))
+            digest=self._art_source(c,cache_key,data)
+            c.execute('UPDATE '+self.image_table('art_thumbnails')+' SET metadata=? WHERE cache_key=? AND source_digest=?',(encode(metadata or {}),cache_key,digest))
+        self.thumbnails.request(cache_key,digest)
+
+    def image_table(self,name):
+        if name not in('art_sources','art_thumbnails'):raise ValueError('Unknown derived image table')
+        return ('images.'if self.separate_cache else'main.')+name
+
+    def _art_source(self,connection,key,data):
+        import hashlib
+        digest=hashlib.sha256(data).hexdigest()
+        connection.execute('INSERT INTO '+self.image_table('art_sources')+' VALUES(?,?) ON CONFLICT(cache_key)DO UPDATE SET digest=excluded.digest',(key,digest))
+        return digest
+
+    def flush_thumbnails(self,timeout=5):return self.thumbnails.flush(timeout)
+    def close_images(self):self.thumbnails.close()
+    def enable_thumbnails(self):
+        if self.thumbnails.closed.is_set():self.thumbnails=Thumbnails(self)
+        self.thumbnails.enabled=True
+        return self.thumbnails.status()['available']
+    @contextmanager
+    def quiesce_images(self):
+        with self.thumbnails.pause(),self.image_io.operation(timeout=3):yield
+    @contextmanager
+    def _exclusive_maintenance(self,readonly=False):
+        # Retire only the derivative worker's brief disk section. CPU decoding
+        # need not finish before purge, and all original cross-process locks
+        # and generation fences remain owned by MaintenanceStore.
+        with self.quiesce_images(),super()._exclusive_maintenance(readonly):yield
+    def queue_thumbnail(self,cache_key):
+        self._check_art_key(cache_key)
+        return self.thumbnails.request(cache_key)

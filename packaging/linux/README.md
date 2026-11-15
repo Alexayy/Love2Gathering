@@ -10,7 +10,7 @@
 
 `--payload DIR` accepts an extracted release directory. `--archive FILE.tar.gz` / `.tar.xz` accepts a bounded release archive with either a single top-level folder or the payload files at its root. With neither option, the installer looks for its sibling `payload/`, then the repository's `dist/stage/linux/Love2Gathering`. A self-extracting release can invoke the same helper after unpacking its private payload.
 
-The payload has an executable `love2gathering` shell launcher, `runtime/java/bin/java` (Java 21), and `share/icons/love2gathering.png`. The host needs Python 3.10 or newer and LÖVE 11.5. The package launcher owns starting the frontend and local services; this installer only copies/registers it.
+The payload has an executable `love2gathering` shell launcher, `runtime/java/bin/java` (Java 21), and `share/icons/love2gathering.png`. The host needs Python 3.10 or newer, Pillow 9.1+ with JPEG support (`python3-pil` or `python3-pillow`), and LÖVE 11.5. The package launcher owns starting the frontend and local services; this installer only copies/registers it. A missing Pillow installation is reported without installing packages or preventing access to original card images.
 
 Installation adds:
 

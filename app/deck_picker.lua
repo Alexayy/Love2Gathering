@@ -1,9 +1,10 @@
 local Assets=require('app.assets')
 local Layout=require('app.layout')
-local UI={cache={},clock=0}
+local UI={cache={},clock=0,pixelLimit=12*1024*1024}
 local function tile(v,deck,w,h,squareTile)
     local cover=deck and(deck.cover or v.m:deckCoverCard(deck));if type(cover)=='string'then cover={name=cover}end
-    local art=cover and v.m:getArt(cover,true,'art_crop')
+    local artW=squareTile and w-14 or h-14;local artH=squareTile and h-91 or h-14
+    local art=cover and v.m:getArt(cover,true,'art_crop',require('app.image_hints').forSize(artW,artH))
     local colors=deck and(deck.colorIdentity or deck.colors)or{}
     local commander=deck and(deck.faceCommander or(deck.commander and deck.commander[1]and deck.commander[1].name));if type(commander)=='table'then commander=commander.name end
     local key=table.concat({Assets.rasterEpoch,tostring(art),deck and deck.id or'',deck and deck.name or'',commander or'',table.concat(colors),w,h,Layout.scale,tostring(v.r.fonts[16]),tostring(squareTile),v.r.assets.theme and v.r.assets.theme.colorSignature or''},':')
@@ -24,8 +25,8 @@ local function tile(v,deck,w,h,squareTile)
         elseif deck and #colors==0 then v.r.assets:mana('C',x,cy,18)
         else for i,symbol in ipairs(colors)do v.r.assets:mana(symbol,x+(i-1)*22,cy,18)end end
     end)
-    UI.cache[key]={image=image,used=UI.clock};local n=0;for _ in pairs(UI.cache)do n=n+1 end
-    if n>96 then local oldest,stamp;for candidate,e in pairs(UI.cache)do if not stamp or e.used<stamp then oldest,stamp=candidate,e.used end end;UI.cache[oldest]=nil end
+    UI.cache[key]={image=image,used=UI.clock,pixels=image:getWidth()*image:getHeight()};local n,pixels=0,0;for _,entry in pairs(UI.cache)do n=n+1;pixels=pixels+entry.pixels end
+    while n>96 or pixels>UI.pixelLimit do local oldest,stamp;for candidate,e in pairs(UI.cache)do if candidate~=key and(not stamp or e.used<stamp)then oldest,stamp=candidate,e.used end end;if not oldest then break end;pixels=pixels-UI.cache[oldest].pixels;UI.cache[oldest]=nil;n=n-1 end
     return image
 end
 local function close(v,state)
@@ -37,7 +38,7 @@ function UI.button(v,id,deckId,format,width,changed,opts)
     opts=opts or{};local height=opts.height or 84;local deck=v.m:findDeck(deckId)
     if v.S.Button(id,{W=width,H=height,Image={Image=tile(v,deck,width,height)},Tooltip=deck and(deck.name..' · '..format..' · choose another deck')or('Choose '..format..' deck')})then
         if v.deckSelection then close(v,v.deckSelection)end
-        local state={id=id,selected=deckId,format=format,changed=changed,search='',offset=0,precons={},collapsed={starter=true},timer=0,openPage=v.m.page}
+        local state={id=id,selected=deckId,format=format,changed=changed,search='',offset=0,precons={},collapsed={starter=true},timer=0,openPage=v.m.page,scrollReset=true}
         v.deckSelection=state;v.m.lobbyDeckPicker=state;if v.m.loadLobbyStarters then v.m:loadLobbyStarters(state)end
     end
 end
@@ -63,7 +64,7 @@ function UI.popup(v,w,h)
     local S,m=v.S,v.m;local width=math.min(1000,w-70);local height=math.min(700,h-110);local inner=width-32
     v:window('choose-deck-tiles',(w-width)/2,(h-height)/2,width,height,'Choose '..state.format..' deck',{Layer='ContextMenu',BgColor={.025,.04,.06,.99}})
     if S.Button('Close deck selection',{W=inner,H=28})then close(v,state);S.EndWindow();return end
-    if S.Input('deck-tile-search',{Text=state.search,W=inner,H=30,Align='left',Tooltip='Search My Decks, Starter and preconstructed products'})then state.search=S.GetInputText();if m.searchLobbyPrecons then m:searchLobbyPrecons(state)end end
+    if S.Input('deck-tile-search',{Text=state.search,W=inner,H=30,Align='left',Tooltip='Search My Decks, Starter and preconstructed products'})then state.search=S.GetInputText();state.scrollReset=true;if m.searchLobbyPrecons then m:searchLobbyPrecons(state)end end
     S.NewLine()
     if state.confirmAuxiliary then
         local pending=state.confirmAuxiliary
@@ -71,14 +72,19 @@ function UI.popup(v,w,h)
         if S.Button('Use constructed cards',{W=(inner-8)/2,H=34})then m:cacheLobbyPrecon(state,pending.source,true)end
         S.SameLine();if S.Button('Keep browsing',{W=(inner-8)/2,H=34})then state.confirmAuxiliary=nil end;S.NewLine()
     end
-    S.BeginListBox('deck-tiles',{W=inner,H=math.max(150,height-(state.confirmAuxiliary and 240 or 158))})
+    local listH=math.max(150,height-(state.confirmAuxiliary and 240 or 158))
+    local Window=require('lib.Slab.Internal.UI.Window');local vx,vy=S.GetCursorPos({Absolute=true});vx,vy=Window.TransformPoint(vx,vy)
+    if state.scrollReset then require('lib.Slab.Internal.UI.Region').ResetTransform(Window.GetItemId('deck-tiles'));state.scrollReset=nil end
+    S.BeginListBox('deck-tiles',{W=inner,H=listH,AlwaysShowScrollBarY=true,ScrollStep=100})
     local columns=width>=780 and 4 or 3;local tw=math.floor((inner-28-(columns-1)*12)/columns);local th=tw;local selected=m:findDeck(state.selected)
     local function grid(decks,precon)
         for index,deck in ipairs(decks)do
             if(index-1)%columns~=0 then S.SameLine({Pad=8})elseif index>1 then S.NewLine()end
             S.PushID('tile-'..deck.id)
             local active=state.selected==deck.id or selected and selected.sourceDeckId==deck.id
-            if S.Button(deck.name,{W=tw,H=th,Image={Image=tile(v,deck,tw,th,true)},Tooltip=deck.name..(precon and' · historical product; XMage validates when the match starts'or''),Active=active,Disabled=state.detailBusy})then
+            local tx,ty=S.GetCursorPos({Absolute=true});tx,ty=Window.TransformPoint(tx,ty)
+            local visible=ty+th>=vy and ty<=vy+listH and tx+tw>=vx and tx<=vx+inner-18
+            if S.Button(deck.name,{W=tw,H=th,Image=visible and{Image=tile(v,deck,tw,th,true)}or nil,Invisible=not visible,Tooltip=deck.name..(precon and' · historical product; XMage validates when the match starts'or''),Active=active,Disabled=not visible or state.detailBusy})then
                 if precon then m:selectLobbyPrecon(state,deck)else state.changed(deck.id);close(v,state)end
             end
             S.PopID()
@@ -97,7 +103,7 @@ function UI.popup(v,w,h)
         for _,deck in ipairs(state.precons)do local name=deck.expansion or deck.setName or deck.set or'Other products';if not groups[name]then groups[name]={};order[#order+1]=name end;groups[name][#groups[name]+1]=deck end
         for _,name in ipairs(order)do if not header(v,state,'set:'..name,name,#groups[name],true,inner-20)then grid(groups[name],true)end end
         if state.busy or state.timer then S.Text('Loading preconstructed decks…',{Color=v.r.colors.muted})
-        elseif state.error then S.Textf(state.error,{W=inner-24,Color=v.r.colors.red});if S.Button('Retry deck search',{W=200,H=28})then m:queryLobbyPrecons(state)end
+        elseif state.error then S.Textf(state.error,{W=inner-24,Color=v.r.colors.red});if S.Button('Retry deck search',{W=200,H=28})then m:queryLobbyPrecons(state,true)end
         elseif#order==0 then S.Text('No matching preconstructed products',{Color=v.r.colors.muted})end
         if state.detailBusy then S.Text('Loading selected deck…',{Color=v.r.colors.muted})end
     end

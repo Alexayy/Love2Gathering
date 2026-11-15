@@ -1,6 +1,7 @@
 local Layout=require('app.layout')
 local Table={}
 local Board=require('app.board_fx')
+local handScale,fieldScale=1.05,1.10
 local function terrain(r,view,draw)
     local dx,dy=Board.worldOffset(r)
     r.worldTransform={x=dx,y=dy,scale=1,clip=view,shakeOnly=true}
@@ -30,11 +31,16 @@ function Table.field(r,player,x,y,w,rowH,foe)
     end
     local _,height=Layout.dimensions();local available=math.max(58,rowH-14)
     local inWorld=r.worldTransform~=nil and not r.worldTransform.shakeOnly
-    local landH=math.min(inWorld and 154 or 128,math.max(66,inWorld and 154 or height*.12),available)
-    local permanentH=math.min(inWorld and 196 or 157,available)
+    -- Duel rows share a bounded height. A smaller land target leaves the same
+    -- visible growth for creatures near the transition to full-size rows.
+    local landScale=inWorld and fieldScale or 1.07
+    local landTarget=(inWorld and 154 or 128)*landScale
+    local permanentTarget=(inWorld and 196 or 157)*fieldScale
+    local landH=math.min(landTarget,math.max(66,(inWorld and 154 or height*.12)*landScale),available)
+    local permanentH=math.min(permanentTarget,available)
     if #lands>0 and #permanents>0 then
         landH=math.min(landH,(available-12)/2)
-        permanentH=math.min(inWorld and 196 or 157,available-landH-12)
+        permanentH=math.min(permanentTarget,available-landH-12)
     end
     local function drawRow(cards,cardH,rowY,mana)
         if #cards==0 then return end
@@ -59,6 +65,25 @@ function Table.pile(r,label,count,cards,x,y,cw,back)
     r:panel(x+cw-21,y-9,31,27,'dark');r:text(count or #(cards or {}),x+cw-21,y-7,16,r.colors.text,31,'center')
     r:hit({x=x-8,y=y-9,w=cw+18,h=ch+38,kind='zone',cards=cards or {},label=label,tooltip=label})
 end
+function Table.library(r,player,x,y,cw)
+    local m,C=r.model,r.colors;local top=m:libraryTop(player);local ch=cw*1.4
+    local before=#r.hits
+    r:drawCard(top or{name='Library'},x,y,cw,ch,{back=not top,noHit=not top,kind='library-top'})
+    if top and #r.hits>before and r.hits[#r.hits].card==top and r.hits[#r.hits].kind=='library-top'then
+        local hit=r.hits[#r.hits]
+        hit.libraryPlayerId=player.id;hit.libraryGameId=m.game.gameId
+        local visibility=player.libraryTopVisibility=='public'and'Revealed top card'or'Known top card'
+        hit.tooltip=visibility..' · '..(top.name or'Card')..(m:canSelect(top.id)and' · click or drag to choose this card'or' · click to inspect')
+    end
+    r:panel(x+cw-21,y-9,31,27,'dark');r:text(player.libraryCount or 0,x+cw-21,y-7,16,C.text,31,'center')
+    local labelY=y+ch+4
+    r.assets:iconSymbol('library',x+cw/2-11,labelY+2,22,top and C.gold or C.muted)
+    -- Leave the card itself actionable; the count and zone icon open inspection.
+    local function open()m:openLibrary(player.id)end
+    r:hit({x=x-7,y=labelY,w=cw+14,h=30,kind='library-zone',libraryPlayerId=player.id,action=open,tooltip=(player.name or'Player')..' · Library · inspect the entitled top card'})
+    r:hit({x=x+cw-23,y=y-11,w=35,h=31,kind='library-zone',libraryPlayerId=player.id,action=open,tooltip='Library · '..tostring(player.libraryCount or 0)..' cards'})
+    if not top then r:hit({x=x,y=y,w=cw,h=ch,kind='library-zone',libraryPlayerId=player.id,action=open,tooltip='Library · top card is not visible'})end
+end
 function Table.hand(r,player,layout,w,h)
     local cards=player.hand or {};local n=#cards;local board=layout.board
     if n==0 then r.handBounds=nil;return end
@@ -68,17 +93,17 @@ function Table.hand(r,player,layout,w,h)
     local ease=r.model.settings.reducedMotion and 1 or 1-math.exp(-r.dt*16)
     r.handExpansion=r.handExpansion+((hot and 1 or 0)-r.handExpansion)*ease
     local amount=r.handExpansion
-    local small=math.min(104,math.max(84,w*.073));local cw=small+(146-small)*amount;local ch=cw*1.4
+    local small=math.min(104,math.max(84,w*.073))*handScale;local cw=small+(146*handScale-small)*amount;local ch=cw*1.4
     local spacing=math.min(cw*(.57+.16*amount),(board.w-340-cw)/math.max(1,n-1));local start=board.x+(board.w-(n-1)*spacing-cw)/2
     local hoverIndex=hot and r.hover and r.hover.kind=='hand' and r.hover.index
-    local visible=80+(ch+5-80)*amount
+    local resting=80*handScale;local visible=resting+(ch+5-resting)*amount
     local y=h-visible;local minY=y-8
     for i,c in ipairs(cards) do
         local normal=n<=1 and 0 or (i-1)/(n-1)-.5;local angle=normal*math.min(.30,n*.04)
         if i~=hoverIndex then r:drawCard(c,start+(i-1)*spacing,y+math.abs(normal)*9,cw,ch,{angle=angle,kind='hand',index=i,animate=true}) end
     end
     if hoverIndex and cards[hoverIndex] then
-        local hw=math.min(206,w*.16);local hh=hw*1.4
+        local hw=math.min(206,w*.16)*handScale;local hh=hw*1.4
         minY=h-hh-34
         r:drawCard(cards[hoverIndex],start+(hoverIndex-1)*spacing+(cw-hw)/2,minY,hw,hh,{kind='hand',index=hoverIndex,animate=true})
     end
@@ -144,8 +169,8 @@ function Table.draw(r,w,h)
         local zoneW=L.zoneW;local zoneH=zoneW*1.4+34
         local enemyZone=math.max(330,L.enemyY+5);local ownZone=math.max(enemyZone+zoneH+15,L.humanY+10)
         local enemyLibrary=250;local humanLibrary=math.max(enemyLibrary+zoneH+14,L.humanY-10)
-        Table.pile(r,'Library',enemy.libraryCount,nil,hx,enemyLibrary,zoneW,true)
-        Table.pile(r,'Library',human.libraryCount,nil,hx,humanLibrary,zoneW,true)
+        Table.library(r,enemy,hx,enemyLibrary,zoneW)
+        Table.library(r,human,hx,humanLibrary,zoneW)
         local playerY=math.max(h-L.handH-15,humanLibrary+zoneW*1.4+40)
         r:drawAvatar(human,hx,playerY+3,44)
         r:strong(r:fit(human.name or'You',122,16,1),hx+54,playerY,16,C.accent,122)
@@ -171,7 +196,7 @@ function Table.draw(r,w,h)
         for i,c in ipairs(enemy.command or {}) do r:drawCard(c,L.fieldX+(i-1)*78,127,76,106,{kind='command',animate=true}) end
         local manaEntries={}
         for _,symbol in ipairs({'W','U','B','R','G','C'}) do local amount=(human.mana or {})[symbol] or 0;if amount>0 then manaEntries[#manaEntries+1]={symbol=symbol,amount=amount} end end
-        local mx=B.x+(B.w-#manaEntries*42)/2;local my=h-L.handH-54
+        local mx=B.x+(B.w-#manaEntries*42)/2;local my=L.fieldBottom-8
         for _,entry in ipairs(manaEntries) do r.assets:mana(entry.symbol,mx,my,20);r:text(entry.amount,mx+23,my+1,14,C.text);mx=mx+42 end
         Table.hand(r,human,L,w,h)
     end

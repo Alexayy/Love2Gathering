@@ -25,6 +25,15 @@ function Settings.build(view,w,h,options)
     local function choice(key,label,items)
         S.Text(label,{Color=C.text});view:combo('setting-'..key,tostring(s[key]),items,math.min(330,inner),function(value) s[key]=value end);S.NewLine()
     end
+    local function artworkSource()
+        S.Image('setting-artwork-source-icon',{Image=r.assets:iconImage('image',19),W=19,H=19});S.SameLine();S.Text('Card image source',{Color=C.text})
+        view:combo('setting-artwork-source',s.localArtworkOnly~=false and'Cache only'or'Download as needed',{'Cache only','Download as needed'},math.min(360,inner),function(value)s.localArtworkOnly=value=='Cache only'end)
+        if s.localArtworkOnly~=false then S.Textf('Browse images already saved on this device. Selecting a card in Builder explicitly downloads its missing image with priority. Storage → Downloads can fill the rest separately.',{W=formWidth,Color=C.muted})
+        else S.Textf('Download missing images needed on screen and reuse them from the cache. Your selected Builder card takes priority. This does not download the whole card catalog.',{W=formWidth,Color=C.muted})end
+        local variants=m.catalogHealth and m.catalogHealth.imageVariants
+        if variants and variants.available==false then S.Textf('Small image variants are unavailable in this Python runtime. Original cached images still work; install Pillow or use a packaged runtime to enable them.',{W=formWidth,Color=C.gold})end
+        S.NewLine()
+    end
     local function slider(key,label,low,high)
         S.Text(label..'  '..math.floor((s[key] or 0)*100)..'%')
         if S.InputNumberSlider('setting-'..key,s[key] or 0,low or 0,high or 1,{W=math.min(460,formWidth),H=38,Step=.01,Precision=2}) then s[key]=S.GetInputNumber() end
@@ -50,6 +59,10 @@ function Settings.build(view,w,h,options)
         S.Textf('High uses a denser Beleren glyph atlas. Menus and text retain native display resolution independently of table render scale.',{W=formWidth,Color=C.muted});S.NewLine()
         choice('renderScale','Table render scale',{.5,.75,1,1.25,1.5})
         choice('textureFilter','Texture filtering',{'linear','nearest'})
+        choice('artworkMemoryMiB','Decoded image cache (MiB)',{128,256,512})
+        local memory=require('app.artwork').cacheInfo(m)
+        S.Textf(string.format('%.1f MiB of decoded card images retained · %d images. This shared budget covers cards, avatars and gallery art. Downloaded files remain on disk when an image leaves memory.',memory.bytes/(1024*1024),memory.images),{W=formWidth,Color=C.muted});S.NewLine()
+        S.Textf('256 MiB is the default. 512 MiB keeps more images ready while leaving room for the rest of the client around a 1 GiB target. Fonts, the table and XMage use separate memory; this is not a limit on the whole game.',{W=formWidth,Color=C.muted});S.NewLine()
         choice('frameLimit','Frame limit (0 = unlimited)',{0,30,60,120,144})
         S.Textf('The table render scale changes the card scene. Menus and text stay at the display resolution.',{W=formWidth,Color=C.muted})
     elseif view.settingsTab=='Presentation' then
@@ -83,8 +96,8 @@ function Settings.build(view,w,h,options)
             if image then local scale=math.min(70/image:getWidth(),95/image:getHeight());S.Image('card-back-preview',{Image=image,W=image:getWidth()*scale,H=image:getHeight()*scale})end
         end
         S.NewLine();slider('boardImpactIntensity','Board impact strength')
-        toggle('showCardArt','Show card artwork on the table','The builder always uses card images. Artwork that is not cached shows a placeholder; use the artwork downloader for selected cards.')
-        toggle('localArtworkOnly','Use local artwork only','Load cached cards and art without contacting Scryfall or its CDN. The separate downloader fills missing images. Disable this to allow on-demand downloads.')
+        toggle('showCardArt','Show card artwork on the table','The builder always uses card images. The image source below controls what happens when an image is missing.')
+        artworkSource()
         toggle('animations','Card movement and drag tweens')
         toggle('particles','Subtle cast and resolution particles')
         toggle('showTooltips','Hover card previews and tooltips')
@@ -99,7 +112,9 @@ function Settings.build(view,w,h,options)
         if S.Button('Preview dice sound',{W=260,H=38,Image={Image=r.assets:buttonImage('dice','Preview dice sound',260,38,{font=r.fonts[16],iconSize=20})}})then r:sound('dice-roll')end;S.NewLine()
         S.Textf('Ambient loop: Dark Portents — Shrouded Future. Credits and asset metadata are in assets/ASSET_GUIDE.md.',{W=formWidth,Color=C.muted})
     elseif view.settingsTab=='Storage' then
+        if m.storageSection=='downloads'then artworkSource()end
         require('app.storage').build(view,formWidth)
+        if m.storageSection=='downloads'then require('app.image_packs').build(view,formWidth)end
     elseif view.settingsTab=='Accessibility' then
         heading('Readability and motion')
         S.Textf('Beleren is used throughout the application. Missing characters use the bundled UTF-8 fallback; Magic symbols retain their own font.',{W=formWidth,Color=C.muted});S.NewLine()

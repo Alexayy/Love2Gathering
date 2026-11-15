@@ -116,6 +116,7 @@ def common_payload(output, source):
     shutil.copy2(ROOT / 'bridge/card-map.json', target / 'bridge/card-map.json')
     (target / 'scripts').mkdir()
     shutil.copy2(ROOT / 'scripts/download-card-images.py', target / 'scripts/download-card-images.py')
+    shutil.copy2(ROOT / 'scripts/starter-image-pack.py', target / 'scripts/starter-image-pack.py')
     (target / 'assets/card-art').mkdir(parents=True)
     shutil.copy2(ROOT / 'assets/card-art/full-art-basics.json', target / 'assets/card-art/full-art-basics.json')
     metadata = target / 'assets/all-cards.jsonl.gz'
@@ -142,7 +143,7 @@ def common_payload(output, source):
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     release = {'applicationId': APP_ID, 'name': 'Love: 2 Gathering', 'version': VERSION,
                'sourceRevision': revision, 'engineRevision': subprocess.check_output(['git', 'rev-parse', 'HEAD:engine/mage'], cwd=ROOT, text=True).strip(),
-               'metadataSource': source.name, 'includesUserData': False, 'catalogApi': 11,
+               'metadataSource': source.name, 'includesUserData': False, 'catalogApi': 14,
                'sourceDirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT).strip())}
     (target / 'release.json').write_text(json.dumps(release, indent=2) + '\n')
     (target / 'love2gathering').write_text('#!/bin/sh\nset -eu\napp_file=$(readlink -f -- "$0")\napp_dir=$(CDPATH= cd -- "$(dirname -- "$app_file")" && pwd)\nexec python3 "$app_dir/launcher.py" "$@"\n')
@@ -190,7 +191,7 @@ def build_deb(output, payload):
     shutil.copytree(payload, stage / 'opt/love2gathering', symlinks=True)
     control = stage / 'DEBIAN';control.mkdir()
     size = sum(p.stat().st_size for p in payload.rglob('*') if p.is_file()) // 1024
-    (control / 'control').write_text(f'Package: love2gathering\nVersion: {VERSION}-1\nArchitecture: amd64\nMaintainer: Love2Gathering contributors\nDepends: python3 (>= 3.10), love (>= 11.5)\nSection: games\nPriority: optional\nInstalled-Size: {size}\nHomepage: https://github.com/Alexayy/Love2Gathering\nDescription: Love: 2 Gathering XMage desktop client\n Native XMage rules, bot practice, private rooms and drafts.\n Includes a Java 21 runtime and card metadata; image downloads are explicit.\n')
+    (control / 'control').write_text(f'Package: love2gathering\nVersion: {VERSION}-1\nArchitecture: amd64\nMaintainer: Love2Gathering contributors\nDepends: python3 (>= 3.10), python3-pil (>= 9.1), love (>= 11.5)\nSection: games\nPriority: optional\nInstalled-Size: {size}\nHomepage: https://github.com/Alexayy/Love2Gathering\nDescription: Love: 2 Gathering XMage desktop client\n Native XMage rules, bot practice, private rooms and drafts.\n Includes a Java 21 runtime and card metadata; image downloads are explicit.\n')
     executable = stage / 'usr/bin/love2gathering';executable.parent.mkdir(parents=True)
     executable.symlink_to('/opt/love2gathering/love2gathering')
     menu = stage / ('usr/share/applications/' + APP_ID + '.desktop');menu.parent.mkdir(parents=True)
@@ -225,7 +226,7 @@ URL: https://github.com/Alexayy/Love2Gathering
 BuildArch: x86_64
 Prefix: /opt/love2gathering
 AutoReqProv: no
-Requires: python3 >= 3.10, love >= 11.5
+Requires: python3 >= 3.10, python3-pillow >= 9.1, love >= 11.5
 %description
 Desktop client with native XMage rules, private rooms and drafts.
 Includes Java 21 and card metadata. Runtime images are cached separately.

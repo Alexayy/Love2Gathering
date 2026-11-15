@@ -96,6 +96,7 @@ function View:modals(w,h)
         self:window('zone-view',w/2-270,155,540,h-260,zone.label)
         if S.Button('Close zone',{W=510,H=28}) then m.zoneView=nil
         else
+            if zone.libraryPlayerId then S.Textf('Only the visible top card is shown. A highlighted card can be played or chosen for the current prompt.',{W=510,Color=C.muted});S.NewLine()end
             if S.Input('zone-search',{Text=zone.query or'',W=510,H=30,Align='left',Tooltip='Find an entitled card by name or native object ID'})then zone.query=S.GetInputText();zone.offset=0 end
             local entries={};local query=(zone.query or''):lower()
             for index,card in ipairs(zone.cards)do
@@ -109,21 +110,23 @@ function View:modals(w,h)
             for position=zone.offset+1,math.min(#entries,zone.offset+pageSize)do
                 local entry=entries[position];local card=entry.card;local caption='#'..entry.index..' '..plain(card.name or card.label)
                 if not card.hidden then
-                    if card.power~=nil and card.toughness~=nil then caption=caption..' · '..tostring(card.power)..'/'..tostring(card.toughness)end
+                    if card.power~=nil and card.toughness~=nil and(not zone.libraryPlayerId or tostring(card.type_line or card.type or''):lower():find('creature',1,true))then caption=caption..' · '..tostring(card.power)..'/'..tostring(card.toughness)end
                     if card.tapped then caption=caption..' · tapped'end
                     if tonumber(card.damage)and tonumber(card.damage)>0 then caption=caption..' · damage '..card.damage end
                     local names={};for name,count in pairs(card.counters or{})do if tonumber(count)and tonumber(count)~=0 then names[#names+1]=name end end;table.sort(names)
                     for _,name in ipairs(names)do caption=caption..' · '..name..' '..tostring(card.counters[name])end
                 end
                 S.PushID('zone-card-'..tostring(card.id or entry.index))
-                local selected=S.TextSelectable(caption,{W=510,Tooltip=caption..'\nNative object '..tostring(card.id or entry.index)})
+                local selected=S.TextSelectable(caption,{W=510,Color=m:canSelect(card.id)and C.accent or nil,Tooltip=caption..'\nNative object '..tostring(card.id or entry.index)})
                 S.PopID()
                 if selected then
-                    if m:selectCard(card) then m.zoneView=nil else m.previewCard=card;m.inspectCard=card end
+                    if m:selectCard(card) then m.zoneView=nil
+                    elseif zone.libraryPlayerId then m:inspectLibraryTop(zone.libraryPlayerId,card.id,zone.libraryGameId)
+                    else m.previewCard=card;m.inspectCard=card end
                     break
                 end
             end
-            if #entries==0 then S.Text(#zone.cards==0 and'This zone is empty.'or'No matching cards.',{Color=C.muted})end
+            if #entries==0 then S.Text(#zone.cards==0 and(zone.libraryPlayerId and'The top card is not currently visible.'or'This zone is empty.')or'No matching cards.',{Color=C.muted})end
         end
         S.EndWindow()
     end
@@ -178,12 +181,15 @@ function View:modals(w,h)
         end
         S.EndWindow()
     end
-    if m.settingsOpen and not m.storageFolderDialog and not m.storageLocationConfirm then self:settings(w,h) end
+    if m.settingsOpen and not m.storageFolderDialog and not m.imagePackFileDialog and not m.storageLocationConfirm then self:settings(w,h) end
     require('app.storage').modal(self,w,h)
     require('app.storage_locations').modal(self,w,h)
+    require('app.image_packs').modal(self,w,h)
     if self.m.cardPrintingPicker then require('app.card_printings_ui').build(self,w,h)end
+    require('app.set_picker').build(self,w,h)
 end
 function View:build()
+    if self.m.refreshLibraryViews then self.m:refreshLibraryViews()end
     local w,h=Layout.dimensions()
     local storageVisible=(self.m.page=='settings'or self.m.settingsOpen)and self.settingsTab=='Storage'and(self.m.storageSection or'cleanup')or false
     if(self.storageRegionVisible or false)~=storageVisible then
@@ -193,7 +199,8 @@ function View:build()
     end
     self.storageRegionVisible=storageVisible
     if self.deckSelection and self.deckSelection.openPage and self.deckSelection.openPage~=self.m.page then require('app.deck_picker').close(self)end
-    local lock=self.m.storageLocationConfirm and'storage-location-confirm'or self.themeColorEdit and'ColorPicker'or self.m.storagePurgePreview and'storage-purge-confirm'or self.m.cardPrintingPicker and'card-printing-picker'or self.m.tokenPicker and'token-art-picker'or self.brandMenu and'app-brand-menu'or self.deckSelection and'choose-deck-tiles'
+    require('app.set_picker').current(self)
+    local lock=self.setPicker and'set-picker'or self.m.storageLocationConfirm and'storage-location-confirm'or self.themeColorEdit and'ColorPicker'or self.m.storagePurgePreview and'storage-purge-confirm'or self.m.cardPrintingPicker and'card-printing-picker'or self.m.tokenPicker and'token-art-picker'or self.brandMenu and'app-brand-menu'or self.deckSelection and'choose-deck-tiles'
         or self.m.settingsOpen and'settings'or self.m.inspectCard and'inspect-card'or self.m.zoneView and'zone-view'
         or self.m.galleryInspect and'gallery-inspect'or self.m.deleteConfirm and'delete-deck'or self.m.archiveCopy and'archive-copy'
         or self.m.confirmConcede and'concede-confirm'or self.combatStopsOpen and'combat-step-stops'
@@ -214,10 +221,10 @@ function View:build()
     if self.m.page=='history' then require('app.library_ui').history(self,w,h)end
     if self.m.page=='tokens' then require('app.library_ui').tokens(self,w,h)end
     if self.m.page=='profile'then require('app.profile_ui').build(self,w,h)end
-    if self.m.page=='settings'and not self.m.storageFolderDialog and not self.m.storageLocationConfirm then self:settings(w,h,{fullPage=true})end
+    if self.m.page=='settings'and not self.m.storageFolderDialog and not self.m.imagePackFileDialog and not self.m.storageLocationConfirm then self:settings(w,h,{fullPage=true})end
     self:modals(w,h)
     require('app.navigation').build(self,w,h)
-    self.r.blockBuilderDrop=self.brandMenu or self.m.cardPrintingPicker or self.m.tokenPicker or self.builderPopup or self.builderFiltersOpen or self.deckSelection or self.m.settingsOpen or self.m.inspectCard or self.m.storagePurgePreview
+    self.r.blockBuilderDrop=self.setPicker or self.brandMenu or self.m.cardPrintingPicker or self.m.tokenPicker or self.builderPopup or self.builderFiltersOpen or self.deckSelection or self.m.settingsOpen or self.m.imagePackFileDialog or self.m.inspectCard or self.m.storagePurgePreview
     self.S.PopFont()
 end
 return View

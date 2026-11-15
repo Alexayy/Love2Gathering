@@ -1,0 +1,167 @@
+{
+  "date": "2026-11-15",
+  "status": "passed",
+  "scope": "Combat presentation, native local-practice lifecycle, UTF-8 preview safety and measured local UI responsiveness.",
+  "native": {
+    "report": "bridge/tests/practice-concession-report.json",
+    "checks": 33,
+    "triggerFixture": {
+      "passed": true,
+      "results": [
+        {
+          "gameEnded": true,
+          "humanLost": true,
+          "passed": true,
+          "scenario": "practice-during-trigger-order",
+          "threadTerminated": true
+        },
+        {
+          "gameEnded": false,
+          "humanLost": true,
+          "passed": true,
+          "scenario": "room-other-seat-during-trigger-order",
+          "threadTerminated": true
+        },
+        {
+          "gameEnded": false,
+          "humanLost": true,
+          "passed": true,
+          "scenario": "room-queued-wake-races-real-order",
+          "threadTerminated": true
+        },
+        {
+          "outcome": "observer",
+          "passed": true,
+          "scenario": "non-seat-observer-result"
+        }
+      ],
+      "scope": "Real native simultaneous-trigger/concession processing; initial zones injected by Game.cheat, separate from production HTTP games",
+      "sourceHashes": {
+        "bridge/tests/love2gathering/ConcessionFixture.java": "33eb322455e09bf676b08728e0cad1be03438e2b316e3436e466678973aea2c2",
+        "bridge/tests/love2gathering/TriggerFixture.java": "07d5e8a38cfda36a146d4e033fa9f1204327b346c5dd4f77cb21b94ccc61a051"
+      },
+      "watchdog": {
+        "cpuSeconds": 8.92,
+        "diskBytes": 1714,
+        "exitCode": 0,
+        "log": "/tmp/love2gathering-mechanics-concession-ff4zc3b6/trigger-fixture/process.log",
+        "ownedProcessIdentities": [
+          {
+            "birthTicks": 4991494,
+            "cpuTicks": 878,
+            "pid": 254723,
+            "ppid": 254446,
+            "processGroup": 254723,
+            "rssBytes": 714596352,
+            "state": "S",
+            "threads": 21
+          }
+        ],
+        "ownedProcessTerminated": true,
+        "peakRssBytes": 715972608,
+        "recovery": null,
+        "sharedServiceDiskBytes": 0,
+        "status": "pass",
+        "threadDumps": [],
+        "wallSeconds": 4.355,
+        "watchdogReason": null
+      }
+    },
+    "buildKind": "Fresh offline staged Maven bridge-only package; adapter published by atomic rename; engine and dependencies read-only",
+    "adapterSha256": "41e9d480384c7cd314ac4473f2a3023e7727e3ff50f6bb1d3db2a3cd8ebe0df4",
+    "engineUnchanged": true,
+    "cleanup": {
+      "catalog": true,
+      "engine": true
+    }
+  },
+  "gui": {
+    "indicators": {
+      "report": "tests/combat-indicators-ui-report.json",
+      "checks": 42,
+      "scope": "Synthetic native-shaped acknowledgement/combat states; actual Slab clicks/pixels. No native rules, service, network or user saves."
+    },
+    "preview": {
+      "report": "tests/preview-utf8-ui-report.json",
+      "checks": 10
+    },
+    "deckScroll": {
+      "report": "tests/deck-picker-scroll-ui-report.json",
+      "checks": 24,
+      "samples": [
+        {
+          "artLookups": 16,
+          "hidden": 52,
+          "scale": 1,
+          "visible": 12,
+          "wheelPixels": 100
+        },
+        {
+          "artLookups": 12,
+          "hidden": 56,
+          "scale": 1.25,
+          "visible": 8,
+          "wheelPixels": 100
+        }
+      ]
+    },
+    "regressions": {
+      "lobby": 30,
+      "setPicker": 36,
+      "globalControls": 189
+    }
+  },
+  "model": {
+    "deckPicker": 25,
+    "collection": 24,
+    "concession": 11,
+    "combatIndicators": 17,
+    "priority": 23,
+    "boardPresentation": 50,
+    "utf8PropertyGroups": 4,
+    "warmButtonCalls": 600,
+    "warmButtonFontMeasurements": 0,
+    "warmButtonRasterizations": 0
+  },
+  "behavior": {
+    "beforeDamage": "Larger acknowledged ON/OFF chip; separate WAIT/unconfirmed states; existing native stop.",
+    "attackers": "Larger arrows, thicker cores/controller outlines, existing native anchors.",
+    "concession": "Local native human loss then GAME end; rooms retain remaining seats and publish departures.",
+    "scroll": "Always-visible draggable rail,100 logical pixels per notch; stale outside wheel discarded; new opening/search resets.",
+    "loading": "Viewport-only thumbnail work, recent product-response cache16entries/4MiB/120seconds, bounded thumbnail pixels, warm button reuse."
+  },
+  "baselinesAndLimits": [
+    "Exact invalid UTF-8 preview stack reproduced before fix; test card crossing byte97 is controlled native-style text, actual Khalni oracle also rendered.",
+    "UI fixtures use controlled metadata/synthetic boards; scroll images are genuine local JPEGs. No Internet throughput or all-catalog cold-drive guarantee.",
+    "Persistent scrollbar testing caught queued outside-wheel displacement before the fix.",
+    "Native fixtures caught a trigger-answer/wake race and stale departure projection, both fixed before final packaged acceptance.",
+    "A set-picker harness failure was native desktop-pointer interference; fixture isolation preserves saved production input handlers.",
+    "Current user processes and data were not stopped, purged or changed; new adapter published atomically for next launch."
+  ],
+  "sourceSha256": {
+    "app/utf8_text.lua": "3800ca6b64c33742a1d4b7d1c7bb840e3357378d2746962f9664540887d8f826",
+    "app/richtext.lua": "1139aee9f61585d5d6d0cf729c6b4c2210307156c02940ecc8a7f55e6b82267b",
+    "app/renderer.lua": "15c38433798568f09db7956be6ab49d2bc73994bba08ceb7e1122ffa63105c08",
+    "app/assets.lua": "172406e8bb63e17a2b22b6b54a6dc84a3c56907f408cd24a1d2db2ae4b85dce4",
+    "app/deck_picker.lua": "e3516c59b6930adac68533032c1a44b7cfa53aa731893eefa214a5d1ef942263",
+    "app/collection.lua": "e5a10c193fae54e401734a778990a0b5fd4f9acf33e02665bfff1adeaf620ea8",
+    "app/model.lua": "86dfcb704242eb804dc71d7082d230d52e33c61edf6746afd04ba391eae81344",
+    "app/priority.lua": "a5720a652066430f1b37380c0885432d9a8d90fb20099fe8712553a422e0a7e4",
+    "app/match_ui.lua": "c2df61ca3086f1ba75e8082c3436da99854b9da01f9eebda0cbfaa1c567b3732",
+    "app/board_fx.lua": "ce79d667b66de59fef6071ec10048416e78d104babe2de875b638dcc24f7e86a",
+    "lib/Slab/API.lua": "e434f9fbe619fdb6ffc7bb9bac45d132a29d952854b2de398bb834361ea83cee",
+    "lib/Slab/Internal/UI/ListBox.lua": "da9bbe7ca9159cd8e56d0603090d59c0fa7793aab88f5f0a4a50cb8c0d92dc8a",
+    "lib/Slab/Internal/UI/Region.lua": "e9f3ed73609a12d4e46633a8eaffa7758f7c98813466a1c09ac82faab5597792",
+    "bridge/src/love2gathering/EngineBridge.java": "c3f3d8538b1b0707bc985e2a43e6f470b079563d4456390a323e2b47c141c243",
+    "bridge/src/love2gathering/PresentationGames.java": "f28b5a031d74cd7175c59a388db779e195a1ebd95e1f40c22cb3adf113c746ef",
+    "bridge/src/love2gathering/LimitedFreeForAll.java": "a2dbacd80182654c00f175d6ded604c9573d94ecd5cb6d9b7dbe3e81ebb51ac0",
+    "tests/deck_picker_scroll_ui.lua": "acde5453aa822996f1ccc8e62109a5d3110d454b63e346de9d24f71e7ecfbf00",
+    "tests/deck_picker_scroll_ui.sh": "b2a43110996d8f1407ab6c2b705928a7de8a264feada8783e8705f7c1d0523fb",
+    "tests/deck_picker_model.lua": "5663192f2a6ad9cfc5310169cb3b860e8fcd3731f86f332cf97e6dab0e23e91c",
+    "tests/ui_raster_cache.lua": "ce0b3b241f6901bd2762dbda532510862d3ccd14e2c42dd3f5a431cdb0b66137",
+    "tests/utf8_text.lua": "ba7a240671e34c01c8fdc68c29030ab0988af88271b31c6684b561bd20a79a06",
+    "tests/concession_model.lua": "c0c8abb834597a411dbd54d1f1616a74ccd133cb517f5551711e55825a6eb468",
+    "tests/combat_indicators.lua": "85b185792da4924e0fa87a2e7c589bb09fca674af872301452cc0c7cfc88790b",
+    "tests/set_picker_ui.lua": "d6586a19597ffe15073c64858027bfa68189864ca14de90c4aa0a6ac414ccb16"
+  }
+}

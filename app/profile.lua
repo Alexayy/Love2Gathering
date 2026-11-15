@@ -15,7 +15,7 @@ function Profile.reference(item)
     return {oracleId=item.oracleId or item.oracle_id,printingId=item.printingId or item.printing_id,face=item.face or item.requested_face or 0,name=item.name}
 end
 function Profile.install(Model)
-    function Model:loadProfile()
+    function Model:loadProfile(callback)
         init(self);self.profileLoadVersion=(self.profileLoadVersion or 0)+1;local version=self.profileLoadVersion;local priorName=self.playerName;local priorRoomName=self.roomSetup and self.roomSetup.playerName or priorName
         self:request('catalog','GET','/profile',nil,function(data,err)
             if version~=self.profileLoadVersion then return end
@@ -25,6 +25,7 @@ function Profile.install(Model)
                 if not self.profileDirty then self.profileDraft=copy(data)end
                 if self.roomSetup and not self.roomConnectionId and self.roomSetup.playerName==priorRoomName then self.roomSetup.playerName=data.name end
             end
+            if callback then callback(data,err)end
         end,true)
     end
     function Model:showProfile()
@@ -81,14 +82,14 @@ function Profile.install(Model)
         if player and type(player.profile)=='table'then return player.profile end
         init(self);return player and(player.human or player.isLocal)and self.profile or {name=player and player.name or 'Planeswalker'}
     end
-    function Model:profileArt(reference)
+    function Model:profileArt(reference,localOnly,options)
         if not reference or not reference.printingId then return nil end
         local key=reference.printingId..':'..tostring(reference.face or 0)
-        local path='/gallery/art/'..API.escape(reference.printingId)..'?face='..tostring(reference.face or 0)..'&kind=art_crop&network='..(self.settings.localArtworkOnly~=false and'0'or'1')
-        return Artwork.image(self,'profileImages','profileArtPending',key,path,4,32)
+        local path='/gallery/art/'..API.escape(reference.printingId)..'?face='..tostring(reference.face or 0)..'&kind=art_crop&network='..((localOnly or self.settings.localArtworkOnly~=false)and'0'or'1')
+        return Artwork.image(self,'profileImages','profileArtPending',key,path,4,32,localOnly==true or self.settings.localArtworkOnly~=false,options)
     end
-    function Model:profileArtState(reference)
-        local key=reference and(reference.printingId..':'..tostring(reference.face or 0));local entry=key and self.profileImages and self.profileImages[key]
+    function Model:profileArtState(reference,options)
+        local key=reference and(reference.printingId..':'..tostring(reference.face or 0)..(options and options.variant=='thumb'and'-thumb'or''));local entry=key and self.profileImages and self.profileImages[key]
         return entry and entry.state or'loading'
     end
     function Model:downloadProfileArt(reference)
@@ -96,7 +97,7 @@ function Profile.install(Model)
         self.profileDownloading=true;self.profileDownloadError=nil;local opening=self.profileOpening
         self:request('catalog','POST','/art/download',{printingId=reference.printingId,face=reference.face or 0,kind='art_crop'},function(data,err)
             self.profileDownloading=false
-            if data then self.profileImages=self.profileImages or{};self.profileImages[reference.printingId..':'..tostring(reference.face or 0)]=nil;self:profileArt(reference)
+            if data then self.profileImages=self.profileImages or{};local key=reference.printingId..':'..tostring(reference.face or 0);self.profileImages[key]=nil;self.profileImages[key..'-thumb']=nil;self:profileArt(reference)
             elseif opening==self.profileOpening then self.profileDownloadError=err end
         end,true)
     end

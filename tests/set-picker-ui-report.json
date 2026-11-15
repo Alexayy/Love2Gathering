@@ -1,0 +1,138 @@
+{
+  "captures": [
+    "/tmp/love2gathering-set-picker-ui-oc3CBP/bounded-set-grid.png",
+    "/tmp/love2gathering-set-picker-ui-oc3CBP/verified-thb-symbol.png",
+    "/tmp/love2gathering-set-picker-ui-oc3CBP/set-grid-1120.png",
+    "/tmp/love2gathering-set-picker-ui-oc3CBP/set-grid-2560.png"
+  ],
+  "checks": [
+    "The edition set button opens an independent searchable child grid",
+    "An asynchronous edition response preserves the typed local set query",
+    "Typing in the set grid does not request more printing metadata",
+    "Choosing a set closes the child and changes only the parent set filter/page",
+    "Set filtering preserves staged artwork and saved deck selections",
+    "Rendering stays bounded to one grid page instead of every available set",
+    "Filtered tiles have separate visible positions inside the child grid",
+    "The THB tile actually renders its verified supplied Keyrune glyph",
+    "Production Escape closes only the child and preserves parent staging",
+    "Closing a child releases its hidden search focus",
+    "The actual Alliances tile filters to set ALL rather than clearing the filter",
+    "The separate All sets tile clears the filter",
+    "Actual Next advances a bounded page while keeping All sets reachable",
+    "Actual Previous returns to the first bounded set page",
+    "The real UTF-8 search input finds an accented set name without byte damage",
+    "Closing a filtered child applies no set choice",
+    "Closing the edition parent invalidates its child and old selection callbacks",
+    "Visible Classic Builder controls open the grid and apply its set filter",
+    "Escape preserves the Classic Builder parent panel",
+    "Visible Simplified Builder controls open the grid and apply its set filter",
+    "Escape preserves the Simplified Builder parent panel",
+    "The visible More filters Close control remains interactive after child Escape",
+    "Child search, close and pagination fit at 1120 width / scale 1",
+    "The selected set tile stays inside the actual scaled viewport",
+    "Child search, close and pagination fit at 2560 width / scale 1.25",
+    "The selected set tile stays inside the actual scaled viewport",
+    "Replacing the editor closes the old child before any stale click can apply",
+    "Set browsing sends no persistence, native game action or image download",
+    "Set browsing sends no persistence, native game action or image download",
+    "Set browsing sends no persistence, native game action or image download",
+    "Set browsing sends no persistence, native game action or image download",
+    "Set browsing sends no persistence, native game action or image download",
+    "Set browsing sends no persistence, native game action or image download",
+    "Set browsing sends no persistence, native game action or image download",
+    "Set browsing sends no persistence, native game action or image download",
+    "Set browsing sends no persistence, native game action or image download"
+  ],
+  "geometry": [
+    {
+      "logical": [
+        1120,
+        720
+      ],
+      "physical": [
+        1120,
+        720
+      ],
+      "requested": [
+        1120,
+        720,
+        1
+      ]
+    },
+    {
+      "logical": [
+        2048,
+        806.4
+      ],
+      "physical": [
+        2560,
+        1008
+      ],
+      "requested": [
+        2560,
+        1080,
+        1.25
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/sets?format=modern",
+      "service": "catalog"
+    },
+    {
+      "method": "POST",
+      "path": "/decks/validate",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/cards/saved-edition?printing=saved-edition",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/printings?name=Swamp&q=&set=&variant=all&limit=12&offset=0",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/printings?name=Swamp&q=&set=neo&variant=all&limit=12&offset=0",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/printings?name=Swamp&q=&set=all&variant=all&limit=12&offset=0",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/printings?name=Swamp&q=&set=&variant=all&limit=12&offset=0",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/sets?format=modern",
+      "service": "catalog"
+    },
+    {
+      "method": "POST",
+      "path": "/decks/validate",
+      "service": "catalog"
+    }
+  ],
+  "scope": "Actual Slab/production main input, supplied Keyrune THB glyph, staged edition filtering and Classic/Simplified child ownership at native/scaled modes. Local metadata/404 image fixtures only; no user data or engine.",
+  "sourceSha256": {
+    "app/set_picker.lua": "60b18b9be6bbbc0fc911f9d4d5486f2b554ce45a3b6a3deb0e3f17ea56e17afe",
+    "app/card_printings_ui.lua": "41ac24835f02b591dbc8a0f7953bcd8b09eb8d2e4f634c4bb90639f86fb6345b",
+    "app/card_printings.lua": "4dd855e7084a5527e228efce1d30d43e89366a8a5ba54ec715578f1e43afb895",
+    "app/model.lua": "86dfcb704242eb804dc71d7082d230d52e33c61edf6746afd04ba391eae81344",
+    "app/view.lua": "b10855e7626cc4b8ff7e6c052ed19c1cca22d3a25b1cc69f860c22c608724fad",
+    "app/renderer.lua": "15c38433798568f09db7956be6ab49d2bc73994bba08ceb7e1122ffa63105c08",
+    "app/builder.lua": "106532e50217e0e0d66b1323b9c1521cebd8119ba1169d1f6189bedd29abe253",
+    "app/builder_simplified.lua": "94ccdf42f94bd69fdb29076a26448ce90bd35d66c9d80321f02ad38e1918bcd0",
+    "tests/set_picker_ui.lua": "d6586a19597ffe15073c64858027bfa68189864ca14de90c4aa0a6ac414ccb16",
+    "main.lua": "82a96d7878c23297cf712f9d3014350a838542b2f5b27c50ec83ab01046eb639"
+  }
+}

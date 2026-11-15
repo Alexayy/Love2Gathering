@@ -2,7 +2,7 @@ local Layout=require('app.layout')
 local Fonts=require('app.fonts')
 local Preferences={};Preferences.__index=Preferences
 local defaults={resolution='Desktop',windowMode='Borderless',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,
-    animations=true,particles=true,localArtworkOnly=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,
+    animations=true,particles=true,localArtworkOnly=true,artworkMemoryMiB=256,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,
     reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,fontFamily=Fonts.default,titleFontFamily='Beleren',
     skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='Kenney',keywordReminders=true,
     panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=true,builderLayout='Classic',presentationVersion=2,fontQuality='High',cursorScale=.55,boardImpactIntensity=.55,cardBackStyle='Arcane'}
@@ -97,12 +97,14 @@ function Preferences:apply(force)
             end
         end
     end
+    require('app.artwork').trim(self.m)
     love.graphics.setDefaultFilter(s.textureFilter,s.textureFilter)
     for _,cache in ipairs({self.m.art or{},self.m.profileImages or{},self.m.galleryArt or{}})do
         for _,entry in pairs(cache)do if entry.image then entry.image:setFilter(s.textureFilter,s.textureFilter)end end
     end
     self.S.SetScale(Layout.setScale(s.uiScale))
     if self.r then require('app.theme').apply(self.S,self.r.assets,s)end
+    if self.r and self.r.colors then for key,value in pairs(require('app.assets').palette(s))do self.r.colors[key]=value end end
     self:applyFont()
     self:applyCursor()
     if love.audio then love.audio.setVolume(s.masterVolume) end
@@ -127,7 +129,7 @@ function Preferences:update()
     local s=self.m.settings
     self.S.SetScale(Layout.setScale(s.uiScale or 1))
     if self.r then require('app.theme').apply(self.S,self.r.assets,s)end
-    if not self.appliedLoaded and self.m.settingsLoaded then self.appliedLoaded=true;self:apply(true) end
+    if not self.appliedLoaded and self.m.settingsLoaded then self:apply(true);self.appliedLoaded=true end
 end
 function Preferences:beginFrame()
     local w,h=love.graphics.getDimensions();local scale=self.m.settings.renderScale or 1

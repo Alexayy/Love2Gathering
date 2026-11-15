@@ -8,8 +8,11 @@ import os
 import shutil
 import ipaddress
 import signal
+import sqlite3
+from contextlib import nullcontext,contextmanager
 from pathlib import Path
 import threading
+import time
 from urllib.parse import parse_qs, unquote, urlsplit
 from urllib.request import Request, urlopen
 from urllib.error import URLError
@@ -25,30 +28,54 @@ from paths import default_data_dir, default_cache_dir
 from downloads import DownloadManager
 from maintenance import StorageMaintenance, operation_lock
 from storage_locations import StorageLocations
+from image_packs import ImagePacks
 
 PROJECT = Path(__file__).resolve().parent.parent
 
 
 def make_handler(catalog, storage, location_manager=None):
+    if hasattr(storage,'enable_thumbnails'):storage.enable_thumbnails()
     art_locks = {}
     art_guard = threading.Lock()
     downloads = DownloadManager(catalog, storage)
     maintenance = StorageMaintenance(storage)
     locations = location_manager or StorageLocations(storage)
+    image_packs = ImagePacks(catalog, storage)
     storage_health = storage.health()
+    @contextmanager
+    def image_lock(key):
+        started=time.monotonic()
+        with art_guard:
+            item=art_locks.setdefault(key,[threading.Lock(),0]);item[1]+=1
+        acquired=False
+        try:
+            acquired=item[0].acquire(timeout=3)
+            if not acquired:raise sqlite3.OperationalError('Local artwork is busy; retry shortly')
+            waited=time.monotonic()-started
+            if hasattr(storage,'image_io'):storage.image_io.note_stage('imageQueue',waited)
+            yield waited
+        finally:
+            if acquired:item[0].release()
+            with art_guard:
+                item[1]-=1
+                if not item[1]:art_locks.pop(key,None)
     class Handler(BaseHTTPRequestHandler):
         server_version = "Love2Gathering/1"
 
         def log_message(self, *args):
             pass
 
-        def respond(self, status, body):
+        def respond(self, status, body, retry_after=None):
             data = json.dumps(body, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-            self.send_response(status)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Content-Length", str(len(data)))
-            self.end_headers()
-            self.wfile.write(data)
+            try:
+                self.send_response(status)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(data)))
+                if retry_after is not None:self.send_header('Retry-After',str(retry_after))
+                self.end_headers()
+                self.wfile.write(data)
+            except (BrokenPipeError,ConnectionResetError):
+                pass
 
         def read_json(self):
             try:
@@ -63,14 +90,18 @@ def make_handler(catalog, storage, location_manager=None):
                 raise ValueError("Invalid JSON body")
 
         def run_request(self, method):
+            self.image_timings={}
             try:
                 path=urlsplit(self.path).path
-                if path.startswith('/art/')or path.startswith('/gallery/art/'):
-                    # The whole image request participates, including a slow
-                    # network fetch or legacy import, so it cannot refill a
-                    # category immediately after an exclusive purge.
-                    with operation_lock(storage.root,blocking=False):self.route(method)
-                else:self.route(method)
+                selected=parse_qs(urlsplit(self.path).query).get('priority')==['selected']or path=='/art/download'
+                io_scope=storage.image_io.foreground(selected)if hasattr(storage,'image_io')and(method=='GET'or path=='/art/download')else nullcontext()
+                with storage.interactive_access()if hasattr(storage,'interactive_access')else nullcontext(),io_scope:
+                    if path.startswith('/art/')or path.startswith('/gallery/art/'):
+                        # The whole image request participates, including a slow
+                        # network fetch or legacy import, so it cannot refill a
+                        # category immediately after an exclusive purge.
+                        with operation_lock(storage.root,blocking=False):self.route(method)
+                    else:self.route(method)
             except ConflictError as exc:
                 self.respond(409, {"error": str(exc)})
             except KeyError as exc:
@@ -79,6 +110,10 @@ def make_handler(catalog, storage, location_manager=None):
                 self.respond(400, {"error": str(exc)})
             except (BrokenPipeError, ConnectionResetError):
                 pass
+            except sqlite3.OperationalError as exc:
+                if any(word in str(exc).lower()for word in('locked','busy')):
+                    self.respond(503,{'error':'Local storage is busy. Please retry shortly.','retryable':True},retry_after=1)
+                else:self.respond(500,{'error':str(exc)})
             except Exception as exc:
                 self.respond(500, {"error": str(exc)})
 
@@ -86,6 +121,14 @@ def make_handler(catalog, storage, location_manager=None):
         def do_POST(self): self.run_request("POST")
         def do_PUT(self): self.run_request("PUT")
         def do_DELETE(self): self.run_request("DELETE")
+
+        @contextmanager
+        def image_stage(self,name):
+            started=time.monotonic()
+            try:yield
+            finally:
+                elapsed=time.monotonic()-started;self.image_timings[name]=self.image_timings.get(name,0)+elapsed
+                if hasattr(storage,'image_io'):storage.image_io.note_stage(name,elapsed)
 
         def local_storage_control(self):
             # These explicit desktop actions must not be triggerable by a
@@ -103,6 +146,14 @@ def make_handler(catalog, storage, location_manager=None):
             param = lambda key, default="": query.get(key, [default])[0]
             if path=='/playmat-art'and method=='GET':
                 self.respond(200,lookup_playmat(catalog,storage,param('name'),param('seed')));return
+            if path=='/storage/image-packs/status'and method=='GET':
+                self.respond(200,image_packs.status());return
+            if path in('/storage/image-packs/inspect','/storage/image-packs/install')and method=='POST':
+                if not self.local_storage_control():return
+                body=self.read_json();key='path'if path.endswith('/inspect')else'jobId'
+                if not isinstance(body,dict)or set(body)!={key}or not isinstance(body[key],str):raise ValueError('Choose one local image pack or its inspected job')
+                if catalog.status()['state']!='ready':self.respond(503,{'error':'Wait for the local card catalog before inspecting image packs'});return
+                self.respond(202,image_packs.inspect(body['path'])if key=='path'else image_packs.install(body['jobId']));return
             if path=='/storage/locations'and method=='GET':
                 self.respond(200,locations.status());return
             if path=='/storage/locations/cancel'and method=='POST':
@@ -149,7 +200,8 @@ def make_handler(catalog, storage, location_manager=None):
                 self.respond(200, {"status": "ok", "ready": progress["state"] == "ready",
                                    "index": progress, "source": catalog.source.name,
                                    "catalogSource": str(catalog.source.resolve()), "version": 3,
-                                   "apiVersion": 11, "schemaVersion": int(SCHEMA_VERSION),
+                                   "apiVersion": 14, "schemaVersion": int(SCHEMA_VERSION),
+                                   "imageVariants":storage.thumbnails.status()if hasattr(storage,'thumbnails')else{'available':False},
                                    "storage": storage_status, "userStore": storage_status})
                 return
             if path == "/ui-layout":
@@ -291,6 +343,8 @@ def make_handler(catalog, storage, location_manager=None):
                 return
             if method=='GET'and path=='/art/cache-info':
                 info=storage.artwork_summary();info['bulk']=None
+                if hasattr(storage,'thumbnails'):info['thumbnails']=storage.thumbnails.status()
+                if hasattr(storage,'image_io'):info['io']=storage.image_io.status()
                 status_path=PROJECT/'.runtime/card-image-download-status.json'
                 if status_path.is_file():
                     try:
@@ -303,25 +357,25 @@ def make_handler(catalog, storage, location_manager=None):
                 if not isinstance(body,dict)or set(body)-{'printingId','face','kind'}:raise ValueError('Choose one exact printing, face and image kind')
                 face=body.get('face',0);kind=body.get('kind','art_crop')
                 if isinstance(face,bool)or not isinstance(face,int)or kind not in('normal','large','art_crop'):raise ValueError('Invalid artwork face or kind')
-                item=catalog.gallery_item(body.get('printingId',''),face)
+                with self.image_stage('catalog'):item=catalog.gallery_item(body.get('printingId',''),face)
                 if not item:raise ValueError('Artwork printing and face are not in the local catalog')
                 key=item['printing_id']+'-'+str(face)+'-'+kind+'.jpg'
-                with art_guard:lock=art_locks.setdefault(key,threading.Lock())
-                with lock:
+                with image_lock(key):
                     local=storage.local_art(item['printing_id'],item['oracle_id'],face,kind,aliases=False)
                     if local:self.respond(200,{'cached':True,'downloaded':False,'printingId':item['printing_id'],'face':face,'kind':kind});return
                     if min(shutil.disk_usage(storage.root).free,shutil.disk_usage(storage.cache_root).free)<64*1024**2+3*3*1024**2:
                         self.respond(409,{'error':'Free a little disk space before downloading this illustration (64 MiB reserve). Existing cached images remain available.','reserveBlocked':True});return
                     url=item['image_uris'].get(kind)
                     if not url or urlsplit(url).hostname!='cards.scryfall.io':raise ValueError('No Scryfall image for this printing and kind')
-                    data=self.download_art(url);storage.save_art(key,data,{'printingId':item['printing_id'],'oracleId':item['oracle_id'],'face':face,'kind':kind,'source':url})
+                    with self.image_stage('network'),storage.external_io()if hasattr(storage,'external_io')else nullcontext():data=self.download_art(url)
+                    storage.save_art(key,data,{'printingId':item['printing_id'],'oracleId':item['oracle_id'],'face':face,'kind':kind,'source':url})
                 self.respond(200,{'cached':True,'downloaded':True,'printingId':item['printing_id'],'face':face,'kind':kind});return
             if method == "GET" and (path.startswith("/art/") or path.startswith("/gallery/art/")):
                 gallery = path.startswith("/gallery/art/")
                 identifier = path[len("/gallery/art/"):] if gallery else path[len("/art/"):]
                 face = int(param("face", "0"))
                 if not 0 <= face <= 9: raise ValueError("Face must be 0 to 9")
-                card = catalog.gallery_item(identifier, face) if gallery else catalog.get(identifier=identifier, printing_id=param("printing") or None)
+                with self.image_stage('catalog'):card = catalog.gallery_item(identifier, face) if gallery else catalog.get(identifier=identifier, printing_id=param("printing") or None)
                 if not card:
                     self.respond(404, {"error": "Card not found"})
                     return
@@ -333,13 +387,14 @@ def make_handler(catalog, storage, location_manager=None):
                 kind = param("kind", "normal")
                 if kind not in ("normal", "large", "art_crop"):
                     raise ValueError("Image kind must be normal, large or art_crop")
+                variant=param('variant','original')
+                if variant not in('original','thumb'):raise ValueError('Image variant must be original or thumb')
                 art_url = images.get(kind)
                 cache_key = card["printing_id"] + f"-{face}-{kind}.jpg"
                 legacy_keys = (card["printing_id"] + f"-{face}.jpg", (card.get("oracle_id") or card["id"]) + f"-{face}.jpg") if kind == "normal" else ()
-                with art_guard:
-                    lock = art_locks.setdefault(cache_key, threading.Lock())
-                with lock:
-                    local = storage.local_art(card['printing_id'], card.get('oracle_id') or card['id'], face, kind, aliases=not gallery and param('exact') != '1')
+                with image_lock(cache_key)as queue_wait:
+                    self.image_timings['queue']=queue_wait
+                    with self.image_stage('local'):local = storage.local_art(card['printing_id'], card.get('oracle_id') or card['id'], face, kind, aliases=not gallery and param('exact') != '1',variant=variant)
                     data = local[0] if local else None
                     if data is None:
                         allow_network = param('network') == '1' or (param('network') != '0' and storage.settings().get('localArtworkOnly') is False)
@@ -349,12 +404,20 @@ def make_handler(catalog, storage, location_manager=None):
                         if not art_url or urlsplit(art_url).hostname != "cards.scryfall.io":
                             self.respond(404, {"error": "No card image"})
                             return
-                        data = self.download_art(art_url)
+                        with self.image_stage('network'),storage.external_io()if hasattr(storage,'external_io')else nullcontext():data=self.download_art(art_url)
                         storage.save_art(cache_key, data, {"oracleId": card.get("oracle_id") or card["id"], "printingId": card["printing_id"], "face": face, "kind": kind, "source": art_url})
+                        if variant=='thumb':
+                            queued=storage.queue_thumbnail(cache_key)
+                            local=(data,cache_key,{'_imageVariant':'original','_thumbPending':queued=='pending','_thumbUnavailable':queued=='unavailable'})
                 self.send_response(200)
                 self.send_header("Content-Type", "image/jpeg")
                 self.send_header("Content-Length", str(len(data)))
-                self.send_header("Cache-Control", "public, max-age=31536000, immutable")
+                details=local[2]if local else{}
+                self.send_header('X-Love2Gathering-Art-Variant',details.get('_imageVariant','original'))
+                if details.get('_thumbPending'):self.send_header('X-Love2Gathering-Thumb-Pending','1')
+                if details.get('_thumbUnavailable'):self.send_header('X-Love2Gathering-Thumb-Unavailable','1')
+                self.send_header('Server-Timing',', '.join(name+';dur='+format(seconds*1000,'.3f')for name,seconds in self.image_timings.items()))
+                self.send_header("Cache-Control", "no-store"if details.get('_thumbPending')else"public, max-age=31536000, immutable")
                 if local: self.send_header('X-Love2Gathering-Art-Key', local[1])
                 self.end_headers()
                 self.wfile.write(data)
@@ -388,10 +451,13 @@ def make_handler(catalog, storage, location_manager=None):
     Handler.downloads=downloads
     Handler.maintenance=maintenance
     Handler.locations=locations
+    Handler.image_packs=image_packs
     def close_managers():
+        image_packs.close()
         locations.close()
         maintenance.close()
         downloads.close()
+        if hasattr(storage,'close_images'):storage.close_images()
     Handler.close_managers=staticmethod(close_managers)
     return Handler
 

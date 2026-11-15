@@ -56,7 +56,7 @@ class LocationHttpTest(unittest.TestCase):
         self.assertEqual(exc.exception.code,403);self.assertIsNone(self.call('/storage/locations')['operation'])
     def test_prepare_restart_keeps_exact_images_offline_and_isolated(self):
         self.call('/storage/locations',self.body);self.assertTrue(self.ready()['restartRequired'])
-        health=self.call('/health');self.assertEqual(health['apiVersion'],11);self.assertTrue(health['storage']['maintenanceBusy'])
+        health=self.call('/health');self.assertEqual(health['apiVersion'],14);self.assertTrue(health['storage']['maintenanceBusy'])
         self.stop();activate_pending(self.env)
         self.storage=Storage(self.root/'new',self.root/'bundled',self.root/'cache');self.start(self.storage)
         health=self.call('/health');self.assertTrue(health['storage']['separateCache'])

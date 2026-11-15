@@ -22,6 +22,20 @@ ROOT = Path(__file__).resolve().parent
 WINDOWS = os.name == 'nt'
 
 
+def image_dependency(required=False):
+    try:
+        from PIL import Image, features, __version__
+        if not features.check_codec('jpg'): raise ImportError('Pillow was built without JPEG support')
+        if tuple(int(part)for part in __version__.split('.')[:2]) < (9,1):
+            raise ImportError('Pillow 9.1 or newer is required')
+        return {'available':True,'pillow':__version__,'jpeg':True}
+    except (ImportError, OSError, ValueError) as exc:
+        message='Small card images are unavailable. Install Pillow with JPEG support (python3-pil on Debian/Ubuntu, python3-pillow on RPM systems); original card images remain available.'
+        if required: raise RuntimeError(message) from exc
+        print(message,file=sys.stderr,flush=True)
+        return {'available':False,'jpeg':False}
+
+
 def runtime(name):
     suffix = '.exe' if WINDOWS else ''
     relative = {'java': 'runtime/java/bin/java' + suffix,
@@ -94,6 +108,7 @@ def main(argv=None):
     parser.add_argument('--checkhealth', action='store_true', help='Start owned local services, verify readiness, then stop them')
     parser.add_argument('--startup-timeout', type=int, default=180, help=argparse.SUPPRESS)
     args, desktop_args = parser.parse_known_args(argv)
+    image_support=image_dependency(required=args.check)
     if WINDOWS:
         os.environ.setdefault('XDG_DATA_HOME', os.environ.get('LOCALAPPDATA', str(Path.home() / 'AppData/Local')))
         os.environ.setdefault('LOVE2GATHERING_CONFIG_DIR', str(Path(os.environ.get('APPDATA', str(Path.home() / 'AppData/Roaming'))) / 'Love2Gathering'))
@@ -117,7 +132,7 @@ def main(argv=None):
         java_line=next((line for line in java_text.splitlines()if re.search(r'version "21(?:\.|\")',line)),None)
         if java_version.returncode or love_version.returncode or not java_line or not love_version.stdout.startswith('LOVE 11.5'):
             raise RuntimeError('A packaged runtime could not start')
-        print(json.dumps({'passed': True, 'root': str(ROOT), 'java': java_line, 'love': love_version.stdout.strip(), 'python': sys.version.split()[0]}))
+        print(json.dumps({'passed': True, 'root': str(ROOT), 'java': java_line, 'love': love_version.stdout.strip(), 'python': sys.version.split()[0], 'images':image_support}))
         return 0
 
     base = Path(os.environ.get('XDG_DATA_HOME', str(Path.home() / '.local/share'))) / 'love2gathering'
@@ -154,6 +169,8 @@ def main(argv=None):
             if child.poll() is not None:
                 raise RuntimeError(key.title() + ' stopped. See ' + str(session / (key.lower() + '.log')))
             result = health(ports[key])
+            if result and key=='CATALOG'and result.get('apiVersion',0)<14:
+                raise RuntimeError('The catalog runtime is outdated. Reinstall the complete matching client package.')
             if result and (not ready or result.get('ready')):
                 return result
             time.sleep(.2)

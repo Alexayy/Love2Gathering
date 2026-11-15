@@ -235,20 +235,25 @@ function Board.flush(r)
     end
     r.pendingBoardFX={}
 end
-local function line(r,a,b,c,dashed,outline)
+local function line(r,a,b,c,dashed,outline,attack)
     if not a or not b then return end
     local dx,dy=b.x-a.x,b.y-a.y;local length=math.sqrt(dx*dx+dy*dy);if length<1 then return end
     local ux,uy=dx/length,dy/length
     local function stroke(color,width,tip)
         tint(color,.94);love.graphics.setLineWidth(width)
-        if dashed then for distance=0,length,16 do local finish=math.min(length,distance+10);love.graphics.line(a.x+ux*distance,a.y+uy*distance,a.x+ux*finish,a.y+uy*finish)end
+        if dashed then for distance=0,length,attack and 26 or 16 do local finish=math.min(length,distance+(attack and 18 or 10));love.graphics.line(a.x+ux*distance,a.y+uy*distance,a.x+ux*finish,a.y+uy*finish)end
         else love.graphics.line(a.x,a.y,b.x,b.y)end
         local tipX,tipY=b.x-ux*(tip*2),b.y-uy*(tip*2)
         love.graphics.polygon('fill',b.x,b.y,tipX-uy*tip,tipY+ux*tip,tipX+uy*tip,tipY-ux*tip)
     end
-    if outline then stroke(outline,6.5,7.5)end
-    stroke(c,2.5,4.5)
-    r.assets:iconSymbol('focus',b.x-9,b.y-9,18,c)
+    if outline then stroke(outline,attack and 11 or 6.5,attack and 14 or 7.5)end
+    stroke(c,attack and 6 or 2.5,attack and 10 or 4.5)
+    if attack then
+        if outline then tint(outline);love.graphics.circle('fill',a.x,a.y,9)end
+        tint(c);love.graphics.circle('fill',a.x,a.y,5.5)
+    end
+    local marker=attack and 22 or 18
+    r.assets:iconSymbol('focus',b.x-marker/2,b.y-marker/2,marker,c)
 end
 function Board.links(r)
     if r.model.page~='table'then return end
@@ -256,7 +261,7 @@ function Board.links(r)
     for index,group in ipairs(list((game.combat or{}).groups))do
         local a=point(Board.anchor(r,group.attackerId));local b=point(Board.anchor(r,group.defenderId))
         local owner=group.attackingPlayerId or((r.boardCards or{})[group.attackerId]or{}).controllerId or game.activePlayerId
-        line(r,a,b,Board.linkColor(index),true,Board.color(r,owner))
+        line(r,a,b,Board.linkColor(index),true,Board.color(r,owner),true)
         for _,blocker in ipairs(list(group.blockerIds))do line(r,point(Board.anchor(r,blocker)),a,r.colors.gold,false)end
         local label,confirmed=Board.blockStatus(group)
         if label then

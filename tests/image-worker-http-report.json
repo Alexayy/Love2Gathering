@@ -1,0 +1,655 @@
+{
+  "fixtureSourceHashes": {
+    "tests/image_worker_http.lua": "b46068d7f9db7b7d48c57fd77a644df98c2d6e086c017dbf360ef24c41f574ff",
+    "tests/image_worker_http.py": "d55b9d664ca25d192b8cc16cf5b624357cc07ee67f030f2bfccbcc0cb2b76279",
+    "tests/loading_http.py": "8db7c85622b15c78b9f5dec9a6d2b614e4a8c97c344dac7714a53f55f2d22691"
+  },
+  "output": "/tmp/love2gathering-mechanics-image-worker-k9sf4gfy",
+  "result": {
+    "allWorkerThreadsTerminated": true,
+    "allocations": [
+      {
+        "bytes": 644,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 644,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 644,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 45,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 644,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 644,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 644,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 644,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 644,
+        "worker": "l2g_0.042107033_1_artSelected2_in"
+      },
+      {
+        "bytes": 644,
+        "worker": "l2g_0.042107033_1_artSelected_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art2_in"
+      },
+      {
+        "bytes": 104,
+        "worker": "l2g_0.042107033_1_art_in"
+      }
+    ],
+    "checks": [
+      {
+        "message": "Two decoded-image consumers coalesce into one production HTTP request",
+        "passed": true
+      },
+      {
+        "message": "Raw binary and decoded-image requests for the same path keep separate identities",
+        "passed": true
+      },
+      {
+        "message": "first callback receives live ImageData as argument four and no compressed body",
+        "passed": true
+      },
+      {
+        "message": "second callback receives live ImageData as argument four and no compressed body",
+        "passed": true
+      },
+      {
+        "message": "Both coalesced callbacks share the live decoded buffer",
+        "passed": true
+      },
+      {
+        "message": "API releases the decoded buffer only after both callbacks finish",
+        "passed": true
+      },
+      {
+        "message": "The separate raw request still returns exact JPEG bytes without ImageData",
+        "passed": true
+      },
+      {
+        "message": "Only the decoded request invokes the worker native decoder",
+        "passed": true
+      },
+      {
+        "message": "/art/corrupt-header.png fails cleanly without a decoded buffer",
+        "passed": true
+      },
+      {
+        "message": "/art/corrupt-header.png native allocation count respects the header bound",
+        "passed": true
+      },
+      {
+        "message": "Recovery request returns to the same worker after /art/corrupt-header.png",
+        "passed": true
+      },
+      {
+        "message": "The real HTTP worker remains usable after /art/corrupt-header.png",
+        "passed": true
+      },
+      {
+        "message": "/art/corrupt-header.jpg fails cleanly without a decoded buffer",
+        "passed": true
+      },
+      {
+        "message": "/art/corrupt-header.jpg native allocation count respects the header bound",
+        "passed": true
+      },
+      {
+        "message": "Recovery request returns to the same worker after /art/corrupt-header.jpg",
+        "passed": true
+      },
+      {
+        "message": "The real HTTP worker remains usable after /art/corrupt-header.jpg",
+        "passed": true
+      },
+      {
+        "message": "/art/corrupt-pixels.png fails cleanly without a decoded buffer",
+        "passed": true
+      },
+      {
+        "message": "/art/corrupt-pixels.png native allocation count respects the header bound",
+        "passed": true
+      },
+      {
+        "message": "/art/corrupt-pixels.png reports its precise decoder/bound failure",
+        "passed": true
+      },
+      {
+        "message": "Recovery request returns to the same worker after /art/corrupt-pixels.png",
+        "passed": true
+      },
+      {
+        "message": "The real HTTP worker remains usable after /art/corrupt-pixels.png",
+        "passed": true
+      },
+      {
+        "message": "/art/oversized.png fails cleanly without a decoded buffer",
+        "passed": true
+      },
+      {
+        "message": "/art/oversized.png native allocation count respects the header bound",
+        "passed": true
+      },
+      {
+        "message": "/art/oversized.png reports its precise decoder/bound failure",
+        "passed": true
+      },
+      {
+        "message": "Recovery request returns to the same worker after /art/oversized.png",
+        "passed": true
+      },
+      {
+        "message": "The real HTTP worker remains usable after /art/oversized.png",
+        "passed": true
+      },
+      {
+        "message": "/art/oversized.jpg fails cleanly without a decoded buffer",
+        "passed": true
+      },
+      {
+        "message": "/art/oversized.jpg native allocation count respects the header bound",
+        "passed": true
+      },
+      {
+        "message": "/art/oversized.jpg reports its precise decoder/bound failure",
+        "passed": true
+      },
+      {
+        "message": "Recovery request returns to the same worker after /art/oversized.jpg",
+        "passed": true
+      },
+      {
+        "message": "The real HTTP worker remains usable after /art/oversized.jpg",
+        "passed": true
+      },
+      {
+        "message": "/art/oversized-compressed.jpg fails cleanly without a decoded buffer",
+        "passed": true
+      },
+      {
+        "message": "/art/oversized-compressed.jpg native allocation count respects the header bound",
+        "passed": true
+      },
+      {
+        "message": "/art/oversized-compressed.jpg reports its precise decoder/bound failure",
+        "passed": true
+      },
+      {
+        "message": "Recovery request returns to the same worker after /art/oversized-compressed.jpg",
+        "passed": true
+      },
+      {
+        "message": "The real HTTP worker remains usable after /art/oversized-compressed.jpg",
+        "passed": true
+      },
+      {
+        "message": "metadata reaches the fixture while both search workers are held",
+        "passed": true
+      },
+      {
+        "message": "metadata is independent of the two 1.2-second searches",
+        "passed": true
+      },
+      {
+        "message": "choices reaches the fixture while both search workers are held",
+        "passed": true
+      },
+      {
+        "message": "choices is independent of the two 1.2-second searches",
+        "passed": true
+      },
+      {
+        "message": "profile reaches the fixture while both search workers are held",
+        "passed": true
+      },
+      {
+        "message": "profile is independent of the two 1.2-second searches",
+        "passed": true
+      },
+      {
+        "message": "A second actual selected socket bypasses an obsolete slow fetch",
+        "passed": true
+      },
+      {
+        "message": "The current selection loads before the old 1.2-second image request finishes",
+        "passed": true
+      },
+      {
+        "message": "Actual worker callbacks preserve bounded stage timings and image variant headers",
+        "passed": true
+      },
+      {
+        "message": "An obsolete HTTP/decode completion releases its pixels instead of delivering stale selected artwork",
+        "passed": true
+      },
+      {
+        "message": "Fifty queued PNG requests deliver genuine decoded pixels without decoding on the main thread",
+        "passed": true
+      },
+      {
+        "message": "All fifty API-owned decoded buffers are released after their callbacks",
+        "passed": true
+      },
+      {
+        "message": "Every queued image/metadata/search request leaves the API pending set",
+        "passed": true
+      },
+      {
+        "message": "The main-thread decoder override was never invoked",
+        "passed": true
+      },
+      {
+        "message": "Coalesced image plus raw mode makes exactly two real HTTP requests",
+        "passed": true
+      },
+      {
+        "message": "Only valid buffers and the bounded corrupt-pixel decode invoke native allocation",
+        "passed": true
+      },
+      {
+        "message": "All actual HTTP threads stop after their owned queues finish",
+        "passed": true
+      }
+    ],
+    "durationSeconds": 2.622239697,
+    "failures": [],
+    "fastLanes": {
+      "choices": {
+        "bothSearchesPending": true,
+        "seconds": 0.003333573
+      },
+      "metadata": {
+        "bothSearchesPending": true,
+        "seconds": 0.003349543
+      },
+      "profile": {
+        "bothSearchesPending": true,
+        "seconds": 0.003340686
+      }
+    },
+    "httpRequestCounts": {
+      "/art/corrupt-header.jpg": 1,
+      "/art/corrupt-header.png": 1,
+      "/art/corrupt-pixels.png": 1,
+      "/art/oversized-compressed.jpg": 1,
+      "/art/oversized.jpg": 1,
+      "/art/oversized.png": 1,
+      "/art/recovery.jpg?case=1": 1,
+      "/art/recovery.jpg?case=2": 1,
+      "/art/recovery.jpg?case=3": 1,
+      "/art/recovery.jpg?case=4": 1,
+      "/art/recovery.jpg?case=5": 1,
+      "/art/recovery.jpg?case=6": 1,
+      "/art/rotation.png?image=1": 1,
+      "/art/rotation.png?image=10": 1,
+      "/art/rotation.png?image=11": 1,
+      "/art/rotation.png?image=12": 1,
+      "/art/rotation.png?image=13": 1,
+      "/art/rotation.png?image=14": 1,
+      "/art/rotation.png?image=15": 1,
+      "/art/rotation.png?image=16": 1,
+      "/art/rotation.png?image=17": 1,
+      "/art/rotation.png?image=18": 1,
+      "/art/rotation.png?image=19": 1,
+      "/art/rotation.png?image=2": 1,
+      "/art/rotation.png?image=20": 1,
+      "/art/rotation.png?image=21": 1,
+      "/art/rotation.png?image=22": 1,
+      "/art/rotation.png?image=23": 1,
+      "/art/rotation.png?image=24": 1,
+      "/art/rotation.png?image=25": 1,
+      "/art/rotation.png?image=26": 1,
+      "/art/rotation.png?image=27": 1,
+      "/art/rotation.png?image=28": 1,
+      "/art/rotation.png?image=29": 1,
+      "/art/rotation.png?image=3": 1,
+      "/art/rotation.png?image=30": 1,
+      "/art/rotation.png?image=31": 1,
+      "/art/rotation.png?image=32": 1,
+      "/art/rotation.png?image=33": 1,
+      "/art/rotation.png?image=34": 1,
+      "/art/rotation.png?image=35": 1,
+      "/art/rotation.png?image=36": 1,
+      "/art/rotation.png?image=37": 1,
+      "/art/rotation.png?image=38": 1,
+      "/art/rotation.png?image=39": 1,
+      "/art/rotation.png?image=4": 1,
+      "/art/rotation.png?image=40": 1,
+      "/art/rotation.png?image=41": 1,
+      "/art/rotation.png?image=42": 1,
+      "/art/rotation.png?image=43": 1,
+      "/art/rotation.png?image=44": 1,
+      "/art/rotation.png?image=45": 1,
+      "/art/rotation.png?image=46": 1,
+      "/art/rotation.png?image=47": 1,
+      "/art/rotation.png?image=48": 1,
+      "/art/rotation.png?image=49": 1,
+      "/art/rotation.png?image=5": 1,
+      "/art/rotation.png?image=50": 1,
+      "/art/rotation.png?image=6": 1,
+      "/art/rotation.png?image=7": 1,
+      "/art/rotation.png?image=8": 1,
+      "/art/rotation.png?image=9": 1,
+      "/art/selected-a.jpg?network=1&priority=selected": 1,
+      "/art/selected-b.jpg?network=1&priority=selected": 1,
+      "/art/tiny.jpg?coalesced=1": 2,
+      "/cards/by-name?name=Swamp": 1,
+      "/cards?q=hold-a": 1,
+      "/cards?q=hold-b": 1,
+      "/printings?name=Swamp": 1,
+      "/probe/state": 1,
+      "/profile": 1
+    },
+    "imageDiagnostics": {
+      "callbackSeconds": 0.00034668100000301,
+      "count": 66,
+      "decodeSeconds": 0.0020384788513184,
+      "httpSeconds": 1.4014253616333,
+      "lastFrameBytes": 0,
+      "lastFrameImages": 0,
+      "queueSeconds": 1.94718901,
+      "queued": 0,
+      "selectedInFlight": 0,
+      "selectedMetadataInFlight": 0,
+      "visibleInFlight": 0
+    },
+    "invalidImages": [
+      {
+        "allocationAttempts": 0,
+        "error": "Invalid image dimensions",
+        "path": "/art/corrupt-header.png",
+        "seconds": 0.003143476
+      },
+      {
+        "allocationAttempts": 0,
+        "error": "Image dimensions are missing or truncated",
+        "path": "/art/corrupt-header.jpg",
+        "seconds": 0.003168764
+      },
+      {
+        "allocationAttempts": 1,
+        "error": "Image decode failed: Could not decode PNG image (custom zlib or inflate decompression failed)",
+        "path": "/art/corrupt-pixels.png",
+        "seconds": 0.003157974
+      },
+      {
+        "allocationAttempts": 0,
+        "error": "Image exceeds the decoded pixel bound",
+        "path": "/art/oversized.png",
+        "seconds": 0.003199021
+      },
+      {
+        "allocationAttempts": 0,
+        "error": "Image exceeds the decoded pixel bound",
+        "path": "/art/oversized.jpg",
+        "seconds": 0.003144268
+      },
+      {
+        "allocationAttempts": 0,
+        "error": "Image exceeds the compressed size bound",
+        "path": "/art/oversized-compressed.jpg",
+        "seconds": 0.006308343
+      }
+    ],
+    "jpegSha256": "199bfd2f0b6e6df146a3c618749edafebe2b6893c760eb938ec308bc4d2996ab",
+    "mainThreadDecodeCalls": 0,
+    "nativeDecodeAttempts": 60,
+    "nativeGame": false,
+    "pngSha256": "2531744ce774492a6f06f016e3e7ce48a38e3f283ca5bb17bc3e283cd5a36011",
+    "rotationRequests": 50,
+    "rotationSeconds": 0.089619295,
+    "selectedCurrentSeconds": 0.0032630709999999,
+    "status": "pass",
+    "watchdog": {
+      "cpuSeconds": 0.11,
+      "diskBytes": 475,
+      "exitCode": 0,
+      "log": "/tmp/love2gathering-mechanics-image-worker-k9sf4gfy/runner/process.log",
+      "ownedProcessIdentities": [
+        {
+          "birthTicks": 5396128,
+          "cpuTicks": 10,
+          "pid": 287539,
+          "ppid": 287537,
+          "processGroup": 287539,
+          "rssBytes": 26161152,
+          "state": "S",
+          "threads": 14
+        }
+      ],
+      "ownedProcessTerminated": true,
+      "peakRssBytes": 26750976,
+      "recovery": null,
+      "sharedServiceDiskBytes": 0,
+      "status": "pass",
+      "threadDumps": [],
+      "wallSeconds": 2.745,
+      "watchdogReason": null
+    }
+  },
+  "runId": "love2gathering-mechanics-image-worker-k9sf4gfy",
+  "schema": 1,
+  "scope": "Actual headless L\u00d6VE LuaSocket worker threads, real ImageData transfer/release, generated PNG/JPEG fixtures and a minimal owned HTTP fault fixture. Native allocation auditing wraps the unchanged production worker loader. No GPU rendering, native game, external network or user data.",
+  "serverTerminated": true,
+  "sourceHashes": {
+    "app/api.lua": "20f13b4bd97a5b859eda70aa278170da097ee002ad3301d20860e67edace906e",
+    "app/http_worker.lua": "0f325c84a1688cd1ccdeacb4b0d9991cb22990c3d7eac6e79cb60e277bb216e8",
+    "app/image_decode.lua": "5c8b422d03b40931338e45798ad28b71ebb1c484c1559af4fb34b6d42632186b",
+    "lib/json.lua": "522e1b89f66c9eec49e5edc9c680dbb4132c2e252f5da54397b2a77bbcc7fddd"
+  },
+  "sourceRevision": "81da08182e042049ad0e7107c9230ba89dbe1c64",
+  "sourceStillMatches": true,
+  "status": "pass"
+}

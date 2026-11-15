@@ -1,0 +1,230 @@
+{
+  "date": "2026-11-15",
+  "status": "passed",
+  "scope": "Frontend presentation, Slab input, ownership and shared hit geometry. No native rules/gameplay change or completed native-match acceptance.",
+  "changes": {
+    "setGrid": [
+      "Edition and artwork",
+      "Classic Builder",
+      "Simplified More filters"
+    ],
+    "handScale": 1.05,
+    "multiplayerFieldScale": 1.1,
+    "duelLandTargetScale": 1.07,
+    "duelPermanentTargetScale": 1.1,
+    "duelMixedRows": "Adaptive5–15% measured growth with retained row/mana gaps"
+  },
+  "models": {
+    "set_picker": 19,
+    "set_filter": 11,
+    "modal_input": 11,
+    "table_card_sizes": 1686,
+    "table_camera": 97,
+    "frontend_model": 17,
+    "builder_model": "passed",
+    "builder_layout": "passed at6 viewport sizes"
+  },
+  "graphics": {
+    "setPicker": {
+      "checks": 36,
+      "report": "tests/set-picker-ui-report.json",
+      "captures": [
+        "/tmp/love2gathering-set-picker-ui-gcVloz/bounded-set-grid.png",
+        "/tmp/love2gathering-set-picker-ui-gcVloz/verified-thb-symbol.png",
+        "/tmp/love2gathering-set-picker-ui-gcVloz/set-grid-1120.png",
+        "/tmp/love2gathering-set-picker-ui-gcVloz/set-grid-2560.png"
+      ],
+      "scope": "Actual Slab/production main input, supplied Keyrune THB glyph, staged edition filtering and Classic/Simplified child ownership at native/scaled modes. Local metadata/404 image fixtures only; no user data or engine.",
+      "geometry": [
+        {
+          "logical": [
+            1120,
+            720
+          ],
+          "physical": [
+            1120,
+            720
+          ],
+          "requested": [
+            1120,
+            720,
+            1
+          ]
+        },
+        {
+          "logical": [
+            2048,
+            806.4
+          ],
+          "physical": [
+            2560,
+            1008
+          ],
+          "requested": [
+            2560,
+            1080,
+            1.25
+          ]
+        }
+      ]
+    },
+    "tableSizing": {
+      "cases": [
+        {
+          "actual": [
+            1120,
+            720
+          ],
+          "handWidth": 88.2,
+          "logical": [
+            1120,
+            720
+          ],
+          "name": "1120-ui1-seats2",
+          "seats": 2
+        },
+        {
+          "actual": [
+            1120,
+            720
+          ],
+          "handWidth": 88.2,
+          "logical": [
+            1120,
+            720
+          ],
+          "name": "1120-ui1-seats4",
+          "seats": 4
+        },
+        {
+          "actual": [
+            1120,
+            720
+          ],
+          "handWidth": 88.2,
+          "logical": [
+            1120,
+            720
+          ],
+          "name": "1120-ui1-seats6",
+          "seats": 6
+        },
+        {
+          "actual": [
+            2560,
+            1008
+          ],
+          "handWidth": 109.2,
+          "logical": [
+            2560,
+            1008
+          ],
+          "name": "2560-ui1-seats2",
+          "seats": 2
+        },
+        {
+          "actual": [
+            2560,
+            1008
+          ],
+          "handWidth": 109.2,
+          "logical": [
+            2560,
+            1008
+          ],
+          "name": "2560-ui1-seats4",
+          "seats": 4
+        },
+        {
+          "actual": [
+            2560,
+            1008
+          ],
+          "handWidth": 109.2,
+          "logical": [
+            2560,
+            1008
+          ],
+          "name": "2560-ui1-seats6",
+          "seats": 6
+        },
+        {
+          "actual": [
+            2560,
+            1008
+          ],
+          "handWidth": 109.2,
+          "logical": [
+            2048,
+            806.4
+          ],
+          "name": "2560-ui1.25-seats2",
+          "seats": 2
+        },
+        {
+          "actual": [
+            2560,
+            1008
+          ],
+          "handWidth": 109.2,
+          "logical": [
+            2048,
+            806.4
+          ],
+          "name": "2560-ui1.25-seats4",
+          "seats": 4
+        },
+        {
+          "actual": [
+            2560,
+            1008
+          ],
+          "handWidth": 109.2,
+          "logical": [
+            2048,
+            806.4
+          ],
+          "name": "2560-ui1.25-seats6",
+          "seats": 6
+        }
+      ],
+      "checks": 90,
+      "scope": "Actual LÖVE images/hit regions; synthetic presentation fixtures, no native game or network"
+    }
+  },
+  "verification": {
+    "pickerSourceHashesMatchCurrent": true,
+    "independentReview": "No findings within requested5–15% adaptive battlefield range",
+    "gitDiffCheck": "passed",
+    "engineGitlink": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+    "engineAndGitmodulesChanged": false,
+    "userDataWrites": false,
+    "networkImageAcquisition": false
+  },
+  "limits": [
+    "Graphical states use controlled metadata/synthetic boards; table scans are genuine local JPEGs.",
+    "Requested2560x1080 clamped by desktop to2560x1008.",
+    "Existing genuine-data edition test adapted but not rerun without exact THB Forest/Rin and Seri fixtures.",
+    "Earlier picker GUI runs found footer clipping and tile flow overlap; both corrected before the passing run."
+  ],
+  "sourceSha256": {
+    "app/set_picker.lua": "60b18b9be6bbbc0fc911f9d4d5486f2b554ce45a3b6a3deb0e3f17ea56e17afe",
+    "app/card_printings_ui.lua": "41ac24835f02b591dbc8a0f7953bcd8b09eb8d2e4f634c4bb90639f86fb6345b",
+    "app/builder.lua": "106532e50217e0e0d66b1323b9c1521cebd8119ba1169d1f6189bedd29abe253",
+    "app/builder_simplified.lua": "94ccdf42f94bd69fdb29076a26448ce90bd35d66c9d80321f02ad38e1918bcd0",
+    "app/model.lua": "7e62f821e65638c2de66d9e48d6b52a076782af2a1ca88ea2494c7096ceca49f",
+    "app/view.lua": "b10855e7626cc4b8ff7e6c052ed19c1cca22d3a25b1cc69f860c22c608724fad",
+    "app/renderer.lua": "2b74cb2c510750fb55e56a6ff6c14e99eb9dfc84621fd443c455c2719363c77e",
+    "main.lua": "82a96d7878c23297cf712f9d3014350a838542b2f5b27c50ec83ab01046eb639",
+    "app/table.lua": "16a4b1c80452bf2f2e691bf224ce66e6ac4a7e4950cd0d762831605811cf77f9",
+    "app/layout.lua": "f97697fb28d4ba7634fa09c51dbee569ff4baabd99721dfa35ca5e2481e19007",
+    "tests/set_picker_model.lua": "9493ad16c16423fe7de3263e03e0ca054f08bed2b964b7faed577d6f366abe68",
+    "tests/set_filter_model.lua": "d82d8fb08120ad3dcdb74c0752d3f0c9fa95ad875044904aac2dedd5a39dad67",
+    "tests/set_picker_ui.lua": "ee4639f4132fc8d46ba4c04143ce7e1e54e317e45f8cc401c0f5924cb6cfa821",
+    "tests/set_picker_ui.sh": "a871769028f13013c641fef0a3a0cdb374fa31a77398098562b7cdea3f38e4ce",
+    "tests/table_card_sizes.lua": "62c99f92ffe664dfbdef827ed090e66fea6427fff2f1bda3573aab861b49824b",
+    "tests/table_card_sizes_ui.lua": "2db752369342bf0add2cdd65594caf4e96d428c630c3918d156615dfeb93d64b",
+    "tests/table_card_sizes_ui.sh": "11c22cefaebcdb0865525ff5dd09b5cc7bd56bc39b2d6c9eca43e664db2f5320",
+    "tests/modal_input.lua": "f06da49808ab9c3817d4d25831f109f5bc22e4899ce1e5aeae8690ad2055b2ad"
+  }
+}

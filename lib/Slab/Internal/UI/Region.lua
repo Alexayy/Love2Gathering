@@ -59,7 +59,7 @@ end
 
 local function GetYScrollSize(instance)
 	if instance ~= nil then
-		return max(instance.H - (instance.ContentH - instance.H), 10)
+		return min(max(0, instance.H), max(instance.H - (instance.ContentH - instance.H), 10))
 	end
 	return 0
 end
@@ -135,7 +135,14 @@ local function UpdateScrollBars(instance, isObstructed, forceShowX, forceShowY)
 			end
 
 			if WheelY ~= 0 then
-				instance.ScrollPosY = max(instance.ScrollPosY - WheelY, 0)
+				local movement = WheelY
+				-- Optional content-space distance per wheel notch. The default
+				-- continues to use Slab's existing scrollbar-space wheel speed.
+				if instance.ScrollStep and WheelSpeed ~= 0 then
+					local travel = max(0, ySize - (instance.HasScrollX and ScrollBarSize + ScrollPad or 0))
+					movement = WheelY / WheelSpeed * instance.ScrollStep * travel / max(1, instance.ContentH - instance.H)
+				end
+				instance.ScrollPosY = max(instance.ScrollPosY - movement, 0)
 				instance.IsScrollingY = true
 				isMouseReleased = true
 				WheelY = 0
@@ -228,11 +235,14 @@ local function DrawScrollBars(instance)
 
 	if instance.HasScrollY then
 		local ySize = GetYScrollSize(instance)
+		if instance.AlwaysShowY then
+			DrawCommands.Rectangle('fill', instance.X + instance.W - ScrollPad - ScrollBarSize, instance.Y + ScrollPad, ScrollBarSize, max(0, instance.H - ScrollPad * 2), {0.3, 0.4, 0.5, 0.22}, Style.ScrollBarRounding)
+		end
 		local color = Utility.MakeColor(Style.ScrollBarColor, tempColor)
 		if instance.HoverScrollY or instance.IsScrollingY then
 			color = Utility.MakeColor(Style.ScrollBarHoveredColor, tempColor)
 		end
-		color[4] = instance.ScrollAlphaY
+		color[4] = instance.AlwaysShowY and 1 or instance.ScrollAlphaY
 		local yPos = instance.ScrollPosY
 		DrawCommands.Rectangle('fill', instance.X + instance.W - ScrollPad - ScrollBarSize, instance.Y + yPos, ScrollBarSize, ySize, color, Style.ScrollBarRounding)
 	end
@@ -288,6 +298,8 @@ function Region.Begin(id, options)
 	instance.MouseX = options.MouseX or 0
 	instance.MouseY = options.MouseY or 0
 	instance.AutoSizeContent = options.AutoSizeContent
+	instance.AlwaysShowY = options.AlwaysShowY
+	instance.ScrollStep = options.ScrollStep and max(1, min(500, options.ScrollStep)) or nil
 
 	if options.ResetContent then
 		instance.ContentW = 0
@@ -315,8 +327,6 @@ function Region.Begin(id, options)
 
 	if not options.IsObstructed then
 		if (
-			options.ForceShowX or
-			options.ForceShowY or
 			Contains(instance, instance.MouseX, instance.MouseY) or
 			(instance.HoverScrollX or instance.HoverScrollY)
 		) then
@@ -555,6 +565,12 @@ end
 
 function Region.GetWheelDelta()
 	return WheelX, WheelY
+end
+
+function Region.EndFrame()
+	-- Regions claim wheel input during UI construction and consume it next
+	-- frame. An event outside every region must not wait for a later hover.
+	if WheelInstance == nil then WheelX, WheelY = 0, 0 end
 end
 
 function Region.IsScrolling(id)

@@ -41,7 +41,7 @@ function Assets:titleFont(size,settings)
     settings=settings or self.titleSettings or {}
     return Fonts.title(size,settings.titleFontFamily,settings.fontFamily)
 end
-function Assets:runtimeIcon(name,x,y,size,tint)
+function Assets:runtimeIcon(name,x,y,size,tint,rotation)
     local spec=runtime.icons[name];if not spec then return false end
     local entry=self.runtimeImages[spec.path]
     if entry==nil then
@@ -55,8 +55,12 @@ function Assets:runtimeIcon(name,x,y,size,tint)
     if not entry then return false end
     love.graphics.push('all');setcolor(tint or {.86,.92,.98})
     local scale=size/math.max(entry.w,entry.h)
-    love.graphics.draw(entry.image,entry.quad,x+(size-entry.w*scale)/2,y+(size-entry.h*scale)/2,0,scale,scale)
+    love.graphics.draw(entry.image,entry.quad,x+size/2,y+size/2,rotation or 0,scale,scale,entry.w/2,entry.h/2)
     love.graphics.pop();return true
+end
+function Assets:loadingCircle(x,y,size,time,tint,still)
+    local angle=still and 0 or((time or love.timer.getTime())*math.pi*1.35)%(math.pi*2)
+    return self:runtimeIcon('loading',x,y,size or 24,tint,angle)
 end
 -- Panoramas are rectangular source images. Cover/crop them; never stretch them
 -- into a cube cross. Retain at most two decoded images (~64 MiB at source size).
@@ -299,17 +303,17 @@ end
 function Assets:buttonImage(symbol,label,width,height,opts)
     opts=opts or {};local size=opts.size or 16;local font=opts.font or self:font(size,true)
     local iconSize=opts.iconSize or 20;local text=tostring(label or '');local gap=text==''and 0 or(opts.gap or 7)
-    local available=math.max(8,width-iconSize-gap-12)
-    if font:getWidth(text)>available then
-        while #text>0 and font:getWidth(text..'…')>available do local last=utf8.offset(text,-1);text=text:sub(1,last-1)end
-        text=text..'…'
-    end
     local scale=Assets.uiRasterScale(self.settings)
     local epoch=Assets.rasterContext()
     local tint=opts.color or {.9,.94,.98,1};local iconTint=opts.iconTint
     local key=table.concat({'button',epoch,symbol,label,width,height,tostring(font),iconSize,gap,string.format('%.5f',scale),table.concat(tint,','),iconTint and table.concat(iconTint,',') or 'auto'},'|')
     self.iconClock=self.iconClock+1;local cached=self.iconCache[key]
     if cached then cached.used=self.iconClock;return cached.image end
+    local available=math.max(8,width-iconSize-gap-12)
+    if font:getWidth(text)>available then
+        while #text>0 and font:getWidth(text..'…')>available do local last=utf8.offset(text,-1);text=text:sub(1,last-1)end
+        text=text..'…'
+    end
     local canvas=Assets.rasterize(width*scale,height*scale,function()
         love.graphics.scale(scale);local total=iconSize+gap+font:getWidth(text);local left=math.max(6,(width-total)/2)
         self:iconSymbol(symbol,left,(height-iconSize)/2,iconSize,iconTint)

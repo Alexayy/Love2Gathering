@@ -118,13 +118,24 @@ class PublishTests(unittest.TestCase):
         for name, value in zip(self.names, content):
             (self.dist / name).write_bytes(value)
         (self.dist / 'install-flatpak.py').write_text('import argparse\nAPP_ID = ' + repr(publisher.APP_ID))
-        (self.dist / 'windows-runtime-provenance.json').write_text(json.dumps(
-            {component: {'sha256': 'a' * 64} for component in ('love', 'python', 'java')}))
+        pillow={'sha256':'d'*64,'version':'13.0.0','includesNativeCode':True,'includesLicenses':True}
+        windows={component: {'sha256': 'a' * 64} for component in ('love', 'python', 'java')}
+        windows['pillow']={**pillow,'platform':'windows-cp313'}
+        (self.dist / 'windows-runtime-provenance.json').write_text(json.dumps(windows))
         (self.dist / 'flatpak-native-provenance.json').write_text(json.dumps(
-            {'love': {'sha256': 'b' * 64}, 'libraries': {'libsample.so': {'sha256': 'c' * 64}}}))
+            {'love': {'sha256': 'b' * 64}, 'libraries': {'libsample.so': {'sha256': 'c' * 64}},'pillow':{**pillow,'platform':'flatpak-cp313'}}))
 
     def prepare(self):
         return publisher.prepare(self.dist, VERSION, TAG, COMMIT, self.metadata)
+
+    def test_missing_private_image_codec_provenance_stops_release_preparation(self):
+        for filename in('windows-runtime-provenance.json','flatpak-native-provenance.json'):
+            with self.subTest(filename=filename):
+                path=self.dist/filename;original=path.read_text();value=json.loads(original);value.pop('pillow')
+                try:
+                    path.write_text(json.dumps(value))
+                    with self.assertRaisesRegex(publisher.ReleaseError,'Pillow'):self.prepare()
+                finally:path.write_text(original)
 
     def test_prepare_has_exact_allowlist_and_checksums_ignore_extra_files(self):
         (self.dist / 'old-version.exe').write_bytes(b'do not upload')

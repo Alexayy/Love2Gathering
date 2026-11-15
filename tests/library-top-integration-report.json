@@ -1,0 +1,406 @@
+{
+  "schema": 1,
+  "status": "pass",
+  "generatedAt": "2026-11-15T16:28:20.150560+00:00",
+  "sourceRevision": "81da08182e042049ad0e7107c9230ba89dbe1c64",
+  "problem": "XMage already offered Courser library-top Forest UUID; player projection/table exported only a library count/back.",
+  "behavior": {
+    "projection": [
+      "players[].libraryTop",
+      "players[].libraryTopVisibility"
+    ],
+    "nativeActionableOnly": true,
+    "inspectionAndPlay": [
+      "duel pile",
+      "multiplayer seat",
+      "live top-only library zone"
+    ],
+    "staleCardGameAndPlayerFences": true,
+    "privatePerspectiveIsolation": true,
+    "nativeUnpaidCostVisibilityGuard": true,
+    "ownershipAloneGrantsLibraryVisibility": false,
+    "replayReadOnly": true
+  },
+  "native": {
+    "report": "bridge/tests/library-top-report.json",
+    "reportSha256": "7ae69080d2c844a3791d32d5c2846cb61675f1ead0f517448c4ea814f496ea57",
+    "passedChecks": 37,
+    "output": "/tmp/love2gathering-mechanics-library-top-00bgog46",
+    "scope": "Real pinned XMage decisions and UUID responses on GAME threads; only initial zones/resources and targeted ability setup are deterministic fixtures. No external services, game replacement, card acquisition, user storage or engine changes."
+  },
+  "ui": {
+    "report": "tests/library-top-ui-report.json",
+    "reportSha256": "0e6eb7d00a78a78895b2f4362ce0e9065bc8b30b1a326d4540bb14903fd53e61",
+    "passedChecks": 32,
+    "captures": [
+      "/tmp/love2gathering-library-top-ui-UQnzSe/duel-native-playable-top.png",
+      "/tmp/love2gathering-library-top-ui-UQnzSe/duel-native-library-zone.png",
+      "/tmp/love2gathering-library-top-ui-UQnzSe/multiplayer-scaled-playable-top.png",
+      "/tmp/love2gathering-library-top-ui-UQnzSe/multiplayer-scaled-library-zone.png"
+    ],
+    "nativeSceneSha256": "a3aca6cab4ca1ac98d139c2a862fd12849f85e07dccea62955e906ff0d1432ad",
+    "scope": "Actual production callbacks, Slab zone rows and rendered native Courser duel scene; synthetic multiplayer expansion/visibility/priority/replay transitions are labeled presentation fixtures. A controlled action ledger records UUID submission; actual native land play is separately verified by the bridge fixture. No network, external images, user storage or running native game is used by this UI test.",
+    "visuallyInspected": true
+  },
+  "models": {
+    "frontend_model": {
+      "passed": 17,
+      "log": "/tmp/love2gathering-library-top-final-frontend_model.log",
+      "logSha256": "f1183fdba91bd470671b003678859b24b9be152429d8df69f2773f18f7979df7"
+    },
+    "modal_input": {
+      "passed": 11,
+      "log": "/tmp/love2gathering-library-top-final-modal_input.log",
+      "logSha256": "bf2c4dbdff57e42edbb178ccb1d876d71a37def2cffc7bda205fed9661b03f81"
+    },
+    "replay_model": {
+      "passed": 8,
+      "log": "/tmp/love2gathering-library-top-final-replay_model.log",
+      "logSha256": "51ab4a940681712c341d90ec37eb744335822fe178d28b3868051c262d9e715a"
+    },
+    "table_camera": {
+      "passed": 97,
+      "log": "/tmp/love2gathering-library-top-final-table_camera.log",
+      "logSha256": "b6f9eeb1af146b6b072352817150bd2d06bf83abd4b8a05820b359a6357072c0"
+    },
+    "priority_model": {
+      "passed": 23,
+      "log": "/tmp/love2gathering-library-top-final-priority_model.log",
+      "logSha256": "4613eceef6d31a9456042a2eaf36ec0cd9bace7275e9a0a70f5e70e36a0f7e20"
+    },
+    "rooms_model": {
+      "passed": 41,
+      "log": "/tmp/love2gathering-library-top-final-rooms_model.log",
+      "logSha256": "0b29b994ad32515c300dec02c5bee312c5b0d184aefac8c2453de0ceb2cc3b1d"
+    },
+    "library_top_model": {
+      "passed": 20,
+      "log": "/tmp/love2gathering-library-top-final-library_top_model.log",
+      "logSha256": "332fbd44fc2474840a6f2039345e930d1cae596d0e7582527c334f9ceaea5f36"
+    }
+  },
+  "existingNativeRegressionGroups": {
+    "passed": 8,
+    "report": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/report.json",
+    "fixtures": [
+      {
+        "fixture": "ActionabilityFixture",
+        "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/ActionabilityFixture/process.log",
+        "watchdog": {
+          "cpuSeconds": 9.61,
+          "diskBytes": 1885,
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/ActionabilityFixture/process.log",
+          "ownedProcessIdentities": [
+            {
+              "birthTicks": 5686359,
+              "cpuTicks": 905,
+              "pid": 307297,
+              "ppid": 307261,
+              "processGroup": 307297,
+              "rssBytes": 720216064,
+              "state": "S",
+              "threads": 20
+            }
+          ],
+          "ownedProcessTerminated": true,
+          "peakRssBytes": 725528576,
+          "recovery": null,
+          "sharedServiceDiskBytes": 0,
+          "status": "pass",
+          "threadDumps": [],
+          "wallSeconds": 4.656,
+          "watchdogReason": null
+        }
+      },
+      {
+        "fixture": "NativeViewFixture",
+        "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/NativeViewFixture/process.log",
+        "watchdog": {
+          "cpuSeconds": 9.44,
+          "diskBytes": 1379,
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/NativeViewFixture/process.log",
+          "ownedProcessIdentities": [
+            {
+              "birthTicks": 5686828,
+              "cpuTicks": 895,
+              "pid": 307327,
+              "ppid": 307261,
+              "processGroup": 307327,
+              "rssBytes": 716218368,
+              "state": "S",
+              "threads": 20
+            }
+          ],
+          "ownedProcessTerminated": true,
+          "peakRssBytes": 718983168,
+          "recovery": null,
+          "sharedServiceDiskBytes": 0,
+          "status": "pass",
+          "threadDumps": [],
+          "wallSeconds": 4.501,
+          "watchdogReason": null
+        }
+      },
+      {
+        "fixture": "ProfileFixture",
+        "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/ProfileFixture/process.log",
+        "watchdog": {
+          "cpuSeconds": 8.75,
+          "diskBytes": 1280,
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/ProfileFixture/process.log",
+          "ownedProcessIdentities": [
+            {
+              "birthTicks": 5687281,
+              "cpuTicks": 819,
+              "pid": 307359,
+              "ppid": 307261,
+              "processGroup": 307359,
+              "rssBytes": 650694656,
+              "state": "S",
+              "threads": 20
+            }
+          ],
+          "ownedProcessTerminated": true,
+          "peakRssBytes": 717737984,
+          "recovery": null,
+          "sharedServiceDiskBytes": 0,
+          "status": "pass",
+          "threadDumps": [],
+          "wallSeconds": 4.247,
+          "watchdogReason": null
+        }
+      },
+      {
+        "fixture": "MultiplayerFixture",
+        "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/MultiplayerFixture/process.log",
+        "watchdog": {
+          "cpuSeconds": 9.27,
+          "diskBytes": 1604,
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/MultiplayerFixture/process.log",
+          "ownedProcessIdentities": [
+            {
+              "birthTicks": 5687709,
+              "cpuTicks": 889,
+              "pid": 307386,
+              "ppid": 307261,
+              "processGroup": 307386,
+              "rssBytes": 716750848,
+              "state": "S",
+              "threads": 20
+            }
+          ],
+          "ownedProcessTerminated": true,
+          "peakRssBytes": 720486400,
+          "recovery": null,
+          "sharedServiceDiskBytes": 0,
+          "status": "pass",
+          "threadDumps": [],
+          "wallSeconds": 4.454,
+          "watchdogReason": null
+        }
+      },
+      {
+        "fixture": "PriorityFixture",
+        "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/PriorityFixture/process.log",
+        "watchdog": {
+          "cpuSeconds": 9.65,
+          "diskBytes": 3125,
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/PriorityFixture/process.log",
+          "ownedProcessIdentities": [
+            {
+              "birthTicks": 5688157,
+              "cpuTicks": 890,
+              "pid": 307414,
+              "ppid": 307261,
+              "processGroup": 307414,
+              "rssBytes": 718327808,
+              "state": "S",
+              "threads": 21
+            }
+          ],
+          "ownedProcessTerminated": true,
+          "peakRssBytes": 723898368,
+          "recovery": null,
+          "sharedServiceDiskBytes": 0,
+          "status": "pass",
+          "threadDumps": [],
+          "wallSeconds": 4.767,
+          "watchdogReason": null
+        }
+      },
+      {
+        "fixture": "StartingPresentationFixture",
+        "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/StartingPresentationFixture/process.log",
+        "watchdog": {
+          "cpuSeconds": 9.38,
+          "diskBytes": 1924,
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/StartingPresentationFixture/process.log",
+          "ownedProcessIdentities": [
+            {
+              "birthTicks": 5688636,
+              "cpuTicks": 901,
+              "pid": 307480,
+              "ppid": 307261,
+              "processGroup": 307480,
+              "rssBytes": 720748544,
+              "state": "S",
+              "threads": 20
+            }
+          ],
+          "ownedProcessTerminated": true,
+          "peakRssBytes": 724287488,
+          "recovery": null,
+          "sharedServiceDiskBytes": 0,
+          "status": "pass",
+          "threadDumps": [],
+          "wallSeconds": 4.448,
+          "watchdogReason": null
+        }
+      },
+      {
+        "fixture": "ConcessionFixture",
+        "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/ConcessionFixture/process.log",
+        "watchdog": {
+          "cpuSeconds": 9.07,
+          "diskBytes": 1795,
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/ConcessionFixture/process.log",
+          "ownedProcessIdentities": [
+            {
+              "birthTicks": 5689084,
+              "cpuTicks": 893,
+              "pid": 307511,
+              "ppid": 307261,
+              "processGroup": 307511,
+              "rssBytes": 716570624,
+              "state": "S",
+              "threads": 21
+            }
+          ],
+          "ownedProcessTerminated": true,
+          "peakRssBytes": 717357056,
+          "recovery": null,
+          "sharedServiceDiskBytes": 0,
+          "status": "pass",
+          "threadDumps": [],
+          "wallSeconds": 4.347,
+          "watchdogReason": null
+        }
+      },
+      {
+        "fixture": "CardPrintingFixture",
+        "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/CardPrintingFixture/process.log",
+        "watchdog": {
+          "cpuSeconds": 8.35,
+          "diskBytes": 1294,
+          "exitCode": 0,
+          "log": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/CardPrintingFixture/process.log",
+          "ownedProcessIdentities": [
+            {
+              "birthTicks": 5695690,
+              "cpuTicks": 796,
+              "pid": 307944,
+              "ppid": 307884,
+              "processGroup": 307944,
+              "rssBytes": 657608704,
+              "state": "S",
+              "threads": 20
+            }
+          ],
+          "ownedProcessTerminated": true,
+          "peakRssBytes": 686116864,
+          "recovery": null,
+          "sharedServiceDiskBytes": 0,
+          "status": "pass",
+          "threadDumps": [],
+          "wallSeconds": 4.127,
+          "watchdogReason": null
+        }
+      }
+    ],
+    "scope": "Existing deterministic native fixture scenarios on the final isolated Maven-built bridge, original pinned runtime libraries; temporary native DB/home/report roots, no user data/services or frontend UI."
+  },
+  "baseline": {
+    "report": "bridge/tests/library-top-baseline-report.json",
+    "reportSha256": "34abf8a1a5383ae707f34a78aa98dde54d547da355070d7089e19c5c40fd89b1",
+    "expectedFailure": true
+  },
+  "resolvedFixtureFailures": [
+    {
+      "report": "/tmp/love2gathering-mechanics-library-regressions-z08e_s_e/report.json",
+      "fixture": "LibraryTopFixture",
+      "reason": "Test read new async prompt with older snapshot before complete publication. Gate now awaits matching published prompt/game/perspective.",
+      "latestVerifiedReport": "/tmp/love2gathering-mechanics-library-top-00bgog46/report.json",
+      "productionChangedForThisFailure": false
+    },
+    {
+      "report": "/tmp/love2gathering-mechanics-library-top-01r66wh2/report.json",
+      "reason": "Same retained fixture-only async publication race; final Maven runner passes all37."
+    }
+  ],
+  "runtimeBuild": {
+    "stage": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/library-top-maven-0twid107",
+    "jar": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/library-top-maven-0twid107/bridge/target/xmage-bridge-1.0.0.jar",
+    "jarSha256": "4ccf1df13945a58835485662d55954045cdfa466320ec657d4d0ad83950e04e7",
+    "sources": {
+      "bridge/src/love2gathering/CardPrintingProjection.java": "6bf741294903bc6823355efb67f195f5e982ace59ff9b3872c0636c736660427",
+      "bridge/src/love2gathering/DraftSession.java": "dc28bbadac25350c560b9b406e2d1c6aba79d05bebb94da5e0daca624a8caccb",
+      "bridge/src/love2gathering/EngineBridge.java": "cb0b361fbc8faa823438e940e4c547ef4ef878ca2b6b4ab31f1a70622cc46a44",
+      "bridge/src/love2gathering/LimitedFreeForAll.java": "8f40ecb7a63347f5990893e1b4ea72f3898e7ee9c9871e25344ef77807252989",
+      "bridge/src/love2gathering/MergedProjection.java": "8ace1bcb977d613d99e6cec27ed12adaf29c0994c6d74e77ea319e6b758e7742",
+      "bridge/src/love2gathering/MultiplayerBridge.java": "1a664dc85ad2d64b266caadb6db615914aa52041c828829e93e4057325b12b93",
+      "bridge/src/love2gathering/NativeProjection.java": "3efb77f41695225560ece0ecde25d3c0c7df01b844c6428b2369fe031a05d242",
+      "bridge/src/love2gathering/PresentationGames.java": "1e1021e3803f8685f963771cdc6e25476e194041976f16029e0bd65fca0c8eb5",
+      "bridge/src/love2gathering/PriorityController.java": "d7e7556bfe3decdd0e969d1f177de82f0aab80409fb4907ac20b78a2f8b8f6b0",
+      "bridge/src/love2gathering/PromptContext.java": "d9febaecb18457fb2769defe09f48d211e00e0987b72f6ec53d2827971700094",
+      "bridge/src/love2gathering/ReplayRecorder.java": "181cdcbd9c71cf54fde7a6d8da86ce753060108d90ebe87e77032f94675fe419",
+      "bridge/src/love2gathering/RoomSeat.java": "9eb20c34d83c57bc7561db4cec684e52c3a6cecd47ad64e4d0d3dbf81e296bc6",
+      "bridge/src/love2gathering/StartingOrder.java": "86283e0d2a0050984d6f38dc68d653df80e2aa46adb24da4ece0b2e7081907cb"
+    },
+    "log": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/library-top-maven-0twid107/maven.log",
+    "enginePin": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+    "kind": "isolated offline bridge-only Maven package; original engine read-only",
+    "published": true,
+    "classpath": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/.tools/library-top-maven-0twid107/bridge/target/xmage-bridge-1.0.0.jar:/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/bridge/target/lib/*",
+    "publishedPath": "/mnt/c79a0e4e-c27b-4f66-87ae-36433ae591c8/Projects/Love2Gathering/bridge/target/xmage-bridge-1.0.0.jar",
+    "previousRuntimeJarSha256": "41e9d480384c7cd314ac4473f2a3023e7727e3ff50f6bb1d3db2a3cd8ebe0df4",
+    "publishedJarSha256": "4ccf1df13945a58835485662d55954045cdfa466320ec657d4d0ad83950e04e7",
+    "activeProcessesStopped": false
+  },
+  "limits": [
+    "Native starting zones/resources and targeted ability setup are deterministic fixtures, rather than a completed production-deck game.",
+    "UI ledger verifies actual input/UUID routing; native play/payment are verified separately.",
+    "No active user service, match, cache, save or engine source changed. Published bridge takes effect on normal restart."
+  ],
+  "engine": {
+    "pin": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+    "sourceOrGitlinkChanged": false
+  },
+  "commitOrPushPerformed": false,
+  "sourceSha256": {
+    "app/model.lua": "208f3c6c149e0932465ecbcc520943e6d267d947aeaa5037f93eb4fbac290398",
+    "app/table.lua": "8c589891756df8b8d15630a51dad90ccf5505e8a4b8eada5a1132c5ed16f958f",
+    "app/multiplayer_table.lua": "0d30bbacda35671c18eea4e142bd16c93ba5545f2b19773d3222a587d286a5d3",
+    "app/renderer.lua": "423ece7e735d6178d6da88d2546e1827d1e03fa90b02b434db3985127f45eaf6",
+    "app/view.lua": "9964411dbcfd0a15af742ec097399d26eeddfdf0c991eaac949f2595a8e8844b",
+    "bridge/src/love2gathering/EngineBridge.java": "cb0b361fbc8faa823438e940e4c547ef4ef878ca2b6b4ab31f1a70622cc46a44",
+    "bridge/src/love2gathering/NativeProjection.java": "3efb77f41695225560ece0ecde25d3c0c7df01b844c6428b2369fe031a05d242",
+    "bridge/src/love2gathering/PresentationGames.java": "1e1021e3803f8685f963771cdc6e25476e194041976f16029e0bd65fca0c8eb5",
+    "bridge/src/love2gathering/LimitedFreeForAll.java": "8f40ecb7a63347f5990893e1b4ea72f3898e7ee9c9871e25344ef77807252989",
+    "bridge/tests/love2gathering/LibraryTopFixture.java": "2c99c030364dce85089f172542e3cc6c88d4aa06d2bd401f0b61fa39e1716f37",
+    "bridge/tests/love2gathering/CardPrintingFixture.java": "214c9b2128688a86af86c8a9471c32fdf2bfb94e707b618afdac9e47bc1b1cbb",
+    "bridge/tests/test_library_top.py": "2b99f1169696a7995e9a09e6cf8887533b6229cd05d6b63a7c2e57f36b7e89d9",
+    "tests/library_top_model.lua": "f9cfbe2a427ecea93c77b5aedf84c8c34cb9e72d7fd989da21033c6eba1175c4",
+    "tests/library_top_ui.lua": "332576409ffd8f8f62d7e5774f43040bfadb29075d12dd877c8521e4b1634467",
+    "tests/library_top_ui.sh": "283cdd31bd78d656dbd2494e0a4b16296d1d7fe696092a74239ef3876acc5cb6",
+    "README.md": "d2b6e07d081d64df47753b8eafa06305f7959a9ae865e3ba123d3b94e5f8371e",
+    "CODEX.md": "2d0a4f67c5435ac4de208d4d3894f79d7a1d4ab8ef74cd13903fd599b215f9ed",
+    "AGENTS.md": "5b0ba9ec392aa8a1b41b5262c13abae67f8f6b946444209cd70e654f054acf30"
+  }
+}

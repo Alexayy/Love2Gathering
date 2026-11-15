@@ -29,15 +29,10 @@ local function scenario()
  local opening=m.cardPrintingPicker;click({x=26,y=110,w=30,h=20});check(m.cardPrintingPicker==opening and not v.builderPopup,'Modal stack lock rejects a visible background builder dropdown press')
  check(m.cardPrintingPicker.total>12 and#m.cardPrintingPicker.items==12,'Forest catalog stays paged instead of loading every printing')
  shot('forest-first-page');click(buttons.Next);settled();check(m.cardPrintingPicker.offset==12,'Actual Next button loads the second bounded printing page');click(buttons.Previous);settled()
- local setBounds=combos['printing-set'];click(setBounds);local thb
- shot('set-popup')
- for attempt=1,35 do
-  for label,box in pairs(selectables)do if label:find('THB',1,true)==1 then thb=box;break end end
-  if thb and thb.y>setBounds.y+36 and thb.y+thb.h<setBounds.y+236 then break end
-  move(setBounds.x+100,setBounds.y+160);wait(.08);love.wheelmoved(0,-12);wait(.08)
- end
- click(thb);settled()
- check(m.cardPrintingPicker.set=='thb'and#m.cardPrintingPicker.items==3,'Actual set dropdown restricts Forest to Theros Beyond Death editions')
+ click(buttons['printing-set']);ready(function()return inputs['set-picker-search']end,'Child set grid did not open')
+ text(inputs['set-picker-search'],'THB');ready(function()return buttons['set-tile-thb']end,'THB set tile did not render');shot('set-popup')
+ click(buttons['set-tile-thb']);settled()
+ check(m.cardPrintingPicker.set=='thb'and#m.cardPrintingPicker.items==3,'Actual searchable set grid restricts Forest to Theros Beyond Death editions')
  choose(targets.forest);shot('forest-thb-selected');local revision=m.deckRevision;click(buttons.Cancel)
  check(not m.cardPrintingPicker and not selected('Forest')and m.deckRevision==revision,'Cancel leaves deck quantities and edition selection untouched')
  m:showCardPrintings({name='Forest'},'main');settled();m:filterCardPrintings(nil,'thb');settled();choose(targets.forest);click(buttons['Apply edition'])

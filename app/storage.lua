@@ -38,9 +38,13 @@ function Storage.scanMatches(m)
         and (actual.art_crop or false)==options(m).artCrops
 end
 local function state(m)return m.downloadStatus and m.downloadStatus.state or'idle'end
+function Storage.packBusy(m)
+    local pack=m.imagePackStatus or{}
+    return m.imagePackActionBusy or pack.state=='inspecting'or pack.state=='importing'
+end
 function Storage.maintenanceBusy(m)
     return m.storageLocationBlocked or m.storageActionBusy or m.storageStatus and m.storageStatus.operation and m.storageStatus.operation.state=='running'
-        or busyDownload[state(m)]or m.downloadActionBusy
+        or busyDownload[state(m)]or m.downloadActionBusy or Storage.packBusy(m)
 end
 local function categoryStats(m,key)
     local stats=m.storageStatus and m.storageStatus.stats or{}
@@ -171,6 +175,7 @@ function Storage.install(Model)
     end
     function Model:imageDownloadCommand(command)
         if self.downloadActionBusy or not({start=true,pause=true,resume=true,cancel=true})[command]then return false end
+        if(command=='start'or command=='resume')and Storage.packBusy(self)then return false end
         local current=state(self)
         if command=='start'and(current~='ready'or not Storage.scanMatches(self)or self.downloadStatus.canStart==false)then return false end
         if command=='resume'and(current~='paused'and current~='error'or self.downloadStatus.canResume==false or self.downloadStatus.canResume~=true and self.downloadStatus.scanValid==false)then return false end
@@ -265,7 +270,7 @@ function Storage.build(v,width)
     line(v,'gallery','Download card images and artwork',width,C.accent);S.NewLine()
     text(v,'Cache: '..tostring(m.downloadStatus and m.downloadStatus.cacheDirectory or stats.cacheDirectory or data.dataDirectory or'Loading…'),width)
     S.NewLine()
-    local config=options(m);local changing=busyDownload[state(m)]or m.downloadActionBusy
+    local config=options(m);local changing=busyDownload[state(m)]or m.downloadActionBusy or Storage.packBusy(m)
     if S.CheckBox(config.fullCards,'Full-card scans',{Size=20,Disabled=changing})then config.fullCards=not config.fullCards;m.storageDownloadOptionsDirty=true end
     S.SameLine({Pad=20});if S.CheckBox(config.artCrops,'Artwork crops',{Size=20,Disabled=changing})then config.artCrops=not config.artCrops;m.storageDownloadOptionsDirty=true end
     S.NewLine()
@@ -297,11 +302,11 @@ function Storage.build(v,width)
     if download.bytesDownloaded then text(v,Storage.bytes(download.bytesDownloaded)..' downloaded · '..Storage.bytes(download.rateBytesPerSecond)..'/s · '..tostring(download.failed or 0)..' failed',width)end
     local disabled=m.downloadActionBusy==true or op and op.state=='running'
     if state(m)=='ready'then
-        if button(v,'Start download','play',210,36,{Disabled=disabled or not Storage.scanMatches(m)or download.canStart==false})then m:imageDownloadCommand('start')end
+        if button(v,'Start download','play',210,36,{Disabled=disabled or Storage.packBusy(m)or not Storage.scanMatches(m)or download.canStart==false})then m:imageDownloadCommand('start')end
     elseif state(m)=='downloading'or state(m)=='scanning'then
         if button(v,'Pause download','pause',210,36,{Disabled=disabled})then m:imageDownloadCommand('pause')end
     elseif state(m)=='paused'or state(m)=='error'then
-        if button(v,'Resume download','play',210,36,{Disabled=disabled or download.canResume==false or download.canResume~=true and download.scanValid==false})then m:imageDownloadCommand('resume')end
+        if button(v,'Resume download','play',210,36,{Disabled=disabled or Storage.packBusy(m)or download.canResume==false or download.canResume~=true and download.scanValid==false})then m:imageDownloadCommand('resume')end
     end
     if liveDownload[state(m)]then
         S.SameLine({Pad=10});if button(v,'Cancel download','close',210,36,{Disabled=disabled or state(m)=='pausing'})then m:imageDownloadCommand('cancel')end
@@ -347,27 +352,34 @@ function Storage.drawProgress(r,w,h)
     local m=r.model;local download=m.downloadStatus or{};local op=m.storageStatus and m.storageStatus.operation
     local location=m.storageLocations;local locationOp=location and object(location.operation)and location.operation or{}
     local relocating=m.storageLocationBlocked
-    local visible=relocating or liveDownload[download.state]or op and op.state=='running';if not visible then r.storageProgressRect=nil;return end
+    local pack=m.imagePackStatus or{};local packActive=pack.state=='inspecting'or pack.state=='importing'
+    local visible=packActive or relocating or liveDownload[download.state]or op and op.state=='running';if not visible then r.storageProgressRect=nil;return end
     local progress=math.max(0,math.min(1,tonumber(download.progress)or 0));local label=statusLabel(m)
+    if packActive then progress=math.max(0,math.min(1,tonumber(pack.progress)or 0));label=(pack.state=='inspecting'and'Checking Starter image pack'or'Installing Starter images')..' · '..tostring(pack.processed or 0)..' / '..tostring(pack.images or 0)end
     if op and op.state=='running'then progress=0;label=op.message or'Maintaining local storage…'end
     if relocating then
         progress=location and location.restartRequired and 1 or(locationOp.total or 0)>0 and(locationOp.done or 0)/locationOp.total or 0
         label=location and location.restartRequired and'Storage ready · restart to activate'or locationOp.message or'Preparing storage copies…'
     end
     local x,y,width,height
-    if m.page=='table'then x,y,width,height=w-268,46,246,3
-    else width=math.min(480,w-48);x,y,height=(w-width)/2,66,16 end
+    if m.page=='table'then x,y,width,height=w-280,84,258,14
+    else width=math.min(520,w-48);x,y,height=(w-width)/2,66,16 end
     local C=r.colors;local tint=(download.state=='paused'or download.state=='error'or m.downloadError)and C.gold or C.accent
     love.graphics.push('all')
-    if height>3 then r.assets:control(x,y,width,height,'dark')else love.graphics.setColor(C.panel[1],C.panel[2],C.panel[3],.98);love.graphics.rectangle('fill',x,y,width,height,2,2)end
-    love.graphics.setColor(tint[1],tint[2],tint[3],.35);love.graphics.rectangle('fill',x,y,width*progress,height,2,2)
+    local circle=height;local barX=x+circle+7;local barW=width-circle-58
+    r.assets:control(barX,y,barW,height,'dark')
+    local active=packActive or relocating or busyDownload[download.state]or op and op.state=='running'
+    if r.assets.loadingCircle then r.assets:loadingCircle(x,y,circle,love.timer.getTime(),tint,m.settings.reducedMotion or not active)end
+    love.graphics.setColor(tint[1],tint[2],tint[3],.35);love.graphics.rectangle('fill',barX,y,barW*progress,height,2,2)
     if download.state=='scanning'or op and op.state=='running'then
         local motion=m.settings.reducedMotion and 0 or(love.timer.getTime()*.25)%1
-        love.graphics.setColor(tint[1],tint[2],tint[3],.65);love.graphics.rectangle('fill',x+motion*(width-36),y,36,height,2,2)
+        love.graphics.setColor(tint[1],tint[2],tint[3],.65);love.graphics.rectangle('fill',barX+motion*(barW-36),y,36,height,2,2)
     end
-    if height>3 then r:text(r:fit(label,width-14,12,1),x+7,y+1,12,C.text,width-14,'center')end
+    if m.page~='table'then r:text(r:fit(label,barW-14,12,1),barX+7,y+1,12,C.text,barW-14,'center')end
+    r:text(string.format('%.0f%%',progress*100),barX+barW+5,y,12,C.text,46,'center')
     love.graphics.pop()
     r.storageProgressRect={x=x,y=y,w=width,h=height}
-    r:hit({x=x,y=y,w=width,h=height,kind='download-progress',tooltip=label..'\n'..Storage.bytes(download.bytesDownloaded)..' downloaded · '..Storage.bytes(download.rateBytesPerSecond)..'/s\nOpen Settings → Storage for controls.',action=function()Storage.press(r,x+width/2,y+height/2,1)end})
+    local detail=packActive and(Storage.bytes(pack.totalBytes)..' local image pack · existing images kept')or(Storage.bytes(download.bytesDownloaded)..' downloaded · '..Storage.bytes(download.rateBytesPerSecond)..'/s')
+    r:hit({x=x,y=y,w=width,h=height,kind='download-progress',tooltip=label..'\n'..detail..'\nOpen Settings → Storage for controls.',action=function()Storage.press(r,x+width/2,y+height/2,1)end})
 end
 return Storage

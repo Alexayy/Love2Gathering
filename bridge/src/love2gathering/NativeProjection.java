@@ -4,6 +4,8 @@ import mage.MageObject;
 import mage.abilities.Ability;
 import mage.abilities.effects.RestrictionEffect;
 import mage.abilities.keyword.*;
+import mage.abilities.effects.common.continuous.LookAtTopCardOfLibraryAnyTimeEffect;
+import mage.cards.Card;
 import mage.constants.*;
 import mage.game.*;
 import mage.game.combat.CombatGroup;
@@ -15,6 +17,28 @@ import static love2gathering.EngineBridge.map;
 
 /** Read-only native relationships and isolated native legality previews. */
 final class NativeProjection {
+    private static final LookAtTopCardOfLibraryAnyTimeEffect TOP_LOOK=new LookAtTopCardOfLibraryAnyTimeEffect();
+    static boolean canLookAtLibraryTop(Game game){return TOP_LOOK.canLookAtNextTopLibraryCard(game);}
+    static boolean currentlySeen(EngineBridge.Session session,UUID id){
+        return session.game.getState().getRevealed().values().stream().anyMatch(cards->cards.contains(id))
+            ||session.game.getState().getLookedAt(session.human.getId()).values().stream().anyMatch(cards->cards.contains(id));
+    }
+    static String libraryTopVisibility(EngineBridge.Session session,mage.players.Player owner){
+        Card top=owner.getLibrary().getFromTop(session.game);
+        if(top==null||!canLookAtLibraryTop(session.game))return null;
+        if(owner.isTopCardRevealed()||session.game.getState().getRevealed().values().stream().anyMatch(cards->cards.contains(top.getId())))return "public";
+        return top.getId().equals(session.libraryTopLooks.get(owner.getId()))?"private":null;
+    }
+    static Map<String,Object> libraryTop(EngineBridge.Session session,mage.players.Player owner){
+        if(libraryTopVisibility(session,owner)==null)return null;
+        Map<String,Object> card=session.card(owner.getLibrary().getFromTop(session.game),true);card.put("zone","LIBRARY");return card;
+    }
+    static boolean knownLibraryCard(EngineBridge.Session session,Card card){
+        if(!canLookAtLibraryTop(session.game))return false;
+        mage.players.Player owner=session.game.getPlayer(card.getOwnerId());
+        Card top=owner==null?null:owner.getLibrary().getFromTop(session.game);
+        return top!=null&&top.getId().equals(card.getId())&&libraryTopVisibility(session,owner)!=null||currentlySeen(session,card.getId());
+    }
     // Display metadata from actual native ability identities, never an oracle
     // text parser or a substitute for native legality.
     private static final Map<Class<?>,String> KEYWORDS=new LinkedHashMap<>();

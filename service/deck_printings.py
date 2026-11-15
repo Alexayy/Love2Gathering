@@ -1,8 +1,10 @@
 """Bounded same-card printing choices. Presentation never changes deck legality."""
 import json
 import re
+from query_cache import cached_query
 
 
+@cached_query
 def printings(catalog, name, query='', set_code='', variant='all', limit=12, offset=0):
     if not isinstance(name, str) or not 1 <= len(name) <= 300:
         raise ValueError('Choose one card name')

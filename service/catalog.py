@@ -12,9 +12,22 @@ import threading
 import time
 from gallery_catalog import GalleryCatalog
 from tokens import TokenCatalog
+from query_cache import QueryCache, cached_query
 
 SCHEMA_VERSION = "7"
 FORMATS = {"modern", "standard", "pioneer", "commander"}
+
+
+class CatalogConnection(sqlite3.Connection):
+    """Read scopes own their connection, including failed queries.
+
+    sqlite3's ordinary context manager only finishes a transaction. Leaving
+    metadata connections open also retains their page caches/file descriptors
+    until cyclic garbage collection runs during an active image download.
+    """
+    def __exit__(self,*args):
+        try:return super().__exit__(*args)
+        finally:self.close()
 
 
 class Catalog(GalleryCatalog,TokenCatalog):
@@ -23,6 +36,7 @@ class Catalog(GalleryCatalog,TokenCatalog):
         self.database = Path(database)
         self.lock = threading.Lock()
         self.progress = {"state": "pending", "lines": 0, "cards": 0, "error": None}
+        self.query_cache = QueryCache(self.database)
 
     def status(self):
         with self.lock:
@@ -33,7 +47,7 @@ class Catalog(GalleryCatalog,TokenCatalog):
             self.progress.update(fields)
 
     def connect(self):
-        connection = sqlite3.connect(f"file:{self.database}?mode=ro", uri=True, timeout=20)
+        connection = sqlite3.connect(f"file:{self.database}?mode=ro", uri=True, timeout=20, factory=CatalogConnection)
         connection.row_factory = sqlite3.Row
         return connection
 
@@ -177,6 +191,7 @@ class Catalog(GalleryCatalog,TokenCatalog):
             temporary.unlink(missing_ok=True)
             raise
 
+    @cached_query
     def search(self, query="", format_name="", color="", type_name="", limit=50, offset=0, sort="name", set_code="", color_mode="legacy"):
         clauses, params = [], []
         for token in query.casefold().split():
@@ -225,9 +240,16 @@ class Catalog(GalleryCatalog,TokenCatalog):
         where = " WHERE " + " AND ".join(clauses) if clauses else ""
         with self.connect() as connection:
             total = connection.execute("SELECT count(*) FROM cards" + where, params).fetchone()[0]
-            rows = connection.execute("SELECT payload FROM cards" + where + " ORDER BY " + orders[sort] + " LIMIT ? OFFSET ?",
-                                      (*params, limit, offset))
-            cards = [json.loads(row[0]) for row in rows]
+            # A broad opening page can stop after a few name-index entries.
+            # A filtered page must retain SQLite's selective legality/index
+            # plan: forcing alphabetical random row reads can inspect thousands
+            # of cold payload pages before finding twenty matching cards.
+            # Sort only identities/names, then fetch JSON for the chosen page.
+            broad = not (query.strip() or color or type_name or set_code)
+            source = "cards INDEXED BY cards_name" if sort == "name" and total > limit and broad else "cards"
+            ids = [row[0] for row in connection.execute("SELECT id FROM " + source + where + " ORDER BY " + orders[sort] + " LIMIT ? OFFSET ?", (*params, limit, offset))] if total > offset else []
+            payloads = {row[0]:row[1] for row in connection.execute("SELECT id,payload FROM cards WHERE id IN (" + ','.join('?' for _ in ids) + ")", ids)} if ids else {}
+            cards = [json.loads(payloads[identifier]) for identifier in ids]
             if set_code:
                 for card in cards:
                     printing = connection.execute("SELECT * FROM card_sets WHERE card_id=? AND set_code=? ORDER BY collector_number LIMIT 1", (card["id"], set_code.casefold())).fetchone()
@@ -250,6 +272,7 @@ class Catalog(GalleryCatalog,TokenCatalog):
                 card["card_faces"][face]["image_uris"] = images
         return card
 
+    @cached_query
     def sets(self, format_name=""):
         if format_name and format_name not in FORMATS:
             raise ValueError("Unsupported format")
@@ -259,13 +282,18 @@ class Catalog(GalleryCatalog,TokenCatalog):
             return [dict(row) for row in rows]
 
     def deck_colors(self, deck):
-        names = list({entry['name'] for zone in ('main', 'commander') for entry in deck.get(zone, [])})
+        names = sorted({entry['name'] for zone in ('main', 'commander') for entry in deck.get(zone, [])})
+        return self._deck_colors(names)
+
+    @cached_query
+    def _deck_colors(self, names):
         if not names: return []
         with self.connect() as connection:
             rows = connection.execute('SELECT payload FROM cards WHERE name COLLATE NOCASE IN (' + ','.join('?' for _ in names) + ')', names)
             colors = {color for row in rows for color in (json.loads(row[0]).get('color_identity') or [])}
         return [color for color in 'WUBRG' if color in colors]
 
+    @cached_query
     def get(self, identifier=None, name=None, printing_id=None):
         with self.connect() as connection:
             row = connection.execute("SELECT payload FROM cards WHERE " + ("name = ? COLLATE NOCASE" if name is not None else "id = ?"),
@@ -293,3 +321,11 @@ class Catalog(GalleryCatalog,TokenCatalog):
                     raise ValueError("Printing does not belong to this card")
                 self._printing(card, printing)
             return card
+
+    @cached_query
+    def gallery(self, *args, **kwargs):
+        return super().gallery(*args, **kwargs)
+
+    @cached_query
+    def gallery_item(self, *args, **kwargs):
+        return super().gallery_item(*args, **kwargs)

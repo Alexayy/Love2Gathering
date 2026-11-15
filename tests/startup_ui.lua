@@ -3,17 +3,25 @@
 local json=require('lib.json');local clock=0;local scenarioName='launcher-build';local ledger={};local queue={}
 local function health(service)
  if service=='catalog'then
-  if scenarioName=='metadata-missing'then return{status='ok',ready=false,apiVersion=9,index={state='error',error='Fixture: configured local card metadata is missing'},storage={dataDirectory='/tmp/isolated-startup-fixture'}},nil,200 end
-  return{status='ok',ready=true,apiVersion=9,index={state='ready',cards=12},storage={dataDirectory='/tmp/isolated-startup-fixture'}},nil,200
+  if scenarioName=='metadata-missing'then return{status='ok',ready=false,apiVersion=14,index={state='error',error='Fixture: configured local card metadata is missing'},storage={dataDirectory='/tmp/isolated-startup-fixture'}},nil,200 end
+  return{status='ok',ready=true,apiVersion=14,index={state='ready',cards=12},storage={dataDirectory='/tmp/isolated-startup-fixture'}},nil,200
  elseif service=='engine'then
   if scenarioName=='bridge-offline'then return nil,'Fixture: bridge unavailable',503 end
   return{engine='XMage',ok=true},nil,200
  elseif service=='room'then return{status='ok'},nil,200 end
  return nil,'Unexpected synthetic route',404
 end
+local function reply(item)
+ if item.path=='/health'then return health(item.service)end
+ if item.path=='/settings'then return{theme='Ember',accentColor='#33AAEE',skybox='Off',sfxEnabled=false,musicEnabled=false,resolution='1120x720',windowMode='Windowed'},nil,200 end
+ if item.path=='/profile'then return{name='Startup Fixture'},nil,200 end
+ if item.path=='/decks'then return{decks={{id='startup-fixture',name='Saved fixture',format='Modern',main={},sideboard={},commander={}}}},nil,200 end
+ if item.path=='/ui-layout'then return{matchPrefs={}},nil,200 end
+ return nil,'Unexpected synthetic route',404
+end
 package.preload['app.api']=function()return{escape=function(v)return tostring(v)end,new=function()return{
- request=function(_,service,method,path,body,callback)ledger[#ledger+1]={scenario=scenarioName,service=service,method=method,path=path};queue[#queue+1]={service=service,callback=callback,due=clock+.035}end,
- update=function()for i=#queue,1,-1 do local item=queue[i];if clock>=item.due then table.remove(queue,i);if item.callback then item.callback(health(item.service))end end end end,
+ request=function(_,service,method,path,body,callback)ledger[#ledger+1]={scenario=scenarioName,service=service,method=method,path=path};queue[#queue+1]={service=service,path=path,callback=callback,due=clock+.035}end,
+ update=function()for i=#queue,1,-1 do local item=queue[i];if clock>=item.due then table.remove(queue,i);if item.callback then item.callback(reply(item))end end end end,
  quit=function()end}end}end
 local S=require('lib.Slab');local Model=require('app.model');local Renderer=require('app.renderer');local Preferences=require('app.preferences');local Startup=require('app.startup')
 local m,r,p,current,runner;local panelBounds;local cursorDecodes=0;local wake=0;local checks,shots,captures,geometry={},{},{},{};local path=os.getenv('LOVE2GATHERING_STARTUP_STATUS')
@@ -26,13 +34,14 @@ end
 local function shot(name)shots[#shots+1]=name;wait(.16)end
 local function fresh(name)
  scenarioName=name;queue={};m=Model.new();m.settings.sfxEnabled=false;m.settings.musicEnabled=false;m.settings.animations=false;m.settings.particles=false
- r=Renderer.new(m);panelBounds=nil;local panel=r.assets.panel;r.assets.panel=function(self,x,y,w,h,...)panelBounds={x=x,y=y,w=w,h=h};return panel(self,x,y,w,h,...)end;p=Preferences.new(m,S,r);p:applyFont();p:applyCursor();current=Startup.new(m,r);return current
+ r=Renderer.new(m);panelBounds=nil;local panel=r.assets.panel;r.assets.panel=function(self,x,y,w,h,...)panelBounds={x=x,y=y,w=w,h=h};return panel(self,x,y,w,h,...)end;p=Preferences.new(m,S,r);p:applyFont();p:applyCursor();current=Startup.new(m,r,p);return current
 end
 local function mode(w,h)
  love.window.setMode(w,h,{resizable=true,vsync=0});geometry[#geometry+1]={requested={w,h},physical={love.graphics.getDimensions()}}
 end
 local function noWrites()
- for _,item in ipairs(ledger)do if item.method~='GET'or item.path~='/health'then return false end end
+ local allowed={['/health']=true,['/settings']=true,['/profile']=true,['/decks']=true,['/ui-layout']=true}
+ for _,item in ipairs(ledger)do if item.method~='GET'or not allowed[item.path]then return false end end
  return true
 end
 local function scenario()
@@ -49,7 +58,7 @@ local function scenario()
  status('ready','ready',1,'Local services ready · fixture status');ready(function()return start.ready end,'ready after owned launcher and three health replies')
  check(start.catalog.ready and start.engine.engine=='XMage'and start.room.status=='ok','Readiness requires catalog XMage and room health independently')
  check(start:progress()==1 and m.startupReport and m.startupReport.checks.ready.state=='ready','Successful gate retains its measured startup report')
- check(not m.loaded and not m.settingsLoaded and noWrites(),'No normal Model initialization or persistence runs before startup handoff')
+ check(m.loaded and m.settingsLoaded and m.profileLoaded and m.playerName=='Startup Fixture'and p.appliedLoaded and start.finalGraphicsReady and noWrites(),'Actual Model saved data and applied personalized graphics finish before startup handoff without writes')
  shot('ready-1120')
  -- A failed shader/font warmup must restore the framebuffer before drawing its diagnostic.
  local graphics=fresh('graphics-failure');graphics.phase='graphics'
@@ -74,7 +83,7 @@ local function scenario()
  status('ready','ready',1,'Local services ready · fixture status');local missing=fresh('metadata-missing')
  ready(function()return missing.allowOffline and missing.error end,'missing metadata continuation')
  check(not missing.ready and missing.error:find('metadata is missing',1,true),'Missing metadata remains an explicit startup failure before continuation')
- wait(.1);check(missing.continueBounds and panelBounds and missing.continueBounds.y+missing.continueBounds.h<=panelBounds.y+panelBounds.h-2 and missing.continueBounds.y+missing.continueBounds.h<=select(2,love.graphics.getDimensions()),'Saved-library continuation remains padded inside the actual panel and viewport')
+ ready(function()return missing.personalizationReady and missing.continueBounds end,'saved profile/preferences before offline continuation');check(missing.continueBounds and panelBounds and missing.continueBounds.y+missing.continueBounds.h<=panelBounds.y+panelBounds.h-2 and missing.continueBounds.y+missing.continueBounds.h<=select(2,love.graphics.getDimensions()),'Saved-library continuation remains padded inside the actual panel and viewport')
  shot('missing-metadata-1120')
  local b=missing.continueBounds;check(not missing:press(b.x+b.w/2,b.y+b.h/2,2)and not missing:press(1,1,1),'Only the visible left-click continuation target can leave the error gate')
  check(missing:press(b.x+b.w/2,b.y+b.h/2,1)and missing.ready and m.startupReport.offline and m.startupReport.error,'Explicit continuation preserves the error and opens saved-library mode')
@@ -90,8 +99,8 @@ local function scenario()
  shot('launcher-error-1120')
  local file=assert(io.open(path,'wb'));file:write(string.rep('x',65537));file:close();local invalid=fresh('invalid-status');invalid.phase='services';wait(.25)
  check(invalid.error=='Startup status is invalid'and not invalid.ready,'Oversized launcher status is rejected without loading unbounded data')
- check(noWrites(),'Every startup scenario remains limited to read-only health requests')
- local report={passed=true,checks=checks,captures=captures,geometry=geometry,requests=ledger,moduleCount=modules,resourceCount=resources,scope='Actual LÖVE Startup requires real modules and decodes actual curated assets/sounds/graphics; launcher status and health replies are explicit isolated fixtures. No native build, real service initialization, WAN check, image download or user-data write claim.'}
+ check(noWrites(),'Every startup scenario remains limited to read-only health and saved-data requests')
+ local report={passed=true,checks=checks,captures=captures,geometry=geometry,requests=ledger,moduleCount=modules,resourceCount=resources,scope='Actual LÖVE Startup/Model hydrates saved data and applies supplied graphics; launcher status and health/settings/profile/deck/layout replies are explicit isolated fixtures. No native build, real service initialization, WAN check, image download or user-data write claim.'}
  local f=assert(io.open('/tmp/love2gathering-startup-ui-report.json','w'));f:write(json.encode(report));f:close();print('STARTUP UI COMPLETE '..#checks..' checks');love.event.quit(0)
 end
 function love.errorhandler(err)io.stderr:write('STARTUP UI FAILED '..tostring(err)..'\n'..debug.traceback()..'\n');return function()return 1 end end

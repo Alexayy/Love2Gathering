@@ -3,4 +3,5 @@ local runtime={["icons"]={["profile"]={["path"]="assets/kenney/runtime/icons/sin
 
 for family,entries in pairs(require('assets.kenney.runtime.enhancements'))do runtime[family]=runtime[family]or{};for name,spec in pairs(entries)do runtime[family][name]=spec end end
 for name,spec in pairs(require('assets.kenney.runtime.window_actions').icons)do runtime.icons[name]=spec end
+for name,spec in pairs(require('assets.kenney.runtime.loading').icons)do runtime.icons[name]=spec end
 return runtime

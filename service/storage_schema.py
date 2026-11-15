@@ -5,7 +5,7 @@ import uuid
 
 FORMATS = {"modern", "standard", "pioneer", "commander"}
 ID = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$")
-DEFAULT_SETTINGS = {"manualTriggers": False, "autoMana": True, "showCardArt": True, "localArtworkOnly": True,
+DEFAULT_SETTINGS = {"manualTriggers": False, "autoMana": True, "showCardArt": True, "localArtworkOnly": True, "artworkMemoryMiB":256,
     "resolution": "Desktop", "windowMode": "Borderless", "vsync": True, "msaa": 0,
     "renderScale": 1.0, "textureFilter": "linear", "frameLimit": 0, "uiScale": 1.0,
     "animations": True, "particles": True, "musicEnabled": False, "musicVolume": 0.25,
@@ -89,7 +89,7 @@ class StorageSchema:
     def validate_settings(value):
         if not isinstance(value, dict) or len(json.dumps(value)) > 20000:
             raise ValueError("Invalid settings object")
-        enums = {"windowMode": {"Windowed", "Borderless", "Fullscreen"}, "msaa": {0, 2, 4, 8},
+        enums = {"artworkMemoryMiB":{128,256,512}, "windowMode": {"Windowed", "Borderless", "Fullscreen"}, "msaa": {0, 2, 4, 8},
                  "textureFilter": {"linear", "nearest"}, "frameLimit": {0, 30, 60, 120, 144},
                  "colorblindMode": {"Off", "Deuteranopia", "Protanopia", "Tritanopia"}, "titleFontFamily":{"Beleren","Application font"},
                  "skybox":{"Galaxy","Nebula","Band","Dark","Day","Off"},"counterStyle":{"Dice","Text"},"cursorStyle":{"System","Kenney"},

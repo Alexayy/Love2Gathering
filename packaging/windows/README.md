@@ -2,10 +2,13 @@
 
 `build.py --payload dist/stage/common/Love2Gathering` produces the offline
 `dist/Love2Gathering-VERSION-windows-x64-setup.exe`. It includes LÖVE 11.5,
-CPython 3.13.11 embeddable, Temurin JRE 21.0.13+9 and the compiled bridge.
+CPython 3.13.11 embeddable, Pillow 13 with JPEG support, Temurin JRE 21.0.13+9 and the compiled bridge.
 `runtimes.lock.json` pins official URLs and SHA256 checksums. Runtime archives
 retain their original licenses/notices. No user decks, image cache or replay
-database enters the payload.
+database enters the payload. `../python-wheels.lock.json` pins the official
+CPython3.13 Windows Pillow wheel and SHA256. Its PIL/native DLLs and license
+notices are unpacked under the private interpreter's `Lib/site-packages` and
+explicitly enabled in `python313._pth`; no host Python or pip install is used.
 
 The per-user NSIS installer offers a directory page and an optional desktop
 shortcut; Start Menu entries and an uninstaller are always registered. The

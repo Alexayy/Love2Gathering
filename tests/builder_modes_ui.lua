@@ -1,6 +1,6 @@
 local S=require('lib.Slab');local Model=require('app.model');local Renderer=require('app.renderer');local View=require('app.view');local Preferences=require('app.preferences');local Layout=require('app.layout');local Builder=require('app.builder');local json=require('lib.json')
 local m,r,v,p,runner,Cursor,Region;local time,wake,frames=0,0,0;local mouse={x=1,y=1};local down=false;local held={}
-local checks,shots,captures,created,filterRequests={},{},{},{},{};local buttons,inputs,choices={},{},{};local id
+local checks,shots,captures,created,filterRequests={},{},{},{},{};local requestTrace={};local buttons,inputs,choices={},{},{};local id
 local function check(ok,s)assert(ok,s);checks[#checks+1]=s;print('BUILDER MODES PASS '..s)end
 local function wait(s)wake=time+(s or .08);coroutine.yield()end
 local function ready(fn,timeout,label)local untilTime=time+(timeout or 15);while not fn()do assert(time<untilTime,label);wait(.06)end end
@@ -90,12 +90,13 @@ local function scenario()
  check(m.editDeck.main[1]and amount('Lightning Bolt')==2 and amount('Plains')==1,'Switching layouts and display scale preserves every deck quantity')
  local f=assert(io.open('/tmp/love2gathering-builder-modes-ui-report.json','w'));f:write(json.encode({passed=true,checks=checks,captures=captures,physical={love.graphics.getDimensions()},logical={Layout.dimensions()},filterRequests=filterRequests,scope='Actual Model/local catalog identity queries, validation/storage, frontend mana toggle input and card-image drag; Classic/Simplified shared bounds and fresh-model persisted settings. No native game or engine legality claim.'}));f:close();print('BUILDER MODES COMPLETE '..#checks..' checks');love.event.quit(0)
 end
-function love.errorhandler(e)io.stderr:write('BUILDER DEBUG '..json.encode({search=m and m.search,timer=m and m.searchTimer,busy=m and m.searchBusy,total=m and m.total,cards=m and m.cards,inputs=inputs,buttons=buttons})..'\n');io.stderr:write('BUILDER MODES FAILED '..tostring(e)..'\n'..debug.traceback()..'\n');io.stderr:flush();return function()return 1 end end
+function love.errorhandler(e)io.stderr:write('BUILDER DEBUG '..json.encode({search=m and m.search,timer=m and m.searchTimer,busy=m and m.searchBusy,total=m and m.total,cards=m and(function()local names={};for _,c in ipairs(m.cards)do names[#names+1]=c.name end;return names end)(),error=m and m.searchError,toasts=m and m.toasts,requests=requestTrace,pending=m and m.api:status(),inputs=inputs,buttons=buttons})..'\n');io.stderr:write('BUILDER MODES FAILED '..tostring(e)..'\n'..debug.traceback()..'\n');io.stderr:flush();return function()return 1 end end
 function love.load()
  S.SetINIStatePath(nil);S.Initialize({'nocursor'},true);Cursor=require('lib.Slab.Internal.Core.Cursor');Region=require('lib.Slab.Internal.UI.Region')
  love.mouse.getPosition=function()return mouse.x,mouse.y end;love.mouse.isDown=function(b)return b==1 and down end;love.keyboard.isDown=function(...)for i=1,select('#',...)do if held[select(i,...)]then return true end end;return false end
  m=Model.new();r=Renderer.new(m);v=View.new(S,m,r);p=Preferences.new(m,S,r);v.preferences=p
- local req=m.request;m.request=function(self,service,method,path,body,callback,quiet)if path:find('colorMode=',1,true)then filterRequests[#filterRequests+1]=path end;return req(self,service,method,path,body,function(data,err,failed)
+ local req=m.request;m.request=function(self,service,method,path,body,callback,quiet)local trace={method=method,path=path,started=love.timer.getTime()};requestTrace[#requestTrace+1]=trace;if path:find('colorMode=',1,true)then filterRequests[#filterRequests+1]=path end;return req(self,service,method,path,body,function(data,err,failed)
+  trace.seconds=love.timer.getTime()-trace.started;trace.error=err
   if method=='POST'and path=='/decks'and data then local d=data.deck or data;local found=false;for _,value in ipairs(created)do if value==d.id then found=true end end;if not found then created[#created+1]=d.id;local f=assert(io.open(os.getenv('LOVE2GATHERING_BUILDER_TEST_IDS'),'w'));f:write(json.encode(created));f:close()end end
   if callback then callback(data,err,failed)end
  end,quiet)end

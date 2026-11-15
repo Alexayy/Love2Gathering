@@ -6,7 +6,11 @@
 LÖVE 11.5 and the three additional native SONAMEs absent from that Platform;
 their original notices and exact native hashes are retained. Python/SQLite/SSL
 come from the actual Platform, independently of the SDK. This is a local binary
-bundle, not a Flathub submission manifest.
+bundle, not a Flathub submission manifest. A checksum-pinned CPython3.13
+manylinux Pillow wheel is included under the application's private
+`runtime/python-packages`; its JPEG/native libraries and notices are retained.
+The wrapper sets that package path, and the shipping Platform preflight imports
+Pillow and verifies its JPEG codec before a bundle can be published.
 
 Install through the distribution's software manager, or use the supplied folder
 chooser/CLI helper:

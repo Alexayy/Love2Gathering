@@ -23,10 +23,10 @@ function love.load(args)
     love.window.setTitle('Love: 2 Gathering')
     love.window.setIcon(love.image.newImageData(renderer.assets:icon()))
     if smoke then model.settings.showCardArt=false end
-    startup=Startup.new(model,renderer)
+    startup=Startup.new(model,renderer,preferences)
 end
 function love.update(dt)
-    if startup and not startup.ready then startup:update(dt);return end
+    if startup and not startup.ready then startup:update(dt);if not startup.ready then return end end
     model:update(dt);preferences:update();Slab.Update(dt);renderer:update(dt);view:build()
     renderer.uiHovered=not Slab.IsVoidHovered()
     renderer:mousemoved(Layout.mouse())
@@ -107,10 +107,12 @@ function love.keypressed(key,scancode,isrepeat)
     if startup and not startup.ready then if key=='escape'then love.event.quit()end;return end
     Slab.OnKeyPressed(key,scancode,isrepeat)
     if key=='escape'then
+        if view.setPicker then require('app.set_picker').close(view);return end
+        if model.imagePackFileDialog then model.imagePackCancelRequested=true;return end
         if model.cardPrintingPicker then model:closeCardPrintings();return end
         if model.tokenPicker then model:closeTokenPicker();return end
         if view.brandMenu then view.brandMenu=nil;return end
-        model:closeSettings();model.zoneView=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.galleryInspect=nil;model.confirmConcede=false;model.archiveCopy=nil;model.storagePurgePreview=nil;model.storageLocationConfirm=nil;model.storageFolderDialog=nil
+        model:closeSettings();model.zoneView=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.galleryInspect=nil;model.confirmConcede=false;model.archiveCopy=nil;model.storagePurgePreview=nil;model.storageLocationConfirm=nil;model.storageFolderDialog=nil;model.imagePackFileDialog=nil
         view.builderPopup=nil;view.builderFiltersOpen=nil;view.themeColorEdit=nil;view.combatStopsOpen=false;require('app.deck_picker').close(view)
         return
     end
@@ -127,6 +129,6 @@ function love.keypressed(key,scancode,isrepeat)
     end
 end
 function love.keyreleased(...) if startup and not startup.ready then return end;Slab.OnKeyReleased(...) end
-function love.filedropped(file)if startup and not startup.ready then return end;if model.importDeckFile then model:importDeckFile(file)end end
+function love.filedropped(file)if startup and not startup.ready then return end;if model.dropImagePack and model:dropImagePack(file)then return end;if model.importDeckFile then model:importDeckFile(file)end end
 function love.resize() if preferences then preferences:update() end end
 function love.quit() if preferences then preferences:quit() end;if model then model:quit() end;Slab.OnQuit() end

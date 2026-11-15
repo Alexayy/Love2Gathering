@@ -209,6 +209,10 @@ def prepare(dist: Path, version: str, tag: str, commit: str, metadata_report: Pa
         value = windows.get(component, {})
         if not isinstance(value, dict) or not re.fullmatch(r'[a-f0-9]{64}', str(value.get('sha256', ''))):
             raise ReleaseError('Incomplete Windows runtime provenance')
+    for provenance,platform in((windows,'windows-cp313'),(flatpak,'flatpak-cp313')):
+        value=provenance.get('pillow',{})
+        if not isinstance(value,dict)or value.get('platform')!=platform or not re.fullmatch(r'[a-f0-9]{64}',str(value.get('sha256','')))or not value.get('version')or value.get('includesNativeCode')is not True or value.get('includesLicenses')is not True:
+            raise ReleaseError('Incomplete packaged Pillow runtime provenance')
     if not isinstance(flatpak.get('love'), dict) or not re.fullmatch(
             r'[a-f0-9]{64}', str(flatpak['love'].get('sha256', ''))) or not flatpak.get('libraries'):
         raise ReleaseError('Incomplete Flatpak runtime provenance')

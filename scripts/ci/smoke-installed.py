@@ -31,7 +31,7 @@ def main():
         result = subprocess.run([str(payload/'love2gathering'),'--checkhealth'], env=env, capture_output=True, text=True, timeout=70)
         if result.returncode:raise RuntimeError(result.stderr or result.stdout)
         health = json.loads(result.stdout.strip().splitlines()[-1])
-        if not health.get('passed') or health['catalog'].get('apiVersion',0)<11 or health['engine'].get('engine')!='XMage':
+        if not health.get('passed') or health['catalog'].get('apiVersion',0)<14 or health['engine'].get('engine')!='XMage':
             raise RuntimeError('Compiled services did not acknowledge readiness')
         with sqlite3.connect((base/'saves/app.sqlite').as_uri()+'?mode=ro', uri=True) as connection:
             rows = dict(connection.execute('SELECT category,COUNT(*) FROM preconstructed WHERE active=1 GROUP BY category'))

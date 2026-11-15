@@ -1,0 +1,6205 @@
+{
+  "captures": [
+    "/tmp/love2gathering-artwork-budget-SEJUnD/storage-on-demand.png",
+    "/tmp/love2gathering-artwork-budget-SEJUnD/storage-cache-only.png",
+    "/tmp/love2gathering-artwork-budget-SEJUnD/graphics-before-memory.png",
+    "/tmp/love2gathering-artwork-budget-SEJUnD/graphics-image-memory.png"
+  ],
+  "checks": [
+    "Byte accounting uses real decoded dimensions across card, gallery and profile caches",
+    "A shared real GPU Image is charged once across multiple cache entries",
+    "An image cache hit reuses its texture without transport or decoding",
+    "One shared byte LRU evicts the least recently used texture across all image views",
+    "A larger selected budget retains more decoded images",
+    "Reducing the budget evicts old textures immediately without changing disk images",
+    "Artwork never releases the API-owned decoded buffer during a consumer callback",
+    "Higher-precision cached PNG textures count their actual eight bytes per pixel",
+    "Rotating 100 actual images stays inside the shared decoded budget",
+    "Rotating 200 actual images stays inside the shared decoded budget",
+    "Rotating 300 actual images stays inside the shared decoded budget",
+    "Rotating 400 actual images stays inside the shared decoded budget",
+    "Rotating 500 actual images stays inside the shared decoded budget",
+    "Rotating 600 actual images stays inside the shared decoded budget",
+    "Rotating 700 actual images stays inside the shared decoded budget",
+    "Rotating 800 actual images stays inside the shared decoded budget",
+    "Rotating 900 actual images stays inside the shared decoded budget",
+    "Rotating 1000 actual images stays inside the shared decoded budget",
+    "Native texture allocation remains bounded after 1,000 rotating images and collection",
+    "Incremental collection bounds transient native texture growth while rotating the image working set",
+    "Identical decoded-image requests coalesce while retaining separate consumer caches",
+    "Both real texture consumers finish before the coalesced ImageData is released",
+    "Coalesced consumers share one actual GPU upload and decoded cache charge",
+    "The API releases its decoded ImageData once all consumers finish",
+    "Actual GPU uploads prioritize the selected image and defer the third four-MiB completion",
+    "A real completion burst uploads at most two images and eight MiB in one update",
+    "Delivered pixels are released while the bounded deferred buffer remains alive",
+    "The next update uploads and releases the deferred real image",
+    "On-demand mode requests threaded decoding of only the requested exact printing and face",
+    "The acquired card is reused from the decoded cache on subsequent views",
+    "Cache-only mode forbids remote acquisition for missing cards",
+    "The source selector is visible beside Storage download controls",
+    "Actual Slab selection enables persistent on-demand image behavior",
+    "Actual Slab selection restores strict cache-only behavior",
+    "Graphics exposes the decoded-image budget control",
+    "Actual Slab memory selection preserves a numeric validated setting",
+    "Apply and save persists the selected image source and memory budget together",
+    "Image preferences preserve the configured Beleren font behavior"
+  ],
+  "metrics": {
+    "rotation": [
+      {
+        "decodedBytes": 104857600,
+        "images": 100,
+        "loaded": 100,
+        "nativeTextureBytes": 108936784
+      },
+      {
+        "decodedBytes": 134217728,
+        "images": 128,
+        "loaded": 200,
+        "nativeTextureBytes": 140394064
+      },
+      {
+        "decodedBytes": 134217728,
+        "images": 128,
+        "loaded": 300,
+        "nativeTextureBytes": 141442640
+      },
+      {
+        "decodedBytes": 134217728,
+        "images": 128,
+        "loaded": 400,
+        "nativeTextureBytes": 142491216
+      },
+      {
+        "decodedBytes": 134217728,
+        "images": 128,
+        "loaded": 500,
+        "nativeTextureBytes": 140394064
+      },
+      {
+        "decodedBytes": 134217728,
+        "images": 128,
+        "loaded": 600,
+        "nativeTextureBytes": 141442640
+      },
+      {
+        "decodedBytes": 134217728,
+        "images": 128,
+        "loaded": 700,
+        "nativeTextureBytes": 142491216
+      },
+      {
+        "decodedBytes": 134217728,
+        "images": 128,
+        "loaded": 800,
+        "nativeTextureBytes": 139345488
+      },
+      {
+        "decodedBytes": 134217728,
+        "images": 128,
+        "loaded": 900,
+        "nativeTextureBytes": 140394064
+      },
+      {
+        "decodedBytes": 134217728,
+        "images": 128,
+        "loaded": 1000,
+        "nativeTextureBytes": 142491216
+      }
+    ],
+    "rotationPeakTextureBytes": 138412032,
+    "rotationRetainedTextureBytes": 134217728
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/large-1?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/large-2?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/large-3?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/large-4?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/large-5?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/large-6?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/large-7?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/large-8?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/large-9?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/large-10?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/precision?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-1?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-2?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-3?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-4?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-5?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-6?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-7?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-8?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-9?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-10?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-11?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-12?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-13?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-14?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-15?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-16?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-17?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-18?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-19?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-20?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-21?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-22?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-23?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-24?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-25?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-26?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-27?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-28?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-29?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-30?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-31?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-32?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-33?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-34?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-35?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-36?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-37?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-38?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-39?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-40?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-41?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-42?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-43?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-44?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-45?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-46?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-47?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-48?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-49?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-50?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-51?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-52?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-53?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-54?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-55?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-56?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-57?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-58?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-59?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-60?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-61?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-62?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-63?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-64?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-65?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-66?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-67?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-68?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-69?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-70?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-71?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-72?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-73?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-74?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-75?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-76?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-77?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-78?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-79?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-80?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-81?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-82?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-83?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-84?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-85?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-86?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-87?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-88?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-89?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-90?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-91?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-92?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-93?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-94?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-95?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-96?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-97?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-98?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-99?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-100?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-101?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-102?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-103?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-104?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-105?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-106?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-107?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-108?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-109?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-110?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-111?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-112?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-113?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-114?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-115?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-116?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-117?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-118?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-119?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-120?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-121?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-122?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-123?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-124?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-125?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-126?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-127?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-128?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-129?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-130?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-131?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-132?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-133?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-134?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-135?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-136?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-137?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-138?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-139?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-140?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-141?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-142?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-143?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-144?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-145?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-146?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-147?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-148?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-149?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-150?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-151?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-152?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-153?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-154?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-155?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-156?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-157?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-158?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-159?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-160?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-161?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-162?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-163?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-164?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-165?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-166?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-167?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-168?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-169?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-170?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-171?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-172?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-173?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-174?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-175?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-176?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-177?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-178?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-179?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-180?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-181?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-182?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-183?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-184?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-185?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-186?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-187?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-188?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-189?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-190?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-191?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-192?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-193?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-194?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-195?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-196?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-197?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-198?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-199?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-200?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-201?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-202?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-203?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-204?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-205?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-206?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-207?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-208?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-209?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-210?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-211?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-212?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-213?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-214?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-215?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-216?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-217?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-218?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-219?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-220?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-221?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-222?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-223?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-224?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-225?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-226?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-227?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-228?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-229?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-230?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-231?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-232?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-233?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-234?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-235?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-236?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-237?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-238?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-239?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-240?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-241?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-242?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-243?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-244?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-245?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-246?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-247?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-248?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-249?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-250?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-251?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-252?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-253?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-254?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-255?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-256?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-257?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-258?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-259?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-260?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-261?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-262?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-263?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-264?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-265?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-266?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-267?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-268?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-269?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-270?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-271?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-272?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-273?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-274?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-275?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-276?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-277?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-278?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-279?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-280?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-281?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-282?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-283?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-284?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-285?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-286?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-287?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-288?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-289?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-290?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-291?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-292?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-293?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-294?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-295?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-296?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-297?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-298?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-299?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-300?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-301?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-302?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-303?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-304?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-305?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-306?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-307?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-308?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-309?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-310?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-311?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-312?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-313?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-314?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-315?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-316?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-317?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-318?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-319?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-320?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-321?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-322?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-323?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-324?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-325?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-326?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-327?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-328?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-329?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-330?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-331?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-332?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-333?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-334?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-335?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-336?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-337?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-338?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-339?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-340?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-341?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-342?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-343?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-344?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-345?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-346?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-347?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-348?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-349?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-350?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-351?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-352?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-353?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-354?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-355?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-356?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-357?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-358?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-359?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-360?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-361?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-362?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-363?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-364?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-365?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-366?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-367?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-368?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-369?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-370?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-371?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-372?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-373?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-374?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-375?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-376?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-377?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-378?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-379?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-380?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-381?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-382?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-383?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-384?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-385?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-386?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-387?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-388?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-389?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-390?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-391?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-392?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-393?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-394?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-395?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-396?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-397?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-398?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-399?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-400?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-401?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-402?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-403?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-404?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-405?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-406?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-407?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-408?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-409?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-410?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-411?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-412?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-413?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-414?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-415?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-416?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-417?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-418?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-419?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-420?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-421?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-422?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-423?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-424?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-425?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-426?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-427?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-428?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-429?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-430?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-431?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-432?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-433?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-434?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-435?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-436?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-437?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-438?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-439?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-440?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-441?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-442?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-443?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-444?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-445?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-446?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-447?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-448?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-449?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-450?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-451?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-452?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-453?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-454?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-455?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-456?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-457?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-458?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-459?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-460?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-461?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-462?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-463?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-464?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-465?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-466?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-467?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-468?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-469?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-470?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-471?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-472?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-473?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-474?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-475?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-476?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-477?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-478?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-479?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-480?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-481?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-482?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-483?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-484?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-485?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-486?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-487?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-488?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-489?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-490?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-491?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-492?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-493?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-494?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-495?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-496?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-497?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-498?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-499?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-500?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-501?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-502?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-503?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-504?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-505?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-506?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-507?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-508?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-509?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-510?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-511?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-512?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-513?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-514?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-515?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-516?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-517?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-518?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-519?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-520?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-521?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-522?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-523?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-524?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-525?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-526?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-527?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-528?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-529?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-530?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-531?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-532?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-533?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-534?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-535?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-536?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-537?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-538?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-539?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-540?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-541?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-542?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-543?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-544?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-545?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-546?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-547?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-548?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-549?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-550?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-551?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-552?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-553?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-554?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-555?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-556?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-557?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-558?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-559?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-560?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-561?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-562?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-563?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-564?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-565?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-566?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-567?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-568?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-569?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-570?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-571?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-572?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-573?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-574?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-575?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-576?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-577?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-578?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-579?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-580?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-581?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-582?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-583?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-584?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-585?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-586?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-587?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-588?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-589?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-590?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-591?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-592?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-593?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-594?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-595?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-596?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-597?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-598?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-599?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-600?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-601?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-602?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-603?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-604?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-605?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-606?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-607?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-608?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-609?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-610?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-611?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-612?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-613?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-614?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-615?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-616?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-617?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-618?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-619?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-620?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-621?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-622?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-623?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-624?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-625?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-626?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-627?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-628?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-629?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-630?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-631?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-632?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-633?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-634?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-635?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-636?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-637?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-638?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-639?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-640?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-641?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-642?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-643?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-644?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-645?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-646?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-647?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-648?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-649?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-650?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-651?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-652?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-653?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-654?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-655?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-656?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-657?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-658?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-659?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-660?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-661?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-662?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-663?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-664?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-665?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-666?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-667?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-668?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-669?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-670?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-671?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-672?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-673?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-674?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-675?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-676?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-677?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-678?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-679?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-680?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-681?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-682?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-683?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-684?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-685?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-686?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-687?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-688?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-689?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-690?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-691?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-692?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-693?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-694?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-695?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-696?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-697?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-698?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-699?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-700?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-701?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-702?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-703?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-704?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-705?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-706?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-707?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-708?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-709?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-710?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-711?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-712?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-713?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-714?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-715?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-716?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-717?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-718?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-719?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-720?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-721?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-722?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-723?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-724?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-725?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-726?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-727?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-728?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-729?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-730?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-731?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-732?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-733?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-734?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-735?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-736?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-737?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-738?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-739?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-740?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-741?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-742?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-743?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-744?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-745?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-746?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-747?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-748?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-749?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-750?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-751?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-752?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-753?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-754?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-755?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-756?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-757?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-758?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-759?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-760?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-761?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-762?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-763?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-764?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-765?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-766?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-767?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-768?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-769?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-770?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-771?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-772?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-773?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-774?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-775?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-776?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-777?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-778?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-779?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-780?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-781?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-782?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-783?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-784?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-785?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-786?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-787?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-788?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-789?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-790?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-791?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-792?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-793?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-794?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-795?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-796?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-797?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-798?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-799?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-800?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-801?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-802?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-803?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-804?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-805?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-806?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-807?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-808?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-809?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-810?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-811?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-812?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-813?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-814?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-815?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-816?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-817?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-818?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-819?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-820?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-821?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-822?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-823?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-824?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-825?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-826?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-827?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-828?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-829?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-830?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-831?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-832?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-833?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-834?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-835?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-836?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-837?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-838?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-839?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-840?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-841?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-842?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-843?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-844?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-845?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-846?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-847?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-848?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-849?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-850?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-851?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-852?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-853?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-854?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-855?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-856?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-857?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-858?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-859?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-860?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-861?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-862?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-863?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-864?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-865?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-866?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-867?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-868?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-869?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-870?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-871?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-872?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-873?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-874?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-875?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-876?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-877?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-878?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-879?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-880?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-881?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-882?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-883?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-884?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-885?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-886?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-887?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-888?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-889?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-890?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-891?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-892?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-893?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-894?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-895?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-896?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-897?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-898?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-899?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-900?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-901?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-902?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-903?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-904?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-905?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-906?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-907?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-908?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-909?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-910?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-911?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-912?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-913?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-914?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-915?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-916?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-917?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-918?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-919?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-920?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-921?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-922?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-923?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-924?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-925?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-926?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-927?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-928?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-929?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-930?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-931?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-932?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-933?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-934?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-935?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-936?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-937?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-938?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-939?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-940?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-941?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-942?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-943?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-944?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-945?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-946?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-947?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-948?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-949?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-950?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-951?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-952?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-953?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-954?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-955?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-956?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-957?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-958?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-959?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-960?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-961?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-962?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-963?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-964?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-965?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-966?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-967?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-968?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-969?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-970?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-971?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-972?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-973?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-974?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-975?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-976?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-977?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-978?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-979?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-980?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-981?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-982?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-983?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-984?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-985?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-986?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-987?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-988?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-989?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-990?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-991?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-992?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-993?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-994?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-995?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-996?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-997?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-998?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-999?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/fixture/rotate-1000?network=0",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/art/oracle-fixture?face=1&kind=normal&network=1&printing=exact-fixture",
+      "service": "art"
+    },
+    {
+      "method": "GET",
+      "mode": "image",
+      "path": "/art/missing?face=0&kind=normal&network=0&printing=missing",
+      "service": "art"
+    }
+  ],
+  "scope": "Actual L\u00d6VE image allocations/byte LRU/coalesced decoded ownership and real Slab settings input; fixture image responses, no user storage or engine",
+  "sourceSha256": {
+    "app/artwork.lua": "ef3bd37ca78673d61daf250fc2fda91cb622dcae0ad5012a8b5be1ab8de46269",
+    "app/settings.lua": "1f7321b7502620235631358769fee8f143051766b054d0397e788ebac27fbc52",
+    "app/preferences.lua": "2f5b2b690bb7bbc3e5b2d87f286b478ca80a9571d18804a6c30ac2aca6d358eb",
+    "app/model.lua": "188ed145bc2b372c4ff17df6db94aa111f6086d4778bbfd2fb18a6983a189f00",
+    "app/api.lua": "20f13b4bd97a5b859eda70aa278170da097ee002ad3301d20860e67edace906e",
+    "app/image_decode.lua": "5c8b422d03b40931338e45798ad28b71ebb1c484c1559af4fb34b6d42632186b",
+    "app/http_worker.lua": "0f325c84a1688cd1ccdeacb4b0d9991cb22990c3d7eac6e79cb60e277bb216e8",
+    "tests/artwork_budget_ui.lua": "6fce589ffccf904de541e646241c006b2ebec2935de044e58ecdffaf6d72b4f9"
+  }
+}

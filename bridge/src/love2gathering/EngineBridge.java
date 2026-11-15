@@ -205,6 +205,7 @@ public final class EngineBridge {
         final Map<UUID,UUID> tokenSources = new HashMap<>();
         final Deque<Map<String,Object>> rememberedLookedAt = new ArrayDeque<>();
         final Map<String,Cards> lookedAtReferences = new LinkedHashMap<>();
+        final Map<UUID,UUID> libraryTopLooks=new HashMap<>(); // current native look generation, never look history
         volatile long decisionStartedAt, priorityStartedAt;
         volatile UUID decisionPlayerId, timedPriorityPlayerId;
         // A selected block is provisional until XMage validates the complete
@@ -219,6 +220,8 @@ public final class EngineBridge {
         final int recordingPort;
         volatile ReplayRecorder recorder;
         volatile boolean stopRequested;
+        volatile boolean practiceConcedeRequested, practiceConcedeProcessed, practiceConcedeEnded;
+        final Set<UUID> publishedDepartures=new HashSet<>(); // GAME only
         final BlockingQueue<List<String>> triggerAnswers = new ArrayBlockingQueue<>(1);
         final Queue<UUID> pendingConcedes = new ConcurrentLinkedQueue<>();
         final Object answerLock=new Object();
@@ -288,12 +291,13 @@ public final class EngineBridge {
             boolean commander = format.equalsIgnoreCase("Commander"), limited = format.equalsIgnoreCase("Limited");
             int count = seatConfigs.size();
             if (count > 2 && !commander && !limited) throw new IllegalArgumentException(room ? "More than two players require Commander or Limited" : "Multiple bots require Commander");
+            PresentationGames.Lifecycle lifecycle=new PresentationGames.Lifecycle(this::afterNativeConcede,()->practiceConcedeEnded,this::beforeNativeEffects,this::beforeNativeEvent);
             if (commander && count > 2) {
-                CommanderFreeForAll multiplayer = new PresentationGames.Multiplayer(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(1), 40, 7, this::spellResolved);
+                CommanderFreeForAll multiplayer = new PresentationGames.Multiplayer(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(1), 40, 7, this::spellResolved,lifecycle);
                 multiplayer.setNumPlayers(count); game = multiplayer;
-            } else if (limited && count > 2) game = new LimitedFreeForAll(count, new LondonMulligan(1), this::spellResolved);
-            else game = commander ? new PresentationGames.Commander(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(1), 40, 7, this::spellResolved)
-                    : new PresentationGames.Duel(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(0), limited ? 40 : 60, 20, 7, this::spellResolved);
+            } else if (limited && count > 2) game = new LimitedFreeForAll(count, new LondonMulligan(1), this::spellResolved,lifecycle);
+            else game = commander ? new PresentationGames.Commander(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(1), 40, 7, this::spellResolved,lifecycle)
+                    : new PresentationGames.Duel(MultiplayerAttackOption.MULTIPLE, RangeOfInfluence.ALL, new LondonMulligan(0), limited ? 40 : 60, 20, 7, this::spellResolved,lifecycle);
             GameOptions options = new GameOptions(); options.rollbackTurnsAllowed = false; game.setGameOptions(options);
             MatchOptions matchOptions = new MatchOptions(room ? "Room match" : "Local practice", game.getGameType().getName(), false);
             matchOptions.setDeckType(validator.getName()); matchOptions.setWinsNeeded(1); matchOptions.setFreeMulligans(commander || count > 2 ? 1 : 0);
@@ -472,6 +476,7 @@ public final class EngineBridge {
         Map<String,Object> executionState(){
             Thread thread=owner.gameThread;boolean alive=thread!=null&&thread.isAlive();
             return map("threadAlive",alive,"stopRequested",owner.stopRequested,"terminationConfirmed",thread!=null&&!alive,
+                "concedeRequested",owner.practiceConcedeRequested,"terminationReason",owner.practiceConcedeProcessed?"practice_conceded":owner.stopRequested?"stopped":null,
                 "status",alive?(owner.stopRequested?"stop_requested":"running"):thread==null?"not_started":"terminated");
         }
         Map<String,Object> result() {
@@ -480,10 +485,11 @@ public final class EngineBridge {
                 players.add(map("id", str(player.getId()), "seatId", seatIdOf(player), "name", player.getName(), "life", player.getLife(), "won", player.hasWon(), "lost", player.hasLost()));
                 if (player.hasWon()) winners.add(seatIdOf(player));
             }
-            boolean completed=!running&&!stopRequested&&error==null&&game.hasEnded();
+            boolean completed=!running&&!stopRequested&&error==null&&game.hasEnded();Player perspective=game.getPlayer(human.getId());
             return map("gameId", str(game.getId()), "running", running, "error", error, "turn", game.getTurnNum(), "players", players, "winnerSeatIds", winners,
                 "winnerIds",game.getPlayers().values().stream().filter(Player::hasWon).map(p->str(p.getId())).collect(Collectors.toList()),"perspectivePlayerId",str(human.getId()),"completed",completed,
-                "outcome",completed?(human.hasWon()?"win":human.hasLost()?"loss":"draw"):running?"running":error!=null?"failed":"aborted");
+                "terminationReason",practiceConcedeProcessed?"practice_conceded":stopRequested?"stopped":null,
+                "outcome",completed?(perspective==null?"observer":perspective.hasWon()?"win":perspective.hasLost()?"loss":"draw"):running?"running":error!=null?"failed":"aborted");
         }
         Map<String,Object> publicResult() {
             Map<String,Object> frame = snapshot; List<Map<String,Object>> players = new ArrayList<>(); List<String> winners = new ArrayList<>();
@@ -520,7 +526,7 @@ public final class EngineBridge {
             // prompt cannot accompany the previous board before GAME publishes
             // its complete projection. Published prompt maps are immutable.
             Map<String,Object> visible = projectedPrompt == waiting ? waiting : null;
-            if(owner.stopRequested)visible=null;
+            if(owner.stopRequested||owner.practiceConcedeRequested)visible=null;
             Map<String,Object> controls = priority.view(visible);
             if (visible != null && Boolean.TRUE.equals(visible.get("priority")) && !Boolean.TRUE.equals(controls.get("canEndTurn"))) {
                 visible = null; controls = priority.view(null);
@@ -538,6 +544,7 @@ public final class EngineBridge {
             return result;
         }
         void requestConcede() {
+            if(!room)practiceConcedeRequested=true;
             prompt = null; priority.cancel();
             if (game.getPriorityPlayerId() == null && game.getState().getChoosingPlayerId() == null) owner.pendingConcedes.add(human.getId());
             else game.setConcedingPlayer(human.getId());
@@ -545,7 +552,55 @@ public final class EngineBridge {
             // currently waiting human, including a different player's dialog;
             // native waitForResponse processes the queue on GAME and resumes
             // the same unanswered dialog if the game continues.
-            for (Session view : perspectives) view.human.signalPlayerConcede(true);
+            for (Session view : perspectives) {
+                view.human.signalPlayerConcede(true);
+                // Manual trigger ordering has its own bridge queue instead of
+                // HumanPlayer's response monitor. Wake it to process the same
+                // native concession, preserving another human's unanswered order.
+                synchronized(view.triggerAnswers) {
+                    if(view.triggerAnswers.isEmpty())view.triggerAnswers.offer(Collections.emptyList());
+                }
+            }
+        }
+        void afterNativeConcede(Game context) {
+            if(context!=game)return;
+            boolean changed=false;
+            for(Player player:game.getPlayers().values())if(player.hasLeft()&&publishedDepartures.add(player.getId()))changed=true;
+            afterPracticeConcede();
+            // Native leave need not emit a table event, especially during an
+            // unchanged opponent mulligan/order dialog. Publish the completed
+            // native departure, preserving that other player's exact prompt.
+            if(changed)publishAll();
+        }
+        void beforeNativeEffects(Game context){
+            if(context==game)for(Session view:perspectives)view.libraryTopLooks.clear();
+        }
+        void beforeNativeEvent(Game context,GameEvent event){
+            if(context==game&&event.getType()==GameEvent.EventType.SHUFFLE_LIBRARY)
+                for(Session view:perspectives)view.libraryTopLooks.remove(event.getPlayerId());
+        }
+        void observeLibraryLook(Collection<Card> cards,Game context){
+            if(context!=game||!mage.util.ThreadUtils.isRunGameThread()||context.isSimulation()||context.inCheckPlayableState()||!NativeProjection.canLookAtLibraryTop(game))return;
+            for(Card card:cards){
+                if(card==null)continue;
+                Player owner=game.getPlayer(card.getOwnerId());Card top=owner==null?null:owner.getLibrary().getFromTop(game);
+                if(top!=null&&top.getId().equals(card.getId()))libraryTopLooks.put(owner.getId(),card.getId());
+            }
+        }
+        void afterPracticeConcede() {
+            if(room||!practiceConcedeRequested)return;
+            Player player=game.getPlayer(human.getId());
+            if(player==null||!player.hasLost()||!player.hasLeft())return;
+            // The stock concession queue has already marked the human lost.
+            // End only this local practice on GAME; the bots' unfinished contest
+            // has no invented winner and does not become an aborted human loss.
+            mage.util.ThreadUtils.ensureRunInGameThread();
+            practiceConcedeProcessed=true;
+            if(!game.hasEnded()) {
+                practiceConcedeEnded=true;
+                addLog("Local practice ended after "+human.getName()+" conceded");
+                game.end();
+            }
         }
         void flushPendingConcedes() {
             UUID id; while ((id = owner.pendingConcedes.poll()) != null) game.setConcedingPlayer(id);
@@ -608,7 +663,8 @@ public final class EngineBridge {
             if(id==null)return null;
             MageObject object=game.getObject(id);if(object==null)object=game.getCard(id);
             Card card=game.getCard(id);Zone zone=game.getState().getZone(id);
-            if(card!=null&&!human.getId().equals(card.getOwnerId())&&(zone==Zone.HAND||zone==Zone.LIBRARY)) {
+            if(card!=null&&zone==Zone.LIBRARY&&!NativeProjection.knownLibraryCard(this,card))return null;
+            if(card!=null&&!human.getId().equals(card.getOwnerId())&&zone==Zone.HAND) {
                 boolean revealed=game.getState().getRevealed().values().stream().anyMatch(c->c.contains(id))||(game.getState().getLookedAt(human.getId())!=null&&game.getState().getLookedAt(human.getId()).values().stream().anyMatch(c->c.contains(id)));
                 if(!revealed)return null;
             }
@@ -694,6 +750,7 @@ public final class EngineBridge {
         void query(PlayerQueryEvent event) {
             if (!event.getPlayerId().equals(human.getId())) return;
             owner.flushPendingConcedes();
+            if(game.hasEnded()||human.hasLeft())return;
             if (event.getQueryType() == PlayerQueryEvent.QueryType.PERSONAL_MESSAGE) { addLog(clean(event.getMessage())); publish(); return; }
             long started=System.currentTimeMillis();owner.decisionStartedAt=started;owner.decisionPlayerId=human.getId();
             Map<String, Object> p = map("id", ids.incrementAndGet(), "playerId",str(human.getId()),"startedAt",started,"type", event.getQueryType().name().toLowerCase(Locale.ROOT), "message", clean(event.getMessage()), "min", event.getMin(), "max", event.getMax(), "required", event.isRequired());
@@ -893,9 +950,16 @@ public final class EngineBridge {
                 @SuppressWarnings("unchecked") List<Map<String,Object>> choices = (List<Map<String,Object>>)p.get("choices");
                 Set<String> required = choices.stream().map(x -> x.get("id").toString()).collect(Collectors.toSet());
                 if (order.size() != required.size() || !new HashSet<>(order).equals(required)) throw new IllegalArgumentException("Include every trigger once");
-                recordAction(action.deepCopy());
-                prompt = null;
-                triggerAnswers.offer(order);
+                synchronized(triggerAnswers) {
+                    // A native concession wake carries no chosen trigger IDs.
+                    // Replace only that marker, so a simultaneous genuine
+                    // answer cannot disappear behind the bounded queue.
+                    triggerAnswers.remove(Collections.emptyList());
+                    if(!triggerAnswers.isEmpty())throw new IllegalArgumentException("This trigger order is already answered");
+                    recordAction(action.deepCopy());
+                    prompt = null;
+                    triggerAnswers.add(order);
+                }
                 return;
             }
             // Validate transport values before recording or consuming the prompt.
@@ -980,7 +1044,7 @@ public final class EngineBridge {
                     List<Map<String,Object>> battlefield = new ArrayList<>();
                     for (Permanent permanent : game.getBattlefield().getAllActivePermanents()) if (p.getId().equals(permanent.getControllerId())) battlefield.add(card(permanent));
                     ManaPool mana = p.getManaPool();
-                    players.add(map("id", p.getId().toString(), "seat", seatOf(p), "seatId", seatIdOf(p), "name", p.getName(), "isHuman", p instanceof BridgeHuman, "isLocal", p.getId().equals(human.getId()), "human", p.getId().equals(human.getId()), "profile", playerProfile(p), "avatarCard", avatarCard(p), "playmatCard",playmatCard(p), "life", p.getLife(), "hand", p.getId().equals(human.getId()) ? cards(p.getHand().getCards(game)) : Collections.emptyList(), "handCount", p.getHand().size(), "libraryCount", p.getLibrary().size(), "sideboardCount",p.getSideboard().size(), "graveyard", cards(p.getGraveyard().getCards(game)), "battlefield", battlefield, "command", cards(game.getCommanderCardsFromCommandZone(p, CommanderCardType.ANY)), "exile",cards(game.getExile().getAllCards(game).stream().filter(c -> p.getId().equals(c.getOwnerId())).collect(Collectors.toList())),"mana", map("W",mana.getWhite(),"U",mana.getBlue(),"B",mana.getBlack(),"R",mana.getRed(),"G",mana.getGreen(),"C",mana.getColorless()), "won",p.hasWon(),"lost",p.hasLost(),"attachmentIds",NativeProjection.ids(p.getAttachments())));
+                    players.add(map("id", p.getId().toString(), "seat", seatOf(p), "seatId", seatIdOf(p), "name", p.getName(), "isHuman", p instanceof BridgeHuman, "isLocal", p.getId().equals(human.getId()), "human", p.getId().equals(human.getId()), "profile", playerProfile(p), "avatarCard", avatarCard(p), "playmatCard",playmatCard(p), "life", p.getLife(), "hand", p.getId().equals(human.getId()) ? cards(p.getHand().getCards(game)) : Collections.emptyList(), "handCount", p.getHand().size(), "libraryCount", p.getLibrary().size(), "libraryTop",NativeProjection.libraryTop(this,p),"libraryTopVisibility",NativeProjection.libraryTopVisibility(this,p), "sideboardCount",p.getSideboard().size(), "graveyard", cards(p.getGraveyard().getCards(game)), "battlefield", battlefield, "command", cards(game.getCommanderCardsFromCommandZone(p, CommanderCardType.ANY)), "exile",cards(game.getExile().getAllCards(game).stream().filter(c -> p.getId().equals(c.getOwnerId())).collect(Collectors.toList())),"mana", map("W",mana.getWhite(),"U",mana.getBlue(),"B",mana.getBlack(),"R",mana.getRed(),"G",mana.getGreen(),"C",mana.getColorless()), "won",p.hasWon(),"lost",p.hasLost(),"attachmentIds",NativeProjection.ids(p.getAttachments())));
                 }
                 List<Map<String,Object>> stack = new ArrayList<>();
                 int stackIndex=0;for (StackObject o : game.getStack()) {Map<String,Object> view=stackCard(o);view.put("stackIndex",stackIndex);view.put("isTop",stackIndex++==0);stack.add(view);}
@@ -1037,7 +1101,7 @@ public final class EngineBridge {
             return card(c,false);
         }
         Map<String,Object> card(MageObject c,boolean granted) {
-            if (!granted && c instanceof Card && !human.getId().equals(((Card)c).getOwnerId()) && knownObject(c.getId()) == null)
+            if (!granted && c instanceof Card && (game.getState().getZone(c.getId())==Zone.LIBRARY||!human.getId().equals(((Card)c).getOwnerId())) && knownObject(c.getId()) == null)
                 return map("id",c.getId().toString(),"name","Hidden card","hidden",true,"manaCost","","type","","rules","","power","","toughness","");
             boolean explicitlySeen=game.getState().getRevealed().values().stream().anyMatch(list->list.contains(c.getId()))||game.getState().getLookedAt(human.getId())!=null&&game.getState().getLookedAt(human.getId()).values().stream().anyMatch(list->list.contains(c.getId()));
             if(c instanceof Card && ((Card)c).isFaceDown(game) && !mage.util.CardUtil.canShowAsControlled((Card)c,human.getId())&&!explicitlySeen) return map("id",c.getId().toString(),"name","Face-down card","faceDown",true,"hidden",true,"manaCost","","type","","rules","","power","","toughness","");
@@ -1122,7 +1186,12 @@ public final class EngineBridge {
             prompt = map("id", ids.incrementAndGet(), "type", "order", "message", "Drag triggers left to right: resolves first → resolves last", "choices", choices,"targets",Collections.emptyList(),"required",true);
             owner.publishAll();
             try {
-                List<String> chosen = triggerAnswers.take();
+                List<String> chosen;
+                do {
+                    chosen=triggerAnswers.take();
+                    owner.flushPendingConcedes();((GameImpl)game).checkConcede();
+                    if(game.hasEnded()||human.hasLeft())return abilities.get(0);
+                }while(chosen.isEmpty());
                 Collections.reverse(chosen); // bottom of stack is placed first
                 synchronized (human.triggerOrder) { for (String id : chosen) human.triggerOrder.add(UUID.fromString(id)); }
                 return orderTriggers(abilities, context);
@@ -1155,6 +1224,8 @@ public final class EngineBridge {
         BridgeHuman(String name, Session session) { super(name,RangeOfInfluence.ALL,1); this.session=session; this.triggerOrder=new ArrayDeque<>(); }
         BridgeHuman(BridgeHuman original) { super(original); session=original.session; triggerOrder=original.triggerOrder; }
         @Override public BridgeHuman copy() { return new BridgeHuman(this); }
+        @Override public void lookAtCards(String title,Card card,Game game){if(session!=null)session.observeLibraryLook(Collections.singletonList(card),game);super.lookAtCards(title,card,game);}
+        @Override public void lookAtCards(Ability source,String title,Cards cards,Game game){if(session!=null)session.observeLibraryLook(cards.getCards(game),game);super.lookAtCards(source,title,cards,game);}
         @Override public boolean priority(Game game) {
             if (session == null || game != session.game || game.isSimulation() || game.inCheckPlayableState()) return super.priority(game);
             session.owner.timedPriorityPlayerId=getId();session.owner.priorityStartedAt=System.currentTimeMillis();

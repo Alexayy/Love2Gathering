@@ -69,6 +69,7 @@ function Printings.install(Model)
   if not printing or card.printingExact and card.printing_id==printing then return data end
   self.printingMetadata=self.printingMetadata or{};local cache=self.printingMetadata
   local entry=cache[printing]
+  if entry and entry.pending and entry.isCurrent and not entry.isCurrent()then cache[printing]=nil;entry=nil end
   if entry and not entry.pending and not entry.card and(entry.retryAt or 0)<=now()then cache[printing]=nil;entry=nil end
   if not entry and(self.printingLookupPending or 0)<4 then
    local count=0;for _ in pairs(cache)do count=count+1 end
@@ -153,8 +154,20 @@ function Printings.install(Model)
  end
  function Model:selectCardPrinting(id)
   local p=self.cardPrintingPicker;if not p then return false end
-  for _,item in ipairs(p.items)do if item.printing_id==id then p.selectedId=id;p.selected={printingId=id,set=item.set,collectorNumber=item.collector_number};return true end end
+  for _,item in ipairs(p.items)do if item.printing_id==id then
+   p.selectedId=id;p.selected={printingId=id,set=item.set,collectorNumber=item.collector_number}
+   p.artSelection=(p.artSelection or 0)+1;p.explicitArtId=id
+   self:getCardPrintingArt(item);return true
+  end end
   return false
+ end
+ function Model:getCardPrintingArt(item,variant)
+  local p=self.cardPrintingPicker
+  local exact=copy(item);exact.printingExact=true;exact.printingResolved=true;exact.selectedPrintingId=item.printing_id
+  if not p or p.explicitArtId~=item.printing_id or p.selectedId~=item.printing_id then return self:getArt(exact,true,nil,{variant=variant})end
+  local token,id=p.artSelection,item.printing_id
+  local function current()return self.cardPrintingPicker==p and self.editDeck==p.deck and self.editGeneration==p.generation and self.page=='builder'and(self.deckRevision or 0)==p.revision and p.artSelection==token and p.selectedId==id end
+  return self:getArt(exact,true,nil,{priority='selected',network=true,selectionToken='printing:'..p.opening..':'..token..':'..id,isCurrent=current})
  end
  function Model:confirmCardPrinting(useDefault)
   local p=self.cardPrintingPicker
@@ -166,7 +179,7 @@ function Printings.install(Model)
   if not useDefault then choices[#choices+1]={name=p.name,zone=p.zone,count=entry.count,printingId=p.selectedId,set=p.selected.set,collectorNumber=p.selected.collectorNumber}end
   self.editDeck.printingSelections=choices;self.deckRevision=(self.deckRevision or 0)+1;self.dirty=true;self.validation=nil
   self.validationVersion=(self.validationVersion or 0)+1;self.validationTimer=.2
-  self:closeCardPrintings();return true
+  self:closeCardPrintings();if self.selectBuilderArtwork then self:selectBuilderArtwork(entry)end;return true
  end
 end
 return Printings

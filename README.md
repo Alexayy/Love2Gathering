@@ -16,7 +16,7 @@ XMage is a Git submodule pinned to the engine revision used by this client. Clon
 git submodule update --init --recursive
 ```
 
-Install **Java 21, Python 3 and LÖVE 11.5**, then run (the launcher can also use a development JDK already installed under `.tools/jdk-*/`):
+Install **Java 21, Python 3 and LÖVE 11.5** (Pillow enables small image variants and is included/declared by the installers), then run (the launcher can also use a development JDK already installed under `.tools/jdk-*/`):
 
 ```sh
 ./run.sh
@@ -24,7 +24,10 @@ Install **Java 21, Python 3 and LÖVE 11.5**, then run (the launcher can also us
 
 The launcher starts the local card catalog, XMage, room-code gateway and the desktop window. The first build downloads Java dependencies; if Maven is unavailable, the script downloads a local copy using `curl` and `tar`. The supplied large `assets/all-cards*.jsonl` source is indexed locally into `service/data/catalog.sqlite`. Indexing progress appears in the client; set `LOVE2GATHERING_CATALOG_SOURCE` to select a particular snapshot.
 
-Build and service logs are in `.runtime/engine-build.log`, `.runtime/engine.log`, `.runtime/catalog.log` and `.runtime/rooms.log`. The launcher reuses a catalog with **API 11 or newer** and matching database/cache/source, and starts a separate engine and gateway for each desktop instance, so opening another client preserves an existing match. It selects available local ports and stops only services it started.
+The loading screen waits for your saved theme, colors, profile, decks and panel layout, applies the saved display settings, then prepares the icon graphics before opening the client. Its rotating circle and percentage show progress; reduced motion keeps the circle still. If saved data cannot be read, **Retry loading saved data** retries it instead of opening a default profile. Local artwork remains usable while a background image download runs.
+
+
+Build and service logs are in `.runtime/engine-build.log`, `.runtime/engine.log`, `.runtime/catalog.log` and `.runtime/rooms.log`. The launcher reuses a catalog with **API 14 or newer** and matching database/cache/source, and starts a separate engine and gateway for each desktop instance, so opening another client preserves an existing match. It selects available local ports and stops only services it started.
 
 The splash opens while the launcher checks dependencies, storage, local version, catalog, XMage build, bridge and gateway. It decodes the curated graphics/audio and prepares fonts before opening the client. Card illustrations stream from the local cache as needed. Failures remain visible with the relevant stage; missing metadata offers an explicit saved-library fallback. The version check reads the installed revision; it does not download an application update.
 
@@ -36,11 +39,13 @@ Decks has collapsible **My Decks**, **Starter** and **Preconstructed** groups. M
 
 Preconstructed contains **1,183 deck products** from the acquired MTGJSON snapshot, grouped by expansion, plus a separate **611-packet** category for Jumpstart and similar partial decks. Search by deck, expansion or face commander, use the format selector, and page through the results. Historical formats remain browsable even when they are unsupported by this client. Ordinary Secret Lair drops and other non-deck collections stay outside the deck browser; complete Secret Lair Commander decks remain included. **Calling All Angels** is a Commander product led by **Giada, Font of Hope**. [Source coverage and licenses](service/PRECONS.md) document the complete acquired provider index and its limits.
 
-Square deck tiles fit the **whole illustration** into their image area without trimming it, with the deck name, face commander where supplied, card count and Mana color-identity symbols. Group and expansion headers fold away lists while you browse. The lobby uses the same card-based selection with a searchable tile popup.
+Square deck tiles fit the **whole illustration** into their image area without trimming it, with the deck name, face commander where supplied, card count and Mana color-identity symbols. Group and expansion headers fold away lists while you browse. The lobby uses the same card-based selection with a searchable tile popup. Its scrollbar stays visible and can be dragged; wheel scrolling moves about 100 logical pixels per step. Reopening or changing the search starts at the first group. Recent product pages and full lists are reused briefly, and offscreen tiles do not request artwork or build thumbnail graphics.
 
 Edit, duplicate or delete your owned lists, or choose them for the lobby. Editing an original Starter or preconstructed list creates an independent copy in My Decks. Historical archives ask for a supported target format; if the list needs repairs, the builder opens the complete unsaved copy with named errors. Invalid copies do not enter My Decks until corrected and saved. Original quantities and source templates remain intact. Plane/scheme products keep those auxiliary zones in their archive; copying confirms that the constructed copy uses its main deck, sideboard and commanders.
 
 Select a preview card as the deck's cover. The builder supports name/rules/type search, format/color/type/set filters, and name/color/set sorting. Double-click a search result or drag it into the list to add it; use `−` / `+` to change quantities. Choose the main deck, sideboard or commander zone before adding cards.
+
+The **Set** control opens a separate grid in both builder layouts and the edition/artwork picker. Search by set name or code, page through matching sets, and choose a tile to filter. The active set is marked; **All sets** clears the filter and stays visible on every page. Close or Escape keeps the current filter and any staged artwork choice.
 
 The navbar keeps the page actions beside the navigation: **Import**, **History** and **New deck** on Decks; the deck name and **Classic / Simplified** controls in Builder. Hover an icon for its label. Right-click the application name for **Border Toggle**, **Minimize** or **Exit**. Border Toggle switches between borderless fullscreen and a bordered, maximized window.
 
@@ -66,15 +71,19 @@ Multiplayer uses a **2×2 world-space battlefield** for four players, with a thi
 
 Your hand rests as a compact fan along the bottom so the table remains visible. Moving onto it expands the fan and enlarges the hovered card; leaving it collapses the hand. A stationary right-click opens card details. Highlighted player buttons select an engine-offered target when a target prompt is active. Graveyard, exile and commander zones belong to each seat; the magnifying-glass control opens publicly revealed cards and cards the engine lets you look at. Opponent hands remain hidden.
 
+Resting, expanded and hovered hand cards are 5% larger. Battlefield cards are about 10% larger, with adaptive duel spacing that preserves the land/creature row gaps and mana indicators. Multiplayer keeps the fixed hand and its existing camera controls.
+
 By default the camera follows the next active player when the turn changes, while your hand stays fixed. Manual movement remains in effect until the next turn. Disable **Follow the active player** in Settings to keep manual focus across turns.
 
 The table uses larger cards and controls, with configurable UI scale. Your hand fans across the bottom. Hover to inspect a card and right-click for its full view. Click a highlighted card or drag it onto the table to choose a legal action. Card highlights come from XMage's current playable actions, including costs, available mana, timing, priority and the land limit.
+
+When an effect reveals the top of a library or lets you look at it, that library displays its entitled top card. Click the highlighted top card to play it when XMage offers the action; hover or right-click to inspect it. Courser of Kruphix permits lands from the top, while other cards can grant different permissions. The engine still enforces timing, payment and land limits. A private look remains private to its player, and ordinary libraries stay face down.
 
 During a match the application name and main navigation header are hidden. The field fills the window. Small mana-source rows sit centered lower in your field; crowded rows move left and overlap within their bounds. The icon toolbar opens the lobby, settings, log, stack and recordings. Hover over an icon for its label.
 
 The log and stack are floating windows: drag their title bars or resize their edges. Their placement is saved. The log marks your actions in mint and the opponent's in purple, with separate colors and icons for casting, combat, damage, triggers and other actions. The stack shows source-card images and rules text, with the next object to resolve labeled first.
 
-Hover a stack image to inspect the full card. Target arrows connect stack objects to their projected targets; red combat arrows show attackers and gold lines show assigned blockers. XMage supplies legal blocking choices, including evasion and blocker-count restrictions. Invalid selections produce a short message. The player holding priority is outlined, including in the fixed multiplayer seat strip. The rope displays elapsed decision time; it does not impose an invented timeout or penalty.
+Hover a stack image to inspect the full card. Target arrows connect stack objects to their projected targets; larger outlined combat arrows show attackers and gold lines show assigned blockers. Separate attackers retain distinct colors inside their controller's outline. XMage supplies legal blocking choices, including evasion and blocker-count restrictions. Invalid selections produce a short message. The player holding priority is outlined, including in the fixed multiplayer seat strip. The rope displays elapsed decision time; it does not impose an invented timeout or penalty.
 
 Battlefield badges show current native power/toughness and counters independently of the printed scan. Equipment and Auras overlap behind their host; player Auras retain owner/controller information. Entitled cards linked in exile appear rotated beneath their source. Hover the host to inspect its attachments and linked cards. Damage, life changes and deaths have effects at their actual card/player positions. Combat lunges follow actual native damage events, preserving separate first-strike and regular damage; a phase label alone never generates a hit. Reduced motion and animation preferences suppress movement.
 
@@ -93,6 +102,8 @@ The phase strip now contains **real stops**. Each phase has a human icon for you
 **End Turn** yields the current and subsequent ordinary priority in that turn. A new stack object, new turn, selected stop or required choice cancels that yield. Normal automatic priority then continues: it offers legal reactions and passes empty windows. **Cancel End Turn** stops the yield, and the play/pause icon beside the toolbar switches between automatic priority and **full control**. Stop/full-control preferences are saved. These controls are disabled during replay and while a replaced priority prompt is awaiting engine confirmation.
 
 The Combat stop menu distinguishes beginning of combat, after attackers, **Before damage** (after confirmed blockers), first-strike damage, regular damage and end of combat. Selecting a blocker is provisional until **Done** confirms the declaration. A confirmed blocked attacker remains marked **Blocked** if its blocker is later sacrificed. Current native keywords appear on the card, with granted abilities in gold and in card details. For example, Goreclaw can grant trample until end of turn; sacrificing an already confirmed blocker then permits trample damage. [Combat timing and native verification](docs/COMBAT_TIMING.md) explains these states.
+
+The larger **Before damage** control shows the acknowledged opponent-turn stop as **ON/OFF**, and uses a separate amber state while waiting for confirmation. It toggles the existing native after-blockers stop. **Concede match** ends the whole local bot practice after XMage records your loss. In rooms, conceding removes only your seat and the remaining players continue.
 
 ## Private multiplayer and drafts
 
@@ -138,9 +149,17 @@ Presentation offers five supplied Kenney **space backgrounds**, **Off**, backgro
 
 Practice offers a chosen first player or animated **2d6** by default. Room games always use the server's dice result, rerolling tied highest scores. A resolved commander or spell with native mana value greater than five gives the terrain and individual cards a brief, eased shake; paid X comes from XMage. Motion/intensity settings control it. Target/attack lines have separate colors with their owner's outline. Bots choose a commander illustration or an in-identity full-art basic-land playmat, using exact cached art when available.
 
-Automatic mana payment spends mana already in your pool. This XMage revision has no whole-board automatic land tapper; activate the engine-offered mana sources when needed. Card details, rules and costs render inline Mana symbols, including hybrid costs and tap symbols. **Use local artwork only** is enabled by default: missing images show a placeholder while the downloader populates the cache. Disable that setting explicitly to allow foreground downloads of missing images. The supplied Mana/Keyrune glyphs, Kenney effects/UI/sounds and music are described with their licenses in [the asset guide](assets/ASSET_GUIDE.md).
+Automatic mana payment spends mana already in your pool. This XMage revision has no whole-board automatic land tapper; activate the engine-offered mana sources when needed. Card details, rules and costs render inline Mana symbols, including hybrid costs and tap symbols. **Cache only** is enabled by default for browsing. Explicitly selecting or previewing a Builder card, or clicking an edition candidate, downloads that exact missing image with priority. Enable **Download as needed** for other displayed images. The supplied Mana/Keyrune glyphs, Kenney effects/UI/sounds and music are described with their licenses in [the asset guide](assets/ASSET_GUIDE.md).
 
 The interface uses the supplied **Kenney Fantasy UI Borders** and **Space Expansion** assets for frames, surfaces, buttons, inputs and sliders, with curated icons, gradients, noise, light masks, patterns, panoramas, cursors and sounds from the other supplied packs. Original packs and licenses are preserved. The [Kenney audit](assets/KENNEY_CATALOG.md) records the full PNG contact-sheet review and runtime choices. [Settings ideas](docs/SETTINGS_IDEAS.md) separates implemented controls from possible future improvements.
+
+Choose **Settings → Storage → Downloads → Card image source** (also under Presentation). **Cache only** browses downloaded images; explicit Builder card/edition selections can fetch their own missing image. **Download as needed** reads that same disk cache first, downloads only missing images displayed in the builder/game/gallery, then retains them for later views and restarts. It does not start a whole-library download. The current provider is Scryfall’s image CDN; there is no arbitrary alternate-CDN selector.
+
+Small card images use one cached JPEG derivative, up to 256 pixels wide, when it has enough pixels for the physical display size after UI, camera and display scaling. Inspect and larger views keep the original. Derivatives are prepared in the background after download/import or on first use of an existing image; originals stay usable while preparation runs. This adds some cache space, but does not create export-folder copies. New jobs default to SQL storage without exports; existing export choices and files remain unchanged.
+
+Selected images take precedence over ordinary image requests and background download/import work. Image reads and uploads are bounded to reduce disk contention and frame spikes. A cached image can still take time to reach the screen on a busy or cold drive.
+
+**Settings → Graphics → Decoded artwork cache** offers 128, 256 or 512 MiB, default 256. This is a shared memory budget for card/gallery/profile textures; eviction leaves disk images intact. HTTP and JPEG/PNG decoding run on worker threads, while texture upload stays on the graphics thread. This helps target a client footprint around/below 1 GiB, but is not a hard limit on all allocations or the separate Java XMage process.
 
 ## Profile, avatars and playmats
 
@@ -149,6 +168,18 @@ Click your name/avatar in the main header, or **Profile and playmat** in Setting
 Profile avatars use square previews, while playmats retain the illustration's landscape view. Profile and Gallery distinguish **not cached**, **loading** and **failed** images. Choose **Download avatar**, **Download playmat**, or the selected Gallery illustration's download button to fetch that exact printing without enabling general foreground downloads. A missing illustration never substitutes a different artist's art. Cache totals and the bulk downloader's paused status are shown when available; a partially downloaded library is not a complete offline collection.
 
 Player avatars and playmats travel with public room/draft seats into native games and recordings. Bots use a commander or deck portrait when available. Life totals always come from XMage, including Commander starting life and later gains/losses; profiles do not offer an HP override. The [profile guide](docs/PROFILES.md) describes persistence, exact artwork identity and privacy boundaries.
+
+## Optional Starter image pack
+
+Starter pictures are a **separate optional ZIP**, keeping installers small. It contains full-card scans and art crops for the twenty Starter decks, including needed image faces, rather than every printing of every card. Your other decks and alternate editions use the same local cache and optional on-demand policy.
+
+Open **Settings → Storage → Downloads → Optional Starter image pack**. **Browse** for its ZIP (or drop the ZIP into the client), then **Inspect pack** to check editions, checksums, image count and required bytes. Inspection writes no images. **Install images** is explicit, preserves already cached images and retains at least 64 MiB free space. Pause an active bulk image job before installation; inspection can run while that download continues. A partial interruption retains committed images and can resume through Inspect/Install. Purging cached images does not automatically reinstall the pack.
+
+For this local build, `build/artifacts/Love2Gathering-Starter-images-2026-11-15.zip` contains **1,030 images from 506 card names across all twenty Starters**, about **86 MiB**, with its adjacent `.sha256` file. It was built from 974 existing images and 56 explicitly acquired missing images, with no writes to the source cache. Images retain their catalog printing/face/source identities. Choose a pack matching the installed metadata; unrelated or unknown editions are rejected.
+
+The manual **Optional Starter image pack** GitHub Actions workflow builds and validates a separate ZIP, checksum and provenance artifact on `development`. It does not add images to installers, initialize XMage or publish a Release. An Actions artifact wraps the pack files: extract that download and select the inner `Love2Gathering-starter-images.zip` in Settings. The workflow has not been dispatched for this local change.
+
+A local builder can also run `scripts/starter-image-pack.py plan` or `export` with `--catalog`, `--database` and a new `--output` destination. Those commands use existing SQL read-only and never download. Explicit **build** fetches only missing Starter images; omitting `--database` gives a separate cache-free CI acquisition. See [storage details](service/STORAGE.md).
 
 ## Gallery and offline image downloads
 
@@ -162,7 +193,7 @@ The command-line downloader also supports resumable full card scans, including t
 python3 scripts/download-card-images.py --metadata /path/to/cards.jsonl --output /path/to/image-library
 ```
 
-By default the command-line tool creates **`full-cards/`** and **`art-crops/`** folders and commits the same images to the application's authoritative SQLite cache. All supplied printings and image faces, including extended-art printings, are retained. Restarting reuses saved images and repairs missing exported files. Add `--sql-only` to avoid duplicate export files, `--limit 2` for a small trial, `--dry-run` to inspect entries without downloading, or `--full-size large` for larger full-card scans.
+New command-line jobs default to the application's authoritative SQLite cache without separate exports. An explicit `--output` folder, as above, or `--export-mirrors` also creates **`full-cards/`** and **`art-crops/`** folders. All supplied printings and image faces, including extended-art printings, are retained. Restarting reuses saved images and preserves the job's export choice; `--sql-only` suppresses exports. Add `--limit 2` for a small trial, `--dry-run` to inspect entries without downloading, or `--full-size large` for larger full-card scans.
 
 Runtime images resolve printing, face and image kind locally, reusing a cached same-card printing when appropriate. Full-card scans never substitute for art crops. Gallery keeps exact printing/face identity so its illustrator and set credits match the displayed image. See [image identity and library APIs](service/LIBRARY.md).
 

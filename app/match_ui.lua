@@ -47,13 +47,24 @@ end
 function UI.priority(v,w,h)
     local m,S=v.m,v.S;if m.replay or not m.game or m.game.running==false then return end
     local state=m.game.priority or {};local options=m:priorityOptions()
-    v:window('priority-mode',w-390,10,104,34,nil,{AllowFocus=false})
+    v:window('priority-mode',w-356,10,70,34,nil,{AllowFocus=false})
     iconButton(v,options.autoPass and 'Automatic priority · click for full control' or 'Full control · click for automatic priority',options.autoPass and 'play' or 'pause',function() m:toggleAutoPass() end,not options.autoPass,m.priorityBusy,28)
     S.SameLine()
-    local beforeDamage=m:phaseStop(Priority.beforeDamage,'opponent')
-    iconButton(v,'Stop after confirmed blockers, before combat damage · opponents’ turns','block',function() m:togglePhaseStop(Priority.beforeDamage,'opponent') end,beforeDamage,m.priorityBusy,28)
-    S.SameLine()
     iconButton(v,'Choose combat step stops','settings',function() v.combatStopsOpen=not v.combatStopsOpen end,v.combatStopsOpen,false,28)
+    S.EndWindow()
+    local stop=Priority.stopPresentation(m,Priority.beforeDamage,'opponent');local C=v.r.colors
+    local tint=stop.status=='on'and C.accent or stop.status=='off'and C.muted or C.gold
+    local fill=stop.status=='on'and{tint[1]*.24,tint[2]*.24,tint[3]*.24,1}
+        or stop.status=='off'and{.06,.075,.10,1}or{.24,.17,.065,1}
+    local hover={math.min(1,fill[1]+.07),math.min(1,fill[2]+.07),math.min(1,fill[3]+.07),1}
+    local tooltip='Stop after confirmed blockers, before combat damage · opponents’ turns'
+    tooltip=tooltip..'\n'..(stop.status=='on'and'ON · confirmed by XMage. After Done confirms blockers, priority stops before damage.'
+        or stop.status=='off'and'OFF · confirmed by XMage. Click to enable this stop.'
+        or stop.pending and'WAIT · a native priority update is still pending.'or'Not yet confirmed by XMage; the saved choice is not shown as active.')
+    v:window('before-damage-stop',w-238,76,222,36,nil,{AllowFocus=false,Border=0,BgColor={0,0,0,0},AutoSizeContent=false})
+    local image=v.r.assets:buttonImage('block',stop.label,208,32,{font=v.r.fonts[12],iconSize=24,color=tint,iconTint=tint,gap=8})
+    if S.Button('Stop after confirmed blockers, before combat damage · opponents’ turns',{Image={Image=image},W=208,H=32,Tooltip=tooltip,
+        Color=fill,HoverColor=hover,PressColor=hover,Disabled=stop.pending})then m:togglePhaseStop(Priority.beforeDamage,'opponent')end
     S.EndWindow()
     if v.combatStopsOpen then
         v:window('combat-step-stops',w-480,54,460,350,'Combat stops',{Layer='ContextMenu',BgColor={.025,.04,.06,.99}})

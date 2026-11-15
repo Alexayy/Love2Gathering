@@ -2,6 +2,23 @@ local API=require('app.api')
 local json=require('lib.json')
 local Collection={formats={'All','Modern','Standard','Pioneer','Commander','Archive'}}
 local playable={Modern=true,Standard=true,Pioneer=true,Commander=true}
+local function cacheTime()return love and love.timer and love.timer.getTime()or os.clock()end
+local function cachedProduct(m,key)
+    local cache=m.lobbyProductCache;local entry=cache and cache.entries[key]
+    if not entry or cacheTime()-entry.at>120 then return nil end
+    cache.clock=cache.clock+1;entry.used=cache.clock
+    return json.decode(entry.body)
+end
+local function rememberProduct(m,key,data)
+    local body=json.encode(data);if #body>1024*1024 then return end
+    local cache=m.lobbyProductCache or{entries={},clock=0};m.lobbyProductCache=cache
+    cache.clock=cache.clock+1;cache.entries[key]={body=body,at=cacheTime(),used=cache.clock}
+    local count,bytes=0,0;for _,entry in pairs(cache.entries)do count=count+1;bytes=bytes+#entry.body end
+    while count>16 or bytes>4*1024*1024 do
+        local oldest,used;for id,entry in pairs(cache.entries)do if not used or entry.used<used then oldest,used=id,entry.used end end
+        bytes=bytes-#cache.entries[oldest].body;cache.entries[oldest]=nil;count=count-1
+    end
+end
 function Collection.format(m)return m.collectionFormat or m.format or'All'end
 function Collection.sections(m)
     m.uiLayout=m.uiLayout or{};m.uiLayout.collection=m.uiLayout.collection or{collapsed={starter=true}}
@@ -31,15 +48,17 @@ function Collection.install(Model)
             end
         end,true)
     end
-    function Model:queryLobbyPrecons(state)
+    function Model:queryLobbyPrecons(state,force)
         if not self:lobbyPickerCurrent(state)then return end
         state.queryVersion=(state.queryVersion or 0)+1;local version=state.queryVersion
         state.busy=true;state.error=nil;state.timer=nil
         local path='/precons?category=deck&format='..API.escape(state.format)..'&q='..API.escape(state.search or'')..'&limit=24&offset='..tostring(state.offset or 0)
+        local cached=not force and cachedProduct(self,path)
+        if cached then state.busy=false;state.precons=cached.decks or cached.items or{};state.total=cached.total or#state.precons;return end
         self:request('catalog','GET',path,nil,function(data,err)
             if not self:lobbyPickerCurrent(state)or state.queryVersion~=version then return end
             state.busy=false;state.error=err
-            if data then state.precons=data.decks or data.items or{};state.total=data.total or#state.precons end
+            if data then rememberProduct(self,path,data);state.precons=data.decks or data.items or{};state.total=data.total or#state.precons end
         end,true)
     end
     function Model:searchLobbyPrecons(state)
@@ -70,10 +89,12 @@ function Collection.install(Model)
         if not self:lobbyPickerCurrent(state)or state.detailBusy then return end
         state.selectionVersion=(state.selectionVersion or 0)+1;local version=state.selectionVersion;local query=state.queryVersion
         state.detailBusy=true;state.error=nil
-        self:request('catalog','GET','/precons/'..API.escape(summary.id),nil,function(data,err)
+        local path='/precons/'..API.escape(summary.id);local cached=cachedProduct(self,path)
+        if cached then state.detailBusy=false;return self:cacheLobbyPrecon(state,cached.deck or cached,false)end
+        self:request('catalog','GET',path,nil,function(data,err)
             if not self:lobbyPickerCurrent(state)or state.selectionVersion~=version or state.queryVersion~=query then return end
             state.detailBusy=false;state.error=err
-            if data then self:cacheLobbyPrecon(state,data.deck or data,false)end
+            if data then rememberProduct(self,path,data);self:cacheLobbyPrecon(state,data.deck or data,false)end
         end)
     end
     function Model:toggleCollectionSection(key)

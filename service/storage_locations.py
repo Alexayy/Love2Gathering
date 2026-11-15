@@ -343,7 +343,7 @@ class StorageLocations:
     def _prepare_worker(self,plan,job_id):
         s=self.storage;staging=[];success=False
         try:
-            with _config_lock(self.path),s._exclusive_maintenance():
+            with s.quiesce_images(),_config_lock(self.path),s._exclusive_maintenance():
                 self._check()
                 if s._outbox_protected():raise ConflictError('Native recording became active; storage was preserved')
                 _assert_cooperative_owners(s.root/'replay-outbox.sqlite')
@@ -382,6 +382,10 @@ class StorageLocations:
                 self._check()
                 with _connection(prepared_main,isolation_level=None)as copied:
                     copied.execute("INSERT INTO meta VALUES('image_cache_directory',?) ON CONFLICT(key)DO UPDATE SET value=excluded.value",(str(cache),))
+                    # Derived images are disposable cache content too. Keep the
+                    # prepared application DB free of every image BLOB table.
+                    copied.execute('DROP TABLE IF EXISTS art_thumbnails')
+                    copied.execute('DROP TABLE IF EXISTS art_sources')
                     copied.execute('DROP TABLE IF EXISTS art_cache');copied.execute("DELETE FROM meta WHERE key IN('storage_relocated_to','storage_relocation_job')")
                     copied.execute("INSERT INTO meta VALUES('storage_activation_job',?)ON CONFLICT(key)DO UPDATE SET value=excluded.value",(job_id,))
                     copied.execute('PRAGMA journal_mode=DELETE')

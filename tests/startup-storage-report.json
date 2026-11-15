@@ -1,0 +1,356 @@
+{
+  "schema": 1,
+  "status": "pass",
+  "date": "2026-11-15",
+  "checkpointCommit": "81da08182e042049ad0e7107c9230ba89dbe1c64",
+  "scope": "Saved-state startup and local-cache responsiveness with isolated real services and controlled HTTP/JPEG/rendering fixtures; no user service restart, native rules changes or external acquisition.",
+  "checks": {
+    "service": {
+      "command": "python3 -m unittest discover -s service/tests -v",
+      "passed": 217,
+      "seconds": 89.694,
+      "log": "/tmp/love2gathering-service-external-io-20261115.log"
+    },
+    "standaloneModels": {
+      "suites": 25,
+      "allPassed": true,
+      "results": [
+        {
+          "file": "tests/frontend_model.lua",
+          "passed": true,
+          "output": "PASS new deck and emptied zones retain JSON array contract\nPASS initial lobby selections match selected format\nPASS Commander defaults to four players with three separate bot selections\nPASS Commander supports five and six seats and preserves inactive bot decks\nPASS Constructed and Commander duels retain legacy request shape\nPASS every multiplayer bot must have a deck in the selected format\nPASS deck refresh retains valid bot choices and replaces removed seats\nPASS out-of-order collection refresh cannot restore removed lobby decks\nPASS opening a Commander deck fills all bot seats without changing its composition\nPASS negative boolean choices preserve JSON false\nPASS older snapshots cannot replace a newer prompt\nPASS JSON null prompt never creates an action\nPASS saved false settings override true defaults\nPASS trigger ordering sends stable left-to-right IDs\nPASS practice rematch preserves its original deck payload and resets native prompt identity\nPASS room rematch is host-authorized and main menu preserves the private connection\nPASS new matches reset answered prompt and ordering IDs\nFrontend model checks: 17 passed, 0 failed\n"
+        },
+        {
+          "file": "tests/builder_model.lua",
+          "passed": true,
+          "output": "PASS builder model: format/filter synchronization, covers, actionability, serialized copy guards and removal races\n"
+        },
+        {
+          "file": "tests/builder_layout.lua",
+          "passed": true,
+          "output": "PASS builder geometry 1120x720: 4 columns, 1 rows\nPASS Simplified geometry 1120x720: 12 columns\nPASS builder geometry 1280x720: 3 columns, 1 rows\nPASS Simplified geometry 1280x720: 14 columns\nPASS builder geometry 1440x900: 3 columns, 2 rows\nPASS Simplified geometry 1440x900: 8 columns\nPASS builder geometry 1920x1080: 6 columns, 2 rows\nPASS Simplified geometry 1920x1080: 10 columns\nPASS builder geometry 2560x1440: 10 columns, 2 rows\nPASS Simplified geometry 2560x1440: 14 columns\nPASS builder geometry 3840x2160: 19 columns, 2 rows\nPASS Simplified geometry 3840x2160: 21 columns\n"
+        },
+        {
+          "file": "tests/replay_model.lua",
+          "passed": true,
+          "output": "PASS asynchronous 501-frame pagination preserves order and live game\nPASS closing a load ignores late frame and metadata responses\nPASS out-of-order browser refresh cannot replace newer recordings\nPASS reopening the same ID ignores callbacks from the previous load\nPASS step seek autoplay and restart use saved timestamps\nPASS viewing replay cannot send engine actions\nPASS out-of-order live callbacks preserve latest game and trigger order\nPASS actor colors distinguish human bot and system log entries\nReplay model checks: 8 passed, 0 failed\n"
+        },
+        {
+          "file": "tests/json_codec.lua",
+          "passed": true,
+          "output": "JSON PASS: signed numbers, exponents, nested null/booleans, UTF-8, arrays and 4.0 MB numeric decode in 0.581s\n"
+        },
+        {
+          "file": "tests/rooms_model.lua",
+          "passed": true,
+          "output": "ROOMS MODEL PASS Rooms load native capabilities without enumerating rooms\nROOMS MODEL PASS Native mode bounds and per-pack set choices populate setup\nROOMS MODEL PASS Random draft defaults to all supported booster sets with an explicit empty JSON array\nROOMS MODEL PASS An optional random pool contains unique native-offered set codes only\nROOMS MODEL PASS Traditional booster choices and the random eligible pool survive mode changes independently\nROOMS MODEL PASS Random room creation sends its explicit eligible pool without deriving it from traditional packs\nROOMS MODEL PASS Removing the last eligible set restores all-supported random drafting\nROOMS MODEL PASS All-supported random pool remains an empty JSON array in the create payload\nROOMS MODEL PASS Host creation uses only the local room gateway contract\nROOMS MODEL PASS Room membership receives the participant\u2019s actual engine preferences and priority stops\nROOMS MODEL PASS Host receives its authenticated connection and public room\nROOMS MODEL PASS Guests join with one invitation code and their name\nROOMS MODEL PASS Two clients retain distinct membership connections\nROOMS MODEL PASS A poll started before a mutation cannot overwrite the acknowledged room\nROOMS MODEL PASS Older room revisions are rejected even from a newer HTTP read\nROOMS MODEL PASS Seat deck submission preserves the saved deck composition\nROOMS MODEL PASS Each client renders only its personalized native pack\nROOMS MODEL PASS Another seat\u2019s pack card cannot be submitted locally\nROOMS MODEL PASS An offered native card can be picked\nROOMS MODEL PASS Pick requests retain the native token and card instance ID\nROOMS MODEL PASS A pending pick cannot be submitted twice\nROOMS MODEL PASS Native building phase opens a fresh local deck editor\nROOMS MODEL PASS A reopened builder restores the native accepted UUID/basic selection\nROOMS MODEL PASS Draft deck editing uses owned pool instance IDs and preserves duplicate names\nROOMS MODEL PASS Only native-offered basics are editable within the application resource bound\nROOMS MODEL PASS Draft deck payload contains exact chosen instances and basic quantities\nROOMS MODEL PASS Native validation errors preserve the unsaved pool selection\nROOMS MODEL PASS Reconnect reuses the authenticated seat and rejects callbacks from its previous opening\nROOMS MODEL PASS A background accepted selection does not overwrite unsaved local deck edits\nROOMS MODEL PASS An accepted ready deck remains editable before the first native round\nROOMS MODEL PASS Ready deck edits can be resubmitted with exact instance IDs and quantities\nROOMS MODEL PASS Playing routes engine actions once to the authenticated room connection\nROOMS MODEL PASS Adopting a native room game closes an open read-only replay first\nROOMS MODEL PASS Polling the same active room game preserves read-only replay playback\nROOMS MODEL PASS A new native round updates the routing identity and closes the old replay\nROOMS MODEL PASS A native bye clears live room state while preserving the displayed read-only replay\nROOMS MODEL PASS Tournament completion stops live polling without removing the replay frame\nROOMS MODEL PASS Leaving closes playback and cannot restore an old owned room game after a bye\nROOMS MODEL PASS Leaving uses the room endpoint and retains only the shared invitation for later use\nROOMS MODEL PASS Room departure never sends a global engine stop command\nROOMS MODEL PASS Application quit queues an explicit authenticated room departure\nRooms model checks: 41 passed\n"
+        },
+        {
+          "file": "tests/api_rooms.lua",
+          "passed": true,
+          "output": "API ROOMS PASS Isolated desktop workers keep distinct service ports\nAPI ROOMS PASS Practice state uses the native local worker\nAPI ROOMS PASS A late practice response cannot replace an authenticated room game\nAPI ROOMS PASS Actions carry the authenticated connection and native round identity\nAPI ROOMS PASS Routing does not mutate the caller\u2019s pending action\nAPI ROOMS PASS Native health remains separate from private room gameplay\nAPI ROOMS PASS Switching rounds fences the old game even on the same room connection\nAPI ROOMS PASS Priority commands follow the new native match\nAPI ROOMS PASS Repeated snapshots for the same match do not invalidate valid replies\nAPI ROOMS PASS An assignment changed on the server waits for its authenticated room snapshot before adoption\nAPI ROOMS PASS Leaving restores local practice routing\nAPI room checks: 11 passed\n"
+        },
+        {
+          "file": "tests/table_camera.lua",
+          "passed": true,
+          "output": "Camera checks: 97 passed (presentation geometry only)\n"
+        },
+        {
+          "file": "tests/priority_model.lua",
+          "passed": true,
+          "output": "PRIORITY MODEL PASS Automatic priority defaults have no invented stops\nPRIORITY MODEL PASS Only explicit legacy WAIT intentions migrate to real native stops\nPRIORITY MODEL PASS Own and opponent stops stay separate and can be saved before a game\nPRIORITY MODEL PASS Empty stop lists remain JSON arrays\nPRIORITY MODEL PASS Before damage sends native after-blocker step independently from beginning of combat\nPRIORITY MODEL PASS Combat picker uses actual native priority step BEGIN_COMBAT\nPRIORITY MODEL PASS Combat picker uses actual native priority step DECLARE_ATTACKERS\nPRIORITY MODEL PASS Combat picker uses actual native priority step DECLARE_BLOCKERS\nPRIORITY MODEL PASS Combat picker uses actual native priority step FIRST_COMBAT_DAMAGE\nPRIORITY MODEL PASS Combat picker uses actual native priority step COMBAT_DAMAGE\nPRIORITY MODEL PASS Combat picker uses actual native priority step END_COMBAT\nPRIORITY MODEL PASS Stop control sends canonical native step names\nPRIORITY MODEL PASS A pending priority update blocks stale card and End Turn answers\nPRIORITY MODEL PASS Native acknowledgement releases pending priority controls\nPRIORITY MODEL PASS End Turn identifies the current native priority prompt\nPRIORITY MODEL PASS Pending GAME acknowledgement hides the obsolete priority prompt after HTTP completes\nPRIORITY MODEL PASS Auto-advance cannot revive an old snapshot prompt after pending clears\nPRIORITY MODEL PASS End Turn cannot answer targets or other game choices\nPRIORITY MODEL PASS Replay cannot configure stops or submit priority commands\nPRIORITY MODEL PASS Replay stop indicators use saved native configuration and never invent legacy stops\nPRIORITY MODEL PASS Full control is an explicit native configuration\nPRIORITY MODEL PASS Late command replies cannot replace a new match or release its controls\nPRIORITY MODEL PASS Current match acknowledgement is accepted\nPriority model checks: 23 passed\n"
+        },
+        {
+          "file": "tests/gallery_model.lua",
+          "passed": true,
+          "output": "GALLERY MODEL PASS Pending filters disable pagination before their debounce request\nGALLERY MODEL PASS Typing a filter invalidates already queued pages\nGALLERY MODEL PASS Newest filtered page becomes visible\nGALLERY MODEL PASS Reopening the same gallery invalidates prior callbacks\nGALLERY MODEL PASS Current opening can load its page\nGALLERY MODEL PASS Responsive page size resets its offset\nGALLERY MODEL PASS Gallery query preserves artist, set, variant and language\nGALLERY MODEL PASS Unavailable metadata produces an explicit empty/error state\nGALLERY MODEL PASS Artist links cannot open local files or executable URL schemes\nGALLERY MODEL PASS Explicit artist-link click opens its supplied HTTPS destination\nGallery model checks: 10 passed\n"
+        },
+        {
+          "file": "tests/artwork_model.lua",
+          "passed": true,
+          "output": "ARTWORK PASS Runtime requests retain catalog printing/face and strict local-only preference\nARTWORK PASS Only an actual pending image request is loading\nARTWORK PASS Repeated frames do not enqueue the same pending image\nARTWORK PASS A local miss becomes an explicit missing label instead of perpetual loading\nARTWORK PASS An image miss respects its bounded retry interval\nARTWORK PASS A later cache fill can become a ready image after retry\nARTWORK PASS Full-card and cropped-art requests have distinct cache/status identities\nARTWORK PASS Transport failure has an error state without hiding a ready full-card image\nARTWORK PASS Unavailable card metadata is separate from image download progress\nARTWORK PASS Token status follows its resolved artwork identity without replacing the native token\nARTWORK PASS Missing/error status entries share the bounded runtime image cache\nARTWORK PASS Startup prewarm is local-only even when online artwork is enabled\nARTWORK PASS A local startup miss does not impose its negative TTL on an enabled online view\nARTWORK PASS A ready image is reused across startup and ordinary view policies\nARTWORK PASS A busy image response has a bounded retry delay\nARTWORK PASS Busy cached image lookup retries after one second rather than thirty\nArtwork model checks: 16 passed\n"
+        },
+        {
+          "file": "tests/card_traits.lua",
+          "passed": true,
+          "output": "Card traits PASS: native current keywords, gained/expired abilities, exact metadata and no Oracle heuristics\n"
+        },
+        {
+          "file": "tests/deck_picker_model.lua",
+          "passed": true,
+          "output": "DECK PICKER PASS Product requests are bounded, format-filtered and URL-encoded\nDECK PICKER PASS Typing immediately fences an older precon page before debounce\nDECK PICKER PASS Lobby update adopts only the current asynchronous page\nDECK PICKER PASS An old popup response cannot replace a reopened picker\nDECK PICKER PASS Loaded Starter aliases retain transport arrays and native selectable identity\nDECK PICKER PASS A delayed detail cannot select a deck after the query changes\nDECK PICKER PASS Closed pickers cannot adopt a late selected deck\nDECK PICKER PASS Navigating away fences a late selection even without an explicit close\nDECK PICKER PASS A room or gameplay page transition fences an outstanding product page\nDECK PICKER PASS Full historical list is normalized into a separate temporary lobby identity\nDECK PICKER PASS Selecting an archive does not mutate or save its original\nDECK PICKER PASS Temporary preconstructed lists retain true empty engine arrays\nDECK PICKER PASS Lobby synchronization preserves selected cached precon IDs\nDECK PICKER PASS Refreshing saved decks does not replace a selected temporary precon\nDECK PICKER PASS Planes and schemes require explicit confirmation before any omission\nDECK PICKER PASS Confirmed constructed selection omits auxiliary cards only in the temporary copy\nDECK PICKER PASS Temporary deck cache stays at16 entries and protects selected human and bot decks\nDECK PICKER PASS Temporary selection and cache eviction issue no storage writes\nDeck picker model checks: 18 passed\n"
+        },
+        {
+          "file": "tests/duplicate_model.lua",
+          "passed": true,
+          "output": "DUPLICATE PASS Duplicate submits a new owned identity with complete quantities and cover\nDUPLICATE PASS A current duplicate opens the actual returned owned deck\nDUPLICATE PASS Returned empty zones remain arrays and the original is untouched\nDUPLICATE PASS A late duplicate refreshes saved decks without replacing another editor\nDUPLICATE PASS Later unsaved name changes survive a pending duplicate\nDUPLICATE PASS Later unsaved coverCard changes survive a pending duplicate\nDUPLICATE PASS Later card-quantity revisions survive a pending duplicate\nDUPLICATE PASS A late duplicate does not steal a newer collection selection\nDUPLICATE PASS A late duplicate does not navigate away from another page\nDUPLICATE PASS Rejected duplicate save preserves the editor and reports its actual error\nDuplicate model checks: 10 passed\n"
+        },
+        {
+          "file": "tests/modal_input.lua",
+          "passed": true,
+          "output": "MODAL INPUT PASS An outside double-click cannot add a card through open More filters\nMODAL INPUT PASS A filter opened after drag start blocks release before the next UI frame\nMODAL INPUT PASS An inspection opened during a drag cannot mutate the deck\nMODAL INPUT PASS A drag from a previous editor cannot change a newly opened deck\nMODAL INPUT PASS Navigating away cancels a pending builder drop\nMODAL INPUT PASS A current unobstructed drop still reaches the existing addition method once\nMODAL INPUT PASS Dismissal closes both picker identities before asynchronous callbacks\nMODAL INPUT PASS Repeated dismissal leaves no invisible input blocker\nModal input checks: 8 passed\n"
+        },
+        {
+          "file": "tests/stack_presentation.lua",
+          "passed": true,
+          "output": "Stack presentation PASS: explicit expansion, native board-choice folding and game/connection fencing\n"
+        },
+        {
+          "file": "tests/library_model.lua",
+          "passed": true,
+          "output": "LIBRARY MODEL PASS Pasted export requests a read-only import preview\nLIBRARY MODEL PASS Public deck URL uses the bounded service import path\nLIBRARY MODEL PASS An old text-preview response cannot replace the newer URL request\nLIBRARY MODEL PASS Preview retains quantities and printings without saving\nLIBRARY MODEL PASS Explicit Save submits an allowed unfinished draft\nLIBRARY MODEL PASS Save preserves the reviewed printing and full card count\nLIBRARY MODEL PASS Successful explicit save refreshes the collection\nLIBRARY MODEL PASS Rejected construction cannot be saved by the import action\nLIBRARY MODEL PASS Reopening the importer invalidates previous callbacks\nLIBRARY MODEL PASS Dropped deck exports are read within bounds and closed\nLIBRARY MODEL PASS Unrelated dropped files are rejected before reading\nLIBRARY MODEL PASS Only catalog-projected token artwork identities can be selected\nLIBRARY MODEL PASS Only supported artwork preference modes are accepted\nLIBRARY MODEL PASS Token preferences save independently of the deck card lists\nLIBRARY MODEL PASS Saving preferences invalidates old token resolution cache entries\nLIBRARY MODEL PASS A different deck opening rejects stale preferences and clears the dirty flag\nLIBRARY MODEL PASS A token has one bounded asynchronous resolution rather than repeated pending requests\nLIBRARY MODEL PASS Token art uses stable native object identity and original descriptor, retaining live stats\nLIBRARY MODEL PASS Resolved art passes its actual printing to the original loader without changing native identity or power\nLIBRARY MODEL PASS An enriched token with arbitrary image metadata still resolves its native identity and per-deck preferences\nLIBRARY MODEL PASS Enriched token art uses the preference-selected printing without overwriting its native/catalog identities\nLIBRARY MODEL PASS Explicit catalog token thumbnails preserve their chosen printing without re-resolving\nLIBRARY MODEL PASS Unknown token artwork has a bounded retry and is not treated as a real card\nLIBRARY MODEL PASS Drafted token artwork never inherits the unrelated practice deck preference\nLIBRARY MODEL PASS Constructed room token artwork uses that seat\u2019s actual room deck\nLIBRARY MODEL PASS Disabled artwork does not start token resolution\nLIBRARY MODEL PASS The token page requests grouped related identities rather than every printing\nLIBRARY MODEL PASS Opening a token tile requests only its matching artwork family\nLIBRARY MODEL PASS Outlined random selections are staged until explicit Apply\nLIBRARY MODEL PASS Cancel rejects late popup results and preserves the saved active artwork\nLIBRARY MODEL PASS Late search/page results cannot replace the current token variant grid\nLIBRARY MODEL PASS Artwork outside the offered token family cannot be selected\nLIBRARY MODEL PASS Manual artwork applies one exact printing to this token identity\nLIBRARY MODEL PASS The main token tile displays the currently active manual art\nLIBRARY MODEL PASS Per-token selections are persisted independently without changing deck composition\nLIBRARY MODEL PASS A completed older save cannot clear unsaved token edits made while it was pending\nLIBRARY MODEL PASS An empty random-selected pool remains open with an actionable error\nLIBRARY MODEL PASS Saving remaining token artwork retains the loaded preference for server-side deck-edit reconciliation\nLIBRARY MODEL PASS A successful current save adopts server-normalized preferences after a token maker is removed\nLIBRARY MODEL PASS A subsequent save cannot resubmit the pruned removed-token override\nLIBRARY MODEL PASS Each history opening guards against stale list responses\nLIBRARY MODEL PASS History pagination stays bounded and read-only\nLibrary model checks: 42 passed\n"
+        },
+        {
+          "file": "tests/collection_model.lua",
+          "passed": true,
+          "output": "COLLECTION PASS Starter starts collapsed without hiding My Decks\nCOLLECTION PASS Section collapse is queued for SQLite layout persistence\nCOLLECTION PASS An explicitly expanded section survives defaults\nCOLLECTION PASS Precon requests remain paged and encode the query\nCOLLECTION PASS Editing a query immediately fences the old response before debounce\nCOLLECTION PASS Current page adopts the server total without loading every deck\nCOLLECTION PASS Historical browsing never selects an unsupported practice game format\nCOLLECTION PASS Historical product formats reach the catalog filter\nCOLLECTION PASS Half-deck packets remain an explicit product category\nCOLLECTION PASS Immutable Starter aliases stay selectable without shadowing user decks\nCOLLECTION PASS Editing an original first creates a user copy\nCOLLECTION PASS The builder adopts the actual user identity and preserves the original\nCOLLECTION PASS An archive asks for a supported target format before copying\nCOLLECTION PASS Illegal archival copies retain every card locally for repair without claiming a saved deck\nCOLLECTION PASS Stale detail responses cannot replace a newer selection\nCOLLECTION PASS Current source details remain separate from saved decks\nCOLLECTION PASS A delayed save refreshes storage without rewriting a different open deck or clearing its edits\nCOLLECTION PASS A completed save adopts its new ID while preserving later unsaved name changes\nCOLLECTION PASS A completed save adopts its new ID while preserving later unsaved coverCard changes\nCOLLECTION PASS Using an owned unfinished deck opens the builder before entering the lobby\nCOLLECTION PASS Loaded Starter aliases reach native Start with true empty zone arrays after channel metatables are lost\nCOLLECTION PASS A delayed copy success cannot replace a later editor or misstate persisted ownership\nCOLLECTION PASS A delayed copy rejection cannot replace a later editor or misstate persisted ownership\nCOLLECTION PASS Full product details use a bounded LRU while preserving recently inspected and current complete lists\nCollection model checks: 24 passed\n"
+        },
+        {
+          "file": "tests/profile_model.lua",
+          "passed": true,
+          "output": "PROFILE MODEL 15 checks passed\n"
+        },
+        {
+          "file": "tests/storage_model.lua",
+          "passed": true,
+          "output": "STORAGE MODEL PASS A late storage response cannot overwrite the newest data-directory snapshot\nSTORAGE MODEL PASS Only explicit cache/replay categories can enter a destructive confirmation\nSTORAGE MODEL PASS Purge previews capture the actual category count without deleting anything\nSTORAGE MODEL PASS Cancelling a purge issues no destructive request\nSTORAGE MODEL PASS An explicit confirmation submits one purge\nSTORAGE MODEL PASS Purge sends its exact category through the local catalog\nSTORAGE MODEL PASS Starting asynchronous deletion does not prematurely hide cached images\nSTORAGE MODEL PASS Successful image deletion invalidates GPU caches without corrupting in-flight request counts\nSTORAGE MODEL PASS Deleting duplicate exports retains the app image cache\nSTORAGE MODEL PASS A purge completed before its POST response still invalidates the deleted cache\nSTORAGE MODEL PASS Deleting timelines refreshes replay availability in history and closes stale playback without changing the Settings page\nSTORAGE MODEL PASS An active download blocks conflicting maintenance in the UI\nSTORAGE MODEL PASS Database compaction requires its own confirmation\nSTORAGE MODEL PASS Compaction is an explicit separate action\nSTORAGE MODEL PASS The scan requests both image kinds with space-saving app-cache-only defaults\nSTORAGE MODEL PASS An explicit ready scan matches the chosen image options\nSTORAGE MODEL PASS Changing image options requires a new scan before Start\nSTORAGE MODEL PASS A stale status cannot replace a pending Start action\nSTORAGE MODEL PASS Start adopts the actual managed job state\nSTORAGE MODEL PASS New downloads retry only missing images, preserving ready and pending assets\nSTORAGE MODEL PASS Local mirror imports retry missing images without requiring another HTTP transfer\nSTORAGE MODEL PASS A pending command cannot be sent twice\nSTORAGE MODEL PASS A paused job resumes by explicit action\nSTORAGE MODEL PASS Cancel stops the job while its already cached images remain\nSTORAGE MODEL PASS A cache purge invalidates the old plan and requires a fresh scan before Resume\nSTORAGE MODEL PASS A paused incomplete scan can resume the backend local scan without a valid finished download plan\nSTORAGE MODEL PASS A fresh frontend rehydrates a persisted job and its actual options\nSTORAGE MODEL PASS Progress polling continues after acknowledged API support despite transient health errors\nSTORAGE MODEL PASS Older catalogs do not receive unsupported storage endpoints\nSTORAGE MODEL PASS A JSON-null idle plan retains both recommended image types by default\nSTORAGE MODEL PASS Byte summaries retain explicit units and zero values\nStorage model checks: 31 passed\n"
+        },
+        {
+          "file": "tests/storage_locations_model.lua",
+          "passed": true,
+          "output": "LOCATIONS MODEL PASS Resolved image location is independent of saves\nLOCATIONS MODEL PASS Editing a path fences older validation\nLOCATIONS MODEL PASS Preparing without an explicit confirmed plan is rejected\nLOCATIONS MODEL PASS Validation sends both explicit directories without writing configuration\nLOCATIONS MODEL PASS Validating only opens a reviewable confirmation\nLOCATIONS MODEL PASS Dismissing confirmation keeps the active installation writable\nLOCATIONS MODEL PASS A running match blocks storage preparation\nLOCATIONS MODEL PASS An older status cannot unpause a new preparation request\nLOCATIONS MODEL PASS Confirmed preparation pauses new matches immediately\nLOCATIONS MODEL PASS Background preparation keeps new matches paused\nLOCATIONS MODEL PASS Prepared copies await restart instead of adopting paths during a live process\nLOCATIONS MODEL PASS Cancellation uses the explicit backend control\nLOCATIONS MODEL PASS Confirmed cancellation restores normal use of original storage\nStorage locations model checks: 13 passed\n"
+        },
+        {
+          "file": "tests/card_printings_model.lua",
+          "passed": true,
+          "output": "PRINTING MODEL PASS A saved or unsaved deck card opens its exact printing chooser\nPRINTING MODEL PASS Picker uses the same-card endpoint rather than an ambiguous gallery name search\nPRINTING MODEL PASS Only offered exact printing IDs can be staged\nPRINTING MODEL PASS Staging does not mutate counts or the editor\nPRINTING MODEL PASS Cancel preserves the original deck\nPRINTING MODEL PASS Filter version invalidates an older in-flight response\nPRINTING MODEL PASS Explicit apply commits the staged edition\nPRINTING MODEL PASS Edition covers the actual copies and marks the deck dirty\nPRINTING MODEL PASS The artwork edit changes revision without changing composition\nPRINTING MODEL PASS Removing copies keeps persisted printing quantities aligned\nPRINTING MODEL PASS Adding another copy retains the selected edition\nPRINTING MODEL PASS Synchronizing a validation candidate never mutates the live editor\nPRINTING MODEL PASS Changing format invalidates a staged printing through the deck revision fence\nPRINTING MODEL PASS Reopening the editor invalidates the whole picker and its callbacks\nPRINTING MODEL PASS A card outside the new deck cannot receive an orphan selection\nPRINTING MODEL PASS An explicit but unloaded edition never flashes default artwork\nPRINTING MODEL PASS Exact metadata lookup cannot prefer an unrelated cached printing\nPRINTING MODEL PASS Native object and catalog/printing identities remain distinct\nPRINTING MODEL PASS Selected artwork never overwrites live native values or mutates projections\nPRINTING MODEL PASS Runtime artwork requests enforce exact printing lookup\nPRINTING MODEL PASS An earlier aliased default image cannot poison the exact-edition cache\nPRINTING MODEL PASS A foreign seat cannot visually replace Forest with a Plains printing\nPRINTING MODEL PASS Room opponents never borrow the local human edition fallback\nPRINTING MODEL PASS A multi-human replay keeps its perspective deck separate from another human\nPRINTING MODEL PASS An open editor never leaks its edition choice into another deck tile\nPRINTING MODEL PASS A deck cover uses that deck\u2019s persisted exact choice\nPRINTING MODEL PASS Token illustration selection remains independent of normal-card editions\nCard printing model checks: 27 passed\n"
+        },
+        {
+          "file": "tests/mechanics_client_model.lua",
+          "passed": true,
+          "output": "MECHANICS CLIENT MODEL COMPLETE 21 checks\n"
+        },
+        {
+          "file": "tests/bootstrap_model.lua",
+          "passed": true,
+          "output": "BOOTSTRAP PASS Healthy services alone do not complete saved-state hydration\nBOOTSTRAP PASS Repeated health checks do not duplicate in-flight hydration\nBOOTSTRAP PASS Saved presentation and false layout flags are adopted before handoff\nBOOTSTRAP PASS Failed saved profile blocks readiness with an explicit retry\nBOOTSTRAP PASS Retry repeats only the failed saved-data part\nBOOTSTRAP PASS A late superseded profile cannot overwrite the recovered identity\nBOOTSTRAP PASS Saved library data can hydrate while card metadata is unavailable\nBOOTSTRAP PASS Deck color metadata is re-enriched when the index becomes ready\nBOOTSTRAP PASS Enriched library completes without reloading preferences\nBOOTSTRAP PASS Frontend metadata cache retains a bounded recent set\nBootstrap model checks: 10\n"
+        },
+        {
+          "file": "tests/api_lanes.lua",
+          "passed": true,
+          "output": "API LANES PASS Slow maintenance cannot queue saved preferences or search behind its socket\nAPI LANES PASS Artwork has four bounded independent lanes\nAPI LANES PASS Identical concurrent metadata reads share one request\nAPI LANES PASS Coalesced metadata consumers receive detached tables\nAPI LANES PASS A mutation fences reads that began before the write\nAPI LANES PASS Explicit network image acquisition does not occupy preferences or save lanes\nAPI LANES PASS SQLite saves preserve their ordered lane\nAPI LANES PASS Enabled online artwork has room for the remote read and bounded cache write\nAPI LANES PASS A save callback refresh waits behind another queued write of the same resource\nAPI LANES PASS Pending deck writes do not delay the independent saved profile\nAPI LANES PASS Coalesced post-save refreshes share only a request already ordered after both writes\nAPI lane checks: 11\n"
+        }
+      ]
+    },
+    "startup": {
+      "assertions": 22,
+      "report": "tests/startup-ui-report.json"
+    },
+    "savedStateReadiness": {
+      "assertions": 21,
+      "report": "tests/startup-readiness-ui-report.json"
+    },
+    "optionalLocalArtwork": {
+      "assertions": 59,
+      "scope": "Actual L\u00d6VE real JPEG decode, bounded avatar/eight-cover preparation, exact editions and explicit missing/error/deadline states. Count includes repeated per-request route assertions.",
+      "report": "/tmp/love2gathering-startup-art-fs67zT/report.json"
+    },
+    "storagePresentation": {
+      "assertions": 46,
+      "report": "tests/storage-ui-report.json",
+      "scope": "Actual Slab input/rendering with synthetic storage/download responses; progress is outside phase stops and battlefield."
+    },
+    "actualHttp": {
+      "report": "tests/loading-http-report.json",
+      "status": "pass",
+      "scope": "Actual headless L\u00d6VE HTTP workers + actual isolated SQLite/catalog/background image job; generated JPEGs and explicit synthetic HTTP delay/status routes; baseline replaces API/worker only, another copy disables only the mutation-read barrier, backend is shared current code; no native game, external downloads or user data"
+    },
+    "existingClientTransportAndArtwork": {
+      "report": "/tmp/l2g-startup-client-frozen/report.json",
+      "status": "pass",
+      "cases": [
+        {
+          "scenarioId": "client-watchdog-owned-process",
+          "status": "pass"
+        },
+        {
+          "scenarioId": "client-http-delayed-state-and-seat-controls",
+          "status": "pass",
+          "checks": [
+            "Native concession lane responds while the ordinary state socket is still blocked (latency 0.004226218s)",
+            "Control lane retains the actual native concession payload",
+            "A delayed old projection is not adopted",
+            "A practice rematch invalidates the prior in-flight native projection",
+            "Room concession uses only its authenticated seat route and native round identity",
+            "Control routing never mutates caller input",
+            "A stale room action cannot be relabeled with the new round game identity",
+            "A room client cannot use the practice stop route",
+            "Practice stop fills the exact native game identity without changing the caller",
+            "Concession is not queued behind a slow ordinary action response",
+            "Invalid transport JSON is an explicit error rather than a fabricated game state",
+            "A lost response remains uncertain and is not locally retried or converted into an outcome",
+            "A transport error does not silently resubmit an already accepted action",
+            "All completed requests release their pending diagnostics"
+          ],
+          "scope": "Actual asynchronous L\u00d6VE LuaSocket workers and isolated synthetic HTTP faults; no native game"
+        },
+        {
+          "scenarioId": "client-native-visual-artwork-routing",
+          "status": "pass",
+          "checks": [
+            "Merged token / top card: exact metadata requested for native visual source, without token lookup",
+            "Merged token / top card: image request retains exact source printing and local-only flag",
+            "Merged token / top card: status follows the same pending visual identity",
+            "Merged token / top card: real L\u00d6VE decode/cache returns ready source pixels",
+            "Merged token / top card: host native identity, token status, counters and live values remain unchanged",
+            "Catalog enrichment preserves native host and inspectable merged components",
+            "Copy token / native source: exact metadata requested for native visual source, without token lookup",
+            "Copy token / native source: image request retains exact source printing and local-only flag",
+            "Copy token / native source: status follows the same pending visual identity",
+            "Copy token / native source: real L\u00d6VE decode/cache returns ready source pixels",
+            "Copy token / native source: host native identity, token status, counters and live values remain unchanged",
+            "Catalog enrichment preserves native copy-source metadata without changing token status",
+            "Merged card / explicit top ID: exact metadata requested for native visual source, without token lookup",
+            "Merged card / explicit top ID: image request retains exact source printing and local-only flag",
+            "Merged card / explicit top ID: status follows the same pending visual identity",
+            "Merged card / explicit top ID: real L\u00d6VE decode/cache returns ready source pixels",
+            "Merged card / explicit top ID: host native identity, token status, counters and live values remain unchanged",
+            "Merged token / copied top: exact metadata requested for native visual source, without token lookup",
+            "Merged token / copied top: image request retains exact source printing and local-only flag",
+            "Merged token / copied top: status follows the same pending visual identity",
+            "Merged token / copied top: real L\u00d6VE decode/cache returns ready source pixels",
+            "Merged token / copied top: host native identity, token status, counters and live values remain unchanged",
+            "Ordinary token preferences resolve the native original template, not changed current name/stats/colors",
+            "Ordinary token retains actual preference-selected image request",
+            "Token template status/cache remains ready without changing live host",
+            "Hidden or unavailable native visual provenance never falls back to another component",
+            "Hidden or unavailable native visual provenance never falls back to another component",
+            "Hidden or unavailable native visual provenance never falls back to another component",
+            "Unavailable/hidden component metadata cannot start image or token requests",
+            "L\u00d6VE save location remains inside isolated run storage"
+          ],
+          "scope": "Actual local artwork request identity, L\u00d6VE decode and image cache; controlled catalog metadata/generated pixels. Optional native snapshot supplies original merged/copied host metadata; no native rules or catalog downloads."
+        }
+      ]
+    },
+    "quitPersistence": {
+      "command": "sh tests/quit_storage.sh",
+      "passed": true,
+      "scope": "Actual L\u00d6VE callback-chained save; isolated one-card index and reopened SQLite, with only the SQLite files and coordination lock permitted."
+    }
+  },
+  "controlledDiagnostics": {
+    "planBatching": {
+      "root": "/tmp/love2gathering-download-plan-benchmark-de1sh0xg",
+      "planRows": 30000,
+      "cacheRows": 15000,
+      "kind": "Temporary actual SQLite key/index plan, warm reset before eachcase, local completefixtureJPEGs, concurrent metadata writes, no network/user data",
+      "cases": {
+        "whole_plan_baseline": {
+          "totalSeconds": 0.2831,
+          "bulkTransactionMaxMs": 283.039,
+          "settingsLikeWriterSamples": 2,
+          "settingsLikeWriterMaxMs": 330.896,
+          "settingsLikeWriterMedianMs": 168.253
+        },
+        "chunked_current": {
+          "totalSeconds": 1.974,
+          "bulkTransactionMaxMs": 15.688,
+          "settingsLikeWriterSamples": 90,
+          "settingsLikeWriterMaxMs": 330.479,
+          "settingsLikeWriterMedianMs": 12.702
+        }
+      }
+    },
+    "cachedMetadataPreference": {
+      "baseline": {
+        "decodedCandidateMetadata": 40,
+        "chosenPrintingId": "printing-00",
+        "elapsedMs": 5.536621996725444
+      },
+      "fixed": {
+        "decodedCandidateMetadata": 1,
+        "chosenPrintingId": "printing-00",
+        "elapsedMs": 3.0055659954086877
+      },
+      "foregroundWriter": {
+        "status": "busy",
+        "elapsedMs": 119.83725500613218,
+        "error": "database is locked",
+        "uncommittedThemePreserved": true
+      },
+      "scope": "Actual isolated SQLite + controlled metadata/BLOB fixture. Baseline comparison exercises previous prefer_cached_card against the same eager-list API; timings are warm local diagnostics, not hardware benchmark.",
+      "baselineCommit": "81da081",
+      "sourceHashes": {
+        "service/storage.py": "2de4c4a4ef9b3a933613f3fea11a3fe6b5e4ab08dfaa22b0fe9200bf58e59830",
+        "service/artwork.py": "6ee92635759da7dbea6acceadc9442255b270828fc6f5a3b6570f4d4ab2eb06d",
+        "service/tests/test_storage_contention.py": "40d5a68384ad8f20ee235ba7aa058818c256699903d814c6540fa0e876325e4a"
+      }
+    }
+  },
+  "baselineReproductions": {
+    "prematureStartup": {
+      "source": "81da081",
+      "report": "/tmp/love2gathering-startup-readiness-baseline-mpk5kf3j/baseline-report.json",
+      "expectedFailure": true
+    },
+    "queueBlocking": {
+      "source": "81da081 API/http_worker only; backend stays current",
+      "report": "tests/loading-http-report.json",
+      "expectedFailure": true
+    },
+    "staleMutationRefresh": {
+      "source": "Final API with only the same-resource ordering barrier disabled in a temporary copy",
+      "report": "tests/loading-http-report.json",
+      "expectedFailure": true
+    },
+    "slowExternalFetch": {
+      "source": "Storage.external_io replaced by no-op during isolated HTTP tests",
+      "expectedFailure": true,
+      "outcome": "Successful mocked 3.1-second GET/POST fetched but returned503 before fix; final tests commit JPEG, return200 and hit cache on repeat."
+    }
+  },
+  "validationNotes": [
+    "Initial direct Lua calls for three L\u00d6VE-only fixtures failed setup due to the wrong harness. They are excluded from the 25 standalone suites; card-printing queue passed through test_card_printings in the full service suite, and client transport/artwork passed in their owned L\u00d6VE runner.",
+    "Initial quit_storage check proved persistence but rejected the existing maintenance lock. Its updated assertion permits only that coordination file plus SQLite files, and the test now builds its own one-card catalog; final rerun passed.",
+    "Final review reproduced and fixed slow-external-fetch deadline accounting and stale chained-save refresh ordering."
+  ],
+  "limits": [
+    "No Internet throughput, full-library or cold-drive benchmark.",
+    "Bounded plan batches deliberately take longer overall to yield for foreground writers. The fixture does not show elimination of worst-case writer latency.",
+    "Optional artwork still pending after its two-second warmup continues in the background, with separate cache/missing/error counts.",
+    "Combined user stores remain intact; no relocation, purge or compaction ran.",
+    "Existing user processes remain on old code until normal close/relaunch.",
+    "Engine and bridge sources/builds/native games were not changed."
+  ],
+  "engineGitlink": "d9b266fc981024873ac7ec5f90ee7121a060725e",
+  "productionSourceSha256": {
+    "app/api.lua": "32ed2bcdbedd6bcbfdbe557850982041d713c94f06beb46bfeb9db0bf7e6914d",
+    "app/artwork.lua": "fb26301e888889e3ca6606a470bf0b0a3a20d9c96374b2e00e3dccb16552f7d7",
+    "app/assets.lua": "f93c5337b13b1f7d487ae39e603f1a5ba0cf18c5c18435baedac6245bfcb182c",
+    "app/http_worker.lua": "a7ece2dbe8923bb5230e7fc6a4546ac93e7320cbfd7c4677b57f8ff834431171",
+    "app/model.lua": "c07c10f5aa926105ee1187525115f3a2ae427fbced81823fb0db6bb4d0d440b4",
+    "app/preferences.lua": "1132049d14a98c91b99d59ad378cd164b31efa207b9024984d5f2a8a81319deb",
+    "app/profile.lua": "949656022d351cd06257e4c7878b4ed779c7702360513ddbaa352a369692cd06",
+    "app/startup.lua": "c7226c36c7385462efc484ec6343135981e0cea478b696ec79c81cc8ed2f9811",
+    "app/storage.lua": "980da2b6835733ec2dbf20ed3a1883dca7132634bc5e2cd772a1b96166cad054",
+    "assets/ASSET_GUIDE.md": "8e3d08ccf1b10de9386c0c26bddf028d67061d00d77630ae5ddcbc8af0960a44",
+    "assets/kenney/runtime/manifest.lua": "26da5e80c9646fea54da4d3f2abf1ef0dade88ff33ce68a5220b76f119fe820f",
+    "assets/kenney/runtime/provenance.json": "bcaecff6bec14f04007883a9b9815d8a727ef3e4a1d671a3cf08a5bbd144d86f",
+    "main.lua": "b466fc66eec4ecc4d021a63a80d9ce770208c3eb108e53c688be04f48d6feacb",
+    "packaging/runtime/launcher.py": "4b429cad5199c21139a1e6646df2acb96f0f8eb0c5fe5326ebf5056c4229c8be",
+    "run.sh": "31a89feef67f9a3228fc15341b1839ef72e93ae262d0ff0f7d0af46fd81289f7",
+    "scripts/download-card-images.py": "c48716f9b55d174a51a79dba64e32fb33047bc47adb70b647dfdf3d703345a90",
+    "service/STORAGE.md": "d839268f8224a3869b886754702c9d52c4c05319e77b3952fa4c0fbf8d8520ce",
+    "service/artwork.py": "6ee92635759da7dbea6acceadc9442255b270828fc6f5a3b6570f4d4ab2eb06d",
+    "service/catalog.py": "de7da205973b7055cf05f09df0d42b2dfc6f97d9012c456d24913584c8b88c28",
+    "service/downloads.py": "0edf7e704d5860dd27abd5f9f6576e7f4fe21657b6891908c46d181067590aaa",
+    "service/server.py": "2ddc217b0fdb21e1426108c15ca745b405cc30f0355baed8e8a84273f1daeae8",
+    "service/storage.py": "ba28738911a0d65f6842702589c72919a8bfb33947beff83b4efdcaa3ead7a9d",
+    "app/bootstrap.lua": "c35dbbcba2d1e53bf87843e5d3f44c1fca84f4f1e619caf4161b5af80aae6eb1",
+    "app/startup_art.lua": "3e234ff5db6731cece310b1ac271659e08c869ef2b2d7a3c1038197bb0842926",
+    "assets/kenney/runtime/icons/loading_circle.png": "7e7660813df757657ffbc1adf4be9f0c1ed3239620f1c770f887baf4c7f900a4",
+    "assets/kenney/runtime/loading.lua": "fbae554d3a03fe4e22eb21904242b0985c40d05515d2bb9f11040f42a3631f68",
+    "service/query_cache.py": "06f2c183b40ff4c35fe9e74642cd6673911b1eb2f37696eab5cb571d8b9edd17"
+  }
+}

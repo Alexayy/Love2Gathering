@@ -19,7 +19,7 @@
     "Splash reads the actual owned launcher-status file and installed revision",
     "Readiness requires catalog XMage and room health independently",
     "Successful gate retains its measured startup report",
-    "No normal Model initialization or persistence runs before startup handoff",
+    "Actual Model saved data and applied personalized graphics finish before startup handoff without writes",
     "A failed graphics warmup becomes a blocking startup diagnostic",
     "Graphics failure restores framebuffer font shader color and stack before drawing the error",
     "An absent supplied resource produces a visible blocking diagnostic",
@@ -32,7 +32,7 @@
     "An unavailable bridge cannot falsely complete readiness",
     "Launcher build errors remain visible and block the startup gate",
     "Oversized launcher status is rejected without loading unbounded data",
-    "Every startup scenario remains limited to read-only health requests"
+    "Every startup scenario remains limited to read-only health and saved-data requests"
   ],
   "geometry": [
     {
@@ -56,7 +56,7 @@
       ]
     }
   ],
-  "moduleCount": 44,
+  "moduleCount": 51,
   "passed": true,
   "requests": [
     {
@@ -79,6 +79,30 @@
     },
     {
       "method": "GET",
+      "path": "/settings",
+      "scenario": "launcher-build",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/profile",
+      "scenario": "launcher-build",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/decks",
+      "scenario": "launcher-build",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/ui-layout",
+      "scenario": "launcher-build",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
       "path": "/health",
       "scenario": "metadata-missing",
       "service": "catalog"
@@ -97,6 +121,30 @@
     },
     {
       "method": "GET",
+      "path": "/settings",
+      "scenario": "metadata-missing",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/profile",
+      "scenario": "metadata-missing",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/decks",
+      "scenario": "metadata-missing",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/ui-layout",
+      "scenario": "metadata-missing",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
       "path": "/health",
       "scenario": "bridge-offline",
       "service": "catalog"
@@ -112,59 +160,90 @@
       "path": "/health",
       "scenario": "bridge-offline",
       "service": "room"
+    },
+    {
+      "method": "GET",
+      "path": "/settings",
+      "scenario": "bridge-offline",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/profile",
+      "scenario": "bridge-offline",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/decks",
+      "scenario": "bridge-offline",
+      "service": "catalog"
+    },
+    {
+      "method": "GET",
+      "path": "/ui-layout",
+      "scenario": "bridge-offline",
+      "service": "catalog"
     }
   ],
-  "resourceCount": 94,
-  "scope": "Actual L\u00d6VE Startup requires real modules and decodes actual curated assets/sounds/graphics; launcher status and health replies are explicit isolated fixtures. No native build, real service initialization, WAN check, image download or user-data write claim.",
+  "resourceCount": 96,
+  "scope": "Actual L\u00d6VE Startup/Model hydrates saved data and applies supplied graphics; launcher status and health/settings/profile/deck/layout replies are explicit isolated fixtures. No native build, real service initialization, WAN check, image download or user-data write claim.",
   "sourceSha256": {
-    "app/api.lua": "34cc4595b7e3c274f25bf8b9658828e233c876f5b60d4afbd9c9ff5bb4aa7624",
+    "app/api.lua": "972b25801d748fddf4cd6f69d86339b6144fc568c7bd2868823d6cb74d0da68d",
     "app/profile_ui.lua": "0b00a43979f3702da503f2c3c765b7e5b0ad53b15affb231c8cb7e8c62e2bb01",
-    "app/view.lua": "0a149f1059af5655e0b00c3b43fbde77d1b914f2f1e1e38be577c3410502edfa",
+    "app/view.lua": "e5142b216affa618729129b567c9320c2ba349e2431eb47fdfe9372d0e7be865",
     "app/priority.lua": "370c4b4a57eff66278d1b02948ce1f51d9e249aeae89cdebd19a824e87225bc1",
     "app/playmats.lua": "3a20234b01c6a9b8870b608bc187e91f842dbdeaedc0bf39abb9217aa3c12726",
     "app/table_camera.lua": "2e30fc54280c21bb7248a9c637965309ea84b27f2e8663c75075146bb713b448",
     "app/room_ui.lua": "e43f835be81fce5756ca4406e84ef9de05a028f8debbd6669ad58a98038dd3b2",
-    "app/library_ui.lua": "e3d8622a478ffbdc013d8f7e387729caa80a3d16882ee471d85fbf10ada5d0c5",
+    "app/startup_art.lua": "3e234ff5db6731cece310b1ac271659e08c869ef2b2d7a3c1038197bb0842926",
+    "app/library_ui.lua": "2b51f658393043f51d65816677e4b4093e87f1207e1c6762d819359df06c5d34",
     "app/deck_picker.lua": "2776b7358a459ac60898b7479ba8ba93b276d181e788f2a20251fdce5837b9f6",
     "app/layout.lua": "04c931827af601e03d90b27cfef7bc55111d14fda41a161cf489ad328a96adf9",
     "app/draft_ui.lua": "a8dfd797a98552cc23edf680e16e499cf5a7dfb649721264ba6da63eaf189873",
-    "app/assets.lua": "7ec57010dfd2543628c73f9a20857476823b077b530ab9dd6e6dd0c123b45971",
-    "app/artwork.lua": "87ece8d6c851a2b2d1981b59a18ecb98f296c36843a708bee09ebdd573c94dff",
+    "app/assets.lua": "f93c5337b13b1f7d487ae39e603f1a5ba0cf18c5c18435baedac6245bfcb182c",
+    "app/artwork.lua": "5562c583878c8e55d74b8e4a1643093ba3185235340ba8d51e32baff910c1c10",
     "app/keywords.lua": "bcd747e1cab36a0b5b93d8716777545631dac05ef9b27d03d9d2f18e87a1a4d8",
     "app/log.lua": "6268679d0a6036078af1dc6447a92778434880dc0a0c740b01f0667bce4c6e9f",
-    "app/lobby_ui.lua": "fe19df1a9821d29968acabb3807ec3aa0b6661a751ff1573d7d071979e659ce1",
-    "app/builder_simplified.lua": "532a9bb4e46a2cd77b4b733705fb5ac1798f76023192cbfaaeb4517de95895a3",
-    "app/startup.lua": "2ff41ee5756e74bfda7959986c4e9ac8247954eb7b2d02fa615dc8e017a309d9",
-    "app/storage.lua": "f038aa6a0a02156577b466b5e22a5469d29d6306bdd656570e9564e315a6d37d",
-    "app/multiplayer_table.lua": "bb1bb50597a497fab4b82e2ba392f18684c56a7d55b81ed46473c2e8eab0ea6c",
+    "app/lobby_ui.lua": "63ef9a9e8fbc1e5f3ff43ad445058c674578ba03151e5fffda4da8ef16719943",
+    "app/builder_simplified.lua": "f47713113bc85e4e5d1a8faf47ad00d5e270960432ccfabb23c1c778d44ec6d0",
+    "app/startup.lua": "245a498834f4fe0d4d29cf03dd0c80ff97493bb3575d3a915959cb2f5a4ecdd5",
+    "app/storage.lua": "980da2b6835733ec2dbf20ed3a1883dca7132634bc5e2cd772a1b96166cad054",
+    "app/multiplayer_table.lua": "78a0f3d9697d6d070ed3a676b27389e8eaf621dd1907fb38e40cc035508f2995",
+    "app/navigation.lua": "e4760887df199fc06bc0816529a2f5855c349818e3ef3b17ddc470215b1ad739",
     "app/storage_locations.lua": "8e94c27c56bb40c752592b5dd830d6d6775737e0a6b1570dfc9609fc5caa8836",
-    "app/http_worker.lua": "a737947013a6794b80631f12d68fca9cd470728e506dd0abc2c19eebb032a23e",
+    "app/http_worker.lua": "ecb801dc34320ae5af829a5953eb66a446c9748e51b8f10b10e60f56110358c3",
     "app/card_traits.lua": "fc4b8a891547b2877330ebfd1189c80bc38f867c74db55e112a8ec87817b162d",
-    "app/collection_ui.lua": "7c4dabffec263413a93d4f5e6599e266782c1522faef9eaa319b299387f74693",
+    "app/collection_ui.lua": "82918bd6b17d7ae59564f2636901a3e88f64f1a3dea447fa7872bb44896ca0b9",
+    "app/image_decode.lua": "5c8b422d03b40931338e45798ad28b71ebb1c484c1559af4fb34b6d42632186b",
     "app/board_fx.lua": "a16ce699669ed8565336f38c9aa5babea80b78a2eb9e9ee144b98793b5709452",
-    "app/builder.lua": "9d8d49719a6364c6d6bb5be9206da902a08d19c07086a0456b58b127be0d45f1",
+    "app/builder.lua": "f39295776564125c4907d073e0032e9752845491f938e0fc264466364d8425d8",
     "app/replays.lua": "af324028fa633364d797d9c215a0b1ad886fe58bae23ce408902752d5a5b6138",
     "app/collection.lua": "156602baf908bd682d285129cb70dff568e21bad388f3d9eafc390d97e51e069",
-    "app/preferences.lua": "f9026d476084f82167edf92e1dfd4b71a0f828b2ef1d06108ab39afac85d4554",
-    "app/richtext.lua": "7c937b06bfbeb18da5d8865c2dd61545c150fb5891fcce7f3a710786d03c22cd",
-    "app/profile.lua": "07270a6f3450d76d75ad288bc19d453b453cb388500c02e136d570eee66dc552",
-    "app/settings.lua": "d35d2a4c5db1a0b992f3ed8d59b519e1ee2fec9c2a522ce36a5778876f3c88b4",
-    "app/replay_ui.lua": "17d9ecd8098d9303c8c673690d6f9df8071e9bab896045f4eb2475f89576a526",
+    "app/preferences.lua": "2f5b2b690bb7bbc3e5b2d87f286b478ca80a9571d18804a6c30ac2aca6d358eb",
+    "app/richtext.lua": "058cfed6e901873fea48b892b292492b5fce3e7659580f764c2f511d7d1d203f",
+    "app/profile.lua": "949656022d351cd06257e4c7878b4ed779c7702360513ddbaa352a369692cd06",
+    "app/card_printings_ui.lua": "4b49a5b1b688494575b87317b0f8f738514101b6d394035fcd12c9bf442d8329",
+    "app/settings.lua": "aa50aac93b09b1afe439b12cab30337dd23314d72d95ddfea30636fd464bf770",
+    "app/token_art_ui.lua": "53765ddb851e77512e6487893f8be81175f863e954eb0c2a65227a42255f5e70",
+    "app/replay_ui.lua": "62547cac56f7df88f05aa81be533a86493061661e3e5b5154b90eed268a1a6f6",
     "app/fonts.lua": "083d06c769ef3d6b3189084542693e83bbb624389c17112bda9b21c5567ce675",
-    "app/renderer.lua": "5d0092b054396472a7fc523a95a209439fbfd6964c874abd78c0af0957f16b9f",
+    "app/renderer.lua": "58d063bcc6ccb823cfce5ad65d95e040b16802df5be5124b02a35cfa0824aaf4",
     "app/card_choices.lua": "a5731f8961aad88cd6f20297a64f16d3c832c5f374cb883ae0e4dca6ab8febff",
     "app/rooms.lua": "bb88dde3cc7c405c1c7cf89e3cd4742d8d8495307b5735325bac0d234fc4925f",
     "app/gallery.lua": "adadc8eeae72778405019adbaeb4f7077709f88ddd6060c5deef4ff6c4ec1063",
     "app/builder_colors.lua": "5d60cc7de0bf30579f8cb1ffabf3c7734d99d7c622fb663d62e3ac4fc1b5800f",
-    "app/surfaces.lua": "0ec5e482d55f663d1c49c4a70dfb7ec199d537e34b172526c371552d15fb4079",
+    "app/surfaces.lua": "f9b87b643977a2bf49fcf8592f52eb8a7f158a2c491ad77210d0e1f9d538be84",
     "app/dice.lua": "e2f177e8a060e6f29e2194ce9833a90c32db62b41d2047bee2e9e0ae5bc6424c",
-    "app/table.lua": "745802c3194220d5838332167043472e1241f80438d40ce4f8879bd82052af71",
-    "app/library.lua": "412a7cf4e580ab3e16cbcb1fb3079d38d7b12b0abf07d8de3bc1f4334674ae9f",
-    "app/model.lua": "bfa99822f7c4e08c156ee3b4354fc370ce7ad11c6cfc76eb80d6733b70cf7226",
-    "app/match_ui.lua": "f445e1d136c1c83bf2486873873a936a6b305b1ebed9edf9fdce08c14cd8d3c7",
+    "app/table.lua": "093277153cf18f2727469540a1c6d657b90d72041ec909781485577d4af85e20",
+    "app/library.lua": "cf58d69bb8c8d8fe990dd112f14606c5c9349aafa90eae3bb4de0be3a5fc0814",
+    "app/model.lua": "c52c21a083489b052707d57ba0d890735ff169340e53d49152006c632cfa3a84",
+    "app/match_ui.lua": "bc5e190e50b31fbf9c9a02ea43b4c5f3a66786b7e63f4842ac57cb06f129ddbe",
     "app/theme.lua": "e601fb05d15d35345ce2543d9a448ba6a2e6ca7571560e8f402321dc2b75e7c7",
+    "app/bootstrap.lua": "c35dbbcba2d1e53bf87843e5d3f44c1fca84f4f1e619caf4161b5af80aae6eb1",
+    "app/card_printings.lua": "4dd855e7084a5527e228efce1d30d43e89366a8a5ba54ec715578f1e43afb895",
     "lib/Slab/Style.lua": "d5a2766d100dc98310580e1ff458b4bb849b11cc495ae7ea127dab2537a20086",
-    "lib/Slab/API.lua": "e924e3eca066f79c96c99b6ef758934754414b554d71db3bfdf923b5fb246dea",
+    "lib/Slab/API.lua": "97f6b91c5acd2bfbc25bccfe71f13388b1207ebf3787087030227167e22d3cfc",
     "lib/Slab/SlabDebug.lua": "2e46c37eb3660cf57b29985c9c39bf3042263e8f56dd858d6f4057ad7648073e",
     "lib/Slab/init.lua": "9df6b3293c6637c67f48fce59182531e9a56f5dbecb773e044b96ff46f6213c7",
     "lib/Slab/Internal/Core/Utility.lua": "c9c1c70b6e1d22b4391d2a86d97b42399a890379f360d8faed861f6ca1c32eed",
@@ -172,7 +251,7 @@
     "lib/Slab/Internal/Core/Cursor.lua": "d87bdfa40f53270240a6e8724e5564dadcaa726c52bcb48a8ce573d1463c4b8d",
     "lib/Slab/Internal/Core/Messages.lua": "763dee8902dfc8d8ef209d66135bc5089a5e0be6eeb918e8df86680b974c8611",
     "lib/Slab/Internal/Core/Scale.lua": "ac7557498d435556083bdc582f64fba691f4a930fd773ea40eb16bd69ba38457",
-    "lib/Slab/Internal/Core/DrawCommands.lua": "8b527fa4018a8f097de339be1f8e3e0eb3da7176e07e8cfc9a4ce751f208298e",
+    "lib/Slab/Internal/Core/DrawCommands.lua": "709d5f817099a36243655f6b7b7494aa299f4911887c17e3542acfd6d4929700",
     "lib/Slab/Internal/Core/Stats.lua": "b6a944f67db8dc3e0c8427c60e1d689bcbfb198a59a0674e67503301295eee35",
     "lib/Slab/Internal/Core/Config.lua": "d7566879bfe154d53bc2b969c55a88ef62d942307d8f45ec7231ecd6615a6b4e",
     "lib/Slab/Internal/Core/IdCache.lua": "170370c1a25b48ca7b1efb1f256b15869f5277243f14704a77088a6eb03066af",
@@ -180,7 +259,7 @@
     "lib/Slab/Internal/Input/Common.lua": "3bb6dc2ad9cff1bdcf30ba78e4eb2015f27b534d7f4b6da6fdbd35e1add3e5e1",
     "lib/Slab/Internal/Input/Mouse.lua": "80c3b74645d29bbb9255a680a0ef2cf0efae3a2e74afddeabff4caf1d402a904",
     "lib/Slab/Internal/Input/Keyboard.lua": "c2a353d609785faf5052e944355106154ce21557c7cd1d599f2ed66f497f55b9",
-    "lib/Slab/Internal/UI/ComboBox.lua": "e30832a079ebd6e4a71280095eadac94cac62bae61147f949e8b42aca7a09d6f",
+    "lib/Slab/Internal/UI/ComboBox.lua": "a423b1fc9c206aae318c42835cc0e6030893925de80a7e61ac2913111183e195",
     "lib/Slab/Internal/UI/Window.lua": "329870b4e61d27578e58eb90fc32ddff36e3005ec2057a3589450064b17c7b37",
     "lib/Slab/Internal/UI/CheckBox.lua": "4a336cef2bdd9c35d46bae38c89ca39e2c538654b9fd90192d9a3415619b7971",
     "lib/Slab/Internal/UI/Input.lua": "bff26d20a87a977e2ddd455d6bb5a566ceb22cf1086d92726242acc0dd8dbf15",
@@ -189,7 +268,7 @@
     "lib/Slab/Internal/UI/ListBox.lua": "01c983c835d270b0d0eb5e031eec31156dacc6fca14fa21624c045955cd52f48",
     "lib/Slab/Internal/UI/LayoutManager.lua": "7438628018b473da9884ddd7068f7c614d76de8e5830be6e2803cd1d231a200f",
     "lib/Slab/Internal/UI/Image.lua": "5d246ea11d13ef6998a3a16bb90cb382f3cc295ee2ae6e66ce14edaf7f357a20",
-    "lib/Slab/Internal/UI/Tooltip.lua": "a80ec0facdee221906d24d8c2a0433a5f5a622091e82446ac0cabdfa572fb9bd",
+    "lib/Slab/Internal/UI/Tooltip.lua": "11f587cee05766c5cf25a544b0529b93ac64c1e9e7949b27b975aacff5283654",
     "lib/Slab/Internal/UI/MenuBar.lua": "72bac9a0a1b8365abad39ac6dfe18190b4d4a72ab5b4947dfe813cfd7335a12a",
     "lib/Slab/Internal/UI/MenuState.lua": "593548e18bc4dc83511096639feae7595fccff249a854adb99792c109e01f2d2",
     "lib/Slab/Internal/UI/Button.lua": "db2d8c5cd6a6755f58e1ead0d67b39dcdcb39f183a9b3f99ee2f6b88f2de1af6",
@@ -200,9 +279,11 @@
     "lib/Slab/Internal/UI/Text.lua": "4eb6bd10bf14ab46b51f18505854155b87127130a3698d9e8720def429b9532a",
     "lib/Slab/Internal/UI/Tree.lua": "c430e1ad3f499faba39ccb9b338e352db5ff94a0f4bc03391de5a0bd85b2b9c8",
     "lib/Slab/Internal/UI/Menu.lua": "2374e24545ac064a7035cf512e49d5db18e8960914ef04d06edcb6b69d7d38cd",
-    "assets/kenney/runtime/manifest.lua": "440581f0ae0c8a7f7d18e7e7fe4c5049696bcfde84809e5780f3b9fd29d532c0",
-    "assets/kenney/runtime/provenance.json": "38c83f370c9aa4a65ccfb8415f2eb26257ea445f3ec8dffe5e08592f9b7653ea",
+    "assets/kenney/runtime/loading.lua": "fbae554d3a03fe4e22eb21904242b0985c40d05515d2bb9f11040f42a3631f68",
+    "assets/kenney/runtime/manifest.lua": "26da5e80c9646fea54da4d3f2abf1ef0dade88ff33ce68a5220b76f119fe820f",
+    "assets/kenney/runtime/provenance.json": "bcaecff6bec14f04007883a9b9815d8a727ef3e4a1d671a3cf08a5bbd144d86f",
     "assets/kenney/runtime/enhancements.lua": "1fcd3acb131d9037b63f126cdafd5e4a3911bb04e0a0129c475a71ba52a2ce60",
+    "assets/kenney/runtime/window_actions.lua": "c027c78e5ce3ab370036ab5d92082fca0186a87fceaa6d7252ff5e3ba22c037c",
     "assets/kenney/runtime/cardBacks/cardBack_blue3.png": "a89b8905e2ca25c295c54478de6a8d94b5058b68096fa26e864677f72372d9b2",
     "assets/kenney/runtime/cardBacks/cardBack_blue1.png": "e618908e55918620691348059eac2f9497a8079703caf7380857e3c3c4a38046",
     "assets/kenney/runtime/cardBacks/cardBack_green3.png": "93c833d0746b5bb0ce83dabbdcf2f6bcc42b52e98d8e58cb6c06810ca8a82cb9",
@@ -239,6 +320,7 @@
     "assets/kenney/runtime/icons/dice_4.png": "07610cfef9ce00bb284c277623a0c42c0291538da539163851bfed1430c5b438",
     "assets/kenney/runtime/icons/zoomOut.png": "a5304aa80ab12e4319599799f67c088f4b6adc270dc77fee8b2ec18ee85d91a0",
     "assets/kenney/runtime/icons/dice_6.png": "f97d196a78f02303f9299346d99b19f6a2579431e39c581570d305eb67749f97",
+    "assets/kenney/runtime/icons/loading_circle.png": "7e7660813df757657ffbc1adf4be9f0c1ed3239620f1c770f887baf4c7f900a4",
     "assets/kenney/runtime/icons/gamepad.png": "409ec081344f893b7103c98ec3aec00b1709a4ee74679e3da2b877d9fb0a2275",
     "assets/kenney/runtime/icons/save.png": "a8204ded82d12288c3510c8e0c0033e04f26958ef31aba3087f67288e3e1a7ed",
     "assets/kenney/runtime/icons/dice_3.png": "9e9d333fce2213414a3a9603aff39dc9fa6a70a6d08d97d2d66a0dfe2bf779f2",
@@ -260,6 +342,7 @@
     "assets/kenney/runtime/icons/pawns.png": "5288cfcd4791af321607714c3a334b025158ee2784f54750452da7503cc99b77",
     "assets/kenney/runtime/icons/lock_closed.png": "4f86100f2d4db8cfeb7162c1ad050ed91d70bea3eb44953678f17f029d462f7a",
     "assets/kenney/runtime/icons/card_tap.png": "0074d329973f047c6ba0821d87770e61fb17e98b42754f498577740a290490de",
+    "assets/kenney/runtime/icons/larger.png": "6c4c23f0323d8a373c41be300d7ab59f82d35e1b1c3f2025e6cc20d71a624fac",
     "assets/kenney/runtime/icons/d6_outline.png": "d0d0c9c50c75852041e70f80e9f394fd2bbfc0be3ef98896dd7f96ad6ce238da",
     "assets/kenney/runtime/icons/cards_stack_high.png": "6dc611a928f4bb6722aec7c6f99e4fd8010c497efa03a16b68d68076f53d9cbf",
     "assets/kenney/runtime/icons/stop.png": "ece2ec1c88bc7af9bab9e50bb614b8c25307d0862eb069b1a316331d4f14c988",
@@ -314,6 +397,6 @@
     "assets/kenney/runtime/skyboxes/skybox-space-dark.png": "873104aa5ce7e6cff031dd17260460b2f8021c84898b11a74ab5ae6016a195f2",
     "assets/kenney/runtime/skyboxes/skybox-space-band.png": "54ce0b10c02762d983e47da823eabaf471e93427d58f92526b86a4909dbbdd4a",
     "assets/kenney/runtime/skyboxes/skybox-space-nebula.png": "5e52edd76a8eb2da520041d89b5bec9fd53c003e33fd33ca8e522abc36112946",
-    "tests/startup_ui.lua": "dae0004c1ffee6483fa11df9096e3d67a6ec7120298a546d95039e47a7b5c073"
+    "tests/startup_ui.lua": "32e859535388a865cd5aff35de969e6c6109ac77ab570ab33791b07b09b7c75b"
   }
 }

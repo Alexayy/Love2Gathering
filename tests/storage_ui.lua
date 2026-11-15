@@ -39,7 +39,8 @@ package.preload['app.api']=function()return{escape=function(s)return tostring(s)
  end,quit=function()end}end}end
 local S=require('lib.Slab');local Model=require('app.model');local Renderer=require('app.renderer');local View=require('app.view');local Preferences=require('app.preferences');local Layout=require('app.layout');local Storage=require('app.storage')
 local m,r,v,p,runner,Cursor,Region;local wake=0;local mouse={x=2,y=2};local down=false
-local buttons,controls,regions,windows,texts={},{},{},{},{};local checks,shots,captures,geometry={},{},{},{}
+local buttons,controls,regions,windows,texts={},{},{},{},{}
+local progressCircle,progressLabels=nil,{};local checks,shots,captures,geometry={},{},{},{}
 local function check(ok,label)assert(ok,label);checks[#checks+1]=label;print('STORAGE UI PASS '..label)end
 local function wait(t)wake=clock+(t or .1);coroutine.yield()end
 local function ready(fn,label)for _=1,100 do if fn()then return end;wait(.1)end;error('Timed out: '..label)end
@@ -94,16 +95,18 @@ local function scenario()
  click(scrollTo('Scan download size',true));ready(function()return m.downloadStatus.state=='ready'and m.downloadStatus.scan.fullSize=='large'end,'large scan')
  click(scrollTo('Start download'));ready(function()return m.downloadStatus.state=='downloading'end,'Start download');wait(.1)
  check(r.storageProgressRect and r.storageProgressRect.y==66 and r.storageProgressRect.y+r.storageProgressRect.h<=82,'Floating download progress fits inside the existing navbar height')
+ check(progressCircle and not progressCircle.still and progressLabels['32%'],'Active navbar renders the supplied spinning circle and a separate numeric percentage')
  check(download.bytesDownloaded==1400000 and download.rateBytesPerSecond==512000,'Progress carries actual downloaded bytes and rate from the service')
  shot('download-progress-2560')
- click(scrollTo('Pause download'));ready(function()return m.downloadStatus.state=='paused'end,'Pause download');check(download.downloaded==12,'Pause retains the already downloaded image count')
+ click(scrollTo('Pause download'));ready(function()return m.downloadStatus.state=='paused'end,'Pause download');check(progressCircle and progressCircle.still,'Paused progress keeps its circle still');check(download.downloaded==12,'Pause retains the already downloaded image count')
  m:closeSettings();wait(.1);check(m.page=='decks'and r.storageProgressRect,'Paused download remains discoverable outside Settings')
  click(assert(r.storageProgressRect));wait(.1);check(m.page=='settings'and v.settingsTab=='Storage'and m.storageSection=='downloads','Clicking the navbar ribbon returns to Storage controls')
  click(scrollTo('Resume download'));ready(function()return m.downloadStatus.state=='downloading'end,'Resume download')
  mode(1120,760,.85);wait(.2);shot('settings-1120-scaled')
  check(buttons['Apply and save'].y+buttons['Apply and save'].h<=select(2,Layout.dimensions()),'Scaled Storage keeps its footer reachable')
  m.page='table';m.settingsOpen=false;m.game={gameId='STORAGE-UI-FIXTURE',format='Modern',turn=1,step='PRECOMBAT_MAIN',phase='PRECOMBAT_MAIN',running=true,players={{id='human',name='You',human=true,life=20,battlefield={},hand={},graveyard={},exile={},command={},libraryCount=60},{id='bot',name='Bot',human=false,life=20,battlefield={},hand={},graveyard={},exile={},command={},libraryCount=60}}};m.pollTimer=1e9;wait(.2)
- check(r.storageProgressRect and r.storageProgressRect.h==3 and r.storageProgressRect.y==46 and r.storageProgressRect.y+r.storageProgressRect.h<=49,'In-match progress stays inside the toolbar edge and out of battlefield choices')
+ check(r.storageProgressRect and r.storageProgressRect.h==14 and r.storageProgressRect.y==84 and r.storageProgressRect.y+r.storageProgressRect.h<=104,'In-match progress stays in the reserved header row and out of battlefield choices')
+ local progress=r.storageProgressRect;for _,hit in ipairs(r.hits)do if hit.kind=='phase-stop'then check(progress.y>=hit.y+hit.h or progress.x>=hit.x+hit.w or progress.x+progress.w<=hit.x or progress.y+progress.h<=hit.y,'Download progress never covers a native phase-stop control')end end
  shot('table-progress-1120-scaled');move(r.storageProgressRect.x+20,r.storageProgressRect.y+1.5);wait(.1)
  check(r.hover and r.hover.kind=='download-progress'and r.hover.tooltip:find('downloaded',1,true),'In-match ribbon exposes its actual service progress tooltip')
  click(assert(r.storageProgressRect));wait(.2)
@@ -127,6 +130,8 @@ function love.load()
  love.mouse.getPosition=function()return mouse.x,mouse.y end;love.mouse.isDown=function(button)return button==1 and down end
  m=Model.new();Storage.install(Model);m.loaded=true;m.settingsLoaded=true;m.catalogHealth={ready=true,apiVersion=8};m.healthTimer=1e9;m.searchTimer=nil;m.settings.sfxEnabled=false;m.settings.particles=false;m.settings.animations=false
  r=Renderer.new(m);v=View.new(S,m,r);p=Preferences.new(m,S,r);v.preferences=p;p.appliedLoaded=true
+ local circle=r.assets.loadingCircle;r.assets.loadingCircle=function(self,x,y,size,time,tint,still)progressCircle={time=time,still=still};return circle(self,x,y,size,time,tint,still)end
+ local renderText=r.text;function r:text(value,...)progressLabels[tostring(value)]=true;return renderText(self,value,...)end
  local function bounds()local dx,dy=Region.Transform(nil,0,0);local x,y,w,h=Cursor.GetItemBounds();return{x=x+dx,y=y+dy,w=w,h=h}end
  for _,name in ipairs({'Button','BeginComboBox','TextSelectable','CheckBox'})do local original=S[name];S[name]=function(id,opts,extra)
   local result=original(id,opts,extra);local b=bounds();b.disabled=type(opts)=='table'and opts.Disabled or type(extra)=='table'and extra.Disabled

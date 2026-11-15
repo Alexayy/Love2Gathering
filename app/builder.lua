@@ -34,6 +34,16 @@ local function iconButton(v,label,icon,width,height,options)
     opts.Image={Image=v.r.assets:buttonImage(icon,label,width,height,{font=v.r.fonts[16],iconSize=18,color=tint})}
     return v.S.Button(label,opts)
 end
+function Builder.openSetFilter(v,id)
+    local m=v.m;local deck,generation,format,mode=m.editDeck,m.editGeneration,m.searchFormat,m.settings.builderLayout
+    if not deck then return end
+    if not m.setsBusy and(m.setsFormat~=format or#(m.sets or{})==0)then m:refreshSets()end
+    require('app.set_picker').open(v,{id=id or'builder-sets',owner=deck,title='Filter cards by set',
+        items=function()return m.sets end,selected=m.searchSet=='All'and''or m.searchSet,
+        busy=function()return m.setsBusy end,error=function()return m.setsError end,
+        isCurrent=function()return m.page=='builder'and m.editDeck==deck and m.editGeneration==generation and m.searchFormat==format and m.settings.builderLayout==mode and(id~='simple-set'or v.builderFiltersOpen)end,
+        onSelect=function(code)m.searchSet=code==''and'All'or code;m:searchChanged()end})
+end
 local function space(v,pixels)
     local _,y=v.S.GetCursorPos({Absolute=true});v.S.SetCursorPos(nil,y+(pixels or 6),{Absolute=true})
 end
@@ -101,9 +111,11 @@ function Builder.build(v,w,h)
     combo(v,'builder-type','Type',m.searchType=='' and 'All' or m.searchType,{'All','Creature','Instant','Sorcery','Artifact','Enchantment','Planeswalker','Land','Battle'},half,function(value)m.searchType=value=='All' and '' or value;m:searchChanged()end);S.SameLine({Pad=12})
     combo(v,'builder-sort','Sort',m.searchSort,{'Name','Color','Set'},half,function(value)m.searchSort=value;m:searchChanged()end)
     space(v,6)
-    local setItems={{label='All sets',value='All'}};local selected='All sets'
-    for _,set in ipairs(m.sets)do local label=set.name..' ['..set.code:upper()..']';setItems[#setItems+1]={label=label,value=set.code};if set.code==m.searchSet then selected=set.code:upper()end end
-    combo(v,'builder-set','Set',selected,setItems,content,function(value)m.searchSet=value;m:searchChanged()end)
+    local selected='All sets'
+    for _,set in ipairs(m.sets or{})do if set.code==m.searchSet then selected=(set.code or''):upper()..' · '..set.name;break end end
+    S.PushID('builder-set')
+    if iconButton(v,v.r:fit('Set: '..selected,content-58,16,1),'library',content,36,{Tooltip='Search sets in a grid'})then Builder.openSetFilter(v,'builder-set')end
+    S.PopID()
     S.EndWindow()
     local d=l.controls;local dw=d.w-24
     v:window('builder-deck-controls',d.x,d.y,d.w,d.h)
@@ -122,7 +134,7 @@ function Builder.build(v,w,h)
     space(v,6)
     local validateW=math.floor((dw-48)*.46);local previewW=dw-48-validateW
     if iconButton(v,'Validate','check',validateW,32)then m:validateDeck()end;S.SameLine()
-    if S.Button('Preview card',{W=previewW,H=32,Image={Image=v.r.assets:buttonImage('search','Preview',previewW,32)},Tooltip='Inspect preview card'})then m.inspectCard=m.previewCard or m.cards[1]end;S.SameLine()
+    if S.Button('Preview card',{W=previewW,H=32,Image={Image=v.r.assets:buttonImage('search','Preview',previewW,32)},Tooltip='Inspect preview card'})then local card=m.previewCard or m.cards[1];if card then m:selectBuilderArtwork(card);m.inspectCard=card end end;S.SameLine()
     if S.Button('Token artwork',{W=32,H=32,Image={Image=v.r.assets:iconImage('creature',21)},Tooltip='Token artwork choices'})then
         if m.dirty then m:toast('Save this deck before choosing token artwork',true)else m:showTokenSettings(deck.id)end
     end
@@ -150,7 +162,7 @@ function Builder.build(v,w,h)
         local costWidth=list.w>=400 and cost~='' and symbolCount<=4 and 72 or 0
         local nameWidth=list.w-140-(costWidth>0 and costWidth+4 or 0)
         local shown=v.r:fit(title,nameWidth-12,16,1)
-        if S.Button(shown,{W=nameWidth,H=32,Tooltip=entry.name})then m.previewCard={name=entry.name}end
+        if S.Button(shown,{W=nameWidth,H=32,Tooltip=entry.name})then m:selectBuilderArtwork(entry)end
         if m.showCardPrintings then S.SameLine();if S.Button('Edition artwork',{W=32,H=32,Image={Image=v.r.assets:iconImage('gallery',19)},Tooltip='Choose edition or alternate artwork for '..entry.name})then m:showCardPrintings(entry,m.selectedSection)end end
         if costWidth>0 then S.SameLine({CenterY=true});RichText.slab(v,'entry-mana',cost,costWidth,{size=12,iconSize=14,lineHeight=20,maxLines=1})end
         S.PopID()
@@ -161,12 +173,12 @@ function Builder.build(v,w,h)
     if not validation then S.Textf('Validate the list to check format, copies and Commander restrictions.',{W=list.w-24,Color=C.muted})end
     S.EndWindow()
     local preview=m.previewCard or (v.r.hover and v.r.hover.card) or m.cards[1] or m:deckCoverCard(deck)
-    if preview then m:getArt(preview,true)end
+    if preview then m:getBuilderPreviewArt(preview)end
     if l.preview then
         local p=l.preview;local pw=p.w-24
         v:window('builder-card-preview',p.x,p.y,p.w,p.h)
         if preview then
-            local card=m:cardData(preview) or preview;local art=m:getArt(card,true)
+            local card=m:cardData(preview) or preview;local art=m:getBuilderPreviewArt(preview)
             local imageW=math.min(pw,(p.h-185)/1.4)
             if art then S.Image('preview-art',{Image=art,W=imageW,H=imageW*1.4})else S.Textf(m.artworkLabel and m:artworkLabel(card)or'Card image unavailable',{W=pw,Color=C.muted})end
             S.Textf(card.name or '',{W=pw,Color=C.accent})
@@ -175,7 +187,7 @@ function Builder.build(v,w,h)
             if iconButton(v,'Add to '..m.selectedSection,'plus',pw,36)then m:addCard(card)end
             if iconButton(v,'Use as deck cover','cover',pw,34)then m:setDeckCover(card)end
             if m.showCardPrintings and iconButton(v,'Choose edition / art','gallery',pw,34)then m:showCardPrintings(card,m.selectedSection)end
-            if iconButton(v,'Inspect full card','search',pw,32)then m.inspectCard=card end
+            if iconButton(v,'Inspect full card','search',pw,32)then m:selectBuilderArtwork(preview);m.inspectCard=card end
             RichText.slab(v,'preview-oracle',card.oracle_text or card.rules or '',pw,{size=14,color=C.text})
             if card.legalities and card.legalities[deck.format:lower()]~='legal' then S.Textf('Not legal in '..deck.format..'. Saving will require removing this card.',{W=pw,Color=C.gold})end
         end
@@ -191,14 +203,14 @@ function Builder.draw(r,w,h)
     for i,card in ipairs(m.cards)do
         if i<=l.pageSize then
             local x=start+((i-1)%l.columns)*(l.cardW+14);local y=l.grid.y+math.floor((i-1)/l.columns)*(l.cardH+33)
-            m:getArt(card,true);r:drawCard(card,x,y,l.cardW,l.cardH,{kind='search',imageOnly=true})
+            r:drawCard(card,x,y,l.cardW,l.cardH,{kind='search',imageOnly=true})
             local name=short(card.name,26)
             r:text(name,x,y+l.cardH+5,12,C.muted,l.cardW)
         end
     end
     if not m.catalogHealth.ready then
         r:text('Preparing card catalog…',l.grid.x,l.grid.y+20,18,C.muted,l.grid.w)
-    elseif #m.cards==0 then r:text(m.searchBusy and 'Searching…' or 'No legal cards match these filters.',l.grid.x,l.grid.y+20,16,C.muted,l.grid.w)end
+    elseif #m.cards==0 then r:text(m.searchBusy and 'Searching…' or m.searchError and('Search unavailable · '..m.searchError)or 'No legal cards match these filters.',l.grid.x,l.grid.y+20,16,C.muted,l.grid.w)end
     local y=h-43;local step=m.searchLimit
     r:button('‹ Previous',l.grid.x,y,112,32,function()if m.offset>0 then m.offset=math.max(0,m.offset-step);m:searchCards()end end)
     r:button('Next ›',l.grid.x+l.grid.w-96,y,96,32,function()if m.offset+step<m.total then m.offset=m.offset+step;m:searchCards()end end)

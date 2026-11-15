@@ -27,7 +27,7 @@ class StorageLocationsTest(unittest.TestCase):
         self.storage.save_art('printing-0-normal.jpg',JPEG,{'oracleId':'oracle','printingId':'printing','face':0,'kind':'normal'})
         self.manager=StorageLocations(self.storage,environ=self.env,home=self.root/'home')
         self.body={'databaseDirectory':str(self.root/'new'),'cacheDirectory':str(self.root/'cache')}
-    def tearDown(self):self.manager.close();self.tmp.cleanup()
+    def tearDown(self):self.manager.close();self.storage.close_images();self.tmp.cleanup()
     def ready(self,state='prepared'):
         self.manager.worker.join(timeout=10);value=self.manager.status()
         self.assertEqual(value['operation']['state'],state,value)
@@ -47,6 +47,37 @@ class StorageLocationsTest(unittest.TestCase):
         with sqlite3.connect(active.cache_database)as c:self.assertEqual(c.execute('SELECT count(*)FROM art_cache').fetchone()[0],1)
         self.assertLess(active.database.stat().st_size,self.storage.database.stat().st_size)
         self.assertFalse(self.manager.status()['restartRequired'])
+
+    def test_split_drops_disposable_image_tables_from_prepared_application_database(self):
+        from thumbnails import AVAILABLE,VERSION,jpeg_thumbnail
+        if not AVAILABLE:self.skipTest('Pillow JPEG codec unavailable')
+        from PIL import Image
+        from io import BytesIO
+        import hashlib
+        # Keep this fixture deterministic; no worker can race the prepared copy.
+        self.storage.close_images()
+        output=BytesIO();Image.new('RGB',(488,680),(90,120,70)).save(output,'JPEG')
+        original=output.getvalue();small,width,height=jpeg_thumbnail(original)
+        key='printing-0-normal.jpg';digest=hashlib.sha256(original).hexdigest()
+        self.storage.save_art(key,original,{'oracleId':'oracle','printingId':'printing','face':0,'kind':'normal'})
+        with self.storage.connection(write=True)as c:
+            c.execute('INSERT OR REPLACE INTO art_thumbnails VALUES(?,?,?,?,?,?,?)',(key,digest,VERSION,width,height,'{}',small))
+        self.prepare()
+        pending=read_config(self.env,self.root/'home')['pending']
+        with sqlite3.connect(pending['preparedDatabase'])as copied:
+            tables={r[0]for r in copied.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            self.assertFalse({'art_cache','art_sources','art_thumbnails'}&tables)
+        with sqlite3.connect(self.storage.database)as backup:
+            self.assertEqual(backup.execute('SELECT content FROM art_cache WHERE cache_key=?',(key,)).fetchone()[0],original)
+            self.assertEqual(backup.execute('SELECT content FROM art_thumbnails WHERE cache_key=?',(key,)).fetchone()[0],small)
+        with sqlite3.connect(pending['preparedCache'])as cached:
+            self.assertEqual(cached.execute('SELECT content FROM art_cache WHERE cache_key=?',(key,)).fetchone()[0],original)
+        activate_pending(self.env,self.root/'home')
+        active=Storage(self.root/'new',self.root/'bundled',self.root/'cache')
+        try:
+            active.enable_thumbnails();active.queue_thumbnail(key);self.assertTrue(active.flush_thumbnails(5))
+            with active.connection()as c:self.assertEqual(c.execute('SELECT count(*) FROM images.art_thumbnails').fetchone()[0],1)
+        finally:active.close_images()
 
     def test_same_data_directory_keeps_before_backup_and_fences_other_catalogs(self):
         other=Storage(self.storage.root,self.root/'bundled')

@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""Stream printing/face metadata into restartable SQLite and separate JPEG mirrors.
+"""Stream printing/face metadata into restartable SQLite; optional JPEG mirrors.
 
 No metadata or artwork is downloaded merely by starting the application. This
 utility requires a local source or an explicit --bootstrap-metadata request.
+New CLI jobs keep SQL only; --export-mirrors or --output explicitly requests
+duplicate JPEG folders. Managed jobs keep their saved export choice.
 """
 from __future__ import annotations
 
 import argparse
+from collections import OrderedDict
 from contextlib import contextmanager
 import gzip
-from http.client import HTTPException
+from http.client import HTTPException, HTTPSConnection
 import json
 import os
 from pathlib import Path
@@ -20,8 +23,8 @@ import sys
 import tempfile
 import time
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlsplit
-from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
+from urllib.parse import urlsplit, urljoin
+from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener, getproxies, proxy_bypass
 
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT / 'service'))
@@ -70,8 +73,23 @@ class ScryfallRedirects(HTTPRedirectHandler):
         return super().redirect_request(request, fp, code, message, headers, new_url)
 
 
+class ImageResponse:
+    """A consumed HTTP response releases its file, retaining the TLS socket."""
+    def __init__(self,owner,response,url):self.owner,self.response,self.url=owner,response,url
+    def geturl(self):return self.url
+    def read(self,*args):return self.response.read(*args)
+    def close(self):
+        complete=self.response.isclosed()or self.response.length==0
+        self.response.close()
+        if not complete:self.owner.close()
+    def __enter__(self):return self
+    def __exit__(self,kind,value,traceback):
+        self.close()
+        if kind is not None:self.owner.close()
+
+
 class Fetcher:
-    def __init__(self, interval=.15, retries=3, opener=None, sleep=time.sleep, monotonic=time.monotonic):
+    def __init__(self, interval=.15, retries=3, opener=None, sleep=time.sleep, monotonic=time.monotonic,connection_factory=None):
         self.interval = interval
         self.retries = retries
         self.sleep, self.monotonic = sleep, monotonic
@@ -79,15 +97,47 @@ class Fetcher:
         context = ssl.create_default_context()
         context.minimum_version = ssl.TLSVersion.TLSv1_2
         self.opener = opener or build_opener(ScryfallRedirects(), HTTPSHandler(context=context))
+        self.context=context;self.connection_factory=connection_factory or HTTPSConnection;self.connection=None
+        # Preserve configured proxy routing rather than silently bypassing it.
+        # urllib remains the proxy/metadata path; direct public CDN image jobs
+        # use one validated keep-alive TLS connection per sequential Fetcher.
+        proxies=getproxies();proxied=bool(proxies.get('https')or proxies.get('all'))and not proxy_bypass('cards.scryfall.io')
+        self.persistent_images=opener is None and not proxied
+
+    def close(self):
+        connection,self.connection=self.connection,None
+        if connection is not None:connection.close()
+
+    def _pace(self):
+        self.sleep(max(0,self.next_request-self.monotonic()))
+        self.next_request=self.monotonic()+self.interval
+
+    def _open_image(self,url,accept):
+        for redirect in range(6):
+            check_url(url,image=True)
+            if self.connection is None:self.connection=self.connection_factory('cards.scryfall.io',443,timeout=30,context=self.context)
+            parsed=urlsplit(url);path=parsed.path or'/'
+            if parsed.query:path+='?'+parsed.query
+            self.connection.request('GET',path,headers={'User-Agent':USER_AGENT,'Accept':accept,'Connection':'keep-alive'})
+            response=self.connection.getresponse()
+            if response.status in(301,302,303,307,308):
+                location=response.headers.get('Location');headers=response.headers;status=response.status
+                response.close();self.close()
+                if not location or redirect==5:raise HTTPError(url,status,'Image redirect limit or missing destination',headers,None)
+                url=urljoin(url,location);check_url(url,image=True);self._pace();continue
+            if not 200<=response.status<300:
+                status,reason,headers=response.status,response.reason,response.headers
+                response.close();self.close();raise HTTPError(url,status,reason,headers,None)
+            return ImageResponse(self,response,url)
+        raise RuntimeError('Image redirect budget exhausted')
 
     def open(self, url, accept='application/json', image=False):
         check_url(url, image=image)
         limited = False
         for attempt in range(self.retries + 1):
-            self.sleep(max(0, self.next_request - self.monotonic()))
-            self.next_request = self.monotonic() + self.interval
+            self._pace()
             try:
-                response = self.opener.open(Request(url, headers={'User-Agent': USER_AGENT, 'Accept': accept}), timeout=30)
+                response = self._open_image(url,accept)if image and self.persistent_images else self.opener.open(Request(url, headers={'User-Agent': USER_AGENT, 'Accept': accept}), timeout=30)
                 check_url(response.geturl(), image=image)
                 return response
             except HTTPError as exc:
@@ -106,7 +156,8 @@ class Fetcher:
                     raise
                 else:
                     self.sleep(min(8, 2 ** attempt))
-            except (URLError, TimeoutError, OSError):
+            except (URLError, TimeoutError, OSError,HTTPException):
+                if image:self.close()
                 if attempt == self.retries:
                     raise
                 self.sleep(min(8, 2 ** attempt))
@@ -123,7 +174,8 @@ class Fetcher:
                     raise
                 self.sleep(min(8, 2 ** attempt))
                 continue
-            validate_image(data)
+            try:validate_image(data)
+            except ValueError:self.close();raise
             return data
         raise RuntimeError('Image transfer retry budget exhausted')
 
@@ -280,11 +332,34 @@ def write_mirror(path, data):
         output.write(data)
 
 
+def cached_image(store,job):
+    """Read authoritative SQL only; mirror imports must pass the space check."""
+    keys=[job['key']]
+    if job['metadata']['kind']=='normal':
+        keys.append(job['key'][:-len('-normal.jpg')]+'-large.jpg')
+    with store.connection()as connection:
+        for key in keys:
+            row=connection.execute('SELECT content,metadata FROM art_cache WHERE cache_key=?',(key,)).fetchone()
+            if row:return bytes(row[0]),key,json.loads(row[1])
+    return None
+
+
 def download(metadata, output, store, fetcher, limit=0, dry_run=False, full_size='normal',reserve_bytes=0):
+    coordinator=getattr(store,'image_io',None)
+    with coordinator.background()if coordinator is not None else null_lock():
+        return _download(metadata,output,store,fetcher,limit,dry_run,full_size,reserve_bytes)
+
+
+def _download(metadata, output, store, fetcher, limit=0, dry_run=False, full_size='normal',reserve_bytes=0):
+    coordinator=getattr(store,'image_io',None)
     stats = {'examined': 0, 'downloaded': 0, 'cached': 0, 'imported': 0, 'mirrored': 0, 'failed': 0,
-             'bytesDownloaded': 0, 'dryRun': dry_run, 'errors': []}
+             'reused':0,'bytesDownloaded': 0, 'dryRun': dry_run, 'errors': []}
+    # Keep identities, not decoded JPEGs, in bounded memory. Different exact
+    # printings can share a provider URL without needing another HTTP transfer.
+    shared=OrderedDict()
     for record in read_metadata(metadata):
         for job in image_jobs(record, full_size):
+            if coordinator is not None:coordinator.checkpoint()
             if limit and stats['examined'] >= limit:
                 return stats
             stats['examined'] += 1
@@ -292,9 +367,18 @@ def download(metadata, output, store, fetcher, limit=0, dry_run=False, full_size
                 continue
             path = Path(output) / job['directory'] / job['key']if output is not None else None
             try:
-                data = store.get_art(job['key'])
+                info=job['metadata'];actual=None;cached_metadata={}
+                local=cached_image(store,job)
+                data=None
+                if local:data,actual,cached_metadata=local
                 if data is not None:
                     stats['cached'] += 1
+                elif job['url']in shared:
+                    data=store.get_art(shared[job['url']])
+                    if data is not None:
+                        if reserve_bytes and min(shutil.disk_usage(store.root).free,shutil.disk_usage(store.cache_root).free)<reserve_bytes+MAX_IMAGE*3:
+                            raise DownloadPaused('Paused to retain the configured free-space reserve; restart to reuse committed images')
+                        store.save_art(job['key'],data,job['metadata']);actual=job['key'];cached_metadata=info;stats['reused']+=1
                 elif path is not None and path.is_file() and path.stat().st_size <= MAX_IMAGE:
                     try:
                         data = path.read_bytes()
@@ -305,6 +389,7 @@ def download(metadata, output, store, fetcher, limit=0, dry_run=False, full_size
                         if reserve_bytes and min(shutil.disk_usage(store.root).free,shutil.disk_usage(store.cache_root).free)<reserve_bytes+MAX_IMAGE*3:
                             raise DownloadPaused('Paused to retain the configured free-space reserve; restart to import mirrors')
                         store.save_art(job['key'], data, job['metadata'])
+                        actual=job['key'];cached_metadata=info
                         stats['imported'] += 1
                 if data is None:
                     if reserve_bytes and min(shutil.disk_usage(store.root).free,shutil.disk_usage(store.cache_root).free)<reserve_bytes+MAX_IMAGE*3:
@@ -313,8 +398,14 @@ def download(metadata, output, store, fetcher, limit=0, dry_run=False, full_size
                     # Commit the authoritative copy first. A restart repairs a
                     # missing mirror without repeating the network request.
                     store.save_art(job['key'], data, job['metadata'])
+                    actual=job['key'];cached_metadata=info
                     stats['downloaded'] += 1
                     stats['bytesDownloaded'] += len(data)
+                if actual==job['key']and cached_metadata.get('source')==job['url']:
+                    shared[job['url']]=actual;shared.move_to_end(job['url'])
+                    if len(shared)>4096:shared.popitem(last=False)
+                flush=getattr(store,'flush_thumbnails',None)
+                if stats['examined']%32==0 and flush is not None:flush(timeout=.25)
                 if path is not None and(not path.exists() or path.stat().st_size != len(data) or path.read_bytes() != data):
                     if reserve_bytes and min(shutil.disk_usage(store.root).free,shutil.disk_usage(store.cache_root).free)<reserve_bytes+MAX_IMAGE*3:
                         raise DownloadPaused('Paused to retain the configured free-space reserve; restart to repair mirrors')
@@ -337,6 +428,7 @@ def parser():
     p.add_argument('--bootstrap-metadata', choices=['default_cards', 'all_cards'], help='Explicitly download bulk metadata to a NEW --metadata path (can be several GB)')
     p.add_argument('--output', type=Path, default=None, help='Separate full-cards/ and art-crops/ JPEG mirrors')
     p.add_argument('--sql-only',action='store_true',help='Cache only in the configured SQLite image store, without duplicate export JPEGs')
+    p.add_argument('--export-mirrors',action='store_true',help='Explicitly keep separate duplicate JPEG folders as well as the SQL cache')
     p.add_argument('--reserve-gib',type=float,default=3,help='Pause image work before free space falls below this reserve (default 3 GiB)')
     p.add_argument('--data-dir', type=Path, default=user_data, help='Application saves directory; its configured image cache is resolved independently')
     p.add_argument('--full-size', choices=['normal', 'large'], default='normal', help='Full-card JPEG size (normal=488×680; large=672×936)')
@@ -355,6 +447,9 @@ def main(argv=None):
         p.error('--dry-run cannot download metadata; supply an existing local source')
     if args.bootstrap_metadata and args.metadata.name.endswith('.gz'):
         p.error('Bootstrap produces plain JSONL for the catalog; choose a .jsonl metadata destination')
+    if args.sql_only and args.export_mirrors:
+        p.error('--sql-only cannot be combined with --export-mirrors')
+    fetcher=None;store=None
     try:
         fetcher = Fetcher(args.interval, args.retries)
         if args.bootstrap_metadata:
@@ -362,9 +457,11 @@ def main(argv=None):
         if not args.metadata.is_file():
             p.error('Metadata source is missing. Supply --metadata PATH or explicitly use --bootstrap-metadata TYPE with a new path.')
         store = None if args.dry_run else Storage(args.data_dir, PROJECT / 'decks',cache_dir=default_cache_dir(args.data_dir,fresh_default=True))
+        enable=getattr(store,'enable_thumbnails',None)
+        if enable is not None:enable()
         output=args.output if args.output is not None else(store.image_library if store else(default_cache_dir(args.data_dir,fresh_default=True)or args.data_dir)/'image-library')
         with cli_image_lock(args.data_dir)if store is not None else null_lock():
-            stats = download(args.metadata, None if args.sql_only else output, store, fetcher, args.limit, args.dry_run, args.full_size,int(args.reserve_gib*1024**3))
+            stats = download(args.metadata, output if not args.sql_only and(args.export_mirrors or args.output is not None)else None, store, fetcher, args.limit, args.dry_run, args.full_size,int(args.reserve_gib*1024**3))
         print(json.dumps(stats, ensure_ascii=False, indent=2))
         return 2 if stats.get('paused')else 1 if stats['failed'] else 0
     except KeyboardInterrupt:
@@ -373,6 +470,13 @@ def main(argv=None):
     except (ValueError, OSError, URLError, HTTPException, EOFError) as exc:
         print(str(exc), file=sys.stderr)
         return 1
+    finally:
+        if store is not None:
+            flush=getattr(store,'flush_thumbnails',None)
+            if flush is not None:flush(timeout=3)
+            close=getattr(store,'close_images',None)
+            if close is not None:close()
+        if fetcher is not None:fetcher.close()
 
 
 if __name__ == '__main__':

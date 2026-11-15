@@ -7,11 +7,14 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import urllib.request
 import zipfile
 
 PROJECT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(PROJECT/'packaging'))
+from python_dependencies import bundle_pillow
 
 
 def compile_nsis(tool, arguments):
@@ -59,10 +62,14 @@ def build(payload, output, cache, makensis, version):
                 target.parent.mkdir(parents=True, exist_ok=True)
                 with zipped.open(member) as source, target.open('wb') as outgoing:
                     shutil.copyfileobj(source, outgoing)
+    if not lock['python']['version'].startswith('3.13.'):
+        raise ValueError('Update the pinned Pillow ABI wheel before changing the embedded Python minor version')
+    pillow = bundle_pillow('windows-cp313', stage/'runtime/python/Lib/site-packages', cache)
     # CPython's embeddable isolation permits only these fixed installed paths.
     pth = next((stage / 'runtime/python').glob('python*._pth'))
     text = pth.read_text()
-    pth.write_text(text + '\n../..\n../../service\n', encoding='utf-8')
+    pth.write_text(text + '\nLib/site-packages\n../..\n../../service\n', encoding='utf-8')
+    lock['pillow'] = pillow
     shutil.copy2(PROJECT / 'packaging/runtime/launcher.py', stage / 'launcher.py')
     icon = output / 'love2gathering.ico'
     image = stage / 'share/icons/love2gathering.png'

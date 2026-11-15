@@ -19,6 +19,9 @@ fi
 for executable in python3 love; do
   if ! command -v "$executable" >/dev/null 2>&1; then printf 'Please install %s before starting.\n' "$executable" >&2; exit 1; fi
 done
+if ! python3 -c 'from PIL import Image,features,__version__; assert tuple(int(p) for p in __version__.split(".")[:2]) >= (9,1); assert features.check_codec("jpg")' >/dev/null 2>&1; then
+  printf 'Small card images are unavailable. Install Pillow with JPEG support (python3-pil or python3-pillow); original card images remain available.\n' >&2
+fi
 # Preserve genuine user overrides while allowing Settings to replace paths
 # that a previous launcher resolved automatically.
 if [[ -z "${LOVE2GATHERING_DATA_DIR_EXPLICIT+x}" ]]; then
@@ -70,7 +73,7 @@ try:
         data=json.load(response)
     assert data.get('status')=='ok' or data.get('engine')=='XMage'
     if sys.argv[2]=='catalog':
-        assert data.get('apiVersion',0)>=11
+        assert data.get('apiVersion',0)>=14
         assert data.get('storage',{}).get('dataDirectory')==sys.argv[3]
         assert data.get('storage',{}).get('separateCache',False)==bool(sys.argv[4])
         if sys.argv[4]:assert data.get('storage',{}).get('cacheDirectory')==sys.argv[4]
