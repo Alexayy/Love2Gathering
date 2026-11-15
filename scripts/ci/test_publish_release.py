@@ -7,6 +7,7 @@ from pathlib import Path
 import struct
 import tempfile
 import unittest
+import zipfile
 from unittest.mock import patch
 
 SPEC = importlib.util.spec_from_file_location('publish_release', Path(__file__).with_name('publish-release.py'))
@@ -14,11 +15,12 @@ publisher = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(publisher)
 VERSION = '2026.11.15.123'
 COMMIT = '1a' * 20
-TAG = 'development-123-1-' + COMMIT[:12]
+TAG = 'DEV-' + VERSION + '-1-' + COMMIT[:12]
 
 
 class FakeGitHub:
-    def __init__(self, *, existing=False, fail_upload=0, corrupt=None):
+    def __init__(self, *, existing=False, fail_upload=0, corrupt=None, tag=TAG, channel='development'):
+        self.tag_name=tag;self.channel=channel;self.contents={}
         self.release = self.make_release() if existing else None
         self.tag = {'type': 'commit', 'sha': COMMIT} if existing else None
         self.assets = []
@@ -28,24 +30,23 @@ class FakeGitHub:
         self.corrupt = corrupt
         self.annotated = None
 
-    @staticmethod
-    def make_release():
-        return {'id': 77, 'tag_name': TAG, 'target_commitish': COMMIT,
-                'draft': True, 'prerelease': True,
-                'html_url': f'https://github.com/{publisher.REPOSITORY}/releases/tag/{TAG}'}
+    def make_release(self):
+        return {'id': 77, 'tag_name': self.tag_name, 'target_commitish': COMMIT,
+                'draft': True, 'prerelease': self.channel == 'development',
+                'html_url': f'https://github.com/{publisher.REPOSITORY}/releases/tag/{self.tag_name}'}
 
     def api(self, endpoint, *arguments):
         prefix = 'repos/' + publisher.REPOSITORY
-        if endpoint == prefix + '/releases/tags/' + TAG:
+        if endpoint == prefix + '/releases/tags/' + self.tag_name:
             if self.release is None or self.release['draft']:
                 raise publisher.NotFound('404')
             return deepcopy(self.release)
         if endpoint == 'graphql':
-            assert 'tag=' + TAG in arguments
+            assert 'tag=' + self.tag_name in arguments
             return {'data': {'repository': {'release': {'databaseId': 77} if self.release else None}}}
         if endpoint == prefix + '/releases/77':
             return deepcopy(self.release)
-        if endpoint == prefix + '/git/ref/tags/' + TAG:
+        if endpoint == prefix + '/git/ref/tags/' + self.tag_name:
             if self.tag is None:
                 raise publisher.NotFound('404')
             return {'object': deepcopy(self.tag)}
@@ -55,12 +56,17 @@ class FakeGitHub:
             return {'object': {'type': 'commit', 'sha': COMMIT}}
         raise AssertionError('Unexpected API request: ' + endpoint)
 
+    def asset_text(self, asset):
+        value=self.contents[asset['id']]
+        assert len(value.encode()) == asset['size']
+        return value
+
     def command(self, *args):
         self.commands.append(args)
         assert args[:1] == ('release',)
         assert args[args.index('--repo') + 1] == publisher.REPOSITORY
         if args[1] == 'create':
-            assert '--draft' in args and '--prerelease' in args
+            assert '--draft' in args and '--prerelease=' + str(self.channel == 'development').lower() in args
             assert args[args.index('--target') + 1] == COMMIT
             self.release = self.make_release()
         elif args[1] == 'upload':
@@ -69,7 +75,7 @@ class FakeGitHub:
                 raise publisher.ReleaseError('simulated interrupted upload')
             assert self.release['draft'] is True
             path = Path(args[3])
-            value = {'name': path.name, 'size': path.stat().st_size, 'state': 'uploaded',
+            value = {'id': 100 + self.uploaded, 'name': path.name, 'size': path.stat().st_size, 'state': 'uploaded',
                      'digest': 'sha256:' + publisher.digest(path)}
             if self.uploaded == 1:
                 if self.corrupt == 'size':
@@ -80,9 +86,11 @@ class FakeGitHub:
                     value['digest'] = 'sha256:' + '0' * 64
                 if self.corrupt == 'missing':
                     return ''
+            self.contents[value['id']] = path.read_text() if path.name in ('release-manifest.json','SHA256SUMS') else ''
             self.assets = [a for a in self.assets if a['name'] != path.name] + [value]
         elif args[1] == 'edit':
             assert '--draft=false' in args and '--latest=false' in args
+            assert '--prerelease=' + str(self.channel == 'development').lower() in args
             self.release['draft'] = False
             if self.tag is None:
                 self.tag = {'type': 'commit', 'sha': COMMIT}
@@ -105,7 +113,10 @@ class PublishTests(unittest.TestCase):
         self.release_path.parent.mkdir(parents=True)
         self.release_path.write_text(json.dumps({'applicationId': publisher.APP_ID,
             'version': VERSION, 'sourceRevision': COMMIT, 'engineRevision': publisher.ENGINE_REVISION,
-            'includesUserData': False}))
+            'includesUserData': False, 'channel': 'development', 'branch':'development', 'tag':TAG}))
+        self.embedded_info={'version':VERSION,'revision':COMMIT,'engineRevision':publisher.ENGINE_REVISION,
+                            'channel':'development','branch':'development','tag':TAG,'repository':'https://github.com/'+publisher.REPOSITORY}
+        self.write_app_info()
         self.names = publisher.package_names(VERSION)
         archive = b'\xfd7zXZ\x00' + b'not a real package: transport fixture' * 10
         pe = bytearray(256)
@@ -127,6 +138,11 @@ class PublishTests(unittest.TestCase):
 
     def prepare(self):
         return publisher.prepare(self.dist, VERSION, TAG, COMMIT, self.metadata)
+
+    def write_app_info(self):
+        with zipfile.ZipFile(self.release_path.with_name('app.love'),'w')as archive:
+            archive.writestr('build-info.json',json.dumps(self.embedded_info))
+            for name in ('LICENSE','CREDITS.md','THIRD_PARTY_NOTICES.md'):archive.writestr(name,'fixture distribution notice')
 
     def test_missing_private_image_codec_provenance_stops_release_preparation(self):
         for filename in('windows-runtime-provenance.json','flatpak-native-provenance.json'):
@@ -169,6 +185,76 @@ class PublishTests(unittest.TestCase):
         self.assertEqual([c[1] for c in gh.commands], ['create'] + ['upload'] * 13 + ['edit'])
         self.assertEqual({a['name'] for a in gh.assets}, {p.name for p in files})
 
+    def test_master_stable_publishes_all_six_installers_without_dev_or_prerelease(self):
+        tag='v'+VERSION
+        release=json.loads(self.release_path.read_text());release.update(channel='stable',branch='master',tag=tag)
+        self.release_path.write_text(json.dumps(release))
+        self.embedded_info.update(channel='stable',branch='master',tag=tag);self.write_app_info()
+        files=publisher.prepare(self.dist,VERSION,tag,COMMIT,self.metadata,channel='stable',branch='master')
+        gh=FakeGitHub(tag=tag,channel='stable')
+        publisher.publish(gh,files,VERSION,tag,COMMIT,channel='stable',branch='master')
+        self.assertFalse(gh.release['draft']);self.assertFalse(gh.release['prerelease'])
+        self.assertTrue(set(self.names).issubset({v['name']for v in gh.assets}))
+        self.assertIn('--latest=false',gh.commands[-1]);self.assertIn('--prerelease=false',gh.commands[-1])
+        self.assertIn('Stable release', (self.dist/'INSTALL.md').read_text())
+        before=deepcopy(gh.commands)
+        self.assertTrue(publisher.check_published(gh,VERSION,tag,COMMIT,'stable','master'))
+        self.assertEqual(gh.commands,before,'Published retry preflight performs no mutations')
+        self.assertEqual(publisher.publish(gh,files,VERSION,tag,COMMIT,channel='stable'),gh.release['html_url'])
+        self.assertEqual(gh.commands,before,'Already published identical files are never overwritten')
+
+    def test_published_preflight_refuses_corrupt_missing_foreign_or_duplicate_assets(self):
+        files=self.prepare();original=FakeGitHub();publisher.publish(original,files,VERSION,TAG,COMMIT)
+        self.assertTrue(publisher.check_published(original,VERSION,TAG,COMMIT))
+        for corruption in ('missing','foreign','duplicate','size','digest','manifest','checksums','commit','channel'):
+            with self.subTest(corruption=corruption):
+                gh=deepcopy(original);before=deepcopy(gh.commands)
+                if corruption=='missing':gh.assets.pop()
+                elif corruption=='foreign':gh.assets[0]['name']='foreign.exe'
+                elif corruption=='duplicate':gh.assets.append(deepcopy(gh.assets[0]))
+                elif corruption=='size':gh.assets[0]['size']+=1
+                elif corruption=='digest':gh.assets[0]['digest']='sha256:'+'0'*64
+                elif corruption in ('manifest','checksums'):
+                    name='release-manifest.json'if corruption=='manifest'else'SHA256SUMS'
+                    asset=next(v for v in gh.assets if v['name']==name)
+                    gh.contents[asset['id']]=gh.contents[asset['id']].replace(COMMIT,'f'*40)if corruption=='manifest'else gh.contents[asset['id']].replace('  ',' X',1)
+                    asset['size']=len(gh.contents[asset['id']].encode())
+                elif corruption=='commit':gh.release['target_commitish']='f'*40
+                else:gh.release['prerelease']=False
+                with self.assertRaises(publisher.ReleaseError):publisher.check_published(gh,VERSION,TAG,COMMIT)
+                self.assertEqual(gh.commands,before)
+
+    def test_preflight_absent_or_matching_draft_requests_build_without_mutating(self):
+        for gh in (FakeGitHub(),FakeGitHub(existing=True)):
+            self.assertFalse(publisher.check_published(gh,VERSION,TAG,COMMIT))
+            self.assertEqual(gh.commands,[])
+        gh=FakeGitHub(existing=True);gh.release['target_commitish']='f'*40
+        with self.assertRaises(publisher.ReleaseError):publisher.check_published(gh,VERSION,TAG,COMMIT)
+        self.assertEqual(gh.commands,[])
+
+    def test_remote_small_manifest_bytes_must_match_size_and_digest(self):
+        gh=publisher.GitHub();data='{"manifest":true}\n'
+        import hashlib
+        asset={'id':123,'size':len(data.encode()),'digest':'sha256:'+hashlib.sha256(data.encode()).hexdigest()}
+        with patch.object(gh,'command',return_value=data):self.assertEqual(gh.asset_text(asset),data)
+        with patch.object(gh,'command',return_value=data+'x'),self.assertRaises(publisher.ReleaseError):gh.asset_text(asset)
+        with patch.object(gh,'command',side_effect=AssertionError('Do not download oversized manifest')),self.assertRaises(publisher.ReleaseError):gh.asset_text(dict(asset,size=4*1024*1024+1))
+
+    def test_channel_branch_and_tag_must_agree_before_any_network_action(self):
+        for channel,branch,tag in [('stable','development','v'+VERSION),('development','master',TAG),('stable','master',TAG),('development','development','v'+VERSION)]:
+            with self.subTest(channel=channel,branch=branch,tag=tag),self.assertRaises(publisher.ReleaseError):
+                publisher.release_identity(VERSION,tag,COMMIT,channel,branch)
+
+    def test_embedded_about_must_identify_the_same_release_and_retain_notices(self):
+        for key,value in [('revision','f'*40),('channel','stable'),('tag','foreign'),('version','2025.01.01.1')]:
+            with self.subTest(key=key):
+                original=dict(self.embedded_info);self.embedded_info[key]=value;self.write_app_info()
+                with self.assertRaisesRegex(publisher.ReleaseError,'About'):self.prepare()
+                self.embedded_info=original
+        self.write_app_info()
+        with zipfile.ZipFile(self.release_path.with_name('app.love'),'w')as archive:archive.writestr('build-info.json',json.dumps(self.embedded_info))
+        with self.assertRaisesRegex(publisher.ReleaseError,'distribution notices'):self.prepare()
+
     def test_partial_upload_never_publishes(self):
         gh = FakeGitHub(fail_upload=5)
         with self.assertRaisesRegex(publisher.ReleaseError, 'interrupted'):
@@ -188,7 +274,7 @@ class PublishTests(unittest.TestCase):
 
     def test_foreign_or_published_releases_are_untouched(self):
         files = self.prepare()
-        for changes in ({'draft': False}, {'target_commitish': 'main'},
+        for changes in ({'target_commitish': 'main'},
                         {'target_commitish': 'f' * 40}, {'prerelease': False}, {'tag_name': 'other'}):
             with self.subTest(changes=changes):
                 gh = FakeGitHub(existing=True)

@@ -9,11 +9,18 @@ function Settings.build(view,w,h,options)
     local function close()if m.closeSettings then m:closeSettings()else m.settingsOpen=false;if fullPage then m.page='decks'end end end
     view.settingsTab=view.settingsTab or 'Game'
     if m.storageTabRequested then view.settingsTab='Storage';m.storageTabRequested=nil end
-    local tabs={'Game','Graphics','Presentation','Audio','Accessibility','Storage'}
+    local tabs={'Game','Graphics','Presentation','Audio','Accessibility','Storage','About'}
     for i,tab in ipairs(tabs) do
         if i>1 then S.SameLine() end
-        local tw=math.min(158,(inner-(#tabs-1)*8)/#tabs);local icon=({Game='dice',Graphics='graphics',Presentation='playmat',Audio='audio',Accessibility='inspect',Storage='save'})[tab]
-        if S.Button(tab,{W=tw,H=42,Active=view.settingsTab==tab,Image={Image=r.assets:buttonImage(icon,tab,tw,42,{font=r.fonts[16],iconSize=19})}}) then view.settingsTab=tab end
+        local tw=math.min(158,(inner-(#tabs-1)*8)/#tabs);local icon=({Game='dice',Graphics='graphics',Presentation='playmat',Audio='audio',Accessibility='inspect',Storage='save',About='info'})[tab]
+        local caption,font=tab,r.fonts[16]
+        if font:getWidth(caption)+51>tw then caption=({Graphics='Display',Presentation='Table',Accessibility='Access'})[tab]or tab end
+        if font:getWidth(caption)+51>tw then font=r.fonts[14]end
+        if font:getWidth(caption)+51>tw then caption=''end
+        if S.Button(tab,{W=tw,H=42,Active=view.settingsTab==tab,Tooltip=tab,Image={Image=r.assets:buttonImage(icon,caption,tw,42,{font=font,iconSize=19})}}) then
+            if tab=='About'or view.settingsTab=='About'then require('lib.Slab.Internal.UI.Region').ClearHotInstance();S.SetInputFocus(nil)end
+            view.settingsTab=tab
+        end
     end
     S.Separator();S.NewLine()
     local function heading(text) S.PushFont(r.assets.titleFont and r.assets:titleFont(22,s)or r.fonts[22]);S.Text(text,{Color=C.accent});S.PopFont();S.NewLine() end
@@ -41,7 +48,7 @@ function Settings.build(view,w,h,options)
     end
     local storageTab=view.settingsTab=='Storage'
     if storageTab then require('app.storage').tabs(view,formWidth)end
-    S.BeginListBox(storageTab and('settings-storage-'..(m.storageSection or'cleanup'))or'settings-content',{W=inner,H=height-(storageTab and 224 or 176)})
+    S.BeginListBox(storageTab and('settings-storage-'..(m.storageSection or'cleanup'))or view.settingsTab=='About'and'settings-about-content'or'settings-content',{W=inner,H=height-(storageTab and 224 or 176),AlwaysShowScrollBarY=view.settingsTab=='About'})
     S.Indent(14);S.NewLine(.4)
     if view.settingsTab=='Game' then
         heading('Rules and decisions')
@@ -115,6 +122,8 @@ function Settings.build(view,w,h,options)
         if m.storageSection=='downloads'then artworkSource()end
         require('app.storage').build(view,formWidth)
         if m.storageSection=='downloads'then require('app.image_packs').build(view,formWidth)end
+    elseif view.settingsTab=='About' then
+        require('app.about').build(view,formWidth)
     elseif view.settingsTab=='Accessibility' then
         heading('Readability and motion')
         S.Textf('Beleren is used throughout the application. Missing characters use the bundled UTF-8 fallback; Magic symbols retain their own font.',{W=formWidth,Color=C.muted});S.NewLine()

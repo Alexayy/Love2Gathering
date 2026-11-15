@@ -2,11 +2,13 @@
 
 A LÖVE desktop client with Slab controls, a 2D Magic table and a fanned hand. **XMage runs the game**: legal actions, mana, combat, targets, stack resolution, triggers and the computer opponent. The client displays that state and sends your choices back to the engine.
 
+**Settings → About** shows the build version, channel and revision, credits, source links and offline license notices. Project-authored code is [MIT licensed](LICENSE). Dependencies, card content and supplied assets retain their own terms; see [Credits](CREDITS.md) and [third-party notices and rights status](THIRD_PARTY_NOTICES.md). This is an independent, unofficial project. Contribution instructions are in [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Installers
 
 Release builds include DEB, relocatable RPM, Flatpak, a Windows setup executable and a Linux installer with a folder picker. See [installation and build instructions](packaging/README.md) for custom locations such as `/mnt/Games/Love2Gathering`, menu shortcuts, dependencies and uninstall behavior. Saves and image caches remain separate from the application folder.
 
-Pushes to `development` build the installers and publish a complete development prerelease in [Releases](https://github.com/Alexayy/Love2Gathering/releases). Use `bash scripts/push-development.sh` after committing to check the outgoing XMage pin and push only the parent branch. The helper leaves the engine submodule untouched; [CI and publishing details](packaging/README.md#build-again) describe the checks and reports.
+Pushes to `development` build the installers and publish a `DEV-<version>-<attempt>-<revision>` prerelease. Pushes to `master` publish a normal `v<version>` release. Both use [Releases](https://github.com/Alexayy/Love2Gathering/releases), with the exact version/revision embedded in About. Use `bash scripts/push-development.sh` after committing to check the outgoing XMage pin and push only the parent branch. The helper leaves the engine submodule untouched; [CI and publishing details](packaging/README.md#build-again) describe the checks and reports. Releases whose workflow files differ from the default branch may need the optional `RELEASE_TOKEN` secret; [token setup](packaging/README.md#build-again) explains the GitHub permission requirement.
 
 ## Start
 

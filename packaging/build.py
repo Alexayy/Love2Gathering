@@ -14,12 +14,14 @@ import subprocess
 import tarfile
 import tempfile
 import zipfile
+from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = '2026.11.14'
 APP_ID = 'io.github.Alexayy.Love2Gathering'
 CURATED = ('fonts', 'icons', 'keyrune', 'audio', 'card-backs')
 KENNEY = ('ui', 'theme', 'runtime', 'particles', 'sounds')
+PROJECT_NOTICES = ('LICENSE', 'CREDITS.md', 'THIRD_PARTY_NOTICES.md')
 
 
 def release_version(value):
@@ -90,7 +92,24 @@ def java_home():
     raise SystemExit('Java 21 JDK with jlink is required to build the Linux runtime.')
 
 
-def common_payload(output, source):
+def common_payload(output, source, *, channel='source', branch=None, tag=''):
+    revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    engine = subprocess.check_output(['git', 'rev-parse', 'HEAD:engine/mage'], cwd=ROOT, text=True).strip()
+    branch = branch or subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], cwd=ROOT, text=True).strip()
+    if channel not in ('source', 'development', 'stable') or not re.fullmatch(r'[A-Za-z0-9._/-]{1,120}', branch):
+        raise SystemExit('Invalid build channel or source branch')
+    if not re.fullmatch(r'[a-f0-9]{40}', revision) or not re.fullmatch(r'[a-f0-9]{40}', engine):
+        raise SystemExit('A complete source and engine revision are required')
+    if channel != 'source':
+        expected_branch = 'master' if channel == 'stable' else 'development'
+        expected_tag = re.escape('v' + VERSION) if channel == 'stable' else re.escape('DEV-' + VERSION) + r'-[1-9][0-9]{0,4}-' + revision[:12]
+        if branch != expected_branch or not re.fullmatch(expected_tag, tag):
+            raise SystemExit('Release channel, branch and commit-bound tag disagree')
+    elif tag:
+        raise SystemExit('A source build must not claim a published release tag')
+    info = {'version': VERSION, 'channel': channel, 'branch': branch, 'revision': revision, 'tag': tag,
+            'builtAtUTC': datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'),
+            'repository': 'https://github.com/Alexayy/Love2Gathering', 'engineRevision': engine}
     target = output / 'stage/common/Love2Gathering'
     if target.exists():
         shutil.rmtree(target)
@@ -104,9 +123,15 @@ def common_payload(output, source):
     frontend += list((ROOT / 'app').glob('*.lua'))
     frontend += [p for p in (ROOT / 'lib').rglob('*') if p.is_file() and '__pycache__' not in p.parts]
     frontend += list(asset_paths())
+    frontend += [p for p in (ROOT / 'licenses').rglob('*') if p.is_file() and not p.is_symlink()]
+    for name in PROJECT_NOTICES:
+        path = ROOT / name
+        if path.is_file():frontend.append(path)
+        elif channel != 'source':raise SystemExit('Required distribution notice is missing: ' + name)
     with zipfile.ZipFile(target / 'app.love', 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
         for path in sorted(set(frontend)):
             archive.write(path, path.relative_to(ROOT).as_posix())
+        archive.writestr('build-info.json', json.dumps(info, indent=2) + '\n')
     copy_tree(ROOT / 'service', target / 'service', lambda p: p.parent == ROOT / 'service' and p.suffix == '.py')
     copy_deck_payload(ROOT / 'decks', target / 'decks')
     (target / 'bridge/target/lib').mkdir(parents=True)
@@ -132,17 +157,30 @@ def common_payload(output, source):
     shutil.copy2(ROOT / 'assets/icons/thb.png', icon)
     licenses = target / 'licenses'
     licenses.mkdir()
+    if (ROOT / 'licenses').is_dir():copy_tree(ROOT / 'licenses', licenses)
     shutil.copy2(ROOT / 'engine/mage/LICENSE.txt', licenses / 'XMage-MIT.txt')
+    for name in PROJECT_NOTICES:
+        if (ROOT / name).is_file():shutil.copy2(ROOT / name, licenses / name)
+    for path in frontend:
+        if path.relative_to(ROOT).parts[0] == 'assets' and re.search(r'(?:license|notice|copyright)', path.name, re.I):
+            relative = path.relative_to(ROOT / 'assets')
+            notice = licenses / 'assets' / relative
+            notice.parent.mkdir(parents=True, exist_ok=True);shutil.copy2(path, notice)
+    slab = ROOT / 'lib/Slab/init.lua'
+    if slab.is_file():
+        header = re.search(r'^--\[\[(.*?)--\]\]', slab.read_text(), re.S)
+        if header and 'MIT License' in header.group(1):(licenses / 'Slab-MIT.txt').write_text(header.group(1).strip() + '\n')
     for path in ('README.md', 'assets/ASSET_GUIDE.md', 'assets/card-backs/README.md'):
         shutil.copy2(ROOT / path, licenses / Path(path).name.replace('README', 'README-' + Path(path).parent.name))
     for dependency in sorted((target / 'bridge/target/lib').glob('*.jar')):
         with zipfile.ZipFile(dependency) as archive:
             for name in archive.namelist():
-                if re.match(r'^META-INF/(LICENSE|NOTICE|COPYING)(\.[A-Za-z0-9_-]+)?$', name, re.I):
-                    (licenses / (dependency.stem + '-' + Path(name).name)).write_bytes(archive.read(name))
-    revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+                if re.search(r'(?:^|/)(LICENSE|NOTICE|COPYING)(?:[._-][A-Za-z0-9._-]+)?$', name, re.I):
+                    safe = re.sub(r'[^A-Za-z0-9._-]', '-', name)
+                    (licenses / (dependency.stem + '-' + safe)).write_bytes(archive.read(name))
     release = {'applicationId': APP_ID, 'name': 'Love: 2 Gathering', 'version': VERSION,
-               'sourceRevision': revision, 'engineRevision': subprocess.check_output(['git', 'rev-parse', 'HEAD:engine/mage'], cwd=ROOT, text=True).strip(),
+               'sourceRevision': revision, 'engineRevision': engine,
+               'channel': channel, 'branch': branch, 'tag': tag, 'builtAtUTC': info['builtAtUTC'],
                'metadataSource': source.name, 'includesUserData': False, 'catalogApi': 14,
                'sourceDirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT).strip())}
     (target / 'release.json').write_text(json.dumps(release, indent=2) + '\n')
@@ -294,19 +332,31 @@ def main():
     parser.add_argument('--reuse-common', action='store_true')
     parser.add_argument('--reuse-linux', action='store_true', help='Reuse a previously verified Linux stage')
     parser.add_argument('--version', type=release_version, default=VERSION, help='Shared package/release version (YYYY.MM.DD.BUILD)')
+    parser.add_argument('--channel', choices=('source', 'development', 'stable'), default='source')
+    parser.add_argument('--branch', help='Exact release source branch, also displayed in About')
+    parser.add_argument('--tag', default='', help='Commit-bound release tag, also displayed in About')
     args = parser.parse_args();output = args.output.resolve();output.mkdir(parents=True, exist_ok=True)
     VERSION = args.version
     if platform.machine() not in ('x86_64', 'AMD64') and args.format != 'common':
         parser.error('These native packages target x86_64; use a matching builder.')
     common = output / 'stage/common/Love2Gathering'
-    if not args.reuse_common:common = common_payload(output, args.source.resolve())
+    if not args.reuse_common:common = common_payload(output, args.source.resolve(), channel=args.channel, branch=args.branch, tag=args.tag)
     elif json.loads((common / 'release.json').read_text())['version'] != VERSION:
         parser.error('Reused common payload version differs; rebuild it with the selected --version')
+    if args.reuse_common and args.channel != 'source':
+        identity = json.loads((common / 'release.json').read_text())
+        expected = {'channel': args.channel, 'branch': args.branch, 'tag': args.tag}
+        if any(identity.get(key) != value for key,value in expected.items()):
+            parser.error('Reused common payload release identity differs; rebuild instead of relabelling it')
     if args.format == 'common':return
     payload = output / 'stage/linux/Love2Gathering' if args.reuse_linux else linux_payload(output, common)
     if not payload.is_dir():parser.error('Linux stage is missing; build --format linux first')
-    if args.reuse_linux and json.loads((payload / 'release.json').read_text())['version'] != VERSION:
-        parser.error('Reused Linux payload version differs; rebuild it with the selected --version')
+    if args.reuse_linux:
+        expected = json.loads((common / 'release.json').read_text())
+        reused = json.loads((payload / 'release.json').read_text())
+        fields = ('version', 'sourceRevision', 'engineRevision', 'channel', 'branch', 'tag')
+        if any(reused.get(key) != expected.get(key) for key in fields):
+            parser.error('Reused Linux payload release identity differs from common; rebuild instead of relabelling it')
     if args.format == 'linux':return
     products = []
     if args.format in ('deb', 'all-linux'):products.append(build_deb(output, payload))

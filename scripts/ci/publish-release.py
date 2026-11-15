@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Validate this build and publish a complete, initially private development release.
+"""Publish complete development/stable installers through a validated private draft.
 
-Only the final CI step needs GH_TOKEN. No git push, recursive or otherwise, is used.
+Only read-only release preflight and final publication need GH_TOKEN. No git push is used.
 --prepare-only performs the same local validation without contacting GitHub.
 """
 from __future__ import annotations
@@ -16,6 +16,7 @@ import re
 import struct
 import subprocess
 import tempfile
+import zipfile
 
 REPOSITORY = 'Alexayy/Love2Gathering'
 ENGINE_REVISION = 'd9b266fc981024873ac7ec5f90ee7121a060725e'
@@ -82,6 +83,16 @@ def version_value(value: str) -> str:
     return value
 
 
+def release_identity(version, tag, commit, channel='development', branch=None):
+    version_value(version)
+    if not re.fullmatch(r'[a-f0-9]{40}', commit):raise ReleaseError('Commit must be a full lowercase commit SHA')
+    expected_branch = {'development': 'development', 'stable': 'master'}.get(channel)
+    if expected_branch is None or branch not in (None, expected_branch):raise ReleaseError('Release channel and branch disagree')
+    pattern = re.escape('v' + version) if channel == 'stable' else re.escape('DEV-' + version) + r'-[1-9][0-9]{0,4}-' + commit[:12]
+    if not re.fullmatch(pattern, tag):raise ReleaseError('Tag must match this channel, version and exact commit')
+    return expected_branch
+
+
 def package_names(version: str) -> list[str]:
     prefix = f'Love2Gathering-{version}'
     return [prefix + ending for ending in (
@@ -116,17 +127,17 @@ def validate_magic(path: Path) -> None:
         raise ReleaseError(f'Incorrect package signature: {path.name}')
 
 
-def instructions(version: str, tag: str) -> str:
+def instructions(version: str, tag: str, channel='development') -> str:
     prefix = f'Love2Gathering-{version}'
     return f'''# Install Love: 2 Gathering {version}
 
-Development build from `{tag}`. These packages include the pinned XMage bridge,
+{'Stable release' if channel == 'stable' else 'Development prerelease'} from `{tag}`. These packages include the pinned XMage bridge,
 card metadata and Java runtime. Card images/art and your saved games stay in your
 chosen data/cache folders; bulk image downloads are optional.
 
 ## Linux: choose the application folder
 
-Install LÖVE 11.5 and Python 3.10 or newer using your distribution, then run:
+Install LÖVE 11.5, Python 3.10 or newer and Pillow 9.1+ using your distribution, then run:
 
 ```sh
 chmod +x {prefix}-linux-x86_64.run
@@ -178,19 +189,30 @@ metadata provenance reports and `release-manifest.json` identify this build.
 '''
 
 
-def prepare(dist: Path, version: str, tag: str, commit: str, metadata_report: Path) -> list[Path]:
-    version_value(version)
-    if not re.fullmatch(r'[a-f0-9]{40}', commit):
-        raise ReleaseError('Commit must be a full lowercase commit SHA')
-    if not re.fullmatch(r'development-[0-9]+-[0-9]+-' + commit[:12], tag):
-        raise ReleaseError('Tag must be development-RUN_NUMBER-RUN_ATTEMPT-SHA12 for this commit')
+def prepare(dist: Path, version: str, tag: str, commit: str, metadata_report: Path, *, channel='development', branch=None) -> list[Path]:
+    branch = release_identity(version, tag, commit, channel, branch)
     if dist.is_symlink() or not dist.is_dir():
         raise ReleaseError('Distribution directory must be an existing real directory')
     release = read_json(dist / 'stage/common/Love2Gathering/release.json')
     expected = {'applicationId': APP_ID, 'version': version, 'sourceRevision': commit,
-                'engineRevision': ENGINE_REVISION, 'includesUserData': False}
+                'engineRevision': ENGINE_REVISION, 'includesUserData': False,
+                'channel': channel, 'branch': branch, 'tag': tag}
     if any(release.get(key) != value for key, value in expected.items()):
         raise ReleaseError('Common payload provenance does not match this version/commit/pinned engine')
+    try:
+        with zipfile.ZipFile(checked_file(dist / 'stage/common/Love2Gathering/app.love')) as archive:
+            entry = archive.getinfo('build-info.json')
+            if entry.file_size > 8192:raise ReleaseError('Embedded About build metadata exceeds its bound')
+            info = json.loads(archive.read(entry))
+            embedded = {'version': version, 'revision': commit, 'engineRevision': ENGINE_REVISION,
+                        'channel': channel, 'branch': branch, 'tag': tag,
+                        'repository': 'https://github.com/' + REPOSITORY}
+            if not isinstance(info, dict) or any(info.get(key) != value for key,value in embedded.items()):
+                raise ReleaseError('Embedded About metadata disagrees with release provenance')
+            for notice in ('LICENSE', 'CREDITS.md', 'THIRD_PARTY_NOTICES.md'):
+                if archive.getinfo(notice).file_size <= 0:raise ReleaseError('Missing embedded distribution notice')
+    except (zipfile.BadZipFile, KeyError, ValueError) as exc:
+        raise ReleaseError('Invalid embedded build metadata or distribution notices') from exc
     packages = [checked_file(dist / name) for name in package_names(version)]
     for path in packages:
         validate_magic(path)
@@ -226,12 +248,12 @@ def prepare(dist: Path, version: str, tag: str, commit: str, metadata_report: Pa
     metadata_target = dist / 'metadata-provenance.json'
     write_atomic(metadata_target, json.dumps(metadata, indent=2) + '\n')
     guide = dist / 'INSTALL.md'
-    write_atomic(guide, instructions(version, tag))
+    write_atomic(guide, instructions(version, tag, channel))
     primary = packages + [helper] + runtime_paths + [metadata_target, guide]
     entries = [{'name': path.name, 'bytes': path.stat().st_size, 'sha256': digest(path)} for path in primary]
     manifest = dist / 'release-manifest.json'
     write_atomic(manifest, json.dumps({'version': version, 'tag': tag, 'repository': REPOSITORY,
-        'commit': commit, 'engineRevision': ENGINE_REVISION, 'includesUserData': False,
+        'commit': commit, 'channel': channel, 'branch': branch, 'engineRevision': ENGINE_REVISION, 'includesUserData': False,
         'assets': entries}, indent=2) + '\n')
     primary.append(manifest)
     checksum = dist / 'SHA256SUMS'
@@ -254,6 +276,15 @@ class GitHub:
             return json.loads(self.command('api', path, *arguments))
         except ValueError as exc:
             raise ReleaseError('GitHub returned invalid JSON') from exc
+
+    def asset_text(self, asset):
+        if not isinstance(asset.get('id'), int) or not 0 < asset.get('size', 0) <= 4 * 1024 * 1024:
+            raise ReleaseError('Invalid bounded release manifest/checksum asset')
+        data = self.command('api', f'repos/{REPOSITORY}/releases/assets/{asset["id"]}', '-H', 'Accept: application/octet-stream')
+        encoded = data.encode('utf-8')
+        if len(encoded) != asset['size'] or 'sha256:' + hashlib.sha256(encoded).hexdigest() != asset.get('digest'):
+            raise ReleaseError('Release manifest/checksum bytes disagree with GitHub digest')
+        return data
 
 
 def get_release(gh: GitHub, tag: str):
@@ -297,12 +328,16 @@ def verify_tag(gh: GitHub, tag: str, commit: str, *, required: bool) -> None:
     raise ReleaseError('Existing tag does not point to this exact commit')
 
 
-def verify_draft(release, tag: str, commit: str) -> None:
-    if (not isinstance(release, dict) or release.get('draft') is not True
-            or release.get('prerelease') is not True or release.get('tag_name') != tag
+def verify_release(release, tag, commit, channel, *, draft):
+    if (not isinstance(release, dict) or release.get('draft') is not draft
+            or release.get('prerelease') is not (channel == 'development') or release.get('tag_name') != tag
             or release.get('target_commitish') != commit
             or not isinstance(release.get('id'), int)):
         raise ReleaseError('Refusing to modify a published or unrelated release')
+
+
+def verify_draft(release, tag: str, commit: str, channel='development') -> None:
+    verify_release(release, tag, commit, channel, draft=True)
 
 
 def remote_assets(gh: GitHub, release_id: int) -> list[dict]:
@@ -324,68 +359,132 @@ def verify_assets(assets: list[dict], files: list[Path], *, complete: bool) -> N
             path = local[name]
             if value.get('size') != path.stat().st_size or value.get('state') != 'uploaded':
                 raise ReleaseError('An uploaded release asset is missing or incomplete: ' + name)
-            if value.get('digest') and value['digest'] != 'sha256:' + digest(path):
+            if value.get('digest') != 'sha256:' + digest(path):
                 raise ReleaseError('An uploaded release asset has a mismatched hash: ' + name)
     if complete and seen != set(local):
         raise ReleaseError('Not every expected release asset was uploaded')
 
 
-def publish(gh: GitHub, files: list[Path], version: str, tag: str, commit: str) -> str:
+def check_published(gh, version, tag, commit, channel='development', branch=None):
+    """Read-only retry preflight; verify a complete published release before skipping builds."""
+    branch = release_identity(version, tag, commit, channel, branch)
+    release = get_release(gh, tag)
+    if release is None or release.get('draft') is True:
+        if release is not None:verify_draft(release, tag, commit, channel)
+        verify_tag(gh, tag, commit, required=False)
+        return False
+    verify_release(release, tag, commit, channel, draft=False);verify_tag(gh, tag, commit, required=True)
+    values = remote_assets(gh, release['id'])
+    primary = set(package_names(version) + ['install-flatpak.py', 'windows-runtime-provenance.json',
+                  'flatpak-native-provenance.json', 'metadata-provenance.json', 'INSTALL.md'])
+    assets = {}
+    for value in values:
+        name = value.get('name')
+        if name in assets or name not in primary | {'release-manifest.json', 'SHA256SUMS'}:
+            raise ReleaseError('Unexpected or duplicate published release asset')
+        if value.get('state') != 'uploaded' or not isinstance(value.get('size'), int) or value['size'] <= 0 or not re.fullmatch(r'sha256:[a-f0-9]{64}', str(value.get('digest', ''))):
+            raise ReleaseError('Published release asset is incomplete or has no verified digest')
+        assets[name] = value
+    if set(assets) != primary | {'release-manifest.json', 'SHA256SUMS'}:raise ReleaseError('Published release is missing expected assets')
+    manifest = json.loads(gh.asset_text(assets['release-manifest.json']))
+    expected = {'version': version, 'tag': tag, 'commit': commit, 'channel': channel, 'branch': branch,
+                'repository': REPOSITORY, 'engineRevision': ENGINE_REVISION, 'includesUserData': False}
+    if not isinstance(manifest, dict) or any(manifest.get(k) != v for k,v in expected.items()):
+        raise ReleaseError('Published release manifest provenance does not match this build')
+    entries = manifest.get('assets')
+    if not isinstance(entries, list) or len(entries) != len(primary):raise ReleaseError('Invalid published manifest asset list')
+    seen = set()
+    for entry in entries:
+        if not isinstance(entry, dict):raise ReleaseError('Invalid published manifest asset entry')
+        name = entry.get('name')
+        if name not in primary or name in seen or entry.get('bytes') != assets[name]['size'] or 'sha256:' + str(entry.get('sha256')) != assets[name]['digest']:
+            raise ReleaseError('Published manifest asset hash or size disagrees with GitHub')
+        seen.add(name)
+    sums = gh.asset_text(assets['SHA256SUMS']).splitlines()
+    expected_sums = {assets[name]['digest'][7:] + '  ' + name for name in primary | {'release-manifest.json'}}
+    if len(sums) != len(expected_sums) or set(sums) != expected_sums:raise ReleaseError('Published checksum allowlist disagrees with release assets')
+    return True
+
+
+def publish(gh: GitHub, files: list[Path], version: str, tag: str, commit: str, *, channel='development', branch=None) -> str:
+    release_identity(version, tag, commit, channel, branch)
     release = get_release(gh, tag)
     if release is not None:
-        verify_draft(release, tag, commit)
+        if release.get('draft') is False:
+            verify_release(release, tag, commit, channel, draft=False)
+            verify_tag(gh, tag, commit, required=True)
+            verify_assets(remote_assets(gh, release['id']), files, complete=True)
+            return release.get('html_url', f'https://github.com/{REPOSITORY}/releases/tag/{tag}')
+        verify_draft(release, tag, commit, channel)
     # A draft may only have a pending tag. GitHub creates that ref when it is
     # published; existing refs must still match before any mutation.
     verify_tag(gh, tag, commit, required=False)
     if release is None:
         with tempfile.TemporaryDirectory(prefix='love2gathering-release-') as temporary:
             notes = Path(temporary) / 'notes.md'
-            notes.write_text(f'Development build **{version}** from `{commit}`.\n\n'
+            notes.write_text(f'{"Stable release" if channel == "stable" else "Development prerelease"} **{version}** from `{commit}`.\n\n'
                 'Download the installer for your platform and read INSTALL.md. '
                 'SHA256SUMS and provenance reports accompany all packages.\n\n'
                 f'XMage remains pinned at `{ENGINE_REVISION}`. No user data is included.\n', encoding='utf-8')
-            gh.command('release', 'create', tag, '--repo', REPOSITORY, '--draft', '--prerelease',
-                       '--target', commit, '--title', 'Development ' + version, '--notes-file', str(notes))
+            gh.command('release', 'create', tag, '--repo', REPOSITORY, '--draft', '--prerelease=' + str(channel == 'development').lower(),
+                       '--target', commit, '--title', ('Development ' if channel == 'development' else '') + version, '--notes-file', str(notes))
         release = get_release(gh, tag)
-        verify_draft(release, tag, commit)
+        verify_draft(release, tag, commit, channel)
         verify_tag(gh, tag, commit, required=False)
     verify_assets(remote_assets(gh, release['id']), files, complete=False)
     for path in files:
         # Refuse uploads if somebody published the draft during this job.
-        verify_draft(get_release(gh, tag), tag, commit)
+        verify_draft(get_release(gh, tag), tag, commit, channel)
         gh.command('release', 'upload', tag, str(path), '--repo', REPOSITORY, '--clobber')
     release = get_release(gh, tag)
-    verify_draft(release, tag, commit)
+    verify_draft(release, tag, commit, channel)
     verify_tag(gh, tag, commit, required=False)
     verify_assets(remote_assets(gh, release['id']), files, complete=True)
-    gh.command('release', 'edit', tag, '--repo', REPOSITORY, '--draft=false', '--prerelease', '--latest=false')
+    # The separate serialized promotion job chooses the highest verified stable
+    # numeric version. Build completion order must never move Latest backward.
+    gh.command('release', 'edit', tag, '--repo', REPOSITORY, '--draft=false', '--prerelease=' + str(channel == 'development').lower(), '--latest=false')
     published = get_release(gh, tag)
     if (not isinstance(published, dict) or published.get('draft') is not False
-            or published.get('prerelease') is not True or published.get('target_commitish') != commit):
-        raise ReleaseError('Could not verify final published prerelease state')
+            or published.get('prerelease') is not (channel == 'development') or published.get('target_commitish') != commit):
+        raise ReleaseError('Could not verify final published release state')
     verify_tag(gh, tag, commit, required=True)
     return published.get('html_url', f'https://github.com/{REPOSITORY}/releases/tag/{tag}')
 
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--dist', type=Path, required=True)
+    parser.add_argument('--dist', type=Path)
     parser.add_argument('--version', required=True)
     parser.add_argument('--tag', required=True)
     parser.add_argument('--commit', required=True)
-    parser.add_argument('--metadata-report', type=Path, required=True)
+    parser.add_argument('--metadata-report', type=Path)
+    parser.add_argument('--channel', choices=('development', 'stable'), default='development')
+    parser.add_argument('--branch', choices=('development', 'master'))
+    parser.add_argument('--check-published', action='store_true', help='Read-only complete-release retry preflight; no packages required')
     parser.add_argument('--prepare-only', action='store_true')
     args = parser.parse_args(argv)
     try:
         if os.environ.get('GITHUB_REPOSITORY', REPOSITORY) != REPOSITORY:
             raise ReleaseError('This publisher is restricted to ' + REPOSITORY)
-        files = prepare(args.dist, args.version, args.tag, args.commit, args.metadata_report)
+        branch = release_identity(args.version, args.tag, args.commit, args.channel, args.branch)
+        if os.environ.get('GITHUB_REF_NAME', branch) != branch:
+            raise ReleaseError('Workflow source branch does not match the release channel')
+        if args.check_published:
+            if args.prepare_only:raise ReleaseError('Published preflight cannot be combined with local prepare-only')
+            if not os.environ.get('GH_TOKEN'):raise ReleaseError('GH_TOKEN is required for read-only release preflight')
+            published = check_published(GitHub(), args.version, args.tag, args.commit, args.channel, branch)
+            if os.environ.get('GITHUB_OUTPUT'):
+                with Path(os.environ['GITHUB_OUTPUT']).open('a') as stream:stream.write('already_published=' + str(published).lower() + '\n')
+            print('Already published and verified' if published else 'No complete published release; build required')
+            return 0
+        if args.dist is None or args.metadata_report is None:raise ReleaseError('--dist and --metadata-report are required for package preparation')
+        files = prepare(args.dist, args.version, args.tag, args.commit, args.metadata_report, channel=args.channel, branch=branch)
         print(f'Validated {len(files)} release assets for {args.version}')
         if not args.prepare_only:
             if not os.environ.get('GH_TOKEN'):
                 raise ReleaseError('GH_TOKEN is required only for the final publishing step')
-            print(publish(GitHub(), files, args.version, args.tag, args.commit))
-    except (ReleaseError, OSError, subprocess.SubprocessError) as exc:
+            print(publish(GitHub(), files, args.version, args.tag, args.commit, channel=args.channel, branch=branch))
+    except (ReleaseError, OSError, ValueError, subprocess.SubprocessError) as exc:
         parser.exit(1, 'Release aborted: ' + str(exc) + '\n')
     return 0
 

@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -117,6 +118,33 @@ class VersionTests(unittest.TestCase):
             self.assertEqual(result.returncode,2);self.assertIn('payload version differs',result.stderr)
             self.assertEqual(json.loads((common/'release.json').read_text())['version'],'2026.11.15.1')
 
+    def test_reused_linux_identity_must_match_common_even_when_version_matches(self):
+        from contextlib import redirect_stdout,redirect_stderr
+        with tempfile.TemporaryDirectory()as tmp:
+            root=Path(tmp);output=root/'dist';version='2026.11.15.42'
+            common=output/'stage/common/Love2Gathering';linux=output/'stage/linux/Love2Gathering'
+            for path in (common,linux):path.mkdir(parents=True)
+            identity={'version':version,'sourceRevision':'a'*40,'engineRevision':'b'*40,
+                      'channel':'stable','branch':'master','tag':'v'+version}
+            (common/'release.json').write_text(json.dumps(identity))
+            args=['build.py','--format','deb','--output',str(output),'--reuse-common','--reuse-linux',
+                  '--version',version,'--channel','stable','--branch','master','--tag','v'+version]
+            for key,wrong in [('channel','development'),('sourceRevision','c'*40),('tag','DEV-'+version+'-1-'+'a'*12),
+                              ('engineRevision','c'*40),('branch','development'),('version','2026.11.15.41')]:
+                with self.subTest(key=key):
+                    (linux/'release.json').write_text(json.dumps(identity|{key:wrong}))
+                    with patch.object(packager,'ROOT',root),patch.object(packager,'VERSION',packager.VERSION), \
+                         patch.object(sys,'argv',args),patch.object(packager,'build_deb')as build, \
+                         redirect_stdout(io.StringIO()),redirect_stderr(io.StringIO())as error,self.assertRaises(SystemExit):
+                        packager.main()
+                    self.assertIn('Linux payload release identity differs',error.getvalue());build.assert_not_called()
+            (linux/'release.json').write_text(json.dumps(identity))
+            with patch.object(packager,'ROOT',root),patch.object(packager,'VERSION',packager.VERSION), \
+                 patch.object(sys,'argv',args),patch.object(packager,'build_deb',return_value=output/'fixture.deb')as build, \
+                 redirect_stdout(io.StringIO()):packager.main()
+            build.assert_called_once_with(output,linux)
+            self.assertEqual(json.loads((linux/'release.json').read_text()),identity)
+
     def test_explicit_java21_precedes_another_system_jlink(self):
         with tempfile.TemporaryDirectory()as tmp:
             root=Path(tmp);wanted=root/'jdk21';other=root/'jdk17'
@@ -159,6 +187,10 @@ class PayloadTests(unittest.TestCase):
                          'bridge/target/xmage-bridge-1.0.0.jar', 'bridge/card-map.json',
                          'scripts/download-card-images.py', 'scripts/starter-image-pack.py', 'service/image_packs.py', 'assets/card-art/full-art-basics.json',
                          'assets/icons/thb.png', 'engine/mage/LICENSE.txt', 'README.md',
+                         'LICENSE', 'CREDITS.md', 'THIRD_PARTY_NOTICES.md',
+                         'licenses/Roboto-Apache-2.0.txt',
+                         'assets/fonts/Beleren2016-Bold.ttf', 'assets/fonts/LICENSE-DejaVu.txt',
+                         'assets/card-backs/classic-magic.jpg', 'assets/card-backs/mystic-eye.png',
                          'assets/ASSET_GUIDE.md', 'assets/card-backs/README.md', 'packaging/runtime/launcher.py'):
                 path = root / name; path.parent.mkdir(parents=True, exist_ok=True); path.write_text('fixture')
             catalog = root / 'decks/preconstructed/catalog.jsonl.gz'
@@ -167,10 +199,17 @@ class PayloadTests(unittest.TestCase):
                          'decks/app.sqlite', 'decks/user.log', 'decks/build_library.py'):
                 (root / name).write_bytes(b'must not ship')
             source = root / 'cards.jsonl'; source.write_text(json.dumps(CARD) + '\n')
+            slab=root/'lib/Slab/init.lua';slab.parent.mkdir(parents=True);slab.write_text('--[[\nMIT License\nRetained fixture copyright\n--]]\nreturn{}')
+            jar=root/'bridge/target/lib/fixture.jar';jar.parent.mkdir(parents=True)
+            with zipfile.ZipFile(jar,'w')as archive:
+                archive.writestr('META-INF/jsoup/LICENSE','nested MIT fixture')
+                archive.writestr('com/j256/ormlite/core/LICENSE.txt','nested ISC fixture')
+                archive.writestr('META-INF/maven/org.xerial/sqlite-jdbc/LICENSE.zentus','native dependency fixture')
+            selected=[root/name for name in ('assets/fonts/Beleren2016-Bold.ttf','assets/fonts/LICENSE-DejaVu.txt','assets/card-backs/classic-magic.jpg','assets/card-backs/mystic-eye.png')]
             from contextlib import redirect_stdout
-            with patch.object(packager, 'ROOT', root), patch.object(packager, 'asset_paths', return_value=[]), \
+            with patch.object(packager, 'ROOT', root), patch.object(packager, 'asset_paths', return_value=selected), \
                     patch.object(packager.subprocess, 'check_output', return_value='a' * 40), redirect_stdout(io.StringIO()):
-                payload = packager.common_payload(Path(tmp) / 'dist', source)
+                payload = packager.common_payload(Path(tmp) / 'dist', source,channel='stable',branch='master',tag='v'+packager.VERSION)
             self.assertTrue((payload / 'scripts/starter-image-pack.py').is_file())
             self.assertTrue((payload / 'service/image_packs.py').is_file())
             copied = payload / 'decks/preconstructed/catalog.jsonl.gz'
@@ -185,6 +224,30 @@ class PayloadTests(unittest.TestCase):
                 self.assertTrue((payload / 'decks' / name).is_file())
             for name in ('preconstructed/unrelated.jsonl.gz', 'backup.tar.gz', 'app.sqlite', 'user.log', 'build_library.py'):
                 self.assertFalse((payload / 'decks' / name).exists())
+            with zipfile.ZipFile(payload/'app.love')as archive:
+                info=json.loads(archive.read('build-info.json'))
+                self.assertEqual(info['version'],packager.VERSION);self.assertEqual(info['channel'],'stable')
+                self.assertEqual(info['revision'],'a'*40);self.assertEqual(info['tag'],'v'+packager.VERSION)
+                self.assertEqual(info['branch'],'master');self.assertTrue(info['builtAtUTC'].endswith('Z'))
+                for name in packager.PROJECT_NOTICES:
+                    self.assertEqual(archive.read(name),(root/name).read_bytes())
+                    self.assertEqual((payload/'licenses'/name).read_bytes(),(root/name).read_bytes())
+                self.assertEqual(archive.read('licenses/Roboto-Apache-2.0.txt'),b'fixture')
+                self.assertEqual((payload/'licenses/Roboto-Apache-2.0.txt').read_bytes(),b'fixture')
+                # User explicitly retained these local assets in installer copies.
+                for path in selected:self.assertEqual(archive.read(path.relative_to(root).as_posix()),path.read_bytes())
+            self.assertIn('Retained fixture copyright',(payload/'licenses/Slab-MIT.txt').read_text())
+            self.assertEqual((payload/'licenses/assets/fonts/LICENSE-DejaVu.txt').read_text(),'fixture')
+            notices='\n'.join(path.read_text()for path in(payload/'licenses').glob('fixture-*'))
+            self.assertIn('nested MIT fixture',notices);self.assertIn('nested ISC fixture',notices)
+            self.assertIn('native dependency fixture',(payload/'licenses/fixture-META-INF-maven-org.xerial-sqlite-jdbc-LICENSE.zentus').read_text())
+
+    def test_release_payload_cannot_claim_a_foreign_branch_or_tag(self):
+        with tempfile.TemporaryDirectory()as tmp,patch.object(packager.subprocess,'check_output',return_value='a'*40):
+            for channel,branch,tag in [('stable','development','v'+packager.VERSION),('development','master','DEV-'+packager.VERSION+'-1-'+'a'*12),('source','development','v'+packager.VERSION)]:
+                with self.subTest(channel=channel),self.assertRaises(SystemExit):
+                    packager.common_payload(Path(tmp),Path(tmp)/'unused.jsonl',channel=channel,branch=branch,tag=tag)
+            self.assertFalse((Path(tmp)/'stage').exists())
 
     def test_missing_corrupt_or_symlinked_product_source_fails_build(self):
         with tempfile.TemporaryDirectory() as tmp:

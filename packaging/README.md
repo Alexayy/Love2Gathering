@@ -109,20 +109,59 @@ location checks and missing-drive errors remain active. See
 
 ## Build again
 
-Every push to `development` runs [Development installers](../.github/workflows/development-release.yml)
+Every push to `development` or `master` runs [Installers and releases](../.github/workflows/development-release.yml)
 on GitHub-hosted Ubuntu 24.04. It builds the pinned XMage bridge, Linux DEB/RPM,
 the chosen-folder Linux installer/archive, Windows setup EXE and Flatpak. A dated
-numeric version identifies the workflow run; a unique development tag also
-includes its attempt and source commit.
+numeric version `YYYY.MM.DD.RUN` uses the commit's date in Europe/Belgrade and the
+workflow run number. Retrying on another day preserves that version.
+`development` produces `DEV-<version>-<attempt>-<SHA12>` prereleases;
+`master` produces ordinary `v<version>` releases without the DEV prefix.
+Every installer release initially leaves GitHub's Latest pointer unchanged.
+A separate master-only job runs after successful publication, serialized under
+`stable-latest`. It verifies the highest published four-part numeric stable
+version and promotes only that release. Older builds finishing later therefore
+cannot replace a newer Latest. Only these small promotion jobs share a queue;
+installer builds and releases still run for every push. Each promotion rescans
+published releases, so replacing a pending promotion does not lose a release.
 
-The workflow publishes a **prerelease** in
+The workflow publishes in
 [GitHub Releases](https://github.com/Alexayy/Love2Gathering/releases) only after
 all builds and required checks pass. It stages a draft, uploads the complete
-asset set, verifies names/sizes and then publishes. Releases include SHA256SUMS,
+asset set, verifies exact names, sizes, SHA256 digests, source commit, channel and
+the pinned engine, then publishes. Existing tags must point to the same commit.
+Only a matching unpublished draft can receive uploads. A published release is
+never replaced: a retry validates its small manifest/checksum files and all
+thirteen remote asset descriptors before skipping the build. A foreign,
+incomplete or changed published release stops the job. Releases include SHA256SUMS,
 installation instructions and source/runtime/metadata provenance. Actions keeps
 only compact reports for seven days, avoiding another copy of the large
 installers in artifact storage. This uses Releases rather than GitHub's
 container/package registries.
+
+The read-only release preflight, final publisher and separate Latest promotion
+use the optional repository secret `RELEASE_TOKEN`, falling back to GitHub's
+built-in token when that secret is absent. GitHub requires workflow write
+authorization when a release's target commit changes `.github/workflows/`
+relative to the repository's default branch; the built-in `GITHUB_TOKEN` cannot
+be granted that permission. This includes a development release whose workflow
+differs from the default master branch. Without the required authorization,
+GitHub rejects publication and the workflow fails closed. See the official
+[release API authorization notes](https://docs.github.com/en/rest/releases/releases#create-a-release).
+
+For those releases, a repository owner can configure the supported token:
+
+1. In GitHub account settings, open **Developer settings → Personal access tokens → Fine-grained tokens**.
+2. Select the `Alexayy/Love2Gathering` repository and grant repository permissions
+   **Contents: Read and write** and **Workflows: Read and write**. Choose an
+   appropriate expiry; no other repository or administrative permissions are needed by this publisher.
+3. In repository **Settings → Secrets and variables → Actions**, add a repository
+   secret named **RELEASE_TOKEN** containing that token.
+
+The workflow never writes that secret into checkout, build-tool environments,
+files or command arguments. It is supplied only to the three release endpoints
+listed above. No token is generated or repository secret created automatically.
+Local fake-GitHub tests verify the release contracts; they do not establish that
+a live repository permits a particular publication.
 
 CI acquires current Scryfall **bulk metadata only** into an isolated build
 directory. It does not download card illustrations or read a developer's SQL
@@ -157,7 +196,13 @@ python3 packaging/flatpak/build.py --help
 ```
 
 Pass `--version YYYY.MM.DD.BUILD` to use the same version across all three
-builders. A reused common payload must already carry that version.
+builders. A reused common payload must already carry that version. CI also passes
+`--channel development --branch development --tag DEV-<version>-<attempt>-<SHA12>`
+or `--channel stable --branch master --tag v<version>` to the common payload builder.
+`app.love` contains a bounded `build-info.json` with that version, channel,
+branch, tag, complete source/engine revisions and UTC build time for About.
+No build-info file is generated into a source checkout. Local packaging uses the
+`source` channel unless explicitly supplied a consistent release identity.
 
 The Linux builder requires a Java 21 JDK with `jlink`, `dpkg-deb`, `rpmbuild`, and
 Python 3.11+ for the build scripts. It can use the project's local JDK and locally
@@ -167,8 +212,11 @@ runtime downloads have fixed upstream URLs/SHA256 values in
 uses the installed Freedesktop SDK/Platform 25.08 and the compiled Linux stage;
 it does not require flatpak-builder. No installer compiles the engine at runtime.
 
-Source distributions, supplied-art provenance, dependency notices and runtime
-licenses remain separate. The supplied Classic Magic / Mystic Eye backs are
+The project LICENSE, CREDITS.md, THIRD_PARTY_NOTICES.md and component `licenses/`
+are embedded in `app.love`; installed payloads also retain a separate licenses
+directory, including asset notices, Slab's MIT header and nested JAR notices.
+Windows/Flatpak preserve the bundled runtimes' own complete license trees.
+Project and component licenses remain separate. The supplied Classic Magic / Mystic Eye backs are
 not described as Kenney or CC0; their unchanged originals and provenance live
 in `assets/card-backs/`.
 
