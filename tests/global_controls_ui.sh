@@ -2,7 +2,7 @@
 set -eu
 project_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 test_dir=$(mktemp -d /tmp/love2gathering-global-controls.XXXXXX)
-trap 'python3 -c '\''import pathlib,shutil,sys;p=pathlib.Path(sys.argv[1]);assert p.parent==pathlib.Path("/tmp") and p.name.startswith("love2gathering-global-controls.");shutil.rmtree(p)'\'' "$test_dir"' EXIT INT TERM
+trap 'python3 -c '\''import pathlib,shutil,sys;p=pathlib.Path(sys.argv[1]);assert p.parent==pathlib.Path("/tmp") and p.name.startswith("love2gathering-global-controls.");shutil.rmtree(p) if p.exists() else None'\'' "$test_dir"' EXIT INT TERM
 cp -R "$project_dir/app" "$project_dir/lib" "$test_dir/"
 mkdir -p "$test_dir/assets/fonts" "$test_dir/assets/kenney"
 cp -R "$project_dir/assets/keyrune" "$project_dir/assets/icons" "$test_dir/assets/"

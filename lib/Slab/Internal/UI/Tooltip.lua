@@ -85,7 +85,10 @@ function Tooltip.Begin(Tip)
 		if Y + BoxH > ScreenH - 8 then Y = math.max(8, Y - BoxH - 42) end
 		LastBounds = {x = X, y = Y, w = BoxW, h = BoxH, text = Tip}
 
-		local CursorX, CursorY = Cursor.GetPosition()
+		-- A tooltip is an overlay, not part of the caller's layout. Window.End
+		-- restores the parent window's border anchor, which loses any active
+		-- indentation; tooltip text also changes item/line state for SameLine.
+		Cursor.PushContext()
 
 		LayoutManager.Begin('Ignore', {Ignore = true})
 		Window.Begin('tooltip',
@@ -111,7 +114,7 @@ function Tooltip.Begin(Tip)
 		OffsetY = Window.GetHeight()
 		Window.End()
 		LayoutManager.End()
-		Cursor.SetPosition(CursorX, CursorY)
+		Cursor.PopContext()
 		ResetSize = false
 	end
 end

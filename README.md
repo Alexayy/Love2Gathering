@@ -120,6 +120,8 @@ Guests still join with the invitation code alone; it includes the server locatio
 
 ## Settings and artwork
 
+Hover help appears above the interface while surrounding controls keep their positions, including in the Settings popup during a match.
+
 Settings open as a full page outside gameplay and as a popup above a running match. They cover display mode/resolution, VSync, antialiasing, render scale, texture filtering, frame limit and UI scale; animations/particles; music, sound effects and volume; and accessibility options such as reduced motion, contrast, color-friendly palettes and tooltips. Use **Apply and save** to apply and persist changes. Trigger-order and automatic pool-payment settings apply when starting a match. New installations use desktop-size **borderless fullscreen**.
 
 The supplied **Beleren** font is used throughout the client, lobby and table. Unsupported glyphs or an unavailable font file fall back to bundled DejaVu. Mana and set symbols retain their supplied fonts. Text controls center the visible glyphs and retain padding for input, selection and caret handling.

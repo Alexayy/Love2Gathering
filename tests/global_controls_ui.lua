@@ -17,6 +17,28 @@ local function centered(label,key)
  check(math.abs(record.y-expected)<=1.1,'Actual '..key..' text command is vertically centered at UI scale '..Layout.scale)
  check(record.font==Fonts.font(16),'Actual '..key..' label uses Beleren after nested heading font changes')
 end
+local function hoverLayout(label)
+ local ids={'setting-opponentColor','setting-builderLayout','setting-skybox'}
+ move({x=4,y=4,w=1,h=1});wait(.3)
+ local before={}
+ for _,id in ipairs(ids)do local b=assert(controls[id],id);before[id]={x=b.x,y=b.y,w=b.w,h=b.h}end
+ local function unchanged(phase)
+  for _,id in ipairs(ids)do
+   local b=assert(controls[id],id);local a=before[id]
+   for _,key in ipairs({'x','y','w','h'})do
+    check(math.abs(a[key]-b[key])<.01,label..' '..id..' '..key..' stays fixed '..phase..' ('..a[key]..'/'..b[key]..')')
+   end
+  end
+ end
+ shot('hover-layout-'..label..'-before')
+ move(controls['setting-accentColor']);wait(.15);unchanged('before tooltip delay')
+ wait(1.0)
+ local bounds=Tooltip.GetBounds()
+ check(bounds and bounds.text:find('Optional #RRGGBB',1,true),'Actual Settings input tooltip is visible in '..label)
+ shot('hover-layout-'..label..'-visible');unchanged('with tooltip visible')
+ move({x=4,y=4,w=1,h=1});wait(.3)
+ shot('hover-layout-'..label..'-after');unchanged('after mouseleave')
+end
 local function samples()
  v:window('control-proof',28,150,620,650,'Controls and typography')
  S.PushFont(r.assets:titleFont(22,m.settings));S.Text('Beleren controls');S.PopFont();S.NewLine()
@@ -68,7 +90,9 @@ local function scenario()
  scene='settings';m:openSettings();v.settingsTab='Presentation';wait(.2)
  check(m.page=='settings'and not m.settingsOpen,'Actual Settings routing opens a full page outside a match')
  check(buttons['Apply and save'].y+buttons['Apply and save'].h<=select(2,Layout.dimensions()),'Full-page settings save remains above the viewport bottom');shot('settings-1120-scaled')
+ hoverLayout('page-scaled')
  mode(2560,1080,1,true);wait(.2);shot('settings-2560')
+ hoverLayout('page-native')
  click(controls['setting-theme']);wait(.1);click(buttons.Ember);check(m.settings.theme=='Ember','Actual nested theme dropdown changes the chosen palette')
  click(buttons['Choose your accent']);wait(.3);check(v.themeColorEdit~=nil,'Actual accent button opens the native Slab color picker')
  local Window=require('lib.Slab.Internal.UI.Window');local picker=Window.GetDebugInfo and nil
@@ -82,7 +106,8 @@ local function scenario()
  m:openSettings();v.settingsTab='Accessibility';wait(.15);shot('accessibility-2560')
  check(S.GetStyle().Font==Fonts.font(16),'Actual full settings page retains Beleren body text after every section')
  m.game={gameId='POPUP-UI-FIXTURE',running=true,format='Modern',turn=1,step='PRECOMBAT_MAIN',phase='PRECOMBAT_MAIN',players={{id='human',name='You',human=true,life=20,hand={},battlefield={},graveyard={},exile={},command={},libraryCount=60},{id='bot',name='Bot',human=false,life=20,hand={},battlefield={},graveyard={},exile={},command={},libraryCount=60}}}
- m.page='table';m.settingsOpen=true;v.settingsTab='Game';wait(.2);check(m.page=='table'and m.settingsOpen and buttons['Apply and save'],'Actual Settings routing retains a popup above the current match');shot('settings-table-popup');m.game=nil
+ m.page='table';m.settingsOpen=true;v.settingsTab='Game';wait(.2);check(m.page=='table'and m.settingsOpen and buttons['Apply and save'],'Actual Settings routing retains a popup above the current match');shot('settings-table-popup')
+ v.settingsTab='Presentation';wait(.2);hoverLayout('match-popup');m.game=nil
  local f=assert(io.open('/tmp/love2gathering-global-controls-ui-report.json','w'));f:write(json.encode({passed=true,checks=checks,captures=completed,physical={love.graphics.getDimensions()},logical={Layout.dimensions()},scope='Actual Model/Renderer/View/Preferences/Slab, native desktop mode/cursors and measured rendering; storage callback intercepted, no service or native-game calls'}));f:close();print('GLOBAL CONTROLS COMPLETE '..#checks..' checks');love.event.quit(0)
 end
 function love.errorhandler(message)io.stderr:write('GLOBAL CONTROLS FAILED '..tostring(message)..'\n'..debug.traceback()..'\n');io.stderr:flush();return function()return 1 end end
