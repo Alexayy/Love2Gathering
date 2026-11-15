@@ -29,11 +29,15 @@ class LibraryTest(unittest.TestCase):
         forest = dict(card, id='forest', oracle_id='forest', name='Forest', type_line='Basic Land — Forest', colors=[], color_identity=['G'])
         maker = dict(card, id='maker', oracle_id='maker', name='Goblin Maker', type_line='Creature — Goblin', power='1', toughness='1',
                      all_parts=[{'id': 'goblin-a', 'component': 'token', 'name': 'Goblin', 'type_line': 'Token Creature — Goblin'}])
+        other_maker = dict(maker, id='other-maker', oracle_id='other-maker', name='Other Goblin Maker',
+                           all_parts=[{'id': 'goblin-c', 'component': 'token', 'name': 'Goblin', 'type_line': 'Token Creature — Goblin'}])
         token = dict(card, id='goblin-a', oracle_id='goblin', name='Goblin', type_line='Token Creature — Goblin', layout='token',
                      power='1', toughness='1', legalities={}, image_uris={kind: 'https://cards.scryfall.io/' + kind + '/goblin.jpg' for kind in ('normal', 'large', 'art_crop')})
-        token_b = dict(token, id='goblin-b', set='tbro')
+        # Identical token faces can have different Oracle IDs when paired on
+        # different double-faced token printings. Artwork families still match.
+        token_b = dict(token, id='goblin-b', oracle_id='goblin-alternate-pair', set='tbro')
         other = dict(token, id='goblin-c', oracle_id='goblin-other', colors=['G'], power='2', toughness='2')
-        self.source = self.root / 'cards.jsonl';self.source.write_text('\n'.join(json.dumps(item) for item in (card, second, forest, maker, token, token_b, other)))
+        self.source = self.root / 'cards.jsonl';self.source.write_text('\n'.join(json.dumps(item) for item in (card, second, forest, maker, other_maker, token, token_b, other)))
         self.catalog = Catalog(self.source, self.root / 'catalog.sqlite');self.catalog.ensure();self.assertEqual(self.catalog.status()['state'], 'ready')
         self.storage = Storage(self.root / 'data', self.root / 'bundled')
         self.storage.save_deck({'id': 'my-deck', 'name': 'Token deck', 'format': 'Modern', 'coverCard': 'Goblin Maker', 'main': [{'name': 'Goblin Maker', 'count': 4}]})
@@ -110,6 +114,62 @@ class LibraryTest(unittest.TestCase):
         self.assertIsNone(self.request('/tokens/resolve', {'token': {'name': 'Invented Token'}})['card'])
         for prefs in ({'mode': 'guess'}, {'mode': 'randomSelected', 'selected': []}, {'mode': 'default', 'selected': ['bolt-a-0']}):
             with self.assertRaises(HTTPError): self.request('/decks/my-deck/token-art', prefs, 'PUT')
+
+    def test_token_groups_show_only_related_families_and_saved_active_manual_art(self):
+        groups = self.request('/tokens?deckId=my-deck&groups=1')
+        self.assertTrue(groups['grouped']);self.assertEqual(groups['total'], 1)
+        group = groups['items'][0];key = group['tokenIdentity']
+        self.assertEqual((group['name'], group['variantCount'], group['activeCard']['tokenImageId']), ('Goblin', 2, 'goblin-a-0'))
+        prefs = {'mode': 'default', 'selected': [], 'overrides': {key: {'mode': 'selected', 'selected': ['goblin-b-0']}}}
+        self.assertEqual(self.request('/decks/my-deck/token-art', prefs, 'PUT'), prefs)
+        current = self.request('/tokens?deckId=my-deck&groups=1')['items'][0]
+        self.assertEqual((current['mode'], current['activeCount'], current['activeCard']['tokenImageId']), ('selected', 1, 'goblin-b-0'))
+        variants = self.request('/tokens?deckId=my-deck&identity=' + key + '&limit=1&offset=1')
+        self.assertEqual((variants['total'], len(variants['items']), variants['items'][0]['tokenImageId']), (2, 1, 'goblin-b-0'))
+        result = self.request('/tokens/resolve', {'deckId': 'my-deck', 'token': {'name': 'Goblin', 'power': '1', 'toughness': '1', 'colors': ['R']}, 'seed': 'another-instance'})['card']
+        self.assertEqual(result['tokenImageId'], 'goblin-b-0');self.assertTrue(result['printingExact'])
+        self.assertEqual(Storage(self.storage.root, self.root / 'bundled').token_preferences('my-deck'), prefs)
+
+    def test_token_family_random_all_and_selected_do_not_cross_native_identity(self):
+        key = self.request('/tokens?deckId=my-deck&groups=1')['items'][0]['tokenIdentity']
+        for mode,selected in [('randomSelected',['goblin-b-0']),('randomAll',[])]:
+            prefs={'mode':'default','selected':[],'overrides':{key:{'mode':mode,'selected':selected}}}
+            self.request('/decks/my-deck/token-art',prefs,'PUT')
+            found=set()
+            for n in range(12):
+                card=self.request('/tokens/resolve',{'deckId':'my-deck','token':{'name':'Goblin','power':'1','toughness':'1','colors':['R']},'seed':str(n)})['card']
+                found.add(card['tokenImageId']);self.assertEqual(card['tokenIdentity'],key)
+            self.assertEqual(found,{'goblin-b-0'}if mode=='randomSelected'else{'goblin-a-0','goblin-b-0'})
+        for mode,selected in [('selected',[]),('selected',['goblin-a-0','goblin-b-0']),('randomSelected',[]),('selected',['goblin-c-0'])]:
+            with self.assertRaises(HTTPError):self.request('/decks/my-deck/token-art',{'mode':'default','selected':[],'overrides':{key:{'mode':mode,'selected':selected}}},'PUT')
+        other=self.catalog.token_item('goblin-c-0')['tokenIdentity']
+        with self.assertRaises(HTTPError):self.request('/decks/my-deck/token-art',{'mode':'default','selected':[],'overrides':{other:{'mode':'randomAll','selected':[]}}},'PUT')
+
+    def test_token_save_prunes_unchanged_removed_family_without_admitting_unrelated_edits(self):
+        deck = self.storage.get_deck('my-deck')
+        self.storage.save_deck(dict(deck, main=[{'name': 'Goblin Maker', 'count': 4}, {'name': 'Other Goblin Maker', 'count': 4}]))
+        removed = self.catalog.token_item('goblin-a-0')['tokenIdentity']
+        remaining = self.catalog.token_item('goblin-c-0')['tokenIdentity']
+        prefs = {'mode': 'default', 'selected': [], 'overrides': {
+            removed: {'mode': 'selected', 'selected': ['goblin-b-0']},
+            remaining: {'mode': 'selected', 'selected': ['goblin-c-0']}}}
+        self.request('/decks/my-deck/token-art', prefs, 'PUT')
+        self.storage.save_deck(dict(deck, main=[{'name': 'Other Goblin Maker', 'count': 4}]))
+        reopened = self.request('/tokens?deckId=my-deck&groups=1')
+        self.assertEqual([item['tokenIdentity'] for item in reopened['items']], [remaining])
+        # Preferences may originate before the deck edit. A changed unrelated
+        # override is rejected, even when that family used to be in this deck.
+        edited = json.loads(json.dumps(reopened['preferences']))
+        edited['overrides'][removed] = {'mode': 'randomAll', 'selected': []}
+        with self.assertRaises(HTTPError): self.request('/decks/my-deck/token-art', edited, 'PUT')
+        edited['overrides'][removed] = prefs['overrides'][removed]
+        edited['overrides'][remaining] = {'mode': 'randomAll', 'selected': []}
+        expected = {'mode': 'default', 'selected': [], 'overrides': {remaining: edited['overrides'][remaining]}}
+        self.assertEqual(self.request('/decks/my-deck/token-art', edited, 'PUT'), expected)
+        self.assertEqual(Storage(self.storage.root, self.root / 'bundled').token_preferences('my-deck'), expected)
+        self.assertEqual(self.request('/tokens?deckId=my-deck&groups=1')['preferences'], expected)
+        # Once pruned, even the former saved value is a new unrelated override.
+        with self.assertRaises(HTTPError): self.request('/decks/my-deck/token-art', prefs, 'PUT')
 
     def test_import_preview_preserves_zones_printings_extras_and_never_saves(self):
         text = 'About\nName Imported example\nCommander\n1 Goblin Maker\nDeck\n4x Lightning Bolt (M10) 161 *F* [Burn]\nSB: 1 Forest\n1 Goblin (tbro) 1 [Tokens & Extras{noDeck}]'

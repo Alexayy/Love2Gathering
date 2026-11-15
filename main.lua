@@ -64,10 +64,11 @@ end
 function love.draw()
     if startup and not startup.ready then startup:draw();preferences:endFrame();if smoke and not startupCaptured then love.graphics.captureScreenshot('smoke-startup.png');startupCaptured=true end;love.timer.sleep(.012);return end
     local started=love.timer.getTime()
-    preferences:beginFrame();renderer:draw();preferences:endScene();Slab.Draw()
+    preferences:beginFrame();renderer:draw();preferences:endScene();Slab.Draw({DeferOverlays=true})
     love.graphics.push();love.graphics.scale(Layout.scale)
     renderer:drawForeground();local choices=package.loaded['app.card_choices'];if choices then choices.draw(view)end
     renderer:drawToasts(Layout.dimensions());love.graphics.pop()
+    Slab.DrawOverlays()
     preferences:endFrame()
     love.graphics.setColor(1,1,1,1)
     preferences:limitFrame(started)
@@ -106,6 +107,9 @@ function love.keypressed(key,scancode,isrepeat)
     if startup and not startup.ready then if key=='escape'then love.event.quit()end;return end
     Slab.OnKeyPressed(key,scancode,isrepeat)
     if key=='escape'then
+        if model.cardPrintingPicker then model:closeCardPrintings();return end
+        if model.tokenPicker then model:closeTokenPicker();return end
+        if view.brandMenu then view.brandMenu=nil;return end
         model:closeSettings();model.zoneView=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.galleryInspect=nil;model.confirmConcede=false;model.archiveCopy=nil;model.storagePurgePreview=nil;model.storageLocationConfirm=nil;model.storageFolderDialog=nil
         view.builderPopup=nil;view.builderFiltersOpen=nil;view.themeColorEdit=nil;view.combatStopsOpen=false;require('app.deck_picker').close(view)
         return

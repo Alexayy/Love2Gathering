@@ -5,8 +5,8 @@ local function within(v,x,y) return v and x>=v.x and y>=v.y and x<=v.x+v.w and y
 Multi.within=within
 local function iconButton(r,icon,label,x,y,w,action,active)
     r:panel(x,y,w,28,active and 'accent' or 'dark')
-    r.assets:iconSymbol(icon,x+7,y+5,18,active and r.colors.accent or r.colors.muted)
-    if label then r:text(label,x+30,y+5,12,r.colors.text,w-34) end
+    if label then r:iconLabel(icon,label,x+7,y,w-14,28,12,active and r.colors.accent or r.colors.text,18)
+    else r.assets:iconSymbol(icon,x+(w-18)/2,y+5,18,active and r.colors.accent or r.colors.muted)end
     r:hit({x=x,y=y,w=w,h=28,action=action,tooltip=label})
 end
 local function ordered(game)

@@ -34,4 +34,10 @@ for _,size in ipairs({{1120,720},{1280,720},{1440,900},{1920,1080},{2560,1440},{
     assert(simple.cardH+24<=simple.grid.h+.01 and simple.grid.y+simple.cardH+24<simple.pagerY,'Simplified card captions overlap page controls')
     assert(simple.pageSize==simple.columns*simple.rows and simple.list.y>simple.grid.y+simple.grid.h,'Shared Simplified search/drop geometry')
     print(('PASS Simplified geometry %dx%d: %d columns'):format(w,h,simple.columns))
+    for _,ratio in ipairs({.1,.4,.7,.95})do
+        local resized=Builder.layout(w,h,'Simplified',ratio)
+        assert(resized.list.h>=179 and resized.list.y+resized.list.h<=h-12,'Resizable deck loses usable height or escapes viewport')
+        assert(resized.grid.y+resized.cardH+24<resized.pagerY,'Resizing lets card captions overlap pagination')
+        assert(resized.divider.y>resized.pagerY+30 and resized.divider.y+resized.divider.h<resized.deckToolbar.y,'Resize handle overlaps a button toolbar')
+    end
 end

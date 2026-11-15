@@ -1,0 +1,40 @@
+{
+  "checks": [
+    "Actual deck relationships expose Goat, both Rat rules families and Treasure",
+    "Real token families keep different Rat rules separate and include the full Treasure art catalog",
+    "Exact genuine cached JPEGs render in the actual token grid",
+    "Actual card clicks stage two outlined matching Treasure editions",
+    "Per-token random-selected preference persisted through the actual catalog",
+    "SQLite-backed API returns the exact two selected artwork IDs",
+    "Normal token resolution consumes the saved family selection without changing native identity",
+    "Closing the real popup preserves the prior saved active pool",
+    "Main page shows the newly active exact manual printing"
+  ],
+  "logical": [
+    1440,
+    900
+  ],
+  "passed": true,
+  "physical": [
+    1440,
+    900
+  ],
+  "scope": "Actual L\u00d6VE/Slab, isolated HTTP catalog/SQLite and genuine cached JPEGs. Only the explicitly named temporary deck token preferences are written. No engine/native match or network image download.",
+  "tokenFamilies": 4,
+  "treasureVariants": 97,
+  "sourceSha256": {
+    "app/library.lua": "1df3501fac160640e531a63a67e8efb440dfea352d96ffd9ceff9d7d3eec65fd",
+    "app/library_ui.lua": "2b51f658393043f51d65816677e4b4093e87f1207e1c6762d819359df06c5d34",
+    "app/token_art_ui.lua": "53765ddb851e77512e6487893f8be81175f863e954eb0c2a65227a42255f5e70",
+    "app/artwork.lua": "9bd3d09c8e7e0b01fa41340e004dc3e56c1e986342bb1b895b03f4fb3a1c2424",
+    "app/model.lua": "c8ef59c43e6e8b8c23c849c90bf5bfe76caa6baa2de2c348c1ce59c01355acb3",
+    "app/assets.lua": "b5e791ed9006d0801a8950a0c9bd799c75d7b1116a15c3e7ccbb62eae18de590",
+    "tests/token_art_live_ui.lua": "e7da02aa70853810a9e6837e80d9c772fac946d8d431b3e7c1f18ae645b4d9d6"
+  },
+  "captures": [
+    "/tmp/love2gathering-token-live-families.png",
+    "/tmp/love2gathering-token-live-random-selected.png",
+    "/tmp/love2gathering-token-live-random-all.png",
+    "/tmp/love2gathering-token-live-manual-active.png"
+  ]
+}

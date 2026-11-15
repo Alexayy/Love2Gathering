@@ -3,14 +3,18 @@ local RichText=require('app.richtext')
 local Colors=require('app.builder_colors')
 local Simple={}
 local function contains(box,x,y)return x>=box.x and y>=box.y and x<=box.x+box.w and y<=box.y+box.h end
-function Simple.layout(w,h)
-    local split=math.max(504,math.min(680,math.floor(h*.60)))
-    local width=w-48;local formWidth=width-14;local gridY=304;local gridH=split-gridY-36
-    local cardH=math.min(226,math.max(126,gridH-24));local cardW=cardH/1.4
+function Simple.splitRatio(h,y)
+    return math.max(384,math.min(h-276,y))/h
+end
+function Simple.layout(w,h,ratio)
+    local split=math.floor(Simple.splitRatio(h,h*(ratio or .55))*h)
+    local width=w-48;local formWidth=width-14;local gridY=228;local gridH=split-gridY-40
+    local cardH=math.min(226,math.max(92,gridH-24));local cardW=cardH/1.4
     local columns=math.max(2,math.floor((width+14)/(cardW+14)))
-    return{mode='Simplified',controls={x=24,y=146,w=formWidth,h=48},search={x=24,y=220,w=formWidth,h=58},
-        grid={x=24,y=gridY,w=width,h=gridH},list={x=24,y=split+80,w=width,h=h-split-104},
-        deckToolbar={x=24,y=split+18,w=formWidth,h=40},columns=columns,rows=1,cardW=cardW,cardH=cardH,pageSize=columns,pagerY=split-32}
+    return{mode='Simplified',controls={x=24,y=100,w=formWidth,h=44},search={x=24,y=162,w=formWidth,h=44},
+        grid={x=24,y=gridY,w=width,h=gridH},list={x=24,y=split+76,w=width,h=h-split-96},
+        divider={x=24,y=split+3,w=width,h=10,split=split},
+        deckToolbar={x=24,y=split+24,w=formWidth,h=34},columns=columns,rows=1,cardW=cardW,cardH=cardH,pageSize=columns,pagerY=split-34}
 end
 local function button(v,label,icon,w,h,opts)
     opts=opts or{};opts.W=w;opts.H=h;opts.Tooltip=opts.Tooltip or label
@@ -39,16 +43,15 @@ local function filters(v,w,h)
 end
 function Simple.build(v,w,h)
     local S,m=v.S,v.m;local deck=m.editDeck;if not deck then return end
-    local L=Simple.layout(w,h);m:setSearchLimit(L.pageSize)
-    v:window('simple-deck-controls',L.controls.x,L.controls.y,L.controls.w,L.controls.h,nil,{AutoSizeContent=false})
-    local available=L.controls.w-30;local nameW=math.max(220,available-530)
-    if S.Input('deck-name',{Text=deck.name,W=nameW,H=36,Align='left',Tooltip='Deck name'})then deck.name=S.GetInputText();m.dirty=true end
-    S.SameLine({Pad=12});v:combo('simple-deck-format',deck.format,{'Modern','Standard','Pioneer','Commander'},150,function(value)m:changeDeckFormat(value)end)
+    local L=Simple.layout(w,h,m.simpleBuilderSplitRatio);m:setSearchLimit(L.pageSize)
+    v:window('simple-deck-controls',L.controls.x,L.controls.y,L.controls.w,L.controls.h,nil,{AutoSizeContent=false,Border=6})
+    v:combo('simple-deck-format',deck.format,{'Modern','Standard','Pioneer','Commander'},150,function(value)m:changeDeckFormat(value)end)
     S.SameLine({Pad=12});if button(v,m.dirty and'Save *'or'Save','save',96,36)then m:saveDeck()end
     S.SameLine({Pad=12});if button(v,'Validate','check',108,36)then m:validateDeck()end
     S.SameLine({Pad=12});if button(v,'Preview','search',100,36)then m.inspectCard=m.previewCard or m.cards[1]end
+    if m.showCardPrintings then S.SameLine({Pad=12});if button(v,'Choose art','gallery',128,36)then m:showCardPrintings(m.previewCard or m.cards[1],m.selectedSection)end end
     S.EndWindow()
-    v:window('simple-search',L.search.x,L.search.y,L.search.w,L.search.h,nil,{AutoSizeContent=false})
+    v:window('simple-search',L.search.x,L.search.y,L.search.w,L.search.h,nil,{AutoSizeContent=false,Border=6})
     local inputW=math.max(160,L.search.w-30-596)
     if S.Input('query',{Text=m.search,W=inputW,H=36,Align='left',Tooltip='Search cards in '..deck.format})then m.search=S.GetInputText();m:searchChanged()end
     for _,symbol in ipairs({'All','W','U','B','R','G','C'})do
@@ -60,7 +63,7 @@ function Simple.build(v,w,h)
     if button(v,'Exact','filter',100,36,{Active=m.searchColorExact,Disabled=Colors.symbols(m)=='',Tooltip='Exact color identity: require every selected color and exclude all other colors. '..Colors.summary(m)})then m:toggleExactSearchColors()end
     S.SameLine({Pad=12});if button(v,'More filters','filter',128,36)then v.builderFiltersOpen=not v.builderFiltersOpen end
     S.EndWindow()
-    v:window('simple-deck-toolbar',L.deckToolbar.x,L.deckToolbar.y,L.deckToolbar.w,L.deckToolbar.h,nil,{AutoSizeContent=false})
+    v:window('simple-deck-toolbar',L.deckToolbar.x,L.deckToolbar.y,L.deckToolbar.w,L.deckToolbar.h,nil,{AutoSizeContent=false,Border=6})
     local zones=(deck.format=='Commander'or m.count(deck,'commander')>0)and{'main','commander','sideboard'}or{'main','sideboard'}
     for i,zone in ipairs(zones)do
         if i>1 then S.SameLine({Pad=8})end
@@ -85,8 +88,7 @@ local function groups(m)
     return indexed,order
 end
 function Simple.draw(r,w,h)
-    local m=r.model;local C=r.colors;local L=Simple.layout(w,h);r.builderDrop=L.list;r.simpleBuilderLayout=L
-    r:strong(m.editDeck and m.editDeck.name or'Deck builder',24,104,22,C.text,w-320)
+    local m=r.model;local C=r.colors;local L=Simple.layout(w,h,m.simpleBuilderSplitRatio);r.builderDrop=L.list;r.simpleBuilderLayout=L
     local width=L.columns*L.cardW+(L.columns-1)*14;local start=L.grid.x+(L.grid.w-width)/2
     for i,card in ipairs(m.cards)do if i<=L.pageSize then
         local x=start+(i-1)*(L.cardW+14)
@@ -98,6 +100,11 @@ function Simple.draw(r,w,h)
     r:button('Previous',L.grid.x,L.pagerY,110,30,function()if m.offset>0 then m.offset=math.max(0,m.offset-m.searchLimit);m:searchCards()end end)
     r:button('Next',L.grid.x+L.grid.w-110,L.pagerY,110,30,function()if m.offset+m.searchLimit<m.total then m.offset=m.offset+m.searchLimit;m:searchCards()end end)
     r:text((m.total>0 and(m.offset+1)..'–'..math.min(m.offset+m.searchLimit,m.total)or'0')..' / '..m.total,L.grid.x+130,L.pagerY+7,13,C.muted,L.grid.w-260,'center')
+    local divider=L.divider;local hot=contains(divider,Layout.mouse())
+    love.graphics.setColor(hot and C.accent or C.line);love.graphics.rectangle('fill',divider.x,divider.y+4,divider.w,2,1,1)
+    r.assets:iconSymbol('pan',divider.x+divider.w/2-9,divider.y-3,18,hot and C.accent or C.muted)
+    r:hit({x=divider.x,y=divider.y-4,w=divider.w,h=18,kind='builder-divider',split=divider.split,tooltip='Drag to resize the card browser and deck area'})
+    if hot then r.assets:setInteractionCursor('sizens')end
     r:panel(L.list.x,L.list.y,L.list.w,L.list.h,'dark')
     local indexed,order=groups(m);local n=#order
     if n==0 then r:text('Drag cards here to add them to '..m.selectedSection..'.',L.list.x+20,L.list.y+24,16,C.muted,L.list.w-40)end
@@ -115,6 +122,11 @@ function Simple.draw(r,w,h)
                 r:drawCard(entry,x,y,cw,ch,{kind='builder-card',section=m.selectedSection,clip={x=L.list.x,y=L.list.y+30,w=L.list.w,h=L.list.h-30}})
                 r:panel(x+cw-34,y+3,30,23,'dark');r:strong(entry.count,x+cw-33,y+4,14,C.text,28,'center')
                 r:hit({x=x,y=y,w=cw,h=math.min(step,ch),kind='builder-card',section=m.selectedSection,card=entry,clip={x=L.list.x,y=L.list.y+30,w=L.list.w,h=L.list.h-30},tooltip=entry.name..' · '..entry.count..' copies · right-click for details, double-click to remove one'})
+                if m.showCardPrintings then
+                    local iconX,iconY=x+cw-24,y+math.min(step,ch)-22
+                    r.assets:control(iconX,iconY,22,22,'dark');r.assets:iconSymbol('gallery',iconX+3,iconY+3,16,C.accent)
+                    r:hit({x=iconX,y=iconY,w=22,h=22,clip={x=L.list.x,y=L.list.y+30,w=L.list.w,h=L.list.h-30},kind='printing-art',action=function()m:showCardPrintings(entry,m.selectedSection)end,tooltip='Choose edition or alternate artwork for '..entry.name})
+                end
             end
         end
         maximum=math.max(maximum,35+math.max(0,#indexed[key]-1)*step+ch);x=x+cw+gap

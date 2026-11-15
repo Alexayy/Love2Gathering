@@ -78,7 +78,8 @@ local LayerContextMenu = 3
 local LayerMainMenuBar = 4
 local LayerDialog = 5
 local LayerDebug = 6
-local LayerMouse = 7
+local LayerTooltip = 7
+local LayerMouse = 8
 
 local LayerNames = {
 	Normal = LayerNormal,
@@ -87,10 +88,11 @@ local LayerNames = {
 	MainMenuBar = LayerMainMenuBar,
 	Dialog = LayerDialog,
 	Debug = LayerDebug,
+	Tooltip = LayerTooltip,
 	Mouse = LayerMouse,
 }
 
-local LayerTable = { {}, {}, {}, {}, {}, {}, {} }
+local LayerTable = { {}, {}, {}, {}, {}, {}, {}, {} }
 
 local ActiveLayer = LayerNormal
 local StatsCategory = 'Slab Draw'
@@ -753,7 +755,7 @@ function DrawCommands.PopShader()
 	insert(ActiveBatch, Item)
 end
 
-function DrawCommands.Execute()
+function DrawCommands.Execute(deferOverlays)
 	local StatHandle = Stats.Begin('Execute', StatsCategory)
 
 	graphics.scale(Scale.GetScale())
@@ -764,11 +766,23 @@ function DrawCommands.Execute()
 	DrawLayer(LayerTable[LayerMainMenuBar], 'MainMenuBar')
 	DrawLayer(LayerTable[LayerDialog], 'Dialog')
 	DrawLayer(LayerTable[LayerDebug], 'Debug')
-	DrawLayer(LayerTable[LayerMouse], 'Mouse')
+	if not deferOverlays then
+		DrawLayer(LayerTable[LayerTooltip], 'Tooltip')
+		DrawLayer(LayerTable[LayerMouse], 'Mouse')
+	end
 
 	graphics.setShader()
 
 	Stats.End(StatHandle)
+end
+
+-- Applications with custom foreground panels can draw these last, without
+-- replaying normal windows or inheriting a caller's clip/transform state.
+function DrawCommands.ExecuteOverlays()
+	graphics.scale(Scale.GetScale())
+	DrawLayer(LayerTable[LayerTooltip], 'Tooltip')
+	DrawLayer(LayerTable[LayerMouse], 'Mouse')
+	graphics.setShader()
 end
 
 local function GetLayerDebugInfo(Layer)
@@ -797,6 +811,7 @@ function DrawCommands.GetDebugInfo()
 	Result['MainMenuBar'] = GetLayerDebugInfo(LayerTable[LayerMainMenuBar])
 	Result['Dialog'] = GetLayerDebugInfo(LayerTable[LayerDialog])
 	Result['Debug'] = GetLayerDebugInfo(LayerTable[LayerDebug])
+	Result['Tooltip'] = GetLayerDebugInfo(LayerTable[LayerTooltip])
 	Result['Mouse'] = GetLayerDebugInfo(LayerTable[LayerMouse])
 
 	return Result

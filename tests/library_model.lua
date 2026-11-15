@@ -39,7 +39,7 @@ check(not m:importDeckFile({getFilename=function()return'secret.exe'end}),'Unrel
 m:showTokenSettings('my-deck');local tokens=m.calls[#m.calls]
 tokens.callback({items={{tokenImageId='goblin-a-0',printing_id='goblin-a'},{tokenImageId='goblin-b-0',printing_id='goblin-b'}},total=2,preferences={mode='default',selected={}}})
 check(m:toggleTokenArt('goblin-b-0')and not m:toggleTokenArt('unknown'),'Only catalog-projected token artwork identities can be selected')
-check(m:setTokenMode('randomSelected')and not m:setTokenMode('guess'),'Only the three persisted artwork modes are accepted')
+check(m:setTokenMode('randomSelected')and not m:setTokenMode('guess'),'Only supported artwork preference modes are accepted')
 m:saveTokenSettings();local prefs=m.calls[#m.calls]
 check(prefs.method=='PUT'and prefs.path=='/decks/my-deck/token-art'and prefs.body.selected[1]=='goblin-b-0','Token preferences save independently of the deck card lists')
 prefs.callback({mode='randomSelected',selected={'goblin-b-0'}})
@@ -67,6 +67,41 @@ m.room.config.kind='constructed';m.roomDeckId='room-deck';native.objectId='room-
 check(m.calls[#m.calls].body.deckId=='room-deck','Constructed room token artwork uses that seat’s actual room deck');m.calls[#m.calls].callback({card=json.null})
 m.settings.showCardArt=false;native.objectId='disabled';count=#m.calls;m:getArt(native,false)
 check(#m.calls==count,'Disabled artwork does not start token resolution')
+
+local n=client();local key='token-family';local firstArt={tokenIdentity=key,tokenImageId='a-0',printing_id='a',name='Treasure',set='ONE'}
+local secondArt={tokenIdentity=key,tokenImageId='b-0',printing_id='b',name='Treasure',set='TWO'}
+local group={tokenIdentity=key,name='Treasure',variantCount=2,defaultCard=firstArt,activeCard=firstArt,activeImageIds={}}
+n:showTokenSettings('my-deck');check(n.calls[#n.calls].path:find('groups=1',1,true),'The token page requests grouped related identities rather than every printing')
+n.calls[#n.calls].callback({items={group},total=1,preferences={mode='default',selected={}}})
+n:openTokenPicker(group);local opening=n.calls[#n.calls]
+check(opening.path:find('identity=token-family',1,true),'Opening a token tile requests only its matching artwork family')
+opening.callback({items={firstArt,secondArt},total=2})
+n:setTokenPickerMode('randomSelected');n:toggleTokenPickerArt('a-0');n:toggleTokenPickerArt('b-0')
+check(n.tokenPicker.selected['a-0']and n.tokenPicker.selected['b-0']and not n.tokenDirty and not n.tokenOverrides[key],'Outlined random selections are staged until explicit Apply')
+n:closeTokenPicker();opening.callback({items={{tokenImageId='stale'}},total=99})
+check(not n.tokenPicker and not n.tokenDirty,'Cancel rejects late popup results and preserves the saved active artwork')
+n:openTokenPicker(group);local oldPage=n.calls[#n.calls];n.tokenPicker.query='TWO';n:refreshTokenPicker();local currentPage=n.calls[#n.calls]
+currentPage.callback({items={secondArt},total=1});oldPage.callback({items={firstArt},total=2})
+check(n.tokenPicker.items[1].tokenImageId=='b-0','Late search/page results cannot replace the current token variant grid')
+check(not n:toggleTokenPickerArt('outside'),'Artwork outside the offered token family cannot be selected')
+n:toggleTokenPickerArt('b-0');check(n:applyTokenPicker(),'Manual artwork applies one exact printing to this token identity')
+local active=n:tokenGroupPresentation(group);check(active.mode=='selected'and active.card.printing_id=='b'and active.count==1,'The main token tile displays the currently active manual art')
+n:saveTokenSettings();local pending=n.calls[#n.calls]
+check(pending.body.overrides[key].mode=='selected'and pending.body.overrides[key].selected[1]=='b-0','Per-token selections are persisted independently without changing deck composition')
+n:setTokenMode('randomAll');pending.callback(pending.body)
+check(n.tokenDirty and n.tokenMode=='randomAll','A completed older save cannot clear unsaved token edits made while it was pending')
+n:openTokenPicker(group);n.calls[#n.calls].callback({items={firstArt,secondArt},total=2});n:setTokenPickerMode('randomSelected');n.tokenPicker.selected={}
+check(not n:applyTokenPicker()and n.tokenPicker.error,'An empty random-selected pool remains open with an actionable error')
+n:closeTokenPicker()
+
+local edited=client();local stale='removed-token-family'
+edited:showTokenSettings('edited-deck');edited.calls[#edited.calls].callback({items={group},total=1,preferences={mode='default',selected={},overrides={[stale]={mode='selected',selected={'removed-0'}}}}})
+edited:openTokenPicker(group);edited.calls[#edited.calls].callback({items={firstArt,secondArt},total=2});edited:toggleTokenPickerArt('b-0');edited:applyTokenPicker();edited:saveTokenSettings()
+local reconciled=edited.calls[#edited.calls]
+check(reconciled.body.overrides[stale]and reconciled.body.overrides[key].selected[1]=='b-0','Saving remaining token artwork retains the loaded preference for server-side deck-edit reconciliation')
+reconciled.callback({mode='default',selected={},overrides={[key]={mode='selected',selected={'b-0'}}}})
+check(not edited.tokenOverrides[stale]and edited.tokenOverrides[key].selected[1]=='b-0'and not edited.tokenDirty,'A successful current save adopts server-normalized preferences after a token maker is removed')
+edited:saveTokenSettings();check(not edited.calls[#edited.calls].body.overrides[stale],'A subsequent save cannot resubmit the pruned removed-token override')
 
 m:showHistory();local old=m.calls[#m.calls];m:showHistory();local fresh=m.calls[#m.calls]
 fresh.callback({matches={{id='actual',outcome='win'}},total=1});old.callback({matches={{id='stale'}},total=99})

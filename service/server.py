@@ -18,6 +18,7 @@ from catalog import Catalog, SCHEMA_VERSION
 from storage import Storage, ConflictError
 from validation import validate
 from artwork import prefer_cached_card
+from deck_printings import printings as card_printings
 from deck_import import preview as import_preview
 from playmats import lookup_playmat
 from paths import default_data_dir, default_cache_dir
@@ -148,7 +149,7 @@ def make_handler(catalog, storage, location_manager=None):
                 self.respond(200, {"status": "ok", "ready": progress["state"] == "ready",
                                    "index": progress, "source": catalog.source.name,
                                    "catalogSource": str(catalog.source.resolve()), "version": 3,
-                                   "apiVersion": 10, "schemaVersion": int(SCHEMA_VERSION),
+                                   "apiVersion": 11, "schemaVersion": int(SCHEMA_VERSION),
                                    "storage": storage_status, "userStore": storage_status})
                 return
             if path == "/ui-layout":
@@ -250,7 +251,7 @@ def make_handler(catalog, storage, location_manager=None):
                     self.respond(200 if deleted else 404, {"deleted": deleted})
                 else: self.respond(405, {"error": "Method not allowed"})
                 return
-            if path.startswith(("/cards", "/art", "/sets", "/gallery/art", "/tokens")) and catalog.status()["state"] != "ready":
+            if path.startswith(("/cards", "/art", "/sets", "/printings", "/gallery/art", "/tokens")) and catalog.status()["state"] != "ready":
                 self.respond(503, {"error": "Card index is not ready", "index": catalog.status()})
                 return
             if method == "GET" and path == "/cards":
@@ -261,6 +262,8 @@ def make_handler(catalog, storage, location_manager=None):
             if method == "GET" and path == "/sets":
                 self.respond(200, {"sets": catalog.sets(param("format").lower())})
                 return
+            if method == 'GET' and path == '/printings':
+                self.respond(200,card_printings(catalog,param('name'),param('q'),param('set'),param('variant','all'),int(param('limit','12')),int(param('offset','0'))));return
             if method == "GET" and path.startswith("/cards/"):
                 card = catalog.get(name=param("name"), printing_id=param("printing") or None) if path == "/cards/by-name" else catalog.get(identifier=path[len("/cards/"):], printing_id=param("printing") or None)
                 if card and not param('printing'): card = prefer_cached_card(catalog, storage, card)
@@ -269,14 +272,16 @@ def make_handler(catalog, storage, location_manager=None):
             if path == '/tokens' and method == 'GET':
                 deck = storage.get_deck(param('deckId')) if param('deckId') else None
                 if param('deckId') and not deck: raise KeyError('Deck not found')
-                result = catalog.tokens(param('q'), deck, min(60, max(1, int(param('limit', '24')))), max(0, int(param('offset', '0'))))
-                result['preferences'] = storage.token_preferences(param('deckId')) if deck else {'mode': 'default', 'selected': []}
+                preferences = storage.token_preferences(param('deckId')) if deck else {'mode': 'default', 'selected': []}
+                result = catalog.tokens(param('q'), deck, min(60, max(1, int(param('limit', '24')))), max(0, int(param('offset', '0'))), groups=param('groups')=='1', identity=param('identity'), preferences=preferences)
+                result['preferences'] = preferences
                 self.respond(200, result);return
             if path == '/tokens/resolve' and method == 'POST':
                 body = self.read_json();deck_id = body.get('deckId');deck = storage.get_deck(deck_id) if deck_id else None
                 preferences = storage.token_preferences(deck_id) if deck else {'mode': 'default', 'selected': []}
                 card = catalog.resolve_token(body.get('token'), preferences, body.get('seed', ''), deck)
-                self.respond(200, {'card': card, 'mode': preferences['mode']});return
+                effective = (preferences.get('overrides') or {}).get((card or {}).get('tokenIdentity'), preferences)
+                self.respond(200, {'card': card, 'mode': effective.get('mode', 'default')});return
             if method == "GET" and path == "/gallery":
                 if catalog.status()["state"] != "ready":
                     self.respond(503, {"error": "Artwork index is not ready. Configure a local JSONL source or explicitly download Scryfall bulk metadata.", "index": catalog.status()})

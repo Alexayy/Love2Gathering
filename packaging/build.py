@@ -142,7 +142,7 @@ def common_payload(output, source):
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     release = {'applicationId': APP_ID, 'name': 'Love: 2 Gathering', 'version': VERSION,
                'sourceRevision': revision, 'engineRevision': subprocess.check_output(['git', 'rev-parse', 'HEAD:engine/mage'], cwd=ROOT, text=True).strip(),
-               'metadataSource': source.name, 'includesUserData': False, 'catalogApi': 10,
+               'metadataSource': source.name, 'includesUserData': False, 'catalogApi': 11,
                'sourceDirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT).strip())}
     (target / 'release.json').write_text(json.dumps(release, indent=2) + '\n')
     (target / 'love2gathering').write_text('#!/bin/sh\nset -eu\napp_file=$(readlink -f -- "$0")\napp_dir=$(CDPATH= cd -- "$(dirname -- "$app_file")" && pwd)\nexec python3 "$app_dir/launcher.py" "$@"\n')

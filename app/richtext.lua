@@ -103,7 +103,7 @@ local function keyFor(renderer,text,width,opts,scale,font)
 end
 function RichText.canvas(renderer,value,width,opts)
     opts=opts or {};local text=clean(value);width=math.max(1,width or 300);Assets.rasterContext()
-    local ui=package.loaded['app.layout'];local scale=ui and ui.scale or 1
+    local scale=Assets.uiRasterScale(renderer.assets.settings)
     local font=fontFor(renderer,opts);local key=keyFor(renderer,text,width,opts,scale,font)
     RichText.clock=RichText.clock+1
     local entry=RichText.cache[key]

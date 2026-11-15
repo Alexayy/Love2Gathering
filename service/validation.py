@@ -5,6 +5,7 @@ Rules source: MagicCompRules 20260807.pdf, 100.2a, 100.4a, 101.1,
 """
 from collections import Counter
 import re
+from deck_printings import validate_printings
 
 NUMBERS = {word: value for value, word in enumerate(("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"))}
 BASIC_LAND_COLORS = {"Plains": "W", "Island": "U", "Swamp": "B", "Mountain": "R", "Forest": "G"}
@@ -125,6 +126,7 @@ def validate(deck, catalog):
             problem("unknown_cover", "Unknown cover card: " + cover, [cover])
         else:
             deck["coverCard"] = cover_card["name"]
+    validate_printings(deck, catalog, problem)
     return {"saveAllowed": not errors, "playable": complete and not errors, "valid": complete and not errors,
             "draft": not complete, "errors": errors, "warnings": warnings, "counts": counts,
             "source": "Scryfall snapshot 2026-09-22; XMage performs final play validation."}

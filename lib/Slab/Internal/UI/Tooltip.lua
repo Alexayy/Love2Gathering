@@ -103,7 +103,7 @@ function Tooltip.Begin(Tip)
 			AutoSizeContent = false,
 			AllowResize = false,
 			AllowFocus = false,
-			Layer = 'ContextMenu',
+			Layer = 'Tooltip',
 			ResetWindowSize = ResetSize,
 			CanObstruct = false,
 			NoSavedSettings = true

@@ -129,8 +129,16 @@ function Renderer:button(label,x,y,w,h,action,active,options)
     if hot then rect(x+2,y+2,w-4,h-4,{.14,.27,.31,.35},7) end
     if active then rect(x,y+h-3,w,3,C.accent,1) end
     local size=options.size or 14
-    self:text(label,x,y+(h-self.fonts[size]:getHeight())/2+require('app.fonts').textOffset(self.fonts[size],label),size,active and C.accent or C.text,w,'center')
+    if options.icon then
+        local image=self.assets:buttonImage(options.icon,label,w,h,{font=self.fonts[size],iconSize=20,color=active and C.accent or C.text})
+        color({1,1,1});love.graphics.draw(image,x,y,0,w/image:getWidth(),h/image:getHeight())
+    else self:text(label,x,y+(h-self.fonts[size]:getHeight())/2+require('app.fonts').textOffset(self.fonts[size],label),size,active and C.accent or C.text,w,'center')end
     self:hit({x=x,y=y,w=w,h=h,action=action,tooltip=options.tooltip or label})
+end
+function Renderer:iconLabel(icon,label,x,y,w,h,size,tint,iconSize)
+    size=size or 16;iconSize=iconSize or size+3;tint=tint or C.text
+    self.assets:iconSymbol(icon,x,y+(h-iconSize)/2,iconSize,tint)
+    self:text(label,x+iconSize+8,y+(h-self.fonts[size]:getHeight())/2+require('app.fonts').textOffset(self.fonts[size],label),size,tint,w-iconSize-8)
 end
 function Renderer:drawCard(card,x,y,w,h,options)
     options=options or {};options.back=options.back or card.hidden
@@ -236,41 +244,18 @@ end
 function Renderer:drawNav(w)
     rect(0,0,w,82,{.042,.054,.080},0);color(C.line);love.graphics.line(0,82,w,82)
     self.assets:divider(24,78,w-48,{.22,.35,.40,.60})
-    if not self.brandIcon then self.brandIcon=love.graphics.newImage(self.assets:icon()) end
-    color(C.gold);love.graphics.draw(self.brandIcon,24,18,0,44/self.brandIcon:getWidth(),44/self.brandIcon:getHeight())
-    self:strong(w<1250 and'Love: 2G'or'Love: 2 Gathering',81,27,20,C.text)
-    local pages={{'Decks','decks'},{'Builder','builder'},{'Lobby','lobby'},{'Rooms','rooms'},{'Replays','replays'},{'Gallery','gallery'}}
-    if self.model.game then pages[#pages+1]={'Match','table'} end
-    local navX=w<1250 and 198 or 292;local gap=w<1250 and 5 or 8
-    local px=w-346;local navW=math.min(200,math.floor((px-18-navX-(#pages-1)*gap)/#pages))
-    for i,item in ipairs(pages) do self:button(item[1],navX+(i-1)*(navW+gap),16,navW,50,function()
-        if item[2]=='builder' and not self.model.editDeck then self.model:newDeck()
-        elseif item[2]=='replays' then self.model:showReplays()
-        elseif item[2]=='gallery' then self.model:showGallery() else self.model.page=item[2] end
-        if item[2]=='rooms' then self.model:showRooms() end
-    end,self.model.page==item[2],{size=w<1250 and 16 or 18}) end
-    self:button('Settings',w-150,16,126,50,function() self.model:openSettings()end,self.model.page=='settings',{size=18})
-    local m=self.model;local profile=m.profile or{name=m.playerName}
-    self.assets:control(px,16,184,50,m.page=='profile'and'accent'or'dark')
-    self:drawAvatar(nil,px+6,22,38);self:strong(self:fit(profile.name or'Profile',126,16,1),px+51,22,16,C.text,126)
-    local life;for _,p in ipairs(m.game and m.game.players or{})do if p.human or p.isLocal then life=p.life end end
-    self:text(life and tostring(life)..' life'or'Profile',px+51,44,12,C.muted,126)
-    local ready=m.engineHealth.ok or m.engineHealth.status=='ok'or m.engineHealth.ready
-    color(ready and C.accent or C.gold);love.graphics.circle('fill',px+176,20,3)
-    self:hit({x=px,y=16,w=184,h=50,action=function()m:showProfile()end,tooltip=(profile.name or'Profile')..' · '..(ready and'XMage connected'or'XMage starting')})
+    require('app.navigation').draw(self,w)
 end
 function Renderer:drawDecks(w,h)require('app.collection_ui').draw(self,w,h)end
 function Renderer:inputBlocked()
     local m,v=self.model,self.view
     local dice=package.loaded['app.dice']
-    return (dice and dice.busy(self))or m.storageLocationConfirm or m.storageFolderDialog or m.settingsOpen or m.zoneView or m.deleteConfirm or m.inspectCard or m.galleryInspect or m.confirmConcede or m.archiveCopy or m.storagePurgePreview
-        or v and(v.deckSelection or v.themeColorEdit or v.combatStopsOpen or m.page=='builder'and(v.builderPopup or v.builderFiltersOpen))
+    return (dice and dice.busy(self))or m.storageLocationConfirm or m.storageFolderDialog or m.settingsOpen or m.zoneView or m.deleteConfirm or m.inspectCard or m.galleryInspect or m.confirmConcede or m.archiveCopy or m.storagePurgePreview or m.cardPrintingPicker or m.tokenPicker
+        or v and(v.brandMenu or v.deckSelection or v.themeColorEdit or v.combatStopsOpen or m.page=='builder'and(v.builderPopup or v.builderFiltersOpen))
         or not v and self.blockBuilderDrop
 end
 function Renderer:drawBuilder(w,h)
     require('app.builder').draw(self,w,h)
-    local mode=self.model.settings.builderLayout or'Classic'
-    for i,value in ipairs({'Classic','Simplified'})do self:button(value,w-258+(i-1)*118,102,110,34,function()self.model:setBuilderLayout(value)end,mode==value,{tooltip=value..' deck builder layout'})end
 end
 local function isLand(card)
     local t=card.type_line or card.type or card.cardType or ''
@@ -371,15 +356,16 @@ function Renderer:draw()
     if self.model.page~='table' then self:drawNav(w) end
     if self.model.page=='decks' then self:drawDecks(w,h)
     elseif self.model.page=='builder' then self:drawBuilder(w,h)
-    elseif self.model.page=='table' then self:drawTable(w,h)
-    elseif self.model.page=='replays' then
-        self:strong('Replays',28,101,28,C.text)
-    elseif self.model.page=='lobby' then
-        self:strong('Lobby',28,103,28,C.text)
-    end
-    Board.links(self);self:drawPreview(w,h);require('app.storage').drawProgress(self,w,h)
+    elseif self.model.page=='table' then self:drawTable(w,h)end
+    Board.links(self);require('app.storage').drawProgress(self,w,h)
 end
 function Renderer:mousemoved(x,y)
+    if self.builderResize and(self.model.page~='builder'or self.model.settings.builderLayout~='Simplified'or self:inputBlocked())then self.builderResize=nil end
+    if self.builderResize then
+        local _,h=Layout.dimensions();local Simple=require('app.builder_simplified')
+        self.model.simpleBuilderSplitRatio=Simple.splitRatio(h,y-self.builderResize.offset)
+        self.model.simpleDeckScroll=0
+    end
     local pan=self.panGesture
     if pan then
         local distance=math.abs(x-pan.startX)+math.abs(y-pan.startY)
@@ -402,6 +388,7 @@ function Renderer:mousepressed(x,y,button,clicks)
     if not hit then return end
     if button==2 and hit.card then self.model.previewCard=hit.card;self.model.inspectCard=hit.card;return end
     if button~=1 then return end
+    if hit.kind=='builder-divider'then self.builderResize={offset=y-hit.split};return end
     if hit.action then
         self:sound('click');hit.action()
         if clicks==2 and hit.deck then self.model:openDeck(hit.deck) end
@@ -418,6 +405,7 @@ function Renderer:mousepressed(x,y,button,clicks)
     elseif hit.kind=='zone' then self.model.zoneView={label=hit.label,cards=hit.cards} end
 end
 function Renderer:mousereleased(x,y,button)
+    if button==1 and self.builderResize then self:mousemoved(x,y);self.builderResize=nil;return end
     if button==2 and self.panGesture then
         self:mousemoved(x,y)
         local pan=self.panGesture;self.panGesture=nil
@@ -431,7 +419,7 @@ function Renderer:mousereleased(x,y,button)
     local distance=math.abs(x-self.dragStart[1])+math.abs(y-self.dragStart[2]);local w,h=Layout.dimensions()
     local accepted=false
     if d.kind=='search' then
-        local drop=self.builderDrop or require('app.builder').layout(w,h).list
+        local drop=self.builderDrop or require('app.builder').layout(w,h,self.model.settings.builderLayout,self.model.simpleBuilderSplitRatio).list
         local current=self.model.page=='builder'and(not self.dragEditorGeneration or self.dragEditorGeneration==self.model.editGeneration)
         if current and not self:inputBlocked()and distance>8 and drop and x>=drop.x and x<=drop.x+drop.w and y>=drop.y and y<=drop.y+drop.h then
             self.model:addCard(d.card);accepted=true
@@ -467,13 +455,13 @@ function Renderer:drawForeground()
         self:drawCard(g.card,x-size/2,y-size*.7,size,size*1.4,{noHit=true,imageOnly=true})
     end
     if self.model.settings.particles~=false and not self.model.settings.reducedMotion then self.assets:drawParticles() end
-    if self.model.stackHover or self.model.logHover or self.model.choiceHover then local w,h=Layout.dimensions();self:drawPreview(w,h)end
+    if not self:inputBlocked()then local w,h=Layout.dimensions();self:drawPreview(w,h)end
 end
 function Renderer:wheelmoved(dx,dy)
     if self.uiHovered or self.model.settingsOpen or self.model.zoneView or self.model.inspectCard then return end
     local x,y=Layout.mouse();local w,h=Layout.dimensions();local p=self.model:prompt()
-    if self.model.page=='decks' and x<w-350 and y>230 then self.deckScroll=math.max(0,math.min(self.deckScrollMax or 0,(self.deckScroll or 0)-dy*50))
-    elseif self.model.page=='builder'and self.model.settings.builderLayout=='Simplified'then require('app.builder_simplified').wheel(self.model,self.simpleBuilderLayout or require('app.builder').layout(w,h,'Simplified'),x,y,dy)
+    if self.model.page=='decks' and x<w-350 and y>180 then self.deckScroll=math.max(0,math.min(self.deckScrollMax or 0,(self.deckScroll or 0)-dy*50))
+    elseif self.model.page=='builder'and self.model.settings.builderLayout=='Simplified'then require('app.builder_simplified').wheel(self.model,self.simpleBuilderLayout or require('app.builder').layout(w,h,'Simplified',self.model.simpleBuilderSplitRatio),x,y,dy)
     elseif self.model.page=='table' and p and p.type=='order' and x<w-348 then self.orderScroll=math.max(0,math.min(self.orderScrollMax or 0,(self.orderScroll or 0)-(dy+dx)*90))
     elseif self.model.page=='table' and self.tableCamera and require('app.multiplayer_table').within(self.multiplayerView,x,y) and not (self.hover and self.hover.kind=='hand') then
         self.tableCamera:zoomAt(math.exp(dy*.12),x,y)

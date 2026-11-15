@@ -3,9 +3,9 @@ local palette={text={.90,.94,.98},muted={.46,.56,.66},accent={.28,.89,.72},gold=
 local Builder={}
 local formats={'Modern','Standard','Pioneer','Commander'}
 local function clamp(n,a,b)return math.max(a,math.min(b,n))end
-function Builder.layout(w,h,mode)
-    if mode=='Simplified'then return require('app.builder_simplified').layout(w,h)end
-    local margin,gap,top=24,26,156
+function Builder.layout(w,h,mode,splitRatio)
+    if mode=='Simplified'then return require('app.builder_simplified').layout(w,h,splitRatio)end
+    local margin,gap,top=24,26,100
     local previewW=w>=1200 and clamp(w*.20,240,320) or 0
     local deckW=clamp(w*.31,328,448)
     local searchW=w-margin*2-14-deckW-gap-(previewW>0 and previewW+gap or 0)
@@ -17,7 +17,7 @@ function Builder.layout(w,h,mode)
     local cardW=math.min((searchW-(columns-1)*14)/columns,(gridH/rows-33)/1.4)
     cardW=math.max(60,cardW)
     return {search={x=margin,y=top,w=searchW,h=230},grid={x=margin,y=gridY,w=searchW,h=gridH},
-        controls={x=deckX,y=top,w=deckW,h=232},list={x=deckX,y=top+266,w=deckW,h=h-top-304},
+        controls={x=deckX,y=top,w=deckW,h=190},list={x=deckX,y=top+224,w=deckW,h=h-top-262},
         preview=previewW>0 and {x=deckX+deckW+gap,y=top,w=previewW,h=h-top-38} or nil,
         columns=columns,rows=rows,cardW=cardW,cardH=cardW*1.4,pageSize=columns*rows}
 end
@@ -107,8 +107,6 @@ function Builder.build(v,w,h)
     S.EndWindow()
     local d=l.controls;local dw=d.w-24
     v:window('builder-deck-controls',d.x,d.y,d.w,d.h)
-    if S.Input('deck-name',{Text=deck.name,W=dw,H=36,Align='left'})then deck.name=S.GetInputText();m.dirty=true end
-    space(v,6)
     combo(v,'builder-deck-format','Deck',deck.format,formats,dw-114,function(value)m:changeDeckFormat(value)end);S.SameLine({Pad=12})
     if iconButton(v,m.dirty and 'Save *' or 'Save','save',98,34)then m:saveDeck()end
     space(v,6)
@@ -150,9 +148,10 @@ function Builder.build(v,w,h)
         local data=m:cardData(entry) or entry;local rawCost=tostring(data.mana_cost or data.manaCost or '');local cost=rawCost:match('^(.-)%s*//') or rawCost
         local _,symbolCount=tostring(cost):gsub('{','')
         local costWidth=list.w>=400 and cost~='' and symbolCount<=4 and 72 or 0
-        local nameWidth=list.w-104-(costWidth>0 and costWidth+4 or 0)
+        local nameWidth=list.w-140-(costWidth>0 and costWidth+4 or 0)
         local shown=v.r:fit(title,nameWidth-12,16,1)
         if S.Button(shown,{W=nameWidth,H=32,Tooltip=entry.name})then m.previewCard={name=entry.name}end
+        if m.showCardPrintings then S.SameLine();if S.Button('Edition artwork',{W=32,H=32,Image={Image=v.r.assets:iconImage('gallery',19)},Tooltip='Choose edition or alternate artwork for '..entry.name})then m:showCardPrintings(entry,m.selectedSection)end end
         if costWidth>0 then S.SameLine({CenterY=true});RichText.slab(v,'entry-mana',cost,costWidth,{size=12,iconSize=14,lineHeight=20,maxLines=1})end
         S.PopID()
     end
@@ -175,6 +174,7 @@ function Builder.build(v,w,h)
             RichText.slab(v,'preview-type',card.type_line or card.type or '',pw,{size=14,color=C.muted})
             if iconButton(v,'Add to '..m.selectedSection,'plus',pw,36)then m:addCard(card)end
             if iconButton(v,'Use as deck cover','cover',pw,34)then m:setDeckCover(card)end
+            if m.showCardPrintings and iconButton(v,'Choose edition / art','gallery',pw,34)then m:showCardPrintings(card,m.selectedSection)end
             if iconButton(v,'Inspect full card','search',pw,32)then m.inspectCard=card end
             RichText.slab(v,'preview-oracle',card.oracle_text or card.rules or '',pw,{size=14,color=C.text})
             if card.legalities and card.legalities[deck.format:lower()]~='legal' then S.Textf('Not legal in '..deck.format..'. Saving will require removing this card.',{W=pw,Color=C.gold})end
@@ -187,8 +187,6 @@ function Builder.draw(r,w,h)
     if r.model.settings.builderLayout=='Simplified'then return require('app.builder_simplified').draw(r,w,h)end
     local C=r.colors or palette
     local m=r.model;local l=Builder.layout(w,h);r.builderDrop=l.list
-    r:text(m.editDeck and m.editDeck.name or 'Deck builder',24,96,22,C.text)
-    r:text('Legal cards for your format. Double-click or drag to add. Select a card for its image.',24,130,13,C.muted)
     local totalW=l.columns*l.cardW+(l.columns-1)*14;local start=l.grid.x+(l.grid.w-totalW)/2
     for i,card in ipairs(m.cards)do
         if i<=l.pageSize then

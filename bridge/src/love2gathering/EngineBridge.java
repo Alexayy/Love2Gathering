@@ -979,7 +979,18 @@ public final class EngineBridge {
                 m.put("printing",map("name",printed.getName(),"power",printed.getPower().toString(),"toughness",printed.getToughness().toString(),"set",printed.getExpansionSetCode(),"number",printed.getCardNumber(),
                     "colors",colorNames(printed.getColor()),"type",type,"type_line",type+(subtypes.isEmpty()?"":" — "+String.join(" ",subtypes)),"subtypes",subtypes,"keywords",NativeProjection.keywords(printed)));
             }
-            if(c instanceof Card)m.put("ownerId",str(((Card)c).getOwnerId()));
+            if(c instanceof Card){
+                Card nativeCard=(Card)c;m.put("ownerId",str(nativeCard.getOwnerId()));
+                // Only this already-entitled visible card's choice is public.
+                // The complete deck printingSelections never enters a frame.
+                if(!(c instanceof Permanent)||!((Permanent)c).isToken()){
+                    Player originalOwner=game.getPlayer(nativeCard.getOwnerId());int seat=originalOwner==null?-1:seatOf(originalOwner);
+                    Card original=game.getCard(c.getId());if(original==null)original=nativeCard;
+                    Card main=original.getMainCard();String name=main==null?original.getName():main.getName();
+                    String chosen=seat<0?null:CardPrintingProjection.selected(seatConfigs.get(seat).deck,name,str(original.getId()));
+                    if(chosen!=null)m.put("selectedPrintingId",chosen);
+                }
+            }
             m.put("colors",colorNames(c.getColor(game)));m.put("subtypes",c.getSubtype(game).toString());
             if (c instanceof Permanent) {
                 Permanent p = (Permanent)c;

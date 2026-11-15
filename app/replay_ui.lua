@@ -1,7 +1,7 @@
 local UI={}
 function UI.build(v,w,h)
     local S,m=v.S,v.m
-    v:window('replay-library',24,153,w-48,h-177)
+    v:window('replay-library',24,100,w-48,h-124)
     local refreshW=math.max(244,math.ceil(v.r.fonts[16]:getWidth('Refresh recordings')+70))
     if S.Button('Refresh recordings',{Image={Image=v.r.assets:buttonImage('replay','Refresh recordings',refreshW,44,{font=v.r.fonts[16]})},W=refreshW,H=44,Tooltip='Refresh saved matches'}) then m:refreshReplays() end
     local count=m.replayLoading and('Loading '..(m.replayLoadProgress or 0)..' frames…')or tostring(m.replaysTotal or#(m.replays or{}))..' recordings'

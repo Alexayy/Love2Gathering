@@ -162,6 +162,9 @@ function ComboBox.Begin(id, options)
 	local winX, winY = Window.TransformPoint(x, y)
 
 	if instance.IsOpen then
+		-- Modal forms reassert their own lock every frame. The open child
+		-- popup retains priority for scrolling and input until it closes.
+		Window.SetStackLock(instance.WinId)
 		LayoutManager.Begin(instance.WinId .. '_PopupLayout', IGNORE)
 		local winOpts = instance.WindowOptions
 
@@ -172,7 +175,11 @@ function ComboBox.Begin(id, options)
 		winOpts.Layer = Window.GetLayer()
 		winOpts.ContentW = max(w, instance.WinW)
 		winOpts.Border = 4
+		local popupColor = Style.ComboBoxPopupColor or Style.WindowBackgroundColor
+		winOpts.BgColor = {popupColor[1], popupColor[2], popupColor[3], 1.0}
 
+		-- The popup must not replace the caller's indentation or last-row state.
+		Cursor.PushContext()
 		Window.Begin(instance.WinId, winOpts)
 		Active = instance
 	else
@@ -183,12 +190,9 @@ function ComboBox.Begin(id, options)
 end
 
 function ComboBox.End()
-	local y, h = 0, 0
 	local statHandle = Active and Active.StatHandle or nil
 
 	if Active ~= nil then
-		Cursor.SetItemBounds(Active.X, Active.Y, Active.W, Active.H)
-		y, h = Active.Y, Active.H
 		local contentW, contentH = Window.GetContentSize()
 		Active.WinH = contentH
 		Active.WinW = max(contentW, Active.W)
@@ -200,13 +204,8 @@ function ComboBox.End()
 	end
 
 	Window.End()
-	DrawCommands.SetLayer('Normal')
 	LayoutManager.End()
-
-	if y ~= 0 and h ~= 0 then
-		Cursor.SetY(y)
-		Cursor.AdvanceY(h)
-	end
+	Cursor.PopContext()
 
 	Stats.End(statHandle)
 end

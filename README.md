@@ -24,7 +24,7 @@ Install **Java 21, Python 3 and LÖVE 11.5**, then run (the launcher can also us
 
 The launcher starts the local card catalog, XMage, room-code gateway and the desktop window. The first build downloads Java dependencies; if Maven is unavailable, the script downloads a local copy using `curl` and `tar`. The supplied large `assets/all-cards*.jsonl` source is indexed locally into `service/data/catalog.sqlite`. Indexing progress appears in the client; set `LOVE2GATHERING_CATALOG_SOURCE` to select a particular snapshot.
 
-Build and service logs are in `.runtime/engine-build.log`, `.runtime/engine.log`, `.runtime/catalog.log` and `.runtime/rooms.log`. The launcher reuses a catalog with **API 10 or newer** and matching database/cache/source, and starts a separate engine and gateway for each desktop instance, so opening another client preserves an existing match. It selects available local ports and stops only services it started.
+Build and service logs are in `.runtime/engine-build.log`, `.runtime/engine.log`, `.runtime/catalog.log` and `.runtime/rooms.log`. The launcher reuses a catalog with **API 11 or newer** and matching database/cache/source, and starts a separate engine and gateway for each desktop instance, so opening another client preserves an existing match. It selects available local ports and stops only services it started.
 
 The splash opens while the launcher checks dependencies, storage, local version, catalog, XMage build, bridge and gateway. It decodes the curated graphics/audio and prepares fonts before opening the client. Card illustrations stream from the local cache as needed. Failures remain visible with the relevant stage; missing metadata offers an explicit saved-library fallback. The version check reads the installed revision; it does not download an application update.
 
@@ -42,9 +42,15 @@ Edit, duplicate or delete your owned lists, or choose them for the lobby. Editin
 
 Select a preview card as the deck's cover. The builder supports name/rules/type search, format/color/type/set filters, and name/color/set sorting. Double-click a search result or drag it into the list to add it; use `−` / `+` to change quantities. Choose the main deck, sideboard or commander zone before adding cards.
 
-Choose **Classic** or **Simplified** in the builder header. Simplified places the card browser, search and Mana filters above the deck, with additional filters in a popup. The lower deck uses overlapping columns by mana value and a separate land section. Drag cards into that lower section to add them; double-click a deck card to remove one copy. The selected layout is saved.
+The navbar keeps the page actions beside the navigation: **Import**, **History** and **New deck** on Decks; the deck name and **Classic / Simplified** controls in Builder. Hover an icon for its label. Right-click the application name for **Border Toggle**, **Minimize** or **Exit**. Border Toggle switches between borderless fullscreen and a bordered, maximized window.
+
+Choose **Classic** or **Simplified** in the navbar. Simplified places the card browser, search and Mana filters above the deck, with additional filters in a popup. The lower deck uses overlapping columns by mana value and a separate land section. Drag cards into that lower section to add them; double-click a deck card to remove one copy. Drag the divider above the lower deck up or down to give either section more height. The selected layout is saved; the split remains in place for the current client session.
 
 Simplified's Mana buttons toggle independently. White + Black includes cards whose identity contains either selected color. **Exact identity** instead requires precisely the selected colors: White + Black + Green shows Abzan identity only. Colorless selects empty identity, and All clears the filter. Classic keeps its existing color selector.
+
+Use the **edition/artwork** icon on a deck card or its preview to choose a printing of that card. The popup includes reprints, alternate treatments, basic lands and commanders, with set/search filters and an active selection. **Apply edition** changes every copy of that card in the chosen zone; **Default art** removes the override. Save the deck to retain it. Exact choices use their own cached image; a missing scan stays marked as missing.
+
+Token artwork opens from the saved deck’s token control. Each related token has its own active-art tile and **Default**, **Manual**, **Random selected** or **Random all** mode. Random selected uses only outlined choices in its grid; Random all uses the matching token family’s complete catalog. Apply the popup choice, then **Save token artwork**.
 
 Saving checks format legality, copy limits across the deck and sideboard, Commander color identity and eligible commanders/pairs. Basic lands and cards with printed copy-count exceptions are handled separately. Errors identify the cards that need changes. An otherwise valid unfinished list can be saved as an explicit **draft**; it must meet the format's full construction requirements before play. XMage performs final validation when the match starts.
 

@@ -168,3 +168,9 @@ Cached BLOBs live in `images.sqlite` when the cache is split; existing combined 
 Beleren uses native-DPI rasterization in Standard quality and twice native DPI in High quality. Both keep logical text/caret geometry; they are independent of board render scale. The splash decodes only curated modules/resources and prepares real fonts/canvases while launcher build/services progress. Failures remain visible. Detailed GUI evidence is in `tests/presentation-refresh-ui-report.json`, `tests/startup-ui-report.json` and the separate real-launcher `tests/startup-main-report.json`.
 
 Bot basic-land playmats use a bounded metadata pool of English basic printings explicitly marked `full_art:true` in the supplied snapshot. Regenerate it with `scripts/prepare-playmat-basics.py --source PATH`; this streams the snapshot without fetching images. Exact cached illustrations retain their printing identity. Missing illustrations stay as a faint supplied pattern; they do not cause network downloads.
+
+## Navbar and dense UI artwork
+
+`runtime/window_actions.lua` maps the supplied Game Icons White/2x larger, minus and cross images to window border, minimize and exit actions. Their unmodified source paths and alpha bounds are recorded in `runtime/provenance.json`; the existing Kenney CC0 notices apply. Navbar pages and contextual actions reuse the curated semantic icons and divider. Icon-only controls omit the label gap to stay centered.
+
+Mana glyph atlases, icon/button canvases and inline rich text now follow display DPI, logical UI scale and Standard/High text quality. Their antialiasing is independent of the card texture filter and table render scale. Logical sizes stay unchanged. The shared icon LRU is limited to 96 entries and 8,388,608 pixels; rich text retains its separate bounded cache. Native display changes invalidate both.

@@ -39,7 +39,7 @@ function Model:refreshDecks()
 end
 function Model:update(dt)
     self.api:update()
-    self:updateReplays(dt);self:updateUILayout(dt);self:updateGallery(dt);self:updateRooms(dt);self:updateLibrary(dt);self:updateCollection(dt);self:updateProfile(dt);self:updateStorage(dt)
+    self:updateReplays(dt);self:updateUILayout(dt);self:updateGallery(dt);self:updateRooms(dt);self:updateLibrary(dt);self:updateCollection(dt);self:updateProfile(dt);self:updateStorage(dt);self:updateCardPrintings(dt)
     if self.validationTimer then self.validationTimer=self.validationTimer-dt;if self.validationTimer<=0 then self.validationTimer=nil;self:validateDeck() end end
     for i=#self.toasts,1,-1 do self.toasts[i].ttl=self.toasts[i].ttl-dt;if self.toasts[i].ttl<=0 then table.remove(self.toasts,i) end end
     self.healthTimer=self.healthTimer-dt
@@ -153,6 +153,7 @@ function Model:setBotDeck(index,id)
     self.botDeckIds[index]=id;if index==1 then self.botDeckId=id end
 end
 function Model:openDeck(deck)
+    if self.closeCardPrintings then self:closeCardPrintings()end
     self.editGeneration=(self.editGeneration or 0)+1;self.deckRevision=0;self.mutationQueue={};self.mutationBusy=false;self.saveAfterMutations=false;self.lastBuilderError=nil
     self.editDeck=copy(deck)
     for _,zone in ipairs({'main','sideboard','commander'}) do self.editDeck[zone]=json.array(self.editDeck[zone] or {}) end
@@ -193,12 +194,14 @@ local function changeCard(deck,name,section,delta)
 end
 function Model:commitCard(name,section,delta)
     changeCard(self.editDeck,name,section,delta);self.deckRevision=(self.deckRevision or 0)+1
+    if self.syncCardPrintings then self:syncCardPrintings()end
     self.dirty=true;self.validation=nil;self.validationVersion=(self.validationVersion or 0)+1;self.validationTimer=.35
 end
 function Model:processCardQueue()
     if self.mutationBusy or not self.editDeck or not self.mutationQueue or #self.mutationQueue==0 then return end
     local operation=self.mutationQueue[1];local candidate=copy(self.editDeck)
     changeCard(candidate,operation.name,operation.section,operation.delta)
+    if self.syncCardPrintings then self:syncCardPrintings(candidate)end
     local revision,generation=self.deckRevision or 0,self.editGeneration or 0
     self.mutationBusy=true
     self:request('catalog','POST','/decks/validate',candidate,function(result,err)
@@ -413,4 +416,5 @@ require('app.storage').install(Model)
 require('app.storage_locations').install(Model)
 require('app.playmats').install(Model)
 require('app.builder_colors').install(Model)
+require('app.card_printings').install(Model)
 return Model

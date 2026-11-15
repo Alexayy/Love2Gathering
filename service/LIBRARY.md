@@ -1,6 +1,6 @@
 # Local images, imports, tokens and history
 
-These features use catalog API **5** and generated schema **7**. A future launch must choose a compatible service rather than reusing an old handler. Index rebuilding streams the configured JSONL, preserving the source, user SQLite saves and running matches.
+These features use catalog API **11**; artwork choices reuse existing deck JSON and token-preference storage. A future launch must choose a compatible service rather than reusing an old handler. Index rebuilding streams the configured JSONL, preserving the source, user SQLite saves and running matches.
 
 ## Local image identity
 
@@ -26,20 +26,40 @@ URL retrieval accepts HTTPS Archidekt, Moxfield and MTGGoldfish public deck URLs
 
 Primary sources reviewed **2026-11-14**: [Archidekt FAQ](https://archidekt.com/faq), its [official curated precons](https://archidekt.com/commander-precons), [Moxfield Help](https://moxfield.com/help) and its served frontend's API host, and [MTGGoldfish's own Arena export](https://www.mtggoldfish.com/deck/arena_download/7502486). The live test fetched Archidekt's own `/api/decks/27859380/` and retained all 100 cards/categories. Goldfish refused this session's automated request; its text export remains supported. No third-party scraping/authentication service is used.
 
+## Card editions and alternate artwork
+
+Classic deck rows and the card preview offer an artwork icon; Simplified deck cards expose the same icon. The modal is limited to that card's English, same-Oracle printings. Search accepts edition names/codes, collector numbers, release years and artists; the set dropdown and extended-art/borderless/showcase filters narrow the paged grid. The highlighted tile is the staged edition. **Apply edition** changes every copy of that named card in the chosen deck zone, including basic lands and commanders; **Default art** removes the override. Cancel/Escape does not modify the deck. Save uses the ordinary deck save/fork operation.
+
+`GET /printings?name=&q=&set=&variant=all&limit=12&offset=0` returns `{name,oracleId,items,sets,total,limit,offset}`. Pages allow 1–60 items. Variants are `all`, `extended`, `borderless`, `showcase`; the All/Set views include other treatments and full-art lands without guessing their treatment from a name. Metadata reads use the existing streamed catalog index and never load the complete JSONL into Lua.
+
+`deck.printingSelections` persists `{name,zone,count,printingId,set?,collectorNumber?}` alongside the unchanged named card entries. Before saving, the service validates that the exact printing belongs to that card's Oracle identity, the zone contains it and artwork counts do not exceed card counts. Saved template forks, imports and commanders preserve the same field; unresolved imported set/collector references remain import notes. Catalog validation is separate from XMage's final construction validation.
+
+Explicit thumbnails and selected runtime scans request `exact=1`; a missing selected printing remains a placeholder rather than displaying another illustrator's cached art. The frontend has separate exact cache identities, four concurrent bounded metadata lookups and stale opening/search/editor/revision guards. Picker browsing does not download images.
+
+The bridge adds only `selectedPrintingId` to each entitled visible card. Opposing humans see a revealed card owner's selected art, and recorded projections retain it. Hidden cards never expose this field or a complete deck artwork list. Rendering overlays image metadata while preserving native object IDs, current P/T, counters, rules and engine legality. The normal picker applies one edition to all copies in a zone. Imported mixed-edition lists retain their quantities in storage, but runtime matching uses stable per-object weighted artwork selection by card name across the source deck; it does not guarantee an exact physical distribution or distinguish sideboard copies of the same name.
+
+`service/tests/test_card_printings.py` covers bounded exact pages, validation, persistence and exact-cache misses. Its headless LÖVE queue test runs actual API workers against its own temporary HTTP/SQL service: printing quantities are synchronized on the staged validation candidate before adding/removing copies, with no mutation of the live editor until acceptance. `tests/card_printings_model.lua` covers staging, stale requests, editor routing, format/revision fences and native-value preservation. `tests/card_printings_ui.sh` requires an explicit API11 catalog with real Forest THB and Rin and Seri cached scans under `/tmp`; it creates/removes only its named fixture deck and exercises actual main/Slab input, set filtering, modal cancellation, saves and reopened image identities. `scripts/test-card-printings-native.sh` checks visible/hidden two-human native projections against the packaged bridge, separately from GUI presentation fixtures.
+
 ## Token artwork
 
-Streaming indexing retains real token/emblem printing faces and `all_parts` relationships from the [official Scryfall card schema](https://scryfall.com/docs/api/cards), following its [image documentation](https://scryfall.com/docs/api/images). Deck token browsing includes variants of identities explicitly referenced by the deck's cards. Missing relationships/images remain unknown.
+Streaming indexing retains real token/emblem printing faces and `all_parts` relationships from the [official Scryfall card schema](https://scryfall.com/docs/api/cards). The token page shows one tile per token family actually referenced by the saved deck, with its current mode, active image and selected count. It does not show the entire token catalog as an undifferentiated list. Distinct rules, base P/T, colors and types remain separate families even when they share a name such as Rat. Artwork variants can share a family across Oracle IDs or double-faced pairings; edition and artist do not define the family.
+
+Open a tile to stage choices in a paged image grid. **Default** uses a linked printing, **Manual** picks one exact illustration, **Random selected** samples only the outlined selected cards, and **Random all** samples every matching illustration in the catalog. Popup Apply adopts the staged choice; Cancel/Escape preserves it. **Save token artwork** persists the deck's family overrides. The main tile shows the active illustration/mode, and the popup marks eligible images with an outline and Active label. Missing local scans remain placeholders; the picker does not trigger image downloads or substitute another illustrator's printing.
+
+Removing a token maker from a saved deck hides its token family. On the next artwork save, an unchanged previously saved override for that removed family is pruned. A newly added or modified unrelated override is rejected. The client adopts the normalized save response only when no newer artwork edits have been made.
 
 | Route | Contract |
 | --- | --- |
-| `GET /tokens?deckId=&q=&offset=&limit=` | Up to 60 printing/face items, total and preferences; omit deckId to search all tokens. |
-| `GET /decks/<id>/token-art` | `{mode,selected}`, independent of cards/covers. |
-| `PUT /decks/<id>/token-art` | Validated `default`, `randomSelected` or `randomAll` and up to 500 actual image IDs. |
+| `GET /tokens?deckId=&q=&offset=&limit=` | Up to 60 matching printing/face items; existing flat API remains supported. |
+| `GET /tokens?groups=1&deckId=` | Paged related family tiles: `tokenIdentity`, default/active card, active IDs, mode, active count and complete variant count. |
+| `GET /tokens?deckId=&identity=&q=&offset=&limit=` | Paged variants of one related family; search accepts name, set and artist. |
+| `GET /decks/<id>/token-art` | Legacy `{mode,selected}` plus optional `overrides` keyed by token family. |
+| `PUT /decks/<id>/token-art` | `{mode,selected,overrides?:{tokenIdentity:{mode,selected}}}`. Modes are `default`, `selected` (Manual), `randomSelected`, `randomAll`. At most 100 related families and 500 selected exact token-image IDs across overrides. |
 | `POST /tokens/resolve` | `{deckId?,token:{name,type_line?,power?,toughness?,colors?,printing?},seed?}` returns `{card,mode}`; null card means unknown. |
 
-Resolution matches native name/type/base power/toughness/colors; `token.printing` supplies original identity when live values changed. Random modes choose only matching variants. The native object ID is a stable seed, avoiding illustration flicker. Random selected falls back to a default matching image when a particular token has no selected variant. No known metadata means no guessed image. Artwork never changes native object IDs, live stats, abilities or legal actions.
+The existing `token_preferences` SQL payload stores overrides, so older preferences remain readable without a destructive migration. Manual mode requires exactly one illustration; random-selected requires at least one. An override must belong to a token actually referenced by the deck, and every selected image must match that family's identity. Different token families never join a random pool. The source deck's quantities, commanders, cover and printing selections are not changed. If a later deck edit removes a token maker, the next artwork Save prunes only its unchanged stored family override; new or edited unrelated family overrides remain validation errors.
 
-The frontend resolves at most four tokens concurrently, retains at most 128 entries and bounds error retries. Practice uses its active deck; constructed rooms use their own room deck; drafts use defaults instead of unrelated practice preferences.
+Resolution matches the native original name/type/base P/T/colors; `token.printing` supplies that identity when live values have changed. A stable native object ID seeds random choice to avoid art flicker. A legacy preference without a matching selected variant falls back to a matching default instead of blanking the token. Artwork never changes native IDs, live stats, abilities or legality. The frontend retains four concurrent resolutions, a bounded 128-entry cache, retry bounds and opening/search/save-revision fences. Practice uses its active deck; constructed rooms use the seat's actual deck; drafts do not inherit unrelated practice choices.
 
 `GET /decks` also appends presentation-only `colorIdentity:[W,U,B,R,G]` in canonical order, computed from the main/commander catalog union when the index is ready. It does not persist derived colors or modify quantities.
 

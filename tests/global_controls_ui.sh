@@ -16,6 +16,7 @@ function love.conf(t)
  t.modules.audio=false;t.modules.physics=false;t.modules.joystick=false;t.console=true
 end
 CONF
+rm -f /tmp/love2gathering-global-controls-ui-report.json
 LOVE2GATHERING_CATALOG_PORT=17499 LOVE2GATHERING_ENGINE_PORT=17498 LOVE2GATHERING_ROOM_PORT=17497 love "$test_dir"
 python3 - "$test_dir" "$project_dir" <<'PY'
 import json,hashlib,pathlib,sys

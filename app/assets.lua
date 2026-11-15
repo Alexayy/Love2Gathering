@@ -20,7 +20,7 @@ local function image(path)
     if ok then result:setFilter('linear','linear');return result end
 end
 function Assets.new()
-    local self=setmetatable({fonts={},textFonts={},particles={},sounds={},soundVoices={},maxParticles=180,iconCache={},iconClock=0,iconCacheLimit=96,runtimeImages={},skyboxes={},skyboxClock=0},Assets)
+    local self=setmetatable({fonts={},textFonts={},particles={},sounds={},soundVoices={},maxParticles=180,iconCache={},iconClock=0,iconCacheLimit=96,iconPixelLimit=8*1024*1024,runtimeImages={},skyboxes={},skyboxClock=0},Assets)
     self.theme=Theme.new();self.surfaces=self.theme.surfaces
     self.panelImage=image('assets/kenney/ui/panel.png')
     self.textures={};for name,path in pairs(texturePaths) do self.textures[name]=image(path) end
@@ -95,10 +95,25 @@ function Assets:counterBadge(value,x,y,size,style,tint)
     love.graphics.print(text,x+(size-font:getWidth(text)*fit)/2,y+(size-font:getHeight()*fit)/2,0,fit,fit)
     love.graphics.pop();return size
 end
+-- UI raster density follows display/UI scale and text quality, never the table
+-- canvas scale or the texture-filter setting used for card/background images.
+function Assets.uiRasterScale(settings)
+    local layout=package.loaded['app.layout'];local scale=layout and layout.scale or 1
+    local native=love.window and love.window.getDPIScale and love.window.getDPIScale()or 1
+    local quality=settings and settings.fontQuality or Fonts.quality
+    return scale*math.max(1,native)*(quality=='Standard'and 1 or 2)
+end
 function Assets:font(size,text)
+    if not text then
+        local dpi=math.max(1,Assets.uiRasterScale(self.settings))
+        if self.manaFontDpi~=dpi then self.manaFontDpi=dpi;self.fonts={}end
+    end
     local cache=text and self.textFonts or self.fonts
     size=math.max(8,math.floor(size+.5))
-    if not cache[size] then cache[size]=text and Fonts.font(size)or love.graphics.newFont('assets/keyrune/mana.ttf',size) end
+    if not cache[size] then
+        cache[size]=text and Fonts.font(size)or love.graphics.newFont('assets/keyrune/mana.ttf',size,'normal',self.manaFontDpi)
+        cache[size]:setFilter('linear','linear')
+    end
     return cache[size]
 end
 function Assets:setSettings(settings)
@@ -261,16 +276,17 @@ function Assets:iconSymbol(name,x,y,size,tint)
     love.graphics.pop();return size
 end
 local function trimIconCache(self)
-    local count=0;for _ in pairs(self.iconCache)do count=count+1 end
-    while count>self.iconCacheLimit do
+    local count,pixels=0,0;for _,entry in pairs(self.iconCache)do count=count+1;pixels=pixels+entry.image:getWidth()*entry.image:getHeight()end
+    while count>self.iconCacheLimit or pixels>(self.iconPixelLimit or 8*1024*1024)do
         local oldest,oldestTime
         for key,entry in pairs(self.iconCache)do if not oldestTime or entry.used<oldestTime then oldest,oldestTime=key,entry.used end end
+        local entry=self.iconCache[oldest];pixels=pixels-entry.image:getWidth()*entry.image:getHeight()
         self.iconCache[oldest]=nil;count=count-1
     end
 end
 function Assets:iconImage(symbol,size,tint)
     size=size or 20
-    local layout=package.loaded['app.layout'];local scale=layout and layout.scale or 1
+    local scale=Assets.uiRasterScale(self.settings)
     local epoch=Assets.rasterContext()
     local color=tint or {.86,.92,.98,1};local key=table.concat({epoch,symbol,size,tint and 'tint' or 'auto',string.format('%.5f',scale),unpack(color)},'|')
     self.iconClock=self.iconClock+1
@@ -282,13 +298,13 @@ function Assets:iconImage(symbol,size,tint)
 end
 function Assets:buttonImage(symbol,label,width,height,opts)
     opts=opts or {};local size=opts.size or 16;local font=opts.font or self:font(size,true)
-    local iconSize=opts.iconSize or 20;local gap=opts.gap or 7;local text=tostring(label or '')
+    local iconSize=opts.iconSize or 20;local text=tostring(label or '');local gap=text==''and 0 or(opts.gap or 7)
     local available=math.max(8,width-iconSize-gap-12)
     if font:getWidth(text)>available then
         while #text>0 and font:getWidth(text..'…')>available do local last=utf8.offset(text,-1);text=text:sub(1,last-1)end
         text=text..'…'
     end
-    local layout=package.loaded['app.layout'];local scale=layout and layout.scale or 1
+    local scale=Assets.uiRasterScale(self.settings)
     local epoch=Assets.rasterContext()
     local tint=opts.color or {.9,.94,.98,1};local iconTint=opts.iconTint
     local key=table.concat({'button',epoch,symbol,label,width,height,tostring(font),iconSize,gap,string.format('%.5f',scale),table.concat(tint,','),iconTint and table.concat(iconTint,',') or 'auto'},'|')

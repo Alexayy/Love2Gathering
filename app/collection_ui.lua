@@ -10,7 +10,7 @@ local function match(m,deck)
 end
 function UI.layout(w,h)
     local side=306;local width=w-side-82;local columns=math.max(2,math.min(6,math.floor(width/218)))
-    return{x=28,y=239,w=width,h=h-257,sideX=w-side-28,sideW=side,columns=columns,tile=(width-(columns-1)*16)/columns}
+    return{x=28,y=201,w=width,h=h-219,sideX=w-side-28,sideW=side,columns=columns,tile=(width-(columns-1)*16)/columns}
 end
 local function tile(r,m,d,x,y,size,L)
     local C=r.colors;local selected=m.selectedDeck==d.id
@@ -50,12 +50,9 @@ local function title(r,m,key,label,count,y,L,depth)
 end
 function UI.draw(r,w,h)
     local m=r.model;local C=r.colors;local L=UI.layout(w,h)
-    r:strong('Decks',28,103,28,C.text)
-    local actions={{'Import','import',function()m:showImport()end},{'History','replay',function()m:showHistory()end},{'New deck','add',function()m:newDeck()end}}
-    for i,a in ipairs(actions)do local x=w-432+(i-1)*136;r.assets:control(x,100,126,36,'dark');r.assets:iconSymbol(a[2],x+10,110,17,C.accent);r:text(a[1],x+34,109,14,C.text,84);r:hit({x=x,y=100,w=126,h=36,action=a[3]})end
     for i,f in ipairs(Collection.formats)do
         local width=math.min(112,(L.w-25)/6);local x=L.x+(i-1)*(width+5)
-        r:button(f,x,151,width,31,function()m:setCollectionFormat(f)end,Collection.format(m)==f)
+        r:button(f,x,101,width,31,function()m:setCollectionFormat(f)end,Collection.format(m)==f)
     end
     if m.collectionScrollReset then r.deckScroll=0;m.collectionScrollReset=nil end
     local y=L.y-(r.deckScroll or 0);local groups={{key='user',name='My Decks',decks={}},{key='starter',name='Starter',decks={}}}
@@ -98,14 +95,14 @@ function UI.draw(r,w,h)
 end
 function UI.build(v,w,h)
     local S,m=v.S,v.m;local L=UI.layout(w,h)
-    v:window('collection-search',24,193,L.w+8,34)
+    v:window('collection-search',24,143,L.w+8,34)
     if S.Input('collection-query',{Text=m.collectionSearch or'',W=L.w-180,H=28,Align='left',Tooltip='Search deck names, expansion or commander'})then m.collectionSearch=S.GetInputText();m:collectionSearchChanged()end
     S.SameLine()
     if S.Button('Previous precons',{Image={Image=v.r.assets:iconImage('previous',18)},W=30,H=28,Disabled=m.preconsBusy or(m.preconOffset or 0)==0,Tooltip='Previous preconstructed page'})then m:pagePrecons(-1)end
     S.SameLine()
     if S.Button('Next precons',{Image={Image=v.r.assets:iconImage('next',18)},W=30,H=28,Disabled=m.preconsBusy or(m.preconOffset or 0)+24>=(m.preconsTotal or 0),Tooltip='Next preconstructed page'})then m:pagePrecons(1)end
     S.SameLine();S.Text(tostring(math.min((m.preconOffset or 0)+24,m.preconsTotal or 0))..'/'..tostring(m.preconsTotal or 0),{Color=v.r.colors.muted});S.EndWindow()
-    v:window('collection-formats',L.sideX,151,L.sideW,77)
+    v:window('collection-formats',L.sideX,101,L.sideW,77)
     local formats={'All'};for _,entry in ipairs(m.preconStats and m.preconStats.formats or{})do formats[#formats+1]=entry.id end;formats[#formats+1]='Archive'
     v:combo('historical-format',Collection.format(m),formats,L.sideW-30,function(value)m:setCollectionFormat(value)end)
     if S.Button('Deck products',{W=(L.sideW-38)/2,H=27,Active=m.preconCategory~='packet',Tooltip='Complete preconstructed deck products'})then m.preconCategory='deck';m.preconTimer=0;m.preconOffset=0 end

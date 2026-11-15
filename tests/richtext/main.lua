@@ -18,10 +18,20 @@ function love.load()
     local clipped=Rich.layout(r,example,100,{size=16,maxLines=2});check(clipped.lines==2 and clipped.truncated and clipped.runs[#clipped.runs].text=='…','Maximum lines truncate at safe run boundaries')
     check(Rich.layout(r,'',100,{size=16}).height==0,'Empty rich text has no extra height')
     local a,h=Rich.canvas(r,example,310,{size=16});local b=Rich.canvas(r,example,310,{size=16});check(a==b,'Identical rich text reuses cached native canvas')
-    Layout.setScale(1.25);local c,ch=Rich.canvas(r,example,310,{size=16});check(c~=a and c:getWidth()==math.ceil(310*1.25) and c:getHeight()==math.ceil(ch*1.25),'Canvas rasterization follows native UI scale')
+    Layout.setScale(1.25);local c,ch=Rich.canvas(r,example,310,{size=16});local density=Assets.uiRasterScale()
+    check(c~=a and c:getWidth()==math.ceil(310*density) and c:getHeight()==math.ceil(ch*density),'Canvas rasterization follows display, UI scale and text quality')
     Layout.renderScale=.5;local d=Rich.canvas(r,example,310,{size=16});check(d==c,'Table render scale does not reduce Slab text resolution');Layout.renderScale=1;Layout.setScale(1)
     local icon=r.assets:iconImage('library',24);check(icon==r.assets:iconImage('library',24),'Icon images are cached')
     local defaultMana=r.assets:iconImage('W',24);local tintedMana=r.assets:iconImage('W',24,{.86,.92,.98,1});check(defaultMana~=tintedMana,'Mana cache distinguishes automatic and explicit glyph tints')
+    local oldMin,oldMag,oldAnisotropy=love.graphics.getDefaultFilter();love.graphics.setDefaultFilter('nearest','nearest')
+    r.assets:setSettings({fontQuality='Standard'});local standardMana=r.assets:font(24);local standardWidth=standardMana:getWidth(utf8.char(require('assets.keyrune.glyphs').w))
+    r.assets:setSettings({fontQuality='High'});local sharpMana=r.assets:font(24)
+    local minFilter,magFilter=sharpMana:getFilter()
+    check(minFilter=='linear'and magFilter=='linear','Mana glyphs stay antialiased when card texture filtering is nearest')
+    check(sharpMana:getDPIScale()>=standardMana:getDPIScale()*1.9 and math.abs(sharpMana:getWidth(utf8.char(require('assets.keyrune.glyphs').w))-standardWidth)<=1,'High quality doubles the real Mana glyph atlas while keeping logical advances')
+    local sharpIcon=r.assets:iconImage('W',24)
+    check(sharpIcon:getWidth()==math.ceil(24*Assets.uiRasterScale(r.assets.settings)),'Mana icon images retain the high-density raster instead of enlarging a small bitmap')
+    love.graphics.setDefaultFilter(oldMin,oldMag,oldAnisotropy)
     for _,name in ipairs({'library','graveyard','exile','commander','hand','creature','instant','sorcery','artifact','enchantment','planeswalker','land','battle','token','saga'})do local cp=require('assets.keyrune.glyphs')[name];assert(cp and r.assets:font(24):hasGlyphs(utf8.char(cp)))end
     check(true,'All named Magic zone and type icons use actual font glyphs')
     local beforeFont=love.graphics.getFont();love.graphics.push('all');love.graphics.translate(5,6);love.graphics.setScissor(10,11,40,41);love.graphics.setColor(.3,.4,.5,.7)
@@ -39,6 +49,10 @@ function love.load()
     check(count(Rich.cache)<=3,'Rich text LRU entry limit is enforced');Rich.cacheLimit=oldLimit;Rich.clearCache()
     local oldIcons=r.assets.iconCacheLimit;r.assets.iconCacheLimit=3;for _,name in ipairs({'settings','save','replay','log','stack'})do r.assets:iconImage(name,24)end
     check(count(r.assets.iconCache)<=3,'Icon LRU entry limit is enforced');r.assets.iconCacheLimit=oldIcons
+    r.assets.iconCache={};r.assets.iconPixelLimit=10000
+    for _,name in ipairs({'W','U','B','R','G','C'})do r.assets:iconImage(name,24)end
+    local pixels=0;for _,entry in pairs(r.assets.iconCache)do pixels=pixels+entry.image:getWidth()*entry.image:getHeight()end
+    check(pixels<=r.assets.iconPixelLimit,'High-density icon cache also obeys a pixel budget');r.assets.iconPixelLimit=8*1024*1024
 end
 function love.update(dt)
     frame=frame+1

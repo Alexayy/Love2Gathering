@@ -59,7 +59,7 @@ Requests retain the downloader's pacing, bounded JPEG/provenance checks and retr
 
 ## Local API
 
-Catalog API 10 includes these controls and accepts the six current card-back styles. All mutation bodies require a direct local JSON request without browser-origin headers. Only the location routes accept validated absolute directory paths; cleanup/download routes cannot choose arbitrary filesystem paths.
+Catalog API 11 includes these controls, the six current card-back styles, exact card editions and grouped per-token artwork choices. All mutation bodies require a direct local JSON request without browser-origin headers. Only the location routes accept validated absolute directory paths; cleanup/download routes cannot choose arbitrary filesystem paths.
 
 | Request | Body / behavior |
 | --- | --- |

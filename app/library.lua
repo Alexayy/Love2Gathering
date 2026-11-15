@@ -4,6 +4,11 @@ local json=require('lib.json')
 local Library={}
 local function clone(value)return json.decode(json.encode(value))end
 local function clock()return love and love.timer and love.timer.getTime()or os.clock()end
+local function adoptTokenPreferences(model,preferences)
+    preferences=preferences or{};model.tokenMode=preferences.mode or'default';model.tokenSelected={}
+    for _,id in ipairs(preferences.selected or{})do model.tokenSelected[id]=true end
+    model.tokenOverrides=clone(preferences.overrides or{})
+end
 function Library.install(Model)
     if Model.libraryInstalled then return end;Model.libraryInstalled=true
     function Model:showImport(text)
@@ -65,37 +70,103 @@ function Library.install(Model)
         end,true)
     end
     function Model:showTokenSettings(deckId)
-        self.tokenOpening=(self.tokenOpening or 0)+1;self.tokenDeckId=deckId;self.tokenOffset=0;self.tokenQuery='';self.tokenItems={};self.tokenSelected={};self.tokenDirty=false;self.tokenMode='default';self.page='tokens';self:refreshTokenSettings()
+        if self.closeTokenPicker then self:closeTokenPicker()end
+        self.tokenOpening=(self.tokenOpening or 0)+1;self.tokenDeckId=deckId;self.tokenOffset=0;self.tokenQuery='';self.tokenItems={};self.tokenSelected={};self.tokenDirty=false;self.tokenMode='default';self.tokenOverrides={};self.tokenKnownArt={};self.tokenPicker=nil;self.tokenTimer=nil;self.tokenEditRevision=0;self.tokenSaving=false;self.page='tokens';self:refreshTokenSettings()
     end
     function Model:refreshTokenSettings()
         if not self.tokenDeckId then self.tokenError='Save this deck before choosing its token artwork';return end
         self.tokenVersion=(self.tokenVersion or 0)+1;local opening,version=self.tokenOpening,self.tokenVersion
         self.tokenBusy=true;self.tokenError=nil
-        local path='/tokens?deckId='..API.escape(self.tokenDeckId)..'&q='..API.escape(self.tokenQuery or'')..'&limit=12&offset='..tostring(self.tokenOffset or 0)
+        local path='/tokens?groups=1&deckId='..API.escape(self.tokenDeckId)..'&q='..API.escape(self.tokenQuery or'')..'&limit=12&offset='..tostring(self.tokenOffset or 0)
         self:request('catalog','GET',path,nil,function(data,err)
             if opening~=self.tokenOpening or version~=self.tokenVersion then return end
             self.tokenBusy=false
             if data then
                 self.tokenItems=data.items or{};self.tokenTotal=data.total or 0
-                if not self.tokenDirty then self.tokenMode=(data.preferences or{}).mode or'default';self.tokenSelected={};for _,id in ipairs((data.preferences or{}).selected or{})do self.tokenSelected[id]=true end end
+                for _,item in ipairs(self.tokenItems)do
+                    for _,card in ipairs({item.defaultCard,item.activeCard,item.tokenImageId and item or nil})do if card then self.tokenKnownArt[card.tokenImageId]=card end end
+                end
+                if not self.tokenDirty then adoptTokenPreferences(self,data.preferences)end
             else self.tokenError=err or'Token metadata is unavailable'end
         end,true)
     end
     function Model:setTokenMode(mode)
-        if mode~='default'and mode~='randomSelected'and mode~='randomAll'then return false end
-        self.tokenMode=mode;self.tokenDirty=true;return true
+        if mode~='default'and mode~='selected'and mode~='randomSelected'and mode~='randomAll'then return false end
+        self.tokenMode=mode;self.tokenDirty=true;self.tokenEditRevision=(self.tokenEditRevision or 0)+1;return true
     end
     function Model:toggleTokenArt(id)
-        for _,item in ipairs(self.tokenItems or{})do if item.tokenImageId==id then self.tokenSelected[id]=not self.tokenSelected[id]or nil;self.tokenDirty=true;return true end end
+        for _,item in ipairs(self.tokenItems or{})do if item.tokenImageId==id then self.tokenSelected[id]=not self.tokenSelected[id]or nil;self.tokenDirty=true;self.tokenEditRevision=(self.tokenEditRevision or 0)+1;return true end end
         return false
     end
+    function Model:tokenGroupPresentation(group)
+        local pref=(self.tokenOverrides or{})[group.tokenIdentity]
+        local mode=pref and pref.mode or self.tokenMode or'default'
+        local selected=pref and pref.selected or{};if not pref then for id,on in pairs(self.tokenSelected or{})do if on then selected[#selected+1]=id end end end
+        local card=group.defaultCard or group.activeCard or group
+        local count=0
+        if mode=='selected'or mode=='randomSelected'then
+            local activeIds={};for _,id in ipairs(group.activeImageIds or{})do activeIds[id]=true end
+            for _,id in ipairs(selected)do local art=(self.tokenKnownArt or{})[id];if(art and art.tokenIdentity==group.tokenIdentity)or activeIds[id]then count=count+1;if count==1 then card=art or group.activeCard or card end end end
+            if count==0 then card=group.activeCard or card;count=#(group.activeImageIds or{})end
+        elseif mode=='randomAll'then count=group.variantCount or 0
+        else count=1 end
+        return {mode=mode,card=card,count=count}
+    end
+    function Model:openTokenPicker(group)
+        if not group or not group.tokenIdentity or self.tokenSaving then return false end
+        local presentation=self:tokenGroupPresentation(group)
+        local pref=(self.tokenOverrides or{})[group.tokenIdentity]
+        local selected={};for _,id in ipairs(pref and pref.selected or group.activeImageIds or{})do selected[id]=true end
+        self.tokenPicker={identity=group.tokenIdentity,group=group,mode=presentation.mode,selected=selected,items={},offset=0,total=group.variantCount or 0,query='',version=0}
+        self:refreshTokenPicker();return true
+    end
+    function Model:refreshTokenPicker()
+        local picker=self.tokenPicker;if not picker then return false end
+        picker.version=picker.version+1;local version,opening=picker.version,self.tokenOpening;picker.busy=true;picker.error=nil
+        local path='/tokens?deckId='..API.escape(self.tokenDeckId)..'&identity='..API.escape(picker.identity)..'&q='..API.escape(picker.query or'')..'&limit=12&offset='..picker.offset
+        self:request('catalog','GET',path,nil,function(data,err)
+            if self.tokenPicker~=picker or opening~=self.tokenOpening or version~=picker.version then return end
+            picker.busy=false
+            if data then picker.items=data.items or{};picker.total=data.total or 0;for _,item in ipairs(picker.items)do self.tokenKnownArt[item.tokenImageId]=item end
+            else picker.error=err or'Token illustrations are unavailable'end
+        end,true);return true
+    end
+    function Model:setTokenPickerMode(mode)
+        local picker=self.tokenPicker;if not picker or(mode~='default'and mode~='selected'and mode~='randomSelected'and mode~='randomAll')then return false end
+        picker.mode=mode;picker.error=nil
+        if mode=='selected'then
+            local first;for id,on in pairs(picker.selected)do if on and(not first or id<first)then first=id end end
+            picker.selected={};if first then picker.selected[first]=true end
+        end
+        return true
+    end
+    function Model:toggleTokenPickerArt(id)
+        local picker=self.tokenPicker;if not picker then return false end
+        local found=false;for _,item in ipairs(picker.items)do if item.tokenImageId==id and item.tokenIdentity==picker.identity then found=true;break end end
+        if not found then return false end
+        if picker.mode=='randomSelected'then picker.selected[id]=not picker.selected[id]or nil
+        else picker.mode='selected';picker.selected={[id]=true}end
+        picker.error=nil;return true
+    end
+    function Model:applyTokenPicker()
+        local picker=self.tokenPicker;if not picker then return false end
+        local selected=json.array();for id,on in pairs(picker.selected)do if on then selected[#selected+1]=id end end;table.sort(selected)
+        if(picker.mode=='selected'and#selected~=1)or(picker.mode=='randomSelected'and#selected==0)then picker.error='Select '..(picker.mode=='selected'and'one illustration'or'at least one illustration')..' before applying';return false end
+        self.tokenOverrides[picker.identity]={mode=picker.mode,selected=selected};self.tokenDirty=true;self.tokenEditRevision=self.tokenEditRevision+1;self:closeTokenPicker();return true
+    end
+    function Model:closeTokenPicker()
+        self.tokenPicker=nil;self.tokenPickerTimer=nil
+        if self.tokenPickerLocked then require('lib.Slab.Internal.UI.Window').SetStackLock(nil);self.tokenPickerLocked=false end
+    end
     function Model:saveTokenSettings()
-        if self.tokenBusy or not self.tokenDeckId then return false end
+        if self.tokenBusy or self.tokenSaving or self.tokenPicker or not self.tokenDeckId then return false end
         local selected=json.array();for id,on in pairs(self.tokenSelected or{})do if on then selected[#selected+1]=id end end;table.sort(selected)
-        local opening=self.tokenOpening;self.tokenBusy=true
-        self:request('catalog','PUT','/decks/'..API.escape(self.tokenDeckId)..'/token-art',{mode=self.tokenMode,selected=selected},function(data,err)
-            if opening~=self.tokenOpening then return end;self.tokenBusy=false
-            if data then self.tokenDirty=false;self.tokenArtGeneration=(self.tokenArtGeneration or 0)+1;self.tokenArtCache={};if self.toast then self:toast('Token artwork saved')end
+        local opening,revision=self.tokenOpening,self.tokenEditRevision;self.tokenSaving=true;self.tokenError=nil
+        local body={mode=self.tokenMode,selected=selected};if next(self.tokenOverrides or{})then body.overrides=clone(self.tokenOverrides)end
+        self:request('catalog','PUT','/decks/'..API.escape(self.tokenDeckId)..'/token-art',body,function(data,err)
+            if data then self.tokenArtGeneration=(self.tokenArtGeneration or 0)+1;self.tokenArtCache={}end
+            if opening~=self.tokenOpening then return end;self.tokenSaving=false
+            if data then if revision==self.tokenEditRevision then adoptTokenPreferences(self,data);self.tokenDirty=false end;if self.toast then self:toast('Token artwork saved')end
             else self.tokenError=err or'Token artwork could not be saved'end
         end);return true
     end
@@ -135,6 +206,7 @@ function Library.install(Model)
     function Model:updateLibrary(dt)
         if self.page=='history'then self.historyTimer=(self.historyTimer or 5)-dt;if self.historyTimer<=0 then self.historyTimer=5;if not self.historyBusy then self:refreshHistory()end end end
         if self.tokenTimer then self.tokenTimer=self.tokenTimer-dt;if self.tokenTimer<=0 then self.tokenTimer=nil;self:refreshTokenSettings()end end
+        if self.tokenPickerTimer then self.tokenPickerTimer=self.tokenPickerTimer-dt;if self.tokenPickerTimer<=0 then self.tokenPickerTimer=nil;self:refreshTokenPicker()end end
     end
 end
 return Library

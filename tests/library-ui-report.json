@@ -1,1 +1,54 @@
-{"checks":["Actual Paste button fills the UTF-8 multiline export input","Actual Preview displays deck and printing metadata without saving","Preview retains the selected printing and offers explicit Save","Multiline export text has visible light glyph pixels on the dark input","Actual Save preserves reviewed quantities and printing metadata","History presents supplied native-result and deck summaries","Actual history recording control opens the saved recording","Actual token controls select matching catalog artwork","Actual token Save dispatches independent artwork preferences","Native/catalog validation errors retain a visible rejected preview","Multiline export text has visible light glyph pixels on the dark input","Disabled Save prevents submitting an invalid preview","Token save stays inside the smaller logical viewport"],"logical":[1120,720],"passed":true,"physical":[1120,720],"scope":"Actual themed LÖVE/Slab controls and multiline paste, synthetic service metadata/result adapter only; no native game or real service assertions"}
+{
+  "checks": [
+    "Actual Paste button fills the UTF-8 multiline export input",
+    "Actual Preview displays deck and printing metadata without saving",
+    "Preview retains the selected printing and offers explicit Save",
+    "Multiline export text has visible light glyph pixels on the dark input",
+    "Actual Save preserves reviewed quantities and printing metadata",
+    "History presents supplied native-result and deck summaries",
+    "Actual history recording control opens the saved recording",
+    "Related token page shows one active token family rather than all printings",
+    "The token tile opens a matching-printing grid popup",
+    "Actual grid multiselect outlines are staged before Apply",
+    "Explicit popup Apply adopts the staged token family selection",
+    "Actual token Save dispatches per-family random-selected artwork preferences",
+    "Actual Manual mode saves one explicitly active token printing",
+    "Cancel leaves the prior active art unchanged",
+    "Native/catalog validation errors retain a visible rejected preview",
+    "Multiline export text has visible light glyph pixels on the dark input",
+    "Disabled Save prevents submitting an invalid preview",
+    "Token save stays inside the smaller logical viewport",
+    "Variant popup Apply remains accessible in the scaled small viewport"
+  ],
+  "logical": [
+    1120,
+    720
+  ],
+  "passed": true,
+  "physical": [
+    1120,
+    720
+  ],
+  "scope": "Actual themed L\u00d6VE/Slab controls and multiline paste, synthetic service metadata/result adapter only; no native game or real service assertions",
+  "sourceSha256": {
+    "app/library.lua": "1df3501fac160640e531a63a67e8efb440dfea352d96ffd9ceff9d7d3eec65fd",
+    "app/library_ui.lua": "2b51f658393043f51d65816677e4b4093e87f1207e1c6762d819359df06c5d34",
+    "app/token_art_ui.lua": "53765ddb851e77512e6487893f8be81175f863e954eb0c2a65227a42255f5e70",
+    "app/assets.lua": "b5e791ed9006d0801a8950a0c9bd799c75d7b1116a15c3e7ccbb62eae18de590",
+    "app/theme.lua": "e601fb05d15d35345ce2543d9a448ba6a2e6ca7571560e8f402321dc2b75e7c7",
+    "app/fonts.lua": "083d06c769ef3d6b3189084542693e83bbb624389c17112bda9b21c5567ce675",
+    "lib/Slab/Internal/UI/Tooltip.lua": "11f587cee05766c5cf25a544b0529b93ac64c1e9e7949b27b975aacff5283654",
+    "lib/Slab/Internal/UI/ComboBox.lua": "a423b1fc9c206aae318c42835cc0e6030893925de80a7e61ac2913111183e195",
+    "lib/Slab/Internal/UI/Window.lua": "329870b4e61d27578e58eb90fc32ddff36e3005ec2057a3589450064b17c7b37",
+    "lib/Slab/Internal/Core/Cursor.lua": "d87bdfa40f53270240a6e8724e5564dadcaa726c52bcb48a8ce573d1463c4b8d",
+    "lib/Slab/Internal/Core/DrawCommands.lua": "709d5f817099a36243655f6b7b7494aa299f4911887c17e3542acfd6d4929700",
+    "tests/library_ui.lua": "eea77113e4018ae6cf4b812256ff5bebc8288b37ed3f58d99f49c44dc92698da"
+  },
+  "captures": [
+    "/tmp/love2gathering-library-tokens-1440.png",
+    "/tmp/love2gathering-library-token-grid-1440.png",
+    "/tmp/love2gathering-library-token-random-all.png",
+    "/tmp/love2gathering-library-tokens-1120.png",
+    "/tmp/love2gathering-library-token-grid-1120.png"
+  ]
+}

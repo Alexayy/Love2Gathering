@@ -435,7 +435,7 @@ end
 
 	Return: None.
 --]]
-function Slab.Draw()
+function Slab.Draw(options)
 	if Stats.IsEnabled() then
 		PrevStatsData = love.graphics.getStats(PrevStatsData)
 	end
@@ -466,9 +466,10 @@ function Slab.Draw()
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.push()
+	love.graphics.push('all')
 	love.graphics.origin()
-	DrawCommands.Execute()
+	love.graphics.setScissor()
+	DrawCommands.Execute(options and options.DeferOverlays)
 	love.graphics.pop()
 	love.graphics.setColor(1, 1, 1, 1)
 
@@ -487,6 +488,17 @@ function Slab.Draw()
 			StatsData[k] = v - PrevStatsData[k]
 		end
 	end
+end
+
+-- Optional final pass after application-owned foreground drawing. Call only
+-- when Slab.Draw({DeferOverlays = true}) was used for this frame.
+function Slab.DrawOverlays()
+	love.graphics.push('all')
+	love.graphics.origin()
+	love.graphics.setScissor()
+	love.graphics.setColor(1, 1, 1, 1)
+	DrawCommands.ExecuteOverlays()
+	love.graphics.pop()
 end
 
 --[[

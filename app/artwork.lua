@@ -26,14 +26,17 @@ end
 local function identity(m,card,kind)
     local data=m:cardData(card)
     if not data or not data.id or not(data.printing_id or data.image_uris)then return nil end
+    if data.printingExact and data.printingResolved==false then return nil end
     local face=data.requested_face or 0;kind=kind or'normal'
-    return(data.printing_id or data.id)..'-'..face..'-'..kind,data,face,kind
+    local exact=data.printingExact or data.tokenImageId~=nil
+    return(data.printing_id or data.id)..'-'..face..'-'..kind..(exact and'-exact'or''),data,face,kind
 end
 function Artwork.get(m,card,force,kind)
     if not card or(not force and m.settings.showCardArt==false)then return nil end
     local key,data,face,imageKind=identity(m,card,kind);if not key then return nil,'catalog'end
     local path='/art/'..API.escape(data.id)..'?face='..face..'&kind='..API.escape(imageKind)..'&network='..(m.settings.localArtworkOnly~=false and'0'or'1')
     if data.printing_id then path=path..'&printing='..API.escape(data.printing_id)end
+    if data.printingExact or data.tokenImageId then path=path..'&exact=1'end
     return Artwork.image(m,'art','artPending',key,path,force and 6 or 2)
 end
 function Artwork.install(Model)

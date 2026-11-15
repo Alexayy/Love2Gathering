@@ -7,6 +7,9 @@ local S=require('lib.Slab');local Assets=require('app.assets');local Fonts=requi
 local m,r,v,runner,Cursor,Region;local checks,buttons,queue,shots,inputs={},{},{},{},{};local elapsed,wake=0,0
 local mouse={x=1,y=1};local down=false
 local deck={id='imported',name='Imported Lightning',format='Modern',main={{name='Lightning Bolt',count=4},{name='Forest',count=56}},commander={},sideboard={},printingSelections={{name='Lightning Bolt',zone='main',count=4,set='m10',collectorNumber='161',printingId='bolt-printing'}}}
+local tokenKey='token-family-goblin'
+local tokenA={id='token',tokenImageId='goblin-a-0',tokenIdentity=tokenKey,printing_id='goblin-a',name='Goblin',set='tm10',collector_number='1',artist='Example artist A',image_uris={normal='synthetic'}}
+local tokenB={id='token',tokenImageId='goblin-b-0',tokenIdentity=tokenKey,printing_id='goblin-b',name='Goblin',set='tbro',collector_number='2',artist='Example artist B',image_uris={normal='synthetic'}}
 local function check(ok,label)assert(ok,label);checks[#checks+1]=label;print('LIBRARY UI PASS '..label)end
 local function wait(seconds)wake=elapsed+(seconds or .1);coroutine.yield()end
 local function click(label)
@@ -22,12 +25,21 @@ local function scenario()
     capture('import-1440');click('Save deck');check(m.saved and m.saved.main[2].count==56 and m.saved.printingSelections[1].collectorNumber=='161','Actual Save preserves reviewed quantities and printing metadata')
     m:showHistory();wait(.2);check(m.historyItems[1].outcome=='win'and m.historyItems[1].players[2].deck.name=='Opponent deck','History presents supplied native-result and deck summaries')
     capture('history-1440');click('Open recording');check(m.openedReplay=='history-one','Actual history recording control opens the saved recording')
-    m:showTokenSettings('my-deck');wait(.2);click('Random selected');click('Goblin · TM10');check(m.tokenMode=='randomSelected'and m.tokenSelected['goblin-0'],'Actual token controls select matching catalog artwork')
-    capture('tokens-1440');click('Save token artwork');check(m.savedPrefs.mode=='randomSelected'and m.savedPrefs.selected[1]=='goblin-0','Actual token Save dispatches independent artwork preferences')
+    m:showTokenSettings('my-deck');wait(.2);check(#m.tokenItems==1 and m.tokenItems[1].variantCount==2,'Related token page shows one active token family rather than all printings')
+    click('Edit Goblin artwork');wait(.2);check(m.tokenPicker and#m.tokenPicker.items==2,'The token tile opens a matching-printing grid popup')
+    click('Random selected');click('Artwork goblin-a-0');click('Artwork goblin-b-0')
+    check(m.tokenPicker.selected['goblin-a-0']and m.tokenPicker.selected['goblin-b-0']and not m.tokenDirty,'Actual grid multiselect outlines are staged before Apply')
+    capture('token-grid-1440');click('Apply token selection');check(m.tokenDirty and not m.tokenPicker,'Explicit popup Apply adopts the staged token family selection')
+    capture('tokens-1440');click('Save token artwork');check(m.savedPrefs.overrides[tokenKey].mode=='randomSelected'and#m.savedPrefs.overrides[tokenKey].selected==2,'Actual token Save dispatches per-family random-selected artwork preferences')
+    click('Edit Goblin artwork');wait(.2);click('Manual');click('Artwork goblin-b-0');click('Apply token selection');click('Save token artwork')
+    check(m.savedPrefs.overrides[tokenKey].mode=='selected'and m.savedPrefs.overrides[tokenKey].selected[1]=='goblin-b-0','Actual Manual mode saves one explicitly active token printing')
+    click('Edit Goblin artwork');wait(.2);click('Random all');capture('token-random-all');click('Cancel token selection')
+    check(m.tokenOverrides[tokenKey].mode=='selected','Cancel leaves the prior active art unchanged')
     love.window.setMode(1120,720,{vsync=0,resizable=true});Layout.setScale(1.25);S.SetScale(Layout.scale);Assets.invalidateRasterCaches();wait(.2)
     m:showImport('1 Unknown Card');wait(.1);click('Preview');check(m.importPreview and not m.importPreview.validation.saveAllowed,'Native/catalog validation errors retain a visible rejected preview')
     capture('import-error-1120');local previous=m.saved;click('Save deck');check(m.saved==previous,'Disabled Save prevents submitting an invalid preview')
     m:showTokenSettings('my-deck');wait(.2);capture('tokens-1120');check(buttons['Save token artwork'].y+buttons['Save token artwork'].h<=select(2,Layout.dimensions()),'Token save stays inside the smaller logical viewport')
+    click('Edit Goblin artwork');wait(.2);capture('token-grid-1120');check(buttons['Apply token selection'].y+buttons['Apply token selection'].h<=select(2,Layout.dimensions()),'Variant popup Apply remains accessible in the scaled small viewport');click('Cancel token selection')
     local file=assert(io.open('/tmp/love2gathering-library-ui-report.json','w'));file:write(json.encode({passed=true,checks=checks,scope='Actual themed LÖVE/Slab controls and multiline paste, synthetic service metadata/result adapter only; no native game or real service assertions',physical={love.graphics.getDimensions()},logical={Layout.dimensions()}}));file:close()
     print('LIBRARY UI COMPLETE '..#checks..' checks');love.event.quit(0)
 end
@@ -42,12 +54,14 @@ function love.load()
         elseif path=='/decks'then self.saved=body;data=body
         elseif path:find('/history',1,true)then data={matches={{id='history-one',format='Modern',outcome='win',createdAt=1794600000000,players={{name='Player',deck={name='Imported Lightning'}},{name='XMage Bot',deck={name='Opponent deck'}}}}},total=1}
         elseif path:find('/token-art',1,true)then self.savedPrefs=body;data=body
-        elseif path:find('/tokens?',1,true)then data={items={{id='token',tokenImageId='goblin-0',printing_id='goblin',name='Goblin',set='tm10',artist='Example artist',image_uris={normal='synthetic'}}},total=1,preferences={mode='default',selected={}}}
+        elseif path:find('/tokens?',1,true)then
+            if path:find('identity=',1,true)then data={items={tokenA,tokenB},total=2}
+            else data={items={{tokenIdentity=tokenKey,name='Goblin',variantCount=2,defaultCard=tokenA,activeCard=tokenA,activeImageIds={}}},total=1,preferences=self.savedPrefs or{mode='default',selected={}}}end
         end
         queue[#queue+1]=function()callback(data)end
     end
     function m:toast(text)self.message=text end;function m:refreshDecks()end;function m:openReplay(id)self.openedReplay=id end
-    v={m=m,r=r,S=S};function v:window(id,x,y,w,h)S.BeginWindow(id,{X=x,Y=y,W=w,H=h,AutoSizeWindow=false,AutoSizeContent=false,AllowMove=false,AllowResize=false})end
+    v={m=m,r=r,S=S};function v:window(id,x,y,w,h,title,options)local args={X=x,Y=y,W=w,H=h,Title=title,AutoSizeWindow=false,AutoSizeContent=false,AllowMove=false,AllowResize=false};for key,value in pairs(options or{})do args[key]=value end;S.BeginWindow(id,args)end
     oldClipboard=love.system.getClipboardText();love.mouse.getPosition=function()return mouse.x,mouse.y end;love.mouse.isDown=function(button)return button==1 and down end
     local original=S.Button;S.Button=function(label,options)local dx,dy=Region.Transform(nil,0,0);local result=original(label,options);local x,y,w,h=Cursor.GetItemBounds();buttons[label]={x=x+dx,y=y+dy,w=w,h=h};return result end
     local originalInput=S.Input;S.Input=function(id,options)local dx,dy=Region.Transform(nil,0,0);local result=originalInput(id,options);local x,y,w,h=Cursor.GetItemBounds();inputs[id]={x=x+dx,y=y+dy,w=w,h=h};return result end

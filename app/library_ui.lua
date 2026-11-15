@@ -87,31 +87,5 @@ function UI.history(v,w,h)
     if button(v,'Refresh','replay',120,29,{Disabled=m.historyBusy})then m:refreshHistory()end
     S.EndWindow();footer(v,w,h,'Results come from saved native matches. Interrupted recordings do not count as wins or losses.')
 end
-function UI.tokens(v,w,h)
-    local S,m=v.S,v.m
-    v:window('token-preferences',26,105,w-52,h-170);title(v,'token-title','Token artwork for this deck','gallery',w-85);S.NewLine()
-    local modes={{'default','Default'},{'randomSelected','Random selected'},{'randomAll','Random all'}}
-    for index,mode in ipairs(modes)do if index>1 then S.SameLine()end;if button(v,mode[2],mode[1]=='default'and'gallery'or'overview',math.floor((w-100)/3),33,{Active=m.tokenMode==mode[1]})then m:setTokenMode(mode[1])end end
-    S.NewLine();S.Textf('Only matching token identities use these illustrations. Select artwork below for Random selected.',{W=w-90,Color=v.r.colors.muted});S.NewLine()
-    if S.Input('token-search',{Text=m.tokenQuery or'',W=w-90,H=28,Align='left',Tooltip='Search the tokens related to this deck'})then m.tokenQuery=S.GetInputText();m.tokenOffset=0;m.tokenVersion=(m.tokenVersion or 0)+1;m.tokenTimer=.25 end
-    S.NewLine();S.BeginListBox('token-images',{W=w-82,H=math.max(120,h-480)})
-    local columns=math.max(3,math.floor((w-125)/150));local cw=math.floor((w-125-(columns-1)*10)/columns);local ch=math.floor(cw*1.4)
-    for index,item in ipairs(m.tokenItems or{})do
-        if index>1 and(index-1)%columns~=0 then S.SameLine({Pad=10})end
-        S.PushID(item.tokenImageId);local art=m:getArt(item,true)
-        if art then
-            if S.Button(item.name,{W=cw,H=ch,Image={Image=art},Active=(m.tokenSelected or{})[item.tokenImageId],Tooltip=item.name..' · '..(item.set or''):upper()..' · '..(item.artist or'')})then m:toggleTokenArt(item.tokenImageId)end
-        else
-            if button(v,item.name..' · '..(item.set or''):upper(),(m.tokenSelected or{})[item.tokenImageId]and'check'or'gallery',cw,ch,{Active=(m.tokenSelected or{})[item.tokenImageId],Tooltip='Click to select this token illustration'})then m:toggleTokenArt(item.tokenImageId)end
-        end
-        S.PopID();if index%columns==0 then S.NewLine()end
-    end
-    if#(m.tokenItems or{})==0 then S.Textf(m.tokenBusy and'Loading token metadata…'or'No related token images are available in this local metadata source.',{W=w-120,Color=v.r.colors.muted})end
-    S.EndListBox();S.NewLine()
-    if button(v,'Previous','previous',110,29,{Disabled=m.tokenBusy or(m.tokenOffset or 0)==0})then m.tokenOffset=math.max(0,m.tokenOffset-12);m:refreshTokenSettings()end;S.SameLine()
-    if button(v,'Next','next',110,29,{Disabled=m.tokenBusy or(m.tokenOffset or 0)+12>=(m.tokenTotal or 0)})then m.tokenOffset=(m.tokenOffset or 0)+12;m:refreshTokenSettings()end;S.SameLine()
-    if button(v,'Save token artwork','save',190,29,{Disabled=m.tokenBusy or not m.tokenDeckId})then m:saveTokenSettings()end
-    if m.tokenError then S.NewLine();S.Textf(m.tokenError,{W=w-90,Color=v.r.colors.gold})end
-    S.EndWindow();footer(v,w,h,'Token art changes presentation. The engine retains token type, abilities and current power/toughness.')
-end
+function UI.tokens(v,w,h) return require('app.token_art_ui').build(v,w,h) end
 return UI
