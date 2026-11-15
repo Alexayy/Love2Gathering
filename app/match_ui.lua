@@ -32,6 +32,17 @@ function UI.toolbar(v,w,h)
     }
     for i,item in ipairs(buttons) do if i>1 then S.SameLine() end;iconButton(v,item[1],item[2],item[3],item[4],item[5],28) end
     S.EndWindow()
+    if not m.replay and m.api.status then
+        local pending=m.api:status(m.roomConnectionId and'room'or'engine')
+        local execution=m.game and m.game.execution or{}
+        local stopping=execution.stopRequested==true and execution.terminationConfirmed~=true
+        if pending.oldestSeconds>=2 or stopping then
+            v:window('engine-transport-status',w-430,50,414,52,nil,{AllowFocus=false,BgColor={.025,.04,.06,.99}})
+            S.Textf(stopping and'Stopping game · waiting for engine confirmation'or string.format('Waiting for engine response · %.1fs',pending.oldestSeconds),{W=390,Color=v.r.colors.gold})
+            S.Textf(stopping and'The game thread has not confirmed termination.'or m.concedePending and'Concession requested; native result is not confirmed.'or'You can open Settings, inspect the log or request Concede.',{W=390,Color=v.r.colors.muted})
+            S.EndWindow()
+        end
+    end
 end
 function UI.priority(v,w,h)
     local m,S=v.m,v.S;if m.replay or not m.game or m.game.running==false then return end

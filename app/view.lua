@@ -96,12 +96,34 @@ function View:modals(w,h)
         self:window('zone-view',w/2-270,155,540,h-260,zone.label)
         if S.Button('Close zone',{W=510,H=28}) then m.zoneView=nil
         else
-            for _,card in ipairs(zone.cards) do
-                if S.TextSelectable(plain(card.name or card.label),{W=510}) then
+            if S.Input('zone-search',{Text=zone.query or'',W=510,H=30,Align='left',Tooltip='Find an entitled card by name or native object ID'})then zone.query=S.GetInputText();zone.offset=0 end
+            local entries={};local query=(zone.query or''):lower()
+            for index,card in ipairs(zone.cards)do
+                if query==''or tostring(card.name or card.label or''):lower():find(query,1,true)or tostring(card.id or''):lower():find(query,1,true)then entries[#entries+1]={card=card,index=index}end
+            end
+            local pageSize=math.max(5,math.min(25,math.floor((h-430)/28)))
+            zone.offset=math.max(0,math.min(zone.offset or 0,math.max(0,math.floor((#entries-1)/pageSize)*pageSize)))
+            if S.Button('Previous cards',{W=140,H=28,Disabled=zone.offset==0})then zone.offset=math.max(0,zone.offset-pageSize)end
+            S.SameLine();if S.Button('Next cards',{W=140,H=28,Disabled=zone.offset+pageSize>=#entries})then zone.offset=zone.offset+pageSize end
+            S.SameLine();S.Text((#entries==0 and'0'or(zone.offset+1)..'–'..math.min(#entries,zone.offset+pageSize))..' / '..#entries)
+            for position=zone.offset+1,math.min(#entries,zone.offset+pageSize)do
+                local entry=entries[position];local card=entry.card;local caption='#'..entry.index..' '..plain(card.name or card.label)
+                if not card.hidden then
+                    if card.power~=nil and card.toughness~=nil then caption=caption..' · '..tostring(card.power)..'/'..tostring(card.toughness)end
+                    if card.tapped then caption=caption..' · tapped'end
+                    if tonumber(card.damage)and tonumber(card.damage)>0 then caption=caption..' · damage '..card.damage end
+                    local names={};for name,count in pairs(card.counters or{})do if tonumber(count)and tonumber(count)~=0 then names[#names+1]=name end end;table.sort(names)
+                    for _,name in ipairs(names)do caption=caption..' · '..name..' '..tostring(card.counters[name])end
+                end
+                S.PushID('zone-card-'..tostring(card.id or entry.index))
+                local selected=S.TextSelectable(caption,{W=510,Tooltip=caption..'\nNative object '..tostring(card.id or entry.index)})
+                S.PopID()
+                if selected then
                     if m:selectCard(card) then m.zoneView=nil else m.previewCard=card;m.inspectCard=card end
+                    break
                 end
             end
-            if #zone.cards==0 then S.Text('This zone is empty.',{Color=C.muted}) end
+            if #entries==0 then S.Text(#zone.cards==0 and'This zone is empty.'or'No matching cards.',{Color=C.muted})end
         end
         S.EndWindow()
     end
@@ -129,6 +151,26 @@ function View:modals(w,h)
                 if self.inspectCurrentRules then RichText.slab(self,'inspected-current-rules',card.currentRules,340,{size=16,color=C.gold})end
             end
             if m.inspectCard.power and m.inspectCard.toughness then S.Text('Current '..m.inspectCard.power..'/'..m.inspectCard.toughness,{Color=C.gold})end
+            local merged=m.inspectCard.mutate
+            if type(merged)=='table'and type(merged.components)=='table'and#merged.components>0 then
+                if self.inspectMutateHostId~=m.inspectCard.id then self.inspectMutateHostId=m.inspectCard.id;self.inspectMutateComponentId=nil end
+                S.Separator();S.Text('Mutate components · '..#merged.components,{Color=C.gold})
+                local selected
+                for index,component in ipairs(merged.components)do
+                    local identity=tostring(component.id or index);local label=(component.id==merged.topId and'Top · 'or'Component · ')..plain(component.name or'Card')
+                    S.PushID('mutate-component-'..identity)
+                    if S.TextSelectable(label,{Tooltip='Inspect this component’s original printing. It is part of the merged permanent.'})then self.inspectMutateComponentId=identity end
+                    S.PopID()
+                    if self.inspectMutateComponentId==identity then selected=component end
+                end
+                if selected then
+                    S.Textf('Component printing · '..plain(selected.name or'Card'),{W=340,Color=C.accent})
+                    local printed=selected.printing or selected
+                    if printed.power~=nil and printed.toughness~=nil then S.Text('Printed '..tostring(printed.power)..'/'..tostring(printed.toughness),{Color=C.muted})end
+                    local componentArt=m:getArt(m:cardData(selected)or selected,true)
+                    if componentArt then S.Image('mutate-component-art',{Image=componentArt,W=180,H=252})end
+                end
+            else self.inspectMutateHostId=nil;self.inspectMutateComponentId=nil end
             local attached=(self.r.boardAttached or{})[m.inspectCard.id]or{}
             if #attached>0 then S.Separator();S.Text('Attached cards',{Color=C.gold})end
             for _,entry in ipairs(attached)do if S.TextSelectable(entry.name)then m.inspectCard=entry end end

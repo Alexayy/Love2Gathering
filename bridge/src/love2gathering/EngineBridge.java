@@ -75,33 +75,40 @@ public final class EngineBridge {
             } else if ("/session/start".equals(path) && "POST".equals(method)) {
                 JsonObject body = readBody(exchange);
                 synchronized (EngineBridge.class) {
-                    Session next=new Session(body);next.prepareRecording();
-                    if (current != null) current.stop();
+                    Session next=new Session(body);
+                    if (current != null) {
+                        current.stop();
+                        if(current.executionAlive())throw new IllegalStateException("The previous GAME thread is still stopping; a new match was not started");
+                    }
+                    next.prepareRecording();
                     current = next;current.start();
                     result = current.state();
                 }
             } else if ("/session/state".equals(path)) {
-                result = current == null ? map("running", false, "players", Collections.emptyList(), "log", Collections.emptyList()) : current.state();
+                Session session=current;
+                result = session == null ? map("running", false, "players", Collections.emptyList(), "log", Collections.emptyList()) : session.state();
             } else if ("/session/action".equals(path) && "POST".equals(method)) {
-                if (current == null) throw new IllegalArgumentException("No active game");
-                current.action(readBody(exchange));
-                result = current.state();
+                JsonObject body=readBody(exchange);Session session=expectedSession(body);
+                session.action(body);
+                result = session.state();
             } else if ("/session/priority".equals(path) && "POST".equals(method)) {
-                if (current == null) throw new IllegalArgumentException("No active game");
-                current.priorityCommand(readBody(exchange));
-                result = current.state();
+                JsonObject body=readBody(exchange);Session session=expectedSession(body);
+                session.priorityCommand(body);
+                result = session.state();
             } else if("/session/replay/save".equals(path)&&"POST".equals(method)) {
-                if(current==null||current.recorder==null)throw new IllegalArgumentException("No active recorded game");
-                current.recordAction(map("type","save_replay"));
-                boolean saved=current.recorder.flush(5000);
-                result=new LinkedHashMap<>(current.recorder.state());((Map<String,Object>)result).put("savedSequence",current.recorder.savedSequence);((Map<String,Object>)result).put("saved",saved);
-                if(!saved&&current.recorder.error==null)((Map<String,Object>)result).put("recordingError","Replay is still saving; events remain buffered in SQLite");
+                Session session=expectedSession(readBody(exchange));
+                if(session.recorder==null)throw new IllegalArgumentException("No active recorded game");
+                session.recordAction(map("type","save_replay"));
+                boolean saved=session.recorder.flush(5000);
+                result=new LinkedHashMap<>(session.recorder.state());((Map<String,Object>)result).put("savedSequence",session.recorder.savedSequence);((Map<String,Object>)result).put("saved",saved);
+                if(!saved&&session.recorder.error==null)((Map<String,Object>)result).put("recordingError","Replay is still saving; events remain buffered in SQLite");
             } else if ("/session/stop".equals(path) && "POST".equals(method)) {
-                if (current != null){current.recordAction(map("type","stop"));current.stop();}
-                result = current==null?map("ok",true):current.state();
+                JsonObject body=readBody(exchange);Session session=current;
+                if(session!=null){session=expectedSession(body);session.recordAction(map("type","stop"));session.stop();}
+                else if(body.has("expectedGameId"))throw new IllegalArgumentException("This game is no longer active");
+                result = session==null?map("ok",true):session.state();
             } else if ("/session/settings".equals(path) && "POST".equals(method)) {
-                if (current == null) throw new IllegalArgumentException("No active game");
-                JsonObject settings=readBody(exchange);current.recordAction(map("type","settings","value",settings));current.manualTriggers = bool(settings, "manualTriggers", false);
+                JsonObject settings=readBody(exchange);Session session=expectedSession(settings);session.recordAction(map("type","settings","value",settings));session.manualTriggers = bool(settings, "manualTriggers", false);
                 result = map("ok", true);
             } else { status = 404; result = map("error", "Unknown endpoint"); }
         } catch (Throwable ex) {
@@ -114,6 +121,14 @@ public final class EngineBridge {
         exchange.getResponseHeaders().set("Cache-Control", "no-store");
         exchange.sendResponseHeaders(status, bytes.length);
         try (OutputStream out = exchange.getResponseBody()) { out.write(bytes); }
+    }
+
+    static Session expectedSession(JsonObject body) {
+        Session session=current;
+        if(session==null)throw new IllegalArgumentException("No active game");
+        if(body.has("expectedGameId")&&!session.game.getId().toString().equals(text(body,"expectedGameId","")))
+            throw new IllegalArgumentException("This game is outdated; refresh the current match");
+        return session;
     }
 
     static JsonObject readBody(HttpExchange x) throws IOException {
@@ -206,13 +221,14 @@ public final class EngineBridge {
         volatile boolean stopRequested;
         final BlockingQueue<List<String>> triggerAnswers = new ArrayBlockingQueue<>(1);
         final Queue<UUID> pendingConcedes = new ConcurrentLinkedQueue<>();
+        final Object answerLock=new Object();
         volatile Map<String, Object> snapshot = map("running", true, "status", "Starting XMage", "players", Collections.emptyList(), "log", Collections.emptyList());
         volatile Map<String, Object> prompt;
         volatile boolean running = true;
         volatile boolean manualTriggers;
         volatile String error;
         volatile String projectionError;
-        Thread gameThread;
+        volatile Thread gameThread;
 
         Session(JsonObject body) { this(body, false); }
         Session(JsonObject body, boolean room) {
@@ -438,15 +454,25 @@ public final class EngineBridge {
         void stop() {
             if (owner != this) { requestConcede(); return; }
             if (running) stopRequested = true;
-            for (Session view : perspectives) { view.stopRequested = stopRequested; view.running = false; }
+            for (Session view : perspectives) {
+                view.stopRequested = stopRequested;view.prompt=null;view.priority.cancel();
+                // A requested stop is not proof that native execution ended.
+                if(gameThread==null||!gameThread.isAlive())view.running=false;
+            }
             if (gameThread != null) gameThread.interrupt();
             // Cancellation is input only; the single GAME thread ends execution.
             for (Player player : seatPlayers) player.abort();
             if (gameThread != null && gameThread != Thread.currentThread()) try { gameThread.join(3000); } catch (InterruptedException ex) { Thread.currentThread().interrupt(); }
             for (Session view : perspectives) if (view.recorder != null) {
                 if (gameThread == null) view.recorder.finish("aborted", map("reason", "Stopped before game start"), null);
-                view.recorder.awaitFinished(5000);
+                if(!executionAlive())view.recorder.awaitFinished(5000);
             }
+        }
+        boolean executionAlive(){Thread thread=owner.gameThread;return thread!=null&&thread.isAlive();}
+        Map<String,Object> executionState(){
+            Thread thread=owner.gameThread;boolean alive=thread!=null&&thread.isAlive();
+            return map("threadAlive",alive,"stopRequested",owner.stopRequested,"terminationConfirmed",thread!=null&&!alive,
+                "status",alive?(owner.stopRequested?"stop_requested":"running"):thread==null?"not_started":"terminated");
         }
         Map<String,Object> result() {
             List<Map<String,Object>> players = new ArrayList<>(); List<String> winners = new ArrayList<>();
@@ -494,11 +520,14 @@ public final class EngineBridge {
             // prompt cannot accompany the previous board before GAME publishes
             // its complete projection. Published prompt maps are immutable.
             Map<String,Object> visible = projectedPrompt == waiting ? waiting : null;
+            if(owner.stopRequested)visible=null;
             Map<String,Object> controls = priority.view(visible);
             if (visible != null && Boolean.TRUE.equals(visible.get("priority")) && !Boolean.TRUE.equals(controls.get("canEndTurn"))) {
                 visible = null; controls = priority.view(null);
             }
             Map<String,Object> result=new LinkedHashMap<>(projected);
+            result.put("execution",executionState());
+            if(owner.stopRequested)result.put("running",executionAlive());
             if(recorder!=null)result.putAll(recorder.state());
             result.put("prompt", visible);
             result.put("priority", controls);
@@ -522,6 +551,9 @@ public final class EngineBridge {
             UUID id; while ((id = owner.pendingConcedes.poll()) != null) game.setConcedingPlayer(id);
         }
         void priorityCommand(JsonObject command) {
+            synchronized(answerLock){applyPriorityCommand(command);}
+        }
+        void applyPriorityCommand(JsonObject command) {
             if (!running) throw new IllegalArgumentException("No running game");
             String type = text(command, "command", "configure");
             Map<String,Object> waiting = prompt;
@@ -834,6 +866,19 @@ public final class EngineBridge {
             choices.add(map("id", id.toString(), "label", view != null ? view.get("name") : p != null ? p.getName() : id.toString(), "responseType", "uuid", "card", view));
         }
         void action(JsonObject action) throws Exception {
+            if("concede".equals(text(action,"type",""))){
+                if(action.has("expectedGameId")&&!game.getId().toString().equals(text(action,"expectedGameId","")))throw new IllegalArgumentException("This game is outdated; refresh the current match");
+                // Control signals must remain available while an ordinary
+                // native answer is waiting for its response window to open.
+                recordAction(action.deepCopy());requestConcede();return;
+            }
+            // Claim a prompt once before recording/delivery. The lock is not
+            // the projection monitor, so a long publish cannot block Concede.
+            synchronized(answerLock){deliverAction(action);}
+        }
+        void deliverAction(JsonObject action) throws Exception {
+            if(action.has("expectedGameId")&&!game.getId().toString().equals(text(action,"expectedGameId","")))
+                throw new IllegalArgumentException("This game is outdated; refresh the current match");
             Map<String, Object> p = prompt;
             String type = text(action, "type", "");
             if ("concede".equals(type)) { recordAction(action.deepCopy()); requestConcede(); return; }
@@ -855,6 +900,7 @@ public final class EngineBridge {
             }
             // Validate transport values before recording or consuming the prompt.
             // Rejected stale/malformed attempts are not accepted replay actions.
+            validateAnswer(p,type,value);
             Runnable deliver;
             switch (type) {
                 case "uuid": { UUID answer = UUID.fromString(value.getAsString()); deliver = () -> human.setResponseUUID(answer); break; }
@@ -864,7 +910,7 @@ public final class EngineBridge {
                 case "multi_amount": {
                     if (!"multi_amount".equals(p.get("type"))) throw new IllegalArgumentException("Not an amount distribution prompt");
                     List<Integer> amounts = new ArrayList<>();
-                    for (JsonElement v : value.getAsJsonArray()) amounts.add(v.getAsInt());
+                    for (JsonElement v : value.getAsJsonArray()) amounts.add(exactInteger(v));
                     @SuppressWarnings("unchecked") List<Map<String,Object>> limits=(List<Map<String,Object>>)p.get("amountMessages");
                     if (limits==null || amounts.size()!=limits.size()) throw new IllegalArgumentException("Answer every amount");
                     long total=0;
@@ -886,6 +932,34 @@ public final class EngineBridge {
             prompt = null;
             try { deliver.run(); }
             catch (RuntimeException ex) { if(prompt==null) prompt=p; throw ex; }
+        }
+        static int exactInteger(JsonElement value){
+            if(!value.isJsonPrimitive()||!value.getAsJsonPrimitive().isNumber())throw new IllegalArgumentException("An integer answer is required");
+            try{return value.getAsBigDecimal().intValueExact();}
+            catch(ArithmeticException ex){throw new IllegalArgumentException("An integer answer is required");}
+        }
+        static void validateAnswer(Map<String,Object> prompt,String type,JsonElement value){
+            if("multi_amount".equals(type)){
+                if(!value.isJsonArray())throw new IllegalArgumentException("An amount array is required");
+                return; // Per-entry and total native bounds are checked below.
+            }
+            if("integer".equals(type)){
+                int amount=exactInteger(value);String kind=String.valueOf(prompt.get("type"));
+                if(!"amount".equals(kind)&&!"get_amount".equals(kind))throw new IllegalArgumentException("Not an amount prompt");
+                if(!(prompt.get("min")instanceof Number)||!(prompt.get("max")instanceof Number)
+                    ||amount<((Number)prompt.get("min")).intValue()||amount>((Number)prompt.get("max")).intValue())throw new IllegalArgumentException("Amount outside native allowed range");
+                return;
+            }
+            if(!value.isJsonPrimitive()||("boolean".equals(type)?!value.getAsJsonPrimitive().isBoolean():!value.getAsJsonPrimitive().isString()))
+                throw new IllegalArgumentException("Answer type does not match the offered choice");
+            Object offered=prompt.get("choices");
+            if(offered instanceof List<?>)for(Object entry:(List<?>)offered){
+                if(!(entry instanceof Map<?,?>))continue;Map<?,?> choice=(Map<?,?>)entry;
+                if(!type.equals(choice.get("responseType"))||Boolean.FALSE.equals(choice.get("selectable")))continue;
+                Object answer=choice.containsKey("value")?choice.get("value"):choice.get("id");
+                if(JSON.toJsonTree(answer).equals(value))return;
+            }
+            throw new IllegalArgumentException("This answer was not offered by the native prompt");
         }
         void recordAction(Object input) {
             Session saved = recordingView();
@@ -972,6 +1046,7 @@ public final class EngineBridge {
             if(c instanceof Card) { Map<String,Object> counters=new LinkedHashMap<>(); ((Card)c).getCounters(game).forEach((name,counter)->counters.put(name,counter.getCount())); m.put("counters",counters); }
             MageObject printed=c instanceof mage.game.permanent.PermanentToken?((mage.game.permanent.PermanentToken)c).getToken():game.getCard(c.getId());
             if(c instanceof mage.game.permanent.PermanentToken&&((Permanent)c).isTransformed()&&((mage.game.permanent.PermanentToken)c).getToken().getBackFace()!=null)printed=((mage.game.permanent.PermanentToken)c).getToken().getBackFace();
+            MageObject mergedTop=MergedProjection.top(this,c);if(mergedTop!=null)printed=mergedTop;
             if(printed==null&&c instanceof Card)printed=c;
             if(printed!=null){
                 List<String> subtypes=printed.getSubtype(null).stream().map(Object::toString).collect(Collectors.toList());
@@ -979,13 +1054,17 @@ public final class EngineBridge {
                 m.put("printing",map("name",printed.getName(),"power",printed.getPower().toString(),"toughness",printed.getToughness().toString(),"set",printed.getExpansionSetCode(),"number",printed.getCardNumber(),
                     "colors",colorNames(printed.getColor()),"type",type,"type_line",type+(subtypes.isEmpty()?"":" — "+String.join(" ",subtypes)),"subtypes",subtypes,"keywords",NativeProjection.keywords(printed)));
             }
+            if(c instanceof mage.game.permanent.token.Token){
+                Card copySource=((mage.game.permanent.token.Token)c).getCopySourceCard();
+                if(copySource!=null&&!(copySource instanceof Permanent))m.put("copySourceCard",card(copySource,true));
+            }
             if(c instanceof Card){
                 Card nativeCard=(Card)c;m.put("ownerId",str(nativeCard.getOwnerId()));
                 // Only this already-entitled visible card's choice is public.
                 // The complete deck printingSelections never enters a frame.
                 if(!(c instanceof Permanent)||!((Permanent)c).isToken()){
                     Player originalOwner=game.getPlayer(nativeCard.getOwnerId());int seat=originalOwner==null?-1:seatOf(originalOwner);
-                    Card original=game.getCard(c.getId());if(original==null)original=nativeCard;
+                    Card original=printed instanceof Card?(Card)printed:game.getCard(c.getId());if(original==null)original=nativeCard;
                     Card main=original.getMainCard();String name=main==null?original.getName():main.getName();
                     String chosen=seat<0?null:CardPrintingProjection.selected(seatConfigs.get(seat).deck,name,str(original.getId()));
                     if(chosen!=null)m.put("selectedPrintingId",chosen);
@@ -1000,6 +1079,24 @@ public final class EngineBridge {
                 m.put("permanent",map("power",power,"toughness",toughness,"damage",p.getDamage(),"counters",m.get("counters"),"tapped",p.isTapped()));
                 m.put("attachedToId",str(p.getAttachedTo()));m.put("attachedToPlayerId",game.getPlayer(p.getAttachedTo())==null?null:str(p.getAttachedTo()));m.put("attachmentIds",NativeProjection.ids(p.getAttachments()));
                 m.put("linkedExile",NativeProjection.linkedExile(this,p));m.put("token",p.isToken());m.put("isToken",p.isToken());
+                if(p instanceof mage.game.permanent.PermanentToken){
+                    mage.game.permanent.token.Token template=((mage.game.permanent.PermanentToken)p).getToken();
+                    if(p.isTransformed()&&template.getBackFace()!=null){
+                        m.put("originalTokenTemplate",card(template,true));template=template.getBackFace();
+                    }
+                    // Preserve the original native token template separately
+                    // from a merged top's printing and current live values.
+                    // Ordinary tokens already carry this exact template in
+                    // printing. Avoid duplicating it in every recorded frame.
+                    if(p.getMutateCount()>0||p.isTransformed()||template.getCopySourceCard()!=null){
+                        Map<String,Object> templateView=card(template,true);templateView.put("token",true);templateView.put("isToken",true);
+                        m.put("tokenTemplate",templateView);
+                        // The engine supplies this exact original Card reference.
+                        // Never infer a copy's artwork from its current name/P-T.
+                        if(templateView.containsKey("copySourceCard"))m.put("copySourceCard",templateView.get("copySourceCard"));
+                    }
+                }
+                Map<String,Object> merged=MergedProjection.view(this,p);if(merged!=null)m.put("mutate",merged);
                 UUID tokenSource=tokenSources.get(p.getId());MageObject source=knownObject(tokenSource);
                 m.put("tokenSourceId",source==null?null:str(tokenSource));m.put("tokenSourceName",source==null?null:visibleName(tokenSource));
                 m.put("minBlockers",p.getMinBlockedBy());m.put("maxBlockers",p.getMaxBlockedBy());

@@ -1,0 +1,4763 @@
+{
+  "schemaVersion": 1,
+  "scope": "Deterministic native rules/costs/combat with explicit initial-zone fixtures; projection-only subchecks labeled separately; no completed production matches",
+  "scenarios": [
+    {
+      "id": "C01",
+      "name": "Threshold, counter and printing separation",
+      "purpose": "Threshold, counter and printing separation",
+      "mechanics": [
+        "characteristics",
+        "continuous_effects",
+        "native_identity"
+      ],
+      "cards": [
+        {
+          "name": "Angel of Vitality",
+          "count": 1,
+          "engineClass": "mage.cards.a.AngelOfVitality",
+          "enginePrinting": {
+            "set": "ANB",
+            "number": "1"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Angel of Vitality"
+        ],
+        "life": 25,
+        "counters": {
+          "+1/+1": 1
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Apply native continuous effects",
+        "Project live/printing values",
+        "Change life to24 and reapply"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Live5/5 with counter and native25life; printed2/2",
+        "Below25life remains3/3"
+      ],
+      "expected": [
+        "Live5/5 with counter and native25life; printed2/2",
+        "Below25life remains3/3"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C01 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt",
+        "https://magic.wizards.com/en/news/feature/foundations-release-notes"
+      ]
+    },
+    {
+      "id": "C02",
+      "name": "Opposite-counter SBA and derived values",
+      "purpose": "Opposite-counter SBA and derived values",
+      "mechanics": [
+        "characteristics",
+        "continuous_effects",
+        "native_identity"
+      ],
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Grizzly Bears"
+        ],
+        "counters": {
+          "+1/+1": 3,
+          "-1/-1": 2
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Run native SBA",
+        "Apply effects after native counter annihilation"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Exactly one+1/+1 and no-1/-1 counter remain; live3/3"
+      ],
+      "expected": [
+        "Exactly one+1/+1 and no-1/-1 counter remain; live3/3"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": false,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C02 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C03",
+      "name": "Indestructible, lethal damage and negative toughness",
+      "purpose": "Indestructible, lethal damage and negative toughness",
+      "mechanics": [
+        "characteristics",
+        "continuous_effects",
+        "native_identity"
+      ],
+      "cards": [
+        {
+          "name": "Darksteel Myr",
+          "count": 1,
+          "engineClass": "mage.cards.d.DarksteelMyr",
+          "enginePrinting": {
+            "set": "SOM",
+            "number": "151"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Darksteel Myr"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Apply8native damage",
+        "Run SBA",
+        "Add2-1/-1counters; apply effects; runSBA"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Indestructible survives damage8",
+        "Toughness-1 goes to graveyard despite indestructible"
+      ],
+      "expected": [
+        "Indestructible survives damage8",
+        "Toughness-1 goes to graveyard despite indestructible"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C03 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C04",
+      "name": "Continuous lord disappearance",
+      "purpose": "Continuous lord disappearance",
+      "mechanics": [
+        "characteristics",
+        "continuous_effects",
+        "native_identity"
+      ],
+      "cards": [
+        {
+          "name": "Elvish Archdruid",
+          "count": 1,
+          "engineClass": "mage.cards.e.ElvishArchdruid",
+          "enginePrinting": {
+            "set": "C14",
+            "number": "190"
+          }
+        },
+        {
+          "name": "Llanowar Elves",
+          "count": 1,
+          "engineClass": "mage.cards.l.LlanowarElves",
+          "enginePrinting": {
+            "set": "ATH",
+            "number": "59"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Elvish Archdruid",
+          "Llanowar Elves"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Apply native lord boost",
+        "Sacrifice lord",
+        "Apply effects"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Elf2/2 then1/1; lord never boosts itself"
+      ],
+      "expected": [
+        "Elf2/2 then1/1; lord never boosts itself"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": false,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C04 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C05",
+      "name": "Equipment plus Aura boost and granted keyword",
+      "purpose": "Equipment plus Aura boost and granted keyword",
+      "mechanics": [
+        "characteristics",
+        "continuous_effects",
+        "native_identity"
+      ],
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        },
+        {
+          "name": "Bonesplitter",
+          "count": 1,
+          "engineClass": "mage.cards.b.Bonesplitter",
+          "enginePrinting": {
+            "set": "PAL03",
+            "number": "8"
+          }
+        },
+        {
+          "name": "Rancor",
+          "count": 1,
+          "engineClass": "mage.cards.r.Rancor",
+          "enginePrinting": {
+            "set": "ARC",
+            "number": "67"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Grizzly Bears",
+          "Bonesplitter",
+          "Rancor"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Native addAttachment for both",
+        "Apply continuous effects",
+        "Project host"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Live6/2; two attachmentIDs; native granted trample"
+      ],
+      "expected": [
+        "Live6/2; two attachmentIDs; native granted trample"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C05 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C06",
+      "name": "Control change, owner, haste and untap",
+      "purpose": "Control change, owner, haste and untap",
+      "mechanics": [
+        "characteristics",
+        "continuous_effects",
+        "native_identity"
+      ],
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        },
+        {
+          "name": "Act of Treason",
+          "count": 1,
+          "engineClass": "mage.cards.a.ActOfTreason",
+          "enginePrinting": {
+            "set": "M19",
+            "number": "127"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "opponentBattlefield": [
+          "Grizzly Bears"
+        ],
+        "tapped": [
+          "Grizzly Bears"
+        ],
+        "humanHand": [
+          "Act of Treason"
+        ],
+        "injectedMana": {
+          "R": 3
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Cast Act using offered bear target",
+        "Resolve native stack"
+      ],
+      "expectedPrompts": [
+        "pick_target"
+      ],
+      "expectedNativeEffects": [
+        "Controller becomes human; owner remains opponent; untapped; haste"
+      ],
+      "expected": [
+        "Controller becomes human; owner remains opponent; untapped; haste"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C06 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C07",
+      "name": "Blink resets counters damage and equipment",
+      "purpose": "Blink resets counters damage and equipment",
+      "mechanics": [
+        "characteristics",
+        "continuous_effects",
+        "native_identity"
+      ],
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        },
+        {
+          "name": "Bonesplitter",
+          "count": 1,
+          "engineClass": "mage.cards.b.Bonesplitter",
+          "enginePrinting": {
+            "set": "PAL03",
+            "number": "8"
+          }
+        },
+        {
+          "name": "Cloudshift",
+          "count": 1,
+          "engineClass": "mage.cards.c.Cloudshift",
+          "enginePrinting": {
+            "set": "AVR",
+            "number": "12"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Grizzly Bears",
+          "Bonesplitter"
+        ],
+        "attachments": {
+          "Bonesplitter": "Grizzly Bears"
+        },
+        "counters": {
+          "+1/+1": 2
+        },
+        "damage": 1,
+        "humanHand": [
+          "Cloudshift"
+        ],
+        "injectedMana": {
+          "W": 1
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Cast/resolve Cloudshift on offered ownBear",
+        "Inspect zone-change counter/new permanent"
+      ],
+      "expectedPrompts": [
+        "pick_target"
+      ],
+      "expectedNativeEffects": [
+        "ZCC increases; no counters/damage/attachments; live2/2; equipment stays unattached"
+      ],
+      "expected": [
+        "ZCC increases; no counters/damage/attachments; live2/2; equipment stays unattached"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 3,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C07 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C08",
+      "name": "Blink invalidates previously targeted removal",
+      "purpose": "Blink invalidates previously targeted removal",
+      "mechanics": [
+        "characteristics",
+        "continuous_effects",
+        "native_identity"
+      ],
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        },
+        {
+          "name": "Doom Blade",
+          "count": 1,
+          "engineClass": "mage.cards.d.DoomBlade",
+          "enginePrinting": {
+            "set": "E01",
+            "number": "33"
+          }
+        },
+        {
+          "name": "Cloudshift",
+          "count": 1,
+          "engineClass": "mage.cards.c.Cloudshift",
+          "enginePrinting": {
+            "set": "AVR",
+            "number": "12"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Grizzly Bears"
+        ],
+        "humanHand": [
+          "Doom Blade",
+          "Cloudshift"
+        ],
+        "injectedMana": {
+          "B": 2,
+          "W": 1
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Cast DoomBlade at ownBear",
+        "Respond Cloudshift at ownBear",
+        "Resolve blink then removal"
+      ],
+      "expectedPrompts": [
+        "pick_target"
+      ],
+      "expectedNativeEffects": [
+        "New zone-change object survives old target; removal reaches graveyard; stackempty"
+      ],
+      "expected": [
+        "New zone-change object survives old target; removal reaches graveyard; stackempty"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 3,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C08 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C09",
+      "name": "ETB generates nested life-gain counter",
+      "purpose": "ETB generates nested life-gain counter",
+      "mechanics": [
+        "trigger_order",
+        "nested_triggers"
+      ],
+      "cards": [
+        {
+          "name": "Soul Warden",
+          "count": 1,
+          "engineClass": "mage.cards.s.SoulWarden",
+          "enginePrinting": {
+            "set": "BRB",
+            "number": "76"
+          }
+        },
+        {
+          "name": "Ajani's Pridemate",
+          "count": 1,
+          "engineClass": "mage.cards.a.AjanisPridemate",
+          "enginePrinting": {
+            "set": "C13",
+            "number": "3"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Soul Warden",
+          "Ajani's Pridemate"
+        ],
+        "newOutsideCard": "Grizzly Bears"
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Clear setuptriggers",
+        "Native enterBear",
+        "Place/resolve all native triggers"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Humanlife21; Pridemate one counter; stackempty"
+      ],
+      "expected": [
+        "Humanlife21; Pridemate one counter; stackempty"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C09 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C10",
+      "name": "Mass death triggers survive their sources",
+      "purpose": "Mass death triggers survive their sources",
+      "mechanics": [
+        "trigger_order",
+        "nested_triggers"
+      ],
+      "cards": [
+        {
+          "name": "Blood Artist",
+          "count": 1,
+          "engineClass": "mage.cards.b.BloodArtist",
+          "enginePrinting": {
+            "set": "AVR",
+            "number": "86"
+          }
+        },
+        {
+          "name": "Zulaport Cutthroat",
+          "count": 1,
+          "engineClass": "mage.cards.z.ZulaportCutthroat",
+          "enginePrinting": {
+            "set": "BFZ",
+            "number": "126"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        },
+        {
+          "name": "Wrath of God",
+          "count": 1,
+          "engineClass": "mage.cards.w.WrathOfGod",
+          "enginePrinting": {
+            "set": "MP2",
+            "number": "7"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Blood Artist",
+          "Zulaport Cutthroat",
+          "Grizzly Bears"
+        ],
+        "humanHand": [
+          "Wrath of God"
+        ],
+        "injectedMana": {
+          "W": 4
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Cast/resolve Wrath",
+        "Choose actual opponent for BloodArtist triggers",
+        "Resolve all native triggers"
+      ],
+      "expectedPrompts": [
+        "pick_target"
+      ],
+      "expectedNativeEffects": [
+        "Threecreatures in graveyard; human26/opponent14; sourcesdead but triggersresolve"
+      ],
+      "expected": [
+        "Threecreatures in graveyard; human26/opponent14; sourcesdead but triggersresolve"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C10 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C11",
+      "name": "Manual resolution order with threshold and nested triggers",
+      "purpose": "Manual resolution order with threshold and nested triggers",
+      "mechanics": [
+        "trigger_order",
+        "nested_triggers"
+      ],
+      "cards": [
+        {
+          "name": "Soul Warden",
+          "count": 1,
+          "engineClass": "mage.cards.s.SoulWarden",
+          "enginePrinting": {
+            "set": "BRB",
+            "number": "76"
+          }
+        },
+        {
+          "name": "Impassioned Orator",
+          "count": 1,
+          "engineClass": "mage.cards.i.ImpassionedOrator",
+          "enginePrinting": {
+            "set": "ANB",
+            "number": "10"
+          }
+        },
+        {
+          "name": "Ajani's Pridemate",
+          "count": 1,
+          "engineClass": "mage.cards.a.AjanisPridemate",
+          "enginePrinting": {
+            "set": "C13",
+            "number": "3"
+          }
+        },
+        {
+          "name": "Angel of Vitality",
+          "count": 1,
+          "engineClass": "mage.cards.a.AngelOfVitality",
+          "enginePrinting": {
+            "set": "ANB",
+            "number": "1"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Soul Warden",
+          "Impassioned Orator",
+          "Ajani's Pridemate",
+          "Angel of Vitality"
+        ],
+        "life": 24,
+        "manualTriggers": true,
+        "newOutsideCard": "Grizzly Bears"
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Clear setup events after initiallife",
+        "EnterBear",
+        "Order Orator leftmost using offered trigger IDs",
+        "Resolve stack including nested Pridemate triggers"
+      ],
+      "expectedPrompts": [
+        "order"
+      ],
+      "expectedNativeEffects": [
+        "Leftmost resolvesfirst; two life-gain events of2; life28; two counters; Angel4/4"
+      ],
+      "expected": [
+        "Leftmost resolvesfirst; two life-gain events of2; life28; two counters; Angel4/4"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C11 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt",
+        "https://magic.wizards.com/en/news/feature/foundations-release-notes"
+      ]
+    },
+    {
+      "id": "C12",
+      "name": "Optional trigger declines and later continues",
+      "purpose": "Optional trigger declines and later continues",
+      "mechanics": [
+        "trigger_order",
+        "nested_triggers"
+      ],
+      "cards": [
+        {
+          "name": "Soul's Attendant",
+          "count": 1,
+          "engineClass": "mage.cards.s.SoulsAttendant",
+          "enginePrinting": {
+            "set": "ROE",
+            "number": "44"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        },
+        {
+          "name": "Llanowar Elves",
+          "count": 1,
+          "engineClass": "mage.cards.l.LlanowarElves",
+          "enginePrinting": {
+            "set": "ATH",
+            "number": "59"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Soul's Attendant"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "EnterBear; offeredNo",
+        "EnterElf; offeredYes"
+      ],
+      "expectedPrompts": [
+        "ask:boolean"
+      ],
+      "expectedNativeEffects": [
+        "Firsttrigger ends withlife20; subsequent trigger works and life21"
+      ],
+      "expected": [
+        "Firsttrigger ends withlife20; subsequent trigger works and life21"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": false,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C12 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C13",
+      "name": "Two-human native APNAP order",
+      "purpose": "Two-human native APNAP order",
+      "mechanics": [
+        "trigger_order",
+        "nested_triggers"
+      ],
+      "cards": [
+        {
+          "name": "Soul Warden",
+          "count": 2,
+          "engineClass": "mage.cards.s.SoulWarden",
+          "enginePrinting": {
+            "set": "BRB",
+            "number": "76"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "players": 2,
+        "humanBattlefield": [
+          "Soul Warden"
+        ],
+        "otherHumanBattlefield": [
+          "Soul Warden"
+        ],
+        "newOutsideCard": "Grizzly Bears"
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "EnterBear during activehuman main",
+        "Place native triggers",
+        "Resolve top then next"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Nonactive trigger is top; active trigger below; bothnativehumanlife21"
+      ],
+      "expected": [
+        "Nonactive trigger is top; active trigger below; bothnativehumanlife21"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C13 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C14",
+      "name": "Control native combat damage",
+      "purpose": "Control native combat damage",
+      "mechanics": [
+        "combat",
+        "native_damage",
+        "combat_legality"
+      ],
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "opponentBattlefield": [
+          "Grizzly Bears"
+        ],
+        "combat": {
+          "attacker": "Grizzly Bears",
+          "defender": "human",
+          "blockers": []
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Add native attacker",
+        "Begin regular native combat-damage step",
+        "RunSBA"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Defender18; real combatdamage event retained"
+      ],
+      "expected": [
+        "Defender18; real combatdamage event retained"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": false,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C14 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C15",
+      "name": "Confirmed block survives sacrificed blocker",
+      "purpose": "Confirmed block survives sacrificed blocker",
+      "mechanics": [
+        "combat",
+        "native_damage",
+        "combat_legality"
+      ],
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 2,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "opponentBattlefield": [
+          "Grizzly Bears"
+        ],
+        "humanBattlefield": [
+          "Grizzly Bears"
+        ],
+        "combat": {
+          "attacker": "opponentGrizzly Bears",
+          "blocker": "humanGrizzly Bears"
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Declare/accept blocker",
+        "Native sacrifice blocker",
+        "Run regular damage"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Blocked remains true; blockers0; defender20; no inferred playerdamage"
+      ],
+      "expected": [
+        "Blocked remains true; blockers0; defender20; no inferred playerdamage"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C15 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C16",
+      "name": "Trample after confirmed blocker sacrifice",
+      "purpose": "Trample after confirmed blocker sacrifice",
+      "mechanics": [
+        "combat",
+        "native_damage",
+        "combat_legality"
+      ],
+      "cards": [
+        {
+          "name": "Colossal Dreadmaw",
+          "count": 1,
+          "engineClass": "mage.cards.c.ColossalDreadmaw",
+          "enginePrinting": {
+            "set": "M19",
+            "number": "172"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "opponentBattlefield": [
+          "Colossal Dreadmaw"
+        ],
+        "humanBattlefield": [
+          "Grizzly Bears"
+        ],
+        "combat": {
+          "attacker": "Colossal Dreadmaw",
+          "blocker": "Grizzly Bears"
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Declare/accept blocker",
+        "Native sacrifice blocker",
+        "Run regulardamage"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Blockedremains true; native6trample reachesdefender life14"
+      ],
+      "expected": [
+        "Blockedremains true; native6trample reachesdefender life14"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C16 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C17",
+      "name": "First strike removes retaliation source",
+      "purpose": "First strike removes retaliation source",
+      "mechanics": [
+        "combat",
+        "native_damage",
+        "combat_legality"
+      ],
+      "cards": [
+        {
+          "name": "White Knight",
+          "count": 1,
+          "engineClass": "mage.cards.w.WhiteKnight",
+          "enginePrinting": {
+            "set": "ATH",
+            "number": "18"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "opponentBattlefield": [
+          "White Knight"
+        ],
+        "humanBattlefield": [
+          "Grizzly Bears"
+        ],
+        "combat": {
+          "attacker": "White Knight",
+          "blocker": "Grizzly Bears"
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Declare/accept blocker",
+        "Run firststrikedamage/SBA",
+        "Run regular damage/SBA"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Bear dies first; Knight survives undamaged; exactnative damage step events"
+      ],
+      "expected": [
+        "Bear dies first; Knight survives undamaged; exactnative damage step events"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C17 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C18",
+      "name": "Double strike and surviving-blocker retaliation",
+      "purpose": "Double strike and surviving-blocker retaliation",
+      "mechanics": [
+        "combat",
+        "native_damage",
+        "combat_legality"
+      ],
+      "cards": [
+        {
+          "name": "Fencing Ace",
+          "count": 1,
+          "engineClass": "mage.cards.f.FencingAce",
+          "enginePrinting": {
+            "set": "E01",
+            "number": "7"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "opponentBattlefield": [
+          "Fencing Ace"
+        ],
+        "humanBattlefield": [
+          "Grizzly Bears"
+        ],
+        "combat": {
+          "attacker": "Fencing Ace",
+          "blocker": "Grizzly Bears"
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Declare/accept blocker",
+        "Run firstdamage then regular withSBA"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Bear has1marked afterfirst; secondnative hit killsBear while Bear2damagesAce; bothdie"
+      ],
+      "expected": [
+        "Bear has1marked afterfirst; secondnative hit killsBear while Bear2damagesAce; bothdie"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C18 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C19",
+      "name": "Deathtouch trample and lifelink combine",
+      "purpose": "Deathtouch trample and lifelink combine",
+      "mechanics": [
+        "combat",
+        "native_damage",
+        "combat_legality"
+      ],
+      "cards": [
+        {
+          "name": "Vampire Nighthawk",
+          "count": 1,
+          "engineClass": "mage.cards.v.VampireNighthawk",
+          "enginePrinting": {
+            "set": "E01",
+            "number": "38"
+          }
+        },
+        {
+          "name": "Giant Spider",
+          "count": 1,
+          "engineClass": "mage.cards.g.GiantSpider",
+          "enginePrinting": {
+            "set": "AKH",
+            "number": "166"
+          }
+        },
+        {
+          "name": "Rancor",
+          "count": 1,
+          "engineClass": "mage.cards.r.Rancor",
+          "enginePrinting": {
+            "set": "ARC",
+            "number": "67"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "opponentBattlefield": [
+          "Vampire Nighthawk",
+          "Rancor"
+        ],
+        "humanBattlefield": [
+          "Giant Spider"
+        ],
+        "attachments": {
+          "Rancor": "Vampire Nighthawk"
+        },
+        "combat": {
+          "attacker": "Vampire Nighthawk",
+          "blocker": "Giant Spider"
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Declare native legal reachblock",
+        "AttachRancor and applyeffects",
+        "Run regulardamage/SBA"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Deathtouchassign1toSpider;3trample defenderlife17; lifelink4 ownerlife24; Spiderdies/Nighthawksurvives"
+      ],
+      "expected": [
+        "Deathtouchassign1toSpider;3trample defenderlife17; lifelink4 ownerlife24; Spiderdies/Nighthawksurvives"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C19 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C20",
+      "name": "Evasion and group-restriction comparison",
+      "purpose": "Evasion and group-restriction comparison",
+      "mechanics": [
+        "combat",
+        "native_damage",
+        "combat_legality"
+      ],
+      "cards": [
+        {
+          "name": "Wind Drake",
+          "count": 1,
+          "engineClass": "mage.cards.w.WindDrake",
+          "enginePrinting": {
+            "set": "BRB",
+            "number": "98"
+          }
+        },
+        {
+          "name": "River Boa",
+          "count": 1,
+          "engineClass": "mage.cards.r.RiverBoa",
+          "enginePrinting": {
+            "set": "BRB",
+            "number": "59"
+          }
+        },
+        {
+          "name": "Boggart Brute",
+          "count": 1,
+          "engineClass": "mage.cards.b.BoggartBrute",
+          "enginePrinting": {
+            "set": "M19",
+            "number": "131"
+          }
+        },
+        {
+          "name": "Invisible Stalker",
+          "count": 1,
+          "engineClass": "mage.cards.i.InvisibleStalker",
+          "enginePrinting": {
+            "set": "ISD",
+            "number": "60"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        },
+        {
+          "name": "Giant Spider",
+          "count": 1,
+          "engineClass": "mage.cards.g.GiantSpider",
+          "enginePrinting": {
+            "set": "AKH",
+            "number": "166"
+          }
+        },
+        {
+          "name": "Island",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Island",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "266"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "opponentBattlefield": [
+          "Wind Drake",
+          "River Boa",
+          "Boggart Brute",
+          "Invisible Stalker"
+        ],
+        "humanBattlefield": [
+          "Grizzly Bears",
+          "Giant Spider",
+          "Island"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Registernativeattackers",
+        "Read nativeblockerOptions",
+        "Declare lone Bear onmenace; evaluate nativegrouprestrictions"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Groundcannotblockflying/islandwalk/unblockable; reachcanflyer; pairwisemenacelegal butgroupaloneillegal; no damage claimed"
+      ],
+      "expected": [
+        "Groundcannotblockflying/islandwalk/unblockable; reachcanflyer; pairwisemenacelegal butgroupaloneillegal; no damage claimed"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C20 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C21",
+      "name": "Sacrifice activation cancels before payment",
+      "purpose": "Sacrifice activation cancels before payment",
+      "mechanics": [
+        "costs",
+        "native_prompts"
+      ],
+      "cards": [
+        {
+          "name": "Woe Strider",
+          "count": 1,
+          "engineClass": "mage.cards.w.WoeStrider",
+          "enginePrinting": {
+            "set": "BLC",
+            "number": "189"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Woe Strider",
+          "Grizzly Bears"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Begin actualnative activation",
+        "Choose explicit cancelChoice before sacrifice"
+      ],
+      "expectedPrompts": [
+        "pick_target:cancelChoice"
+      ],
+      "expectedNativeEffects": [
+        "Activationfalse; Bearpresent; stackempty; cancellation scope pending_action"
+      ],
+      "expected": [
+        "Activationfalse; Bearpresent; stackempty; cancellation scope pending_action"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": false,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C21 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C22",
+      "name": "Committed sacrifice cannot be undone at scry",
+      "purpose": "Committed sacrifice cannot be undone at scry",
+      "mechanics": [
+        "costs",
+        "native_prompts"
+      ],
+      "cards": [
+        {
+          "name": "Woe Strider",
+          "count": 1,
+          "engineClass": "mage.cards.w.WoeStrider",
+          "enginePrinting": {
+            "set": "BLC",
+            "number": "189"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        },
+        {
+          "name": "Island",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Island",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "266"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Woe Strider",
+          "Grizzly Bears"
+        ],
+        "humanLibrary": [
+          "Island"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Activate using offered Bear UUID",
+        "Resolve scry with nativeDone"
+      ],
+      "expectedPrompts": [
+        "pick_target",
+        "scry"
+      ],
+      "expectedNativeEffects": [
+        "Bear remainsgraveyard; scope no longer pending_action; resolving effect cannotrefundcost"
+      ],
+      "expected": [
+        "Bear remainsgraveyard; scope no longer pending_action; resolving effect cannotrefundcost"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C22 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C23",
+      "name": "Tap cost then loot discard",
+      "purpose": "Tap cost then loot discard",
+      "mechanics": [
+        "costs",
+        "native_prompts"
+      ],
+      "cards": [
+        {
+          "name": "Merfolk Looter",
+          "count": 1,
+          "engineClass": "mage.cards.m.MerfolkLooter",
+          "enginePrinting": {
+            "set": "CN2",
+            "number": "114"
+          }
+        },
+        {
+          "name": "Mountain",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Mountain",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "274"
+          }
+        },
+        {
+          "name": "Island",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Island",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "266"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Merfolk Looter"
+        ],
+        "summoningSickness": false,
+        "humanHand": [
+          "Mountain"
+        ],
+        "humanLibrary": [
+          "Island"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Activate actualtapability",
+        "Resolve draw",
+        "Choose offered Mountain discard"
+      ],
+      "expectedPrompts": [
+        "pick_target"
+      ],
+      "expectedNativeEffects": [
+        "Looter tapped before resolution; Mountainingraveyard; one Islandinhand"
+      ],
+      "expected": [
+        "Looter tapped before resolution; Mountainingraveyard; one Islandinhand"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C23 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C24",
+      "name": "Native mana wheel colors and painland effect",
+      "purpose": "Native mana wheel colors and painland effect",
+      "mechanics": [
+        "costs",
+        "native_prompts"
+      ],
+      "cards": [
+        {
+          "name": "Shivan Reef",
+          "count": 1,
+          "engineClass": "mage.cards.s.ShivanReef",
+          "enginePrinting": {
+            "set": "DRC",
+            "number": "170"
+          }
+        },
+        {
+          "name": "City of Brass",
+          "count": 1,
+          "engineClass": "mage.cards.c.CityOfBrass",
+          "enginePrinting": {
+            "set": "ARN",
+            "number": "71"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Shivan Reef",
+          "City of Brass"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Project actual Reef offered abilities",
+        "Activate City; choose offered Blue",
+        "Resolve City damage trigger"
+      ],
+      "expectedPrompts": [
+        "choose_ability:projection",
+        "string:Blue"
+      ],
+      "expectedNativeEffects": [
+        "ReefexactC/U/R; City addsU1/taps; humanlife19"
+      ],
+      "expected": [
+        "ReefexactC/U/R; City addsU1/taps; humanlife19"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C24 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C25",
+      "name": "X announcement and native cost payment",
+      "purpose": "X announcement and native cost payment",
+      "mechanics": [
+        "costs",
+        "native_prompts"
+      ],
+      "cards": [
+        {
+          "name": "Fireball",
+          "count": 1,
+          "engineClass": "mage.cards.f.Fireball",
+          "enginePrinting": {
+            "set": "ATH",
+            "number": "29"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanHand": [
+          "Fireball"
+        ],
+        "injectedMana": {
+          "R": 7
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Cast actualFireball",
+        "Choose offered X6",
+        "Target opponent and finishoptional targetlist",
+        "Resolve native spell"
+      ],
+      "expectedPrompts": [
+        "amount:integer",
+        "pick_target"
+      ],
+      "expectedNativeEffects": [
+        "One Xannouncement; native cost consumes7; opponent14"
+      ],
+      "expected": [
+        "One Xannouncement; native cost consumes7; opponent14"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": false,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C25 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C26",
+      "name": "Native pile choice and zones",
+      "purpose": "Native pile choice and zones",
+      "mechanics": [
+        "native_prompts",
+        "stack_resolution"
+      ],
+      "cards": [
+        {
+          "name": "Fact or Fiction",
+          "count": 1,
+          "engineClass": "mage.cards.f.FactOrFiction",
+          "enginePrinting": {
+            "set": "CMD",
+            "number": "45"
+          }
+        },
+        {
+          "name": "Mountain",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Mountain",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "274"
+          }
+        },
+        {
+          "name": "Forest",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Forest",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "278"
+          }
+        },
+        {
+          "name": "Island",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Island",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "266"
+          }
+        },
+        {
+          "name": "Swamp",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Swamp",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "270"
+          }
+        },
+        {
+          "name": "Plains",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Plains",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "262"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanHand": [
+          "Fact or Fiction"
+        ],
+        "humanLibrary": [
+          "Mountain",
+          "Forest",
+          "Island",
+          "Swamp",
+          "Plains"
+        ],
+        "injectedMana": {
+          "U": 4
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Cast/resolveFoF",
+        "Native bot separates five cards",
+        "Choose offeredPile1 boolean"
+      ],
+      "expectedPrompts": [
+        "piles:boolean"
+      ],
+      "expectedNativeEffects": [
+        "Selected exactIDs inhand; otherpile graveyard; totalfiveplusresolvedspellaccounted"
+      ],
+      "expected": [
+        "Selected exactIDs inhand; otherpile graveyard; totalfiveplusresolvedspellaccounted"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": false,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C26 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C27",
+      "name": "Native distinct modal selection preserves unselected classes",
+      "purpose": "Native distinct modal selection preserves unselected classes",
+      "mechanics": [
+        "native_prompts",
+        "stack_resolution"
+      ],
+      "cards": [
+        {
+          "name": "Austere Command",
+          "count": 1,
+          "engineClass": "mage.cards.a.AustereCommand",
+          "enginePrinting": {
+            "set": "MP2",
+            "number": "1"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        },
+        {
+          "name": "Colossal Dreadmaw",
+          "count": 1,
+          "engineClass": "mage.cards.c.ColossalDreadmaw",
+          "enginePrinting": {
+            "set": "M19",
+            "number": "172"
+          }
+        },
+        {
+          "name": "Bonesplitter",
+          "count": 1,
+          "engineClass": "mage.cards.b.Bonesplitter",
+          "enginePrinting": {
+            "set": "PAL03",
+            "number": "8"
+          }
+        },
+        {
+          "name": "Rancor",
+          "count": 1,
+          "engineClass": "mage.cards.r.Rancor",
+          "enginePrinting": {
+            "set": "ARC",
+            "number": "67"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Grizzly Bears",
+          "Colossal Dreadmaw",
+          "Bonesplitter",
+          "Rancor"
+        ],
+        "attachments": {
+          "Rancor": "Colossal Dreadmaw"
+        },
+        "humanHand": [
+          "Austere Command"
+        ],
+        "injectedMana": {
+          "W": 6
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Choose native artifacts mode thennative manaValue3orless mode",
+        "Cast/resolveCommand"
+      ],
+      "expectedPrompts": [
+        "mode:uuid"
+      ],
+      "expectedNativeEffects": [
+        "Exactly2distinct modes; artifact/smallcreaturedead; largecreature/Aura survive"
+      ],
+      "expected": [
+        "Exactly2distinct modes; artifact/smallcreaturedead; largecreature/Aura survive"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C27 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C28",
+      "name": "Native multi-amount mana distribution then draw",
+      "purpose": "Native multi-amount mana distribution then draw",
+      "mechanics": [
+        "native_prompts",
+        "stack_resolution"
+      ],
+      "cards": [
+        {
+          "name": "Manamorphose",
+          "count": 1,
+          "engineClass": "mage.cards.m.Manamorphose",
+          "enginePrinting": {
+            "set": "2XM",
+            "number": "208"
+          }
+        },
+        {
+          "name": "Island",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Island",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "266"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanHand": [
+          "Manamorphose"
+        ],
+        "humanLibrary": [
+          "Island"
+        ],
+        "injectedMana": {
+          "R": 2
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "CastManamorphose",
+        "Assign offered B1 G1 andzeroothercolors",
+        "Resolve remaining draw"
+      ],
+      "expectedPrompts": [
+        "multi_amount"
+      ],
+      "expectedNativeEffects": [
+        "ExactlyB1/G1 pool; draw1; alloffered amountbounds respected"
+      ],
+      "expected": [
+        "ExactlyB1/G1 pool; draw1; alloffered amountbounds respected"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C28 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C29",
+      "name": "Four-human Commander entitled views",
+      "purpose": "Four-human Commander entitled views",
+      "mechanics": [
+        "multiplayer",
+        "information_entitlement"
+      ],
+      "cards": [
+        {
+          "name": "Krenko, Mob Boss",
+          "count": 1,
+          "engineClass": "mage.cards.k.KrenkoMobBoss",
+          "enginePrinting": {
+            "set": "CMM",
+            "number": "238"
+          }
+        },
+        {
+          "name": "Mountain",
+          "count": 4,
+          "engineClass": "mage.cards.basiclands.Mountain",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "274"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "players": 4,
+        "deck": {
+          "commander": {
+            "Krenko, Mob Boss": 1
+          },
+          "main": {
+            "Mountain": 99
+          }
+        },
+        "eachHumanHand": [
+          "Mountain"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Create4nativehumanvalidated seats",
+        "Read own/opposingcards/choicelabels",
+        "Grant firstviewprivate look",
+        "Reveal publicly",
+        "Saveeachperspective"
+      ],
+      "expectedPrompts": [
+        "pick_target:projection"
+      ],
+      "expectedNativeEffects": [
+        "Exactlyownhandvisible; nohiddenchoicelabelleak; lookedat visibleonlyentitledview; publicrevealvisibleall; real4matchrecords"
+      ],
+      "expected": [
+        "Exactlyownhandvisible; nohiddenchoicelabelleak; lookedat visibleonlyentitledview; publicrevealvisibleall; real4matchrecords"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C29 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C30",
+      "name": "Six-human Commander independent information entitlement",
+      "purpose": "Six-human Commander independent information entitlement",
+      "mechanics": [
+        "multiplayer",
+        "information_entitlement"
+      ],
+      "cards": [
+        {
+          "name": "Krenko, Mob Boss",
+          "count": 1,
+          "engineClass": "mage.cards.k.KrenkoMobBoss",
+          "enginePrinting": {
+            "set": "CMM",
+            "number": "238"
+          }
+        },
+        {
+          "name": "Mountain",
+          "count": 6,
+          "engineClass": "mage.cards.basiclands.Mountain",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "274"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "players": 6,
+        "deck": {
+          "commander": {
+            "Krenko, Mob Boss": 1
+          },
+          "main": {
+            "Mountain": 99
+          }
+        },
+        "eachHumanHand": [
+          "Mountain"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Create6nativehumanvalidated seats",
+        "Compare30cross-seatredactions",
+        "Privateoneviewlook thenpublicreveal",
+        "Saveeachperspective"
+      ],
+      "expectedPrompts": [
+        "pick_target:projection"
+      ],
+      "expectedNativeEffects": [
+        "Exactlyownhandvisible; thirdhumanprivateinformationwithheld; everypublicrevealvisible; real6matchrecords"
+      ],
+      "expected": [
+        "Exactlyownhandvisible; thirdhumanprivateinformationwithheld; everypublicrevealvisible; real6matchrecords"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C30 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C31",
+      "name": "Historical #9839 Aura-suppressed ETB blink regression",
+      "purpose": "Historical #9839 Aura-suppressed ETB blink regression",
+      "mechanics": [
+        "zone_change",
+        "ability_suppression",
+        "etb"
+      ],
+      "cards": [
+        {
+          "name": "Wall of Omens",
+          "count": 1,
+          "engineClass": "mage.cards.w.WallOfOmens",
+          "enginePrinting": {
+            "set": "CMD",
+            "number": "37"
+          }
+        },
+        {
+          "name": "Darksteel Mutation",
+          "count": 1,
+          "engineClass": "mage.cards.d.DarksteelMutation",
+          "enginePrinting": {
+            "set": "C13",
+            "number": "9"
+          }
+        },
+        {
+          "name": "Cloudshift",
+          "count": 1,
+          "engineClass": "mage.cards.c.Cloudshift",
+          "enginePrinting": {
+            "set": "AVR",
+            "number": "12"
+          }
+        },
+        {
+          "name": "Island",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Island",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "266"
+          }
+        },
+        {
+          "name": "Forest",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Forest",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "278"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Wall of Omens"
+        ],
+        "humanLibrary": [
+          "Island",
+          "Forest"
+        ],
+        "humanHand": [
+          "Darksteel Mutation",
+          "Cloudshift"
+        ],
+        "injectedMana": {
+          "W": 3
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Cast Mutation onownWall; resolve",
+        "CastCloudshift atWall; resolve",
+        "Resolve restorednativeETB"
+      ],
+      "expectedPrompts": [
+        "pick_target"
+      ],
+      "expectedNativeEffects": [
+        "Wall0/1whilemutated; blinkedWall0/4; Auraingraveyard; restoredETBdraws1"
+      ],
+      "expected": [
+        "Wall0/1whilemutated; blinkedWall0/4; Auraingraveyard; restoredETBdraws1"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 3,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C31 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt",
+        "https://github.com/magefree/mage/issues/9839"
+      ],
+      "upstreamClassification": "historical_regression_not_reproduced_currently"
+    },
+    {
+      "id": "C32",
+      "name": "Manual native pool payment answers",
+      "purpose": "Manual native pool payment answers",
+      "mechanics": [
+        "mana",
+        "manual_payment"
+      ],
+      "cards": [
+        {
+          "name": "Mind Stone",
+          "count": 1,
+          "engineClass": "mage.cards.m.MindStone",
+          "enginePrinting": {
+            "set": "BLC",
+            "number": "280"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanHand": [
+          "Mind Stone"
+        ],
+        "automaticPoolPayment": false,
+        "injectedMana": {
+          "G": 1,
+          "U": 1,
+          "R": 1
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "CastMindStone",
+        "Answer offered mana-G then mana-U responses",
+        "Resolve"
+      ],
+      "expectedPrompts": [
+        "play_mana:mana"
+      ],
+      "expectedNativeEffects": [
+        "Exactlytwo native mana responses; R1left; actualartifactonbattlefield"
+      ],
+      "expected": [
+        "Exactlytwo native mana responses; R1left; actualartifactonbattlefield"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": false,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C32 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C33",
+      "name": "Countering additional-discard spell never refunds cost",
+      "purpose": "Countering additional-discard spell never refunds cost",
+      "mechanics": [
+        "additional_cost",
+        "counter_spell"
+      ],
+      "cards": [
+        {
+          "name": "Mountain",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Mountain",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "274"
+          }
+        },
+        {
+          "name": "Tormenting Voice",
+          "count": 1,
+          "engineClass": "mage.cards.t.TormentingVoice",
+          "enginePrinting": {
+            "set": "AKH",
+            "number": "151"
+          }
+        },
+        {
+          "name": "Counterspell",
+          "count": 1,
+          "engineClass": "mage.cards.c.Counterspell",
+          "enginePrinting": {
+            "set": "MP2",
+            "number": "10"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanHand": [
+          "Mountain",
+          "Tormenting Voice",
+          "Counterspell"
+        ],
+        "injectedMana": {
+          "R": 2,
+          "U": 2
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "CastVoice; discard offeredMountain asadditionalcost",
+        "CastCounterspell targeting actualVoicestackUUID",
+        "ResolveCounterspell"
+      ],
+      "expectedPrompts": [
+        "pick_target"
+      ],
+      "expectedNativeEffects": [
+        "Mountainstaysgraveyard; Voicecountered; no draw; no costrefund; stackempty"
+      ],
+      "expected": [
+        "Mountainstaysgraveyard; Voicecountered; no draw; no costrefund; stackempty"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C33 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt"
+      ]
+    },
+    {
+      "id": "C34",
+      "name": "Angel threshold reached by simultaneous lifelink before lethal-damage SBA",
+      "purpose": "Angel threshold reached by simultaneous lifelink before lethal-damage SBA",
+      "mechanics": [
+        "life_replacement",
+        "conditional_boost",
+        "damage",
+        "state_based_actions"
+      ],
+      "cards": [
+        {
+          "name": "Angel of Vitality",
+          "count": 1,
+          "engineClass": "mage.cards.a.AngelOfVitality",
+          "enginePrinting": {
+            "set": "ANB",
+            "number": "1"
+          }
+        },
+        {
+          "name": "Vampire Nighthawk",
+          "count": 1,
+          "engineClass": "mage.cards.v.VampireNighthawk",
+          "enginePrinting": {
+            "set": "E01",
+            "number": "38"
+          }
+        },
+        {
+          "name": "Wind Drake",
+          "count": 1,
+          "engineClass": "mage.cards.w.WindDrake",
+          "enginePrinting": {
+            "set": "BRB",
+            "number": "98"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "opponentLife": 24,
+        "opponentBattlefield": [
+          "Angel of Vitality",
+          "Vampire Nighthawk"
+        ],
+        "humanBattlefield": [
+          "Wind Drake"
+        ],
+        "combat": {
+          "attackers": [
+            "Angel of Vitality",
+            "Vampire Nighthawk"
+          ],
+          "blockers": {
+            "Wind Drake": "Angel of Vitality"
+          }
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Run native regular combat damage with both attackers",
+        "Let lifelink/replacement and state-based actions execute"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Opponentlife27; defender18",
+        "Angel has2marked damage but survives as4/4 before SBA",
+        "Drake dies from2damage assigned before threshold changed"
+      ],
+      "expected": [
+        "Opponentlife27; defender18",
+        "Angel has2marked damage but survives as4/4 before SBA",
+        "Drake dies from2damage assigned before threshold changed"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C34 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesSource": "https://magic.wizards.com/en/news/feature/foundations-release-notes",
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt",
+        "https://magic.wizards.com/en/news/feature/foundations-release-notes"
+      ]
+    },
+    {
+      "id": "C35",
+      "name": "Losing life threshold makes previously nonlethal marked damage lethal",
+      "purpose": "Losing life threshold makes previously nonlethal marked damage lethal",
+      "mechanics": [
+        "life_replacement",
+        "conditional_boost",
+        "damage",
+        "state_based_actions"
+      ],
+      "cards": [
+        {
+          "name": "Angel of Vitality",
+          "count": 1,
+          "engineClass": "mage.cards.a.AngelOfVitality",
+          "enginePrinting": {
+            "set": "ANB",
+            "number": "1"
+          }
+        },
+        {
+          "name": "Shock",
+          "count": 1,
+          "engineClass": "mage.cards.s.Shock",
+          "enginePrinting": {
+            "set": "AER",
+            "number": "98"
+          }
+        },
+        {
+          "name": "Lightning Bolt",
+          "count": 1,
+          "engineClass": "mage.cards.l.LightningBolt",
+          "enginePrinting": {
+            "set": "ATH",
+            "number": "43"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanLife": 25,
+        "humanBattlefield": [
+          "Angel of Vitality"
+        ],
+        "humanHand": [
+          "Shock",
+          "Lightning Bolt"
+        ],
+        "injectedMana": {
+          "R": 2
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "CastShock on ownAngel and resolve",
+        "CastLightningBolt targeting self and resolve",
+        "Run native state-based actions"
+      ],
+      "expectedPrompts": [
+        "pick_target"
+      ],
+      "expectedNativeEffects": [
+        "Angel at25life survives damage2 as4/4",
+        "Life22 removesboost; old2marked nowlethal; Angel goesgraveyard"
+      ],
+      "expected": [
+        "Angel at25life survives damage2 as4/4",
+        "Life22 removesboost; old2marked nowlethal; Angel goesgraveyard"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C35 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesSource": "https://magic.wizards.com/en/news/feature/foundations-release-notes",
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt",
+        "https://magic.wizards.com/en/news/feature/foundations-release-notes"
+      ]
+    },
+    {
+      "id": "C36",
+      "name": "Large native counter/P-T values and temporary-effect cleanup",
+      "purpose": "Large native counter/P-T values and temporary-effect cleanup",
+      "mechanics": [
+        "large_values",
+        "counters",
+        "continuous_effects",
+        "duration_cleanup"
+      ],
+      "cards": [
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        },
+        {
+          "name": "Giant Growth",
+          "count": 1,
+          "engineClass": "mage.cards.g.GiantGrowth",
+          "enginePrinting": {
+            "set": "ATH",
+            "number": "55"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Grizzly Bears"
+        ],
+        "counters": {
+          "+1/+1": 1000000
+        },
+        "humanHand": [
+          "Giant Growth"
+        ],
+        "injectedMana": {
+          "G": 1
+        }
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event",
+        "Large counter addition deliberately permits up to2.1M fired native events within heap/RSS/time budget; this is a test resource budget, not a game limit"
+      ],
+      "actions": [
+        "Add exact aggregate native counters and applyeffects",
+        "Cast/resolve GiantGrowth using offered target",
+        "Project large livevalues",
+        "Run actualnative CleanupStep and reapplyeffects"
+      ],
+      "expectedPrompts": [
+        "pick_target"
+      ],
+      "expectedNativeEffects": [
+        "Beforeboost1000002/1000002; afterboost1000005/1000005",
+        "Nativecounterprojection exactly1000000, no token/cardentry limit applied",
+        "Cleanupremovesonlytemporary+3/+3, countersretained"
+      ],
+      "expected": [
+        "Beforeboost1000002/1000002; afterboost1000005/1000005",
+        "Nativecounterprojection exactly1000000, no token/cardentry limit applied",
+        "Cleanupremovesonlytemporary+3/+3, countersretained"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 2100000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C36 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt",
+        "https://magic.wizards.com/en/news/feature/foundations-release-notes"
+      ]
+    },
+    {
+      "id": "C37",
+      "name": "Characteristic-defining P/T responds to both graveyards",
+      "purpose": "Characteristic-defining P/T responds to both graveyards",
+      "mechanics": [
+        "characteristic_defining_ability",
+        "graveyard",
+        "zone_change",
+        "live_projection"
+      ],
+      "cards": [
+        {
+          "name": "Tarmogoyf",
+          "count": 1,
+          "engineClass": "mage.cards.t.Tarmogoyf",
+          "enginePrinting": {
+            "set": "PIP",
+            "number": "349"
+          }
+        },
+        {
+          "name": "Lightning Bolt",
+          "count": 1,
+          "engineClass": "mage.cards.l.LightningBolt",
+          "enginePrinting": {
+            "set": "ATH",
+            "number": "43"
+          }
+        },
+        {
+          "name": "Mountain",
+          "count": 1,
+          "engineClass": "mage.cards.basiclands.Mountain",
+          "enginePrinting": {
+            "set": "AFR",
+            "number": "274"
+          }
+        },
+        {
+          "name": "Grizzly Bears",
+          "count": 1,
+          "engineClass": "mage.cards.g.GrizzlyBears",
+          "enginePrinting": {
+            "set": "6ED",
+            "number": "236"
+          }
+        }
+      ],
+      "temporaryBaseLists": {
+        "duel": {
+          "format": "Modern",
+          "main": [
+            {
+              "name": "Plains",
+              "count": 60
+            }
+          ]
+        },
+        "commander": {
+          "format": "Commander",
+          "commander": [
+            {
+              "name": "Krenko, Mob Boss",
+              "count": 1
+            }
+          ],
+          "main": [
+            {
+              "name": "Mountain",
+              "count": 99
+            }
+          ]
+        }
+      },
+      "initialZones": {
+        "humanBattlefield": [
+          "Tarmogoyf"
+        ],
+        "humanGraveyard": [
+          "Lightning Bolt",
+          "Mountain"
+        ],
+        "opponentGraveyard": [
+          "Grizzly Bears"
+        ]
+      },
+      "preconditions": [
+        "Fresh isolated session with native loaded cards/player initialization",
+        "Initial zones/resources prepared through Game.cheat; does not assert production reachability",
+        "Previous setup triggers cleared only before tested native event"
+      ],
+      "actions": [
+        "Applynative CDA acrossbothgraveyards",
+        "Move opponentBear fromgraveyardtoexile natively",
+        "Reapplyeffects; compareoriginalprinting/livevalues"
+      ],
+      "expectedPrompts": [],
+      "expectedNativeEffects": [
+        "Threecardtypes produce live3/4",
+        "Removingonlycreaturetype updates live2/3",
+        "Original nativeprintingmetadataunchanged (XMageconstructor0/1 isnotOracleprinted*/1+*)"
+      ],
+      "expected": [
+        "Threecardtypes produce live3/4",
+        "Removingonlycreaturetype updates live2/3",
+        "Original nativeprintingmetadataunchanged (XMageconstructor0/1 isnotOracleprinted*/1+*)"
+      ],
+      "successCriteria": "Every explicit predeclared native state/choice assertion passes; no unknown prompt, dead GAME operation or external budget overrun",
+      "evidenceType": "deterministic_native",
+      "combined": true,
+      "repetitions": 1,
+      "fixtureClass": "love2gathering.CoreMechanicsFixture",
+      "fixtureSources": [
+        "bridge/tests/love2gathering/TriggerFixture.java",
+        "bridge/tests/love2gathering/ActionabilityFixture.java",
+        "bridge/tests/love2gathering/CoreMechanicsFixture.java"
+      ],
+      "budgets": {
+        "wallSeconds": 25,
+        "stepSeconds": 12,
+        "heapMiB": 768,
+        "rssBytes": 1258291200,
+        "acceptedActions": 100,
+        "attempts": 110,
+        "nativeObjects": 100,
+        "nativeEvents": 1000,
+        "projectionBytes": 8388608,
+        "logBytes": 8388608,
+        "outboxBytes": 8388608
+      },
+      "reproduce": "java -Xmx768m -cp <isolated-test-classes>:<fresh-bridge-jar>:<pinned-dependencies> love2gathering.CoreMechanicsFixture <repo-root> C37 <owned-run-dir>",
+      "evidence": {
+        "result": "result.json",
+        "trace": "trace.json",
+        "projection": "final-frame.json or perspective-N.json",
+        "prompt": "last-prompt.json",
+        "errors": "exception.txt",
+        "resources": "resource-samples.json",
+        "watchdog": "process.json and diagnostic-process.json"
+      },
+      "rulesReferences": [
+        "https://media.wizards.com/2026/downloads/MagicCompRules%2020261106.txt",
+        "https://magic.wizards.com/en/news/feature/foundations-release-notes"
+      ]
+    }
+  ]
+}

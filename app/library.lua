@@ -170,6 +170,27 @@ function Library.install(Model)
             else self.tokenError=err or'Token artwork could not be saved'end
         end);return true
     end
+    function Model:artworkCard(card)
+        -- These are native visual identities only. Never replace the host's
+        -- token status, live values or targetable object ID with a component.
+        local seen={}
+        while type(card)=='table'and card~=json.null do
+            if card.hidden or card.faceDown or card.metadataUnavailable or seen[card]then return nil end
+            seen[card]=true
+            local merged=card.mutate
+            if type(merged)=='table'and merged~=json.null then
+                if merged.topId==nil then return nil end
+                local top
+                for _,component in ipairs(merged.components or{})do
+                    if component.id==merged.topId then top=component;break end
+                end
+                if not top then return nil end
+                card=top
+            elseif(card.token or card.isToken)and type(card.copySourceCard)=='table'and card.copySourceCard~=json.null then
+                card=card.copySourceCard
+            else return card end
+        end
+    end
     function Model:resolveTokenCard(card)
         if not card or not(card.token or card.isToken)or card.hidden then return nil end
         self.tokenArtCache=self.tokenArtCache or{}
@@ -177,7 +198,9 @@ function Library.install(Model)
         if self.roomConnectionId then
             if self.room and self.room.config and self.room.config.kind~='draft'then deckId=self.roomDeckId end
         else deckId=self.activeDeckId or self.lastMatchDeckId end
-        local descriptor={name=card.name or card.displayName,type=card.type,type_line=card.type_line,power=card.power,toughness=card.toughness,colors=card.colors,printing=card.printing}
+        local template=type(card.tokenTemplate)=='table'and card.tokenTemplate~=json.null and card.tokenTemplate or nil
+        local printed=template and(template.printing or template)or card.printing
+        local descriptor={name=template and(template.name or template.displayName)or card.name or card.displayName,type=template and template.type or card.type,type_line=template and template.type_line or card.type_line,power=card.power,toughness=card.toughness,colors=card.colors,printing=printed}
         local nativeId=tostring(card.objectId or card.nativeId or card.id or descriptor.name)
         local key=tostring(deckId or'')..':'..nativeId..':'..json.encode(descriptor)
         local cached=self.tokenArtCache[key];local time=clock()
@@ -197,6 +220,7 @@ function Library.install(Model)
     local baseGetArt=Model.getArt
     if baseGetArt then function Model:getArt(card,force,kind)
         if not force and self.settings and self.settings.showCardArt==false then return nil end
+        card=self:artworkCard(card);if not card then return nil end
         if card and(card.token or card.isToken)and not card.tokenImageId then
             local resolved=self:resolveTokenCard(card);if not resolved then return nil end
             return baseGetArt(self,resolved,force,kind)

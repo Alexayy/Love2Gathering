@@ -70,8 +70,13 @@ function Model:update(dt)
         self.pollTimer=self.pollTimer-dt
         if self.pollTimer<=0 and not self.polling then
             self.pollTimer=.22;self.polling=true
+            self.pollRequest=(self.pollRequest or 0)+1;local request=self.pollRequest
+            local generation=self.api.routeGeneration
             self:request('engine','GET','/session/state',nil,function(data,err)
-                self.polling=false;if data then self:setGame(data) elseif err and not self.gameConnectionError then self.gameConnectionError=true;self:toast('Engine connection: '..err,true) end
+                if request~=self.pollRequest then return end
+                self.polling=false
+                if generation~=self.api.routeGeneration or self.gameBusy then return end
+                if data then self:setGame(data) elseif err and not self.gameConnectionError then self.gameConnectionError=true;self:toast('Engine connection: '..err,true) end
             end,true)
         end
     end
@@ -109,7 +114,7 @@ function Model:cardData(card)
         local data=copy(self.byName[name])
         -- Catalog IDs select images; native IDs select game objects. Keep both.
         data.objectId=card.id
-        for _,key in ipairs({'power','toughness','damage','counters','printing','currentRules','keywords','abilityIcons','permanent','ownerId','controllerId','token','isToken','colors','subtypes','tokenSourceId','tokenSourceName','attachedToId','attachedToPlayerId','attachmentIds','linkedExile','attacking','blocking'})do
+        for _,key in ipairs({'power','toughness','damage','counters','printing','currentRules','keywords','abilityIcons','permanent','ownerId','controllerId','token','isToken','colors','subtypes','tokenSourceId','tokenSourceName','tokenTemplate','copySourceCard','mutate','attachedToId','attachedToPlayerId','attachmentIds','linkedExile','attacking','blocking'})do
             if card[key]~=nil then data[key]=card[key]end
         end
         return data
@@ -303,6 +308,7 @@ function Model:startGame()
     if deck.format:lower()~=self.format:lower() then self:toast('Your deck must use the selected format',true);return end
     if self.replay then self:closeReplay() end
     self.gameBusy=true;self.answeredPrompt=nil;self.orderPrompt=nil;self.promptOrder={};self.actionBusy=false
+    if self.api.setNativeSession then self.api:setNativeSession(nil)end
     local body={format=deck.format,playerName=self.playerName,deck=deck,settings=self.settings,priority=self:priorityOptions(),startingSeatId=self.practiceStartingSeatId or'dice',recordingPort=self.api.catalogPort or tonumber(os.getenv('LOVE2GATHERING_CATALOG_PORT')) or 17370}
     body.profile=self:profileOptions();body.profile.name=body.playerName
     if count==1 then body.botDeck=bots[1].deck else body.bots=bots end
@@ -325,6 +331,7 @@ function Model:rematch()
     if not self:canRematch()then return false end
     if self.roomConnectionId then return self:roomMutation('/rematch',{})end
     self.gameBusy=true
+    if self.api.setNativeSession then self.api:setNativeSession(nil)end
     self:request('engine','POST','/session/start',copy(self.lastMatchRequest),function(data)
         self.gameBusy=false;if data then self:setGame(data);self.page='table'end
     end)
@@ -340,10 +347,13 @@ function Model:lobbyDeck(deck)
 end
 function Model:setGame(data)
     if self.game and data.gameId==self.game.gameId and data.revision and self.game.revision and data.revision<self.game.revision then return end
-    if self.game and data.gameId and self.game.gameId and data.gameId~=self.game.gameId then
-        self.answeredPrompt=nil;self.orderPrompt=nil;self.promptOrder={};self.actionBusy=false
+    if not self.game or data.gameId and self.game.gameId and data.gameId~=self.game.gameId then
+        self.answeredPrompt=nil;self.orderPrompt=nil;self.promptOrder={};self.actionBusy=false;self.concedePending=false
+        self.zoneView=nil;self.inspectCard=nil;self.confirmConcede=false
+        self.pollRequest=(self.pollRequest or 0)+1;self.polling=false
         self.priorityBusy=false;self.priorityRequest=(self.priorityRequest or 0)+1
     end
+    if self.api.setNativeSession then self.api:setNativeSession(data.gameId)end
     self.game=data;self.gameConnectionError=nil
     local prompt=data.prompt
     if type(prompt)=='table' and prompt~=json.null and self.orderPrompt~=prompt.id then
@@ -352,11 +362,18 @@ function Model:setGame(data)
     end
 end
 function Model:concede()
-    if self.replay then return end
-    self:request('engine','POST','/session/action',{type='concede',value=true},function(data) if data then self:setGame(data) end;self.pollTimer=0 end)
+    if self.replay or self.concedePending or not self.game or not self.game.gameId then return end
+    local gameId=self.game.gameId;local generation=self.api.routeGeneration
+    self.concedePending=true
+    self:request('engine','POST','/session/action',{type='concede',value=true,expectedGameId=gameId},function(data)
+        if not self.game or self.game.gameId~=gameId or generation~=self.api.routeGeneration then return end
+        self.concedePending=false
+        if data then self:setGame(data)end;self.pollTimer=0
+    end)
 end
 function Model:prompt()
-    if self.replay then return nil end
+    if self.replay or self.gameBusy then return nil end
+    if self.game and self.game.execution and self.game.execution.stopRequested then return nil end
     local p=self.game and self.game.prompt
     -- A control command can be acknowledged before the GAME thread replaces
     -- its old projection. That priority ID must not be submitted a second time.
@@ -366,7 +383,9 @@ end
 function Model:answer(kind,value)
     local p=self:prompt();if not p or self.actionBusy or self.priorityBusy then return end
     self.actionBusy=true;self.answeredPrompt=p.id
-    self:request('engine','POST','/session/action',{promptId=p.id,type=kind,value=value},function(data)
+    local gameId=self.game and self.game.gameId;local generation=self.api.routeGeneration
+    self:request('engine','POST','/session/action',{promptId=p.id,type=kind,value=value,expectedGameId=gameId},function(data)
+        if not self.game or self.game.gameId~=gameId or generation~=self.api.routeGeneration then return end
         self.actionBusy=false;if data then self:setGame(data) else self.answeredPrompt=nil end;self.pollTimer=0
     end)
 end

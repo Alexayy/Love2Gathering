@@ -1,0 +1,507 @@
+{
+  "schema": 1,
+  "scope": "Client evidence only. These parameterized rendering levels are not counted toward the native directed-mechanic scenario requirement.",
+  "cases": [
+    {
+      "id": "client-1-equal-stack0",
+      "evidenceType": "synthetic_rendering_fixture",
+      "purpose": "Measure parameterized exact-instance rendering and target access; these levels are not separate Magic mechanics",
+      "countsAsDistinctDirectedMechanicScenario": false,
+      "initialState": {
+        "players": 2,
+        "battlefieldObjects": 1,
+        "template": {
+          "name": "Rat",
+          "id": "token-{1..N}",
+          "power": "1",
+          "toughness": "1",
+          "colors": [
+            "B"
+          ],
+          "token": true
+        },
+        "prompt": {
+          "id": 1,
+          "type": "pick_target",
+          "actionable": [
+            "token-1"
+          ],
+          "choices": [
+            {
+              "id": "token-1",
+              "responseType": "uuid"
+            }
+          ]
+        }
+      },
+      "actions": [
+        "Encode/decode the controlled state",
+        "Measure actual L\u00d6VE layout/draw/hit-test",
+        "Open battlefield instance browser",
+        "Search the last exact object ID",
+        "Click its current native-offered UUID row",
+        "Deliver a delayed old callback after a replacement game opens"
+      ],
+      "expected": [
+        "Every individual rectangle exists",
+        "All objects remain in the searchable browser",
+        "Exactly the offered UUID is submitted once",
+        "Old callbacks preserve the replacement game latch"
+      ],
+      "budget": {
+        "wallSeconds": 60,
+        "cpuSeconds": 30,
+        "rssMiB": 768,
+        "diskMiB": 256,
+        "frameCpuP95Ms": 60
+      },
+      "reproduce": "python3 tests/mechanics_client.py --mode full --output /tmp/FRESH-CLIENT-RUN",
+      "evidence": "{output}/tokens-1/result.json"
+    },
+    {
+      "id": "client-10-equal-stack0",
+      "evidenceType": "synthetic_rendering_fixture",
+      "purpose": "Measure parameterized exact-instance rendering and target access; these levels are not separate Magic mechanics",
+      "countsAsDistinctDirectedMechanicScenario": false,
+      "initialState": {
+        "players": 2,
+        "battlefieldObjects": 10,
+        "template": {
+          "name": "Rat",
+          "id": "token-{1..N}",
+          "power": "1",
+          "toughness": "1",
+          "colors": [
+            "B"
+          ],
+          "token": true
+        },
+        "prompt": {
+          "id": 1,
+          "type": "pick_target",
+          "actionable": [
+            "token-10"
+          ],
+          "choices": [
+            {
+              "id": "token-10",
+              "responseType": "uuid"
+            }
+          ]
+        }
+      },
+      "actions": [
+        "Encode/decode the controlled state",
+        "Measure actual L\u00d6VE layout/draw/hit-test",
+        "Open battlefield instance browser",
+        "Search the last exact object ID",
+        "Click its current native-offered UUID row",
+        "Deliver a delayed old callback after a replacement game opens"
+      ],
+      "expected": [
+        "Every individual rectangle exists",
+        "All objects remain in the searchable browser",
+        "Exactly the offered UUID is submitted once",
+        "Old callbacks preserve the replacement game latch"
+      ],
+      "budget": {
+        "wallSeconds": 60,
+        "cpuSeconds": 30,
+        "rssMiB": 768,
+        "diskMiB": 256,
+        "frameCpuP95Ms": 60
+      },
+      "reproduce": "python3 tests/mechanics_client.py --mode full --output /tmp/FRESH-CLIENT-RUN",
+      "evidence": "{output}/tokens-10/result.json"
+    },
+    {
+      "id": "client-100-equal-stack0",
+      "evidenceType": "synthetic_rendering_fixture",
+      "purpose": "Measure parameterized exact-instance rendering and target access; these levels are not separate Magic mechanics",
+      "countsAsDistinctDirectedMechanicScenario": false,
+      "initialState": {
+        "players": 2,
+        "battlefieldObjects": 100,
+        "template": {
+          "name": "Rat",
+          "id": "token-{1..N}",
+          "power": "1",
+          "toughness": "1",
+          "colors": [
+            "B"
+          ],
+          "token": true
+        },
+        "prompt": {
+          "id": 1,
+          "type": "pick_target",
+          "actionable": [
+            "token-100"
+          ],
+          "choices": [
+            {
+              "id": "token-100",
+              "responseType": "uuid"
+            }
+          ]
+        }
+      },
+      "actions": [
+        "Encode/decode the controlled state",
+        "Measure actual L\u00d6VE layout/draw/hit-test",
+        "Open battlefield instance browser",
+        "Search the last exact object ID",
+        "Click its current native-offered UUID row",
+        "Deliver a delayed old callback after a replacement game opens"
+      ],
+      "expected": [
+        "Every individual rectangle exists",
+        "All objects remain in the searchable browser",
+        "Exactly the offered UUID is submitted once",
+        "Old callbacks preserve the replacement game latch"
+      ],
+      "budget": {
+        "wallSeconds": 60,
+        "cpuSeconds": 30,
+        "rssMiB": 768,
+        "diskMiB": 256,
+        "frameCpuP95Ms": 60
+      },
+      "reproduce": "python3 tests/mechanics_client.py --mode full --output /tmp/FRESH-CLIENT-RUN",
+      "evidence": "{output}/tokens-100/result.json"
+    },
+    {
+      "id": "client-500-equal-stack0",
+      "evidenceType": "synthetic_rendering_fixture",
+      "purpose": "Measure parameterized exact-instance rendering and target access; these levels are not separate Magic mechanics",
+      "countsAsDistinctDirectedMechanicScenario": false,
+      "initialState": {
+        "players": 2,
+        "battlefieldObjects": 500,
+        "template": {
+          "name": "Rat",
+          "id": "token-{1..N}",
+          "power": "1",
+          "toughness": "1",
+          "colors": [
+            "B"
+          ],
+          "token": true
+        },
+        "prompt": {
+          "id": 1,
+          "type": "pick_target",
+          "actionable": [
+            "token-500"
+          ],
+          "choices": [
+            {
+              "id": "token-500",
+              "responseType": "uuid"
+            }
+          ]
+        }
+      },
+      "actions": [
+        "Encode/decode the controlled state",
+        "Measure actual L\u00d6VE layout/draw/hit-test",
+        "Open battlefield instance browser",
+        "Search the last exact object ID",
+        "Click its current native-offered UUID row",
+        "Deliver a delayed old callback after a replacement game opens"
+      ],
+      "expected": [
+        "Every individual rectangle exists",
+        "All objects remain in the searchable browser",
+        "Exactly the offered UUID is submitted once",
+        "Old callbacks preserve the replacement game latch"
+      ],
+      "budget": {
+        "wallSeconds": 60,
+        "cpuSeconds": 30,
+        "rssMiB": 768,
+        "diskMiB": 256,
+        "frameCpuP95Ms": 60
+      },
+      "reproduce": "python3 tests/mechanics_client.py --mode full --output /tmp/FRESH-CLIENT-RUN",
+      "evidence": "{output}/tokens-500/result.json"
+    },
+    {
+      "id": "client-1000-equal-stack0",
+      "evidenceType": "synthetic_rendering_fixture",
+      "purpose": "Measure parameterized exact-instance rendering and target access; these levels are not separate Magic mechanics",
+      "countsAsDistinctDirectedMechanicScenario": false,
+      "initialState": {
+        "players": 2,
+        "battlefieldObjects": 1000,
+        "template": {
+          "name": "Rat",
+          "id": "token-{1..N}",
+          "power": "1",
+          "toughness": "1",
+          "colors": [
+            "B"
+          ],
+          "token": true
+        },
+        "prompt": {
+          "id": 1,
+          "type": "pick_target",
+          "actionable": [
+            "token-1000"
+          ],
+          "choices": [
+            {
+              "id": "token-1000",
+              "responseType": "uuid"
+            }
+          ]
+        }
+      },
+      "actions": [
+        "Encode/decode the controlled state",
+        "Measure actual L\u00d6VE layout/draw/hit-test",
+        "Open battlefield instance browser",
+        "Search the last exact object ID",
+        "Click its current native-offered UUID row",
+        "Deliver a delayed old callback after a replacement game opens"
+      ],
+      "expected": [
+        "Every individual rectangle exists",
+        "All objects remain in the searchable browser",
+        "Exactly the offered UUID is submitted once",
+        "Old callbacks preserve the replacement game latch"
+      ],
+      "budget": {
+        "wallSeconds": 60,
+        "cpuSeconds": 30,
+        "rssMiB": 768,
+        "diskMiB": 256,
+        "frameCpuP95Ms": 60
+      },
+      "reproduce": "python3 tests/mechanics_client.py --mode full --output /tmp/FRESH-CLIENT-RUN",
+      "evidence": "{output}/tokens-1000/result.json"
+    },
+    {
+      "id": "client-5000-equal-stack0",
+      "evidenceType": "synthetic_rendering_fixture",
+      "purpose": "Measure parameterized exact-instance rendering and target access; these levels are not separate Magic mechanics",
+      "countsAsDistinctDirectedMechanicScenario": false,
+      "initialState": {
+        "players": 2,
+        "battlefieldObjects": 5000,
+        "template": {
+          "name": "Rat",
+          "id": "token-{1..N}",
+          "power": "1",
+          "toughness": "1",
+          "colors": [
+            "B"
+          ],
+          "token": true
+        },
+        "prompt": {
+          "id": 1,
+          "type": "pick_target",
+          "actionable": [
+            "token-5000"
+          ],
+          "choices": [
+            {
+              "id": "token-5000",
+              "responseType": "uuid"
+            }
+          ]
+        }
+      },
+      "actions": [
+        "Encode/decode the controlled state",
+        "Measure actual L\u00d6VE layout/draw/hit-test",
+        "Open battlefield instance browser",
+        "Search the last exact object ID",
+        "Click its current native-offered UUID row",
+        "Deliver a delayed old callback after a replacement game opens"
+      ],
+      "expected": [
+        "Every individual rectangle exists",
+        "All objects remain in the searchable browser",
+        "Exactly the offered UUID is submitted once",
+        "Old callbacks preserve the replacement game latch"
+      ],
+      "budget": {
+        "wallSeconds": 60,
+        "cpuSeconds": 30,
+        "rssMiB": 768,
+        "diskMiB": 256,
+        "frameCpuP95Ms": 60
+      },
+      "reproduce": "python3 tests/mechanics_client.py --mode stress --output /tmp/FRESH-CLIENT-RUN",
+      "evidence": "{output}/tokens-5000/result.json"
+    },
+    {
+      "id": "client-model-session-and-response-contracts",
+      "evidenceType": "client_model_transport",
+      "purpose": "Preserve offered values and distinguish stale/new game openings",
+      "initialState": "Exact mock projections and pending callback identities in tests/mechanics_client_model.lua",
+      "actions": [
+        "Present an empty actionable array",
+        "Enrich current/printing values",
+        "Submit boolean false and each offered response category",
+        "Adopt a replacement game with reused prompt ID",
+        "Deliver old failure/success/concession callbacks",
+        "Present explicit stop-request metadata"
+      ],
+      "expected": [
+        "No visibility-derived actionability",
+        "No native value rewriting",
+        "No duplicate pending action",
+        "No stale game adoption or latch clearing",
+        "No inferred thread termination or game outcome"
+      ],
+      "reproduce": "python3 tests/mechanics_client.py --mode smoke --only model --output /tmp/FRESH-MODEL-RUN"
+    },
+    {
+      "id": "client-http-delayed-state-and-seat-controls",
+      "evidenceType": "client_transport",
+      "purpose": "Keep concession independent of a blocked ordinary request without changing action order or room ownership",
+      "initialState": "Owned HTTP fault server: state/action delay1.5s, refused/invalid/dropped responses; no native game",
+      "actions": [
+        "Queue a slow state response then request concession",
+        "Change practice native game ID before an old state response",
+        "Concede through authenticated-shaped room route",
+        "Attempt practice stop while in room",
+        "Queue a slow ordinary action then request concession",
+        "Drop response after synthetic HTTP acceptance"
+      ],
+      "expected": [
+        "Control latency under0.7s before ordinary response",
+        "Old-generation response rejected",
+        "Room route retains expected game and practice stop refused",
+        "No automatic retry of uncertain accepted action"
+      ],
+      "reproduce": "python3 tests/mechanics_client.py --mode smoke --only transport --output /tmp/FRESH-TRANSPORT-RUN"
+    },
+    {
+      "id": "client-1000-varied-stack0",
+      "evidenceType": "synthetic_rendering_fixture",
+      "purpose": "Preserve independent P/T, counters, tapped, damage, colors and abilities through crowded rendering",
+      "initialState": "1000 exact synthetic object IDs; values determined by explicit modulo fixture fields, not Magic rules",
+      "actions": [
+        "Render/measure every object",
+        "Inspect/search and select the last offered instance"
+      ],
+      "expected": [
+        "Live values come from each projected object",
+        "No object cap or identity grouping"
+      ],
+      "reproduce": "python3 tests/mechanics_client.py --mode full --only tokens-1000-varied --output /tmp/FRESH-VARIED-RUN"
+    },
+    {
+      "id": "client-1000-churn-stack0",
+      "evidenceType": "synthetic_rendering_fixture",
+      "purpose": "Release historical animation poses while retaining all current objects",
+      "initialState": "1000 projected objects replaced by new IDs in20waves",
+      "actions": [
+        "Adopt20distinct1000-object fields",
+        "Draw each wave",
+        "Clear field and draw grace frames"
+      ],
+      "expected": [
+        "Retained pose count no more than3currentfields",
+        "No poses after clear; no native object cap"
+      ],
+      "reproduce": "python3 tests/mechanics_client.py --mode full --only tokens-1000-churn --output /tmp/FRESH-CHURN-RUN"
+    },
+    {
+      "id": "client-1000-varied-stack1000",
+      "evidenceType": "synthetic_rendering_fixture",
+      "purpose": "Combine crowded board, long stack and readable log workloads",
+      "initialState": {
+        "battlefieldObjects": 1000,
+        "stackObjects": 1000,
+        "logEntries": 80,
+        "realNativeExecution": false
+      },
+      "actions": [
+        "Render and measure actual UI with stack/log open",
+        "Retain every native-shaped card ID"
+      ],
+      "expected": [
+        "No object or stack mutation",
+        "Bounded raster caches and no hang under configured budgets"
+      ],
+      "reproduce": "python3 tests/mechanics_client.py --mode full --only stack-1000 --output /tmp/FRESH-STACK-RUN"
+    },
+    {
+      "id": "client-10-mutate-stack0",
+      "evidenceType": "synthetic_rendering_fixture",
+      "purpose": "Inspect supplied merged components independently of host current values",
+      "initialState": "Gemrazer-shaped host current5/5, one+1/+1 counter, original Rat1/1 component and Gemrazer4/4 printing; controlled presentation only",
+      "actions": [
+        "Run exact native-offered prompt controls",
+        "Open merged host details",
+        "Choose top component printing"
+      ],
+      "expected": [
+        "Host remains one permanent",
+        "Current5/5 and Printed4/4 stay distinct",
+        "No target/action for a component"
+      ],
+      "reproduce": "python3 tests/mechanics_client.py --mode full --only mutate-inspection --output /tmp/FRESH-MUTATE-UI-RUN"
+    },
+    {
+      "id": "client-native-projection",
+      "evidenceType": "native_projection_client_render",
+      "purpose": "Render an independently captured actual native projection without relabeling it as native execution in the client",
+      "initialState": "Exact JSON snapshot supplied with --native, including all native object IDs and original/live metadata",
+      "actions": [
+        "Load captured projection",
+        "Wait for legitimate opening-roll overlay to finish",
+        "Measure and capture battlefield",
+        "Inspect native mutate components if present"
+      ],
+      "expected": [
+        "Every native battlefield ID remains represented",
+        "No native actions or outcome invented by renderer"
+      ],
+      "reproduce": "python3 tests/mechanics_client.py --mode full --only native-projection --native /tmp/OWNED-NATIVE-PROJECTION.json --output /tmp/FRESH-NATIVE-UI-RUN"
+    },
+    {
+      "id": "client-watchdog-owned-process",
+      "evidenceType": "harness_selftest",
+      "purpose": "Prove external watchdog owns and removes only its own stuck child, then continues",
+      "actions": [
+        "Spawn owned sleeping child",
+        "Exceed0.2s wall budget",
+        "TERM thenKILL only the owned process group if necessary",
+        "Spawn following successful child"
+      ],
+      "expected": [
+        "Termination confirmed",
+        "Next child exits0"
+      ],
+      "reproduce": "Every client runner invocation includes this self-test"
+    },
+    {
+      "id": "client-native-visual-artwork-routing",
+      "evidenceType": "client_artwork_transport_and_decode",
+      "purpose": "Follow native top-component/copy-source illustration identity while retaining host target ID, token flag and live values",
+      "initialState": "Controlled native-shaped merged/copy/token-template projections; optional captured native merged/copy hosts; owned catalog metadata and generated PNG pixels",
+      "actions": [
+        "Request exact native visual-source metadata and local-only image path",
+        "Decode real generated PNG bytes through L\u00d6VE Artwork.image",
+        "Inspect shared artwork status and unchanged native host",
+        "Reject hidden or unavailable top metadata without guessing another component"
+      ],
+      "expected": [
+        "Native merged/copied source selects its exact printing",
+        "Native host token/id/live values remain unchanged",
+        "Ordinary token uses original tokenTemplate and preference-selected token artwork",
+        "No downloads or inferred native card provenance"
+      ],
+      "countsAsDistinctDirectedMechanicScenario": false,
+      "reproduce": "python3 tests/mechanics_client.py --mode full --only artwork --native /tmp/OWNED-NATIVE-FRAME.json --output /tmp/FRESH-ARTWORK-RUN",
+      "evidence": "{output}/artwork/result.json"
+    }
+  ]
+}

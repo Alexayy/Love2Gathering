@@ -42,7 +42,7 @@ function Table.field(r,player,x,y,w,rowH,foe)
         local rows=Layout.cardRow(#cards,x,rowY,w,cardW,cardH,mana)
         for i,card in ipairs(cards) do local box=rows[i];r:drawPermanent(card,box.x,box.y,box.w,box.h,{kind='permanent',animate=true}) end
         local first=rows[1];r.assets:iconSymbol(mana and 'land' or 'creature',first.x-28,rowY+cardH/2-10,20,C.muted)
-        r:hit({x=first.x-30,y=rowY+cardH/2-15,w=25,h=30,tooltip=mana and 'Mana sources' or 'Battlefield'})
+        r:hit({x=first.x-30,y=rowY+cardH/2-15,w=25,h=30,kind='zone',cards=cards,label=(player.name or'Player')..(mana and' · Mana sources'or' · Battlefield'),tooltip=(mana and'Mana sources'or'Battlefield')..' · inspect every permanent, including overlapping cards'})
     end
     if foe then
         drawRow(lands,landH,y,true)

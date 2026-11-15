@@ -146,6 +146,7 @@ function Renderer:drawCard(card,x,y,w,h,options)
     if options.animate and card.id then
         local key=(self.worldTransform and 'world:' or 'screen:')..card.id;local target={x=x,y=y,w=w,h=h,angle=angle};local pose=self.poses[key]
         if not pose then pose={x=x,y=y+38,w=w,h=h,angle=angle};self.poses[key]=pose end
+        pose.seenFrame=self.poseFrame or 0
         local ease=(self.model.settings.reducedMotion or self.model.settings.animations==false) and 1 or 1-math.exp(-self.dt*15)
         for k,v in pairs(target) do pose[k]=pose[k]+(v-pose[k])*ease end
         x,y,w,h,angle=pose.x,pose.y,pose.w,pose.h,pose.angle
@@ -350,6 +351,7 @@ function Renderer:drawToasts(w,h)
     end
 end
 function Renderer:draw()
+    self.poseFrame=(self.poseFrame or 0)+1
     self.previousCardRects=self.cardRects;self.previousPlayerRects=self.playerRects
     self.hits={};self.cardRects={};self.multiplayerView=nil;Board.prepare(self);local w,h=Layout.dimensions();rect(0,0,w,h,C.bg,0)
     if self.assets.background then self.assets:background(w,h,self.model.settings)end
@@ -358,6 +360,9 @@ function Renderer:draw()
     elseif self.model.page=='builder' then self:drawBuilder(w,h)
     elseif self.model.page=='table' then self:drawTable(w,h)end
     Board.links(self);require('app.storage').drawProgress(self,w,h)
+    -- Positions are a presentation cache, not an archive of every native
+    -- object ever created. Keep current poses and a short transition grace.
+    for key,pose in pairs(self.poses)do if(self.poseFrame-(pose.seenFrame or 0))>2 then self.poses[key]=nil end end
 end
 function Renderer:mousemoved(x,y)
     if self.builderResize and(self.model.page~='builder'or self.model.settings.builderLayout~='Simplified'or self:inputBlocked())then self.builderResize=nil end

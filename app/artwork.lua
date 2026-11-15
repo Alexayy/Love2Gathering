@@ -48,6 +48,7 @@ function Artwork.install(Model)
         end,true)
     end
     function Model:artworkStatus(card,kind)
+        if self.artworkCard then card=self:artworkCard(card);if not card then return'catalog'end end
         if card and(card.token or card.isToken)and not card.tokenImageId and self.resolveTokenCard then
             card=self:resolveTokenCard(card);if not card then return'catalog'end
         end
