@@ -175,7 +175,9 @@ Flatpak still uses sandbox-managed paths for saves and cache.
 ## Windows x64
 
 Run `{prefix}-windows-x64-setup.exe` and choose the installation folder. It bundles
-LÖVE, Python and Java, and adds Start menu shortcuts. Windows builds are unsigned;
+LÖVE, Python, Java and a private Mesa software OpenGL fallback, and adds Start menu shortcuts.
+The launcher uses the Windows driver when compatible and otherwise renders on
+the CPU; no dedicated GPU or system driver installation is required. Windows builds are unsigned;
 Windows may display its normal publisher prompt. A native Windows gameplay test
 is separate from Linux cross-build and package validation.
 
@@ -227,7 +229,7 @@ def prepare(dist: Path, version: str, tag: str, commit: str, metadata_report: Pa
         raise ReleaseError('Unexpected Flatpak installation helper')
     runtime_paths = [dist / 'windows-runtime-provenance.json', dist / 'flatpak-native-provenance.json']
     windows, flatpak = (read_json(path) for path in runtime_paths)
-    for component in ('love', 'python', 'java'):
+    for component in ('love', 'python', 'java', 'mesa'):
         value = windows.get(component, {})
         if not isinstance(value, dict) or not re.fullmatch(r'[a-f0-9]{64}', str(value.get('sha256', ''))):
             raise ReleaseError('Incomplete Windows runtime provenance')

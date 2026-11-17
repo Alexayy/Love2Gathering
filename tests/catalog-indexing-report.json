@@ -1,0 +1,89 @@
+{
+  "passed": true,
+  "verifiedDate": "2026-11-17",
+  "scope": "Real current gzip metadata cold index, owned ThreadingHTTPServer /health polling and /cards pagination, ready-index reuse and new-card/face-alias lookup. Temporary catalog and user storage only; no user data, images or engine rules changed. Actual startup rendering is recorded separately in startup-ui-report.json.",
+  "source": {
+    "format": "jsonl.gz",
+    "compressedBytes": 82619809,
+    "compressedSha256": "4044420d947a5cd506ced7ace0ab6448163fdb12f1edcbe12ec1e648583ee75e",
+    "uncompressedBytes": 656621303,
+    "uncompressedSha256": "271185c794ec19ae11bf844c7c582988d90b536e9793c616f060fede82ad0b13",
+    "sourcePreserved": true,
+    "inputEntries": 120139
+  },
+  "method": {
+    "baselineCommit": "0c797b1db53540c99a8739230818646f195544c5",
+    "baselineSource": "service/*.py exported before changes",
+    "executionOrder": [
+      "updated",
+      "baseline"
+    ],
+    "samplesPerRevision": 1,
+    "healthPollSeconds": 0.2,
+    "timingWindow": "Background Catalog.ensure start through observed ready HTTP response; source hashing and final count verification are outside the window.",
+    "limits": "Sequential local Linux host runs with existing OS caches and other project tests; no physical cold-disk, Fedora VM, Windows or Flatpak runtime speed claim."
+  },
+  "comparison": {
+    "sameSourceSha256": true,
+    "sameTableCounts": true,
+    "baseline": {
+      "coldSeconds": 69.647,
+      "reuseSeconds": 0.0021,
+      "databaseBytes": 960679936,
+      "firstInputUpdateSeconds": 4.136,
+      "publishedInputUpdates": 12,
+      "largestObservedInputUpdateGapSeconds": 6.359,
+      "maxHealthSeconds": 0.025
+    },
+    "updated": {
+      "coldSeconds": 51.531,
+      "reuseSeconds": 0.0016,
+      "databaseBytes": 955019264,
+      "firstInputUpdateSeconds": 0.059,
+      "publishedReadUpdates": 69,
+      "largestObservedReadUpdateGapSeconds": 0.65,
+      "maxHealthSeconds": 0.0585,
+      "searchPreparationObservedFromSeconds": 34.641,
+      "searchPreparationElapsedHeartbeat": true,
+      "searchIndexesComplete": 14
+    },
+    "observedTimeReductionPercent": 26.0
+  },
+  "tableCounts": {
+    "cards": 38842,
+    "card_sets": 117479,
+    "aliases": 4178,
+    "gallery": 124251,
+    "token_images": 3445,
+    "token_links": 9904
+  },
+  "newCardCatalogCoverage": {
+    "required": 34,
+    "resolvedIncludingFaceAliases": 34,
+    "missing": [],
+    "faceAlias": {
+      "name": "Soundwave, Sonic Spy",
+      "resolvedCardName": "Soundwave, Sonic Spy // Soundwave, Superior Captain"
+    }
+  },
+  "regressions": {
+    "focusedBackendTests": 6,
+    "sharedProcessSingleBuildTest": 1,
+    "fullServiceSuite": {
+      "passed": 283,
+      "seconds": 102.205,
+      "note": "Includes first five new indexing tests; sixth actual-lock heartbeat test passed in the final focused six-test run."
+    },
+    "startupUiChecks": 25,
+    "model": "tests/catalog_progress.lua"
+  },
+  "sourceSha256": {
+    "service/catalog.py": "3cd3d4d3ee88f11df1354d70b890e4a9c62caad2a35f0b6ac53adb50b187bb3c",
+    "service/gallery_catalog.py": "4a75eacdb59dc01b4a71d72fcd9f41f746f32cdecc8ce4163284c729253fd7d5",
+    "service/tokens.py": "a531d15ba4a1c421bb0920c308865ec2f8130ecc0898d0296560e6ff1e32c72d",
+    "service/tests/test_catalog_indexing.py": "87ae44c0a9b4b174dec428580b4e36493fce292d83d3a9d464b28b26feceef29",
+    "app/startup.lua": "08b7719169d047b4782d19d4c6a6eaa266f24a84d09bc6545517463c177f0697",
+    "tests/catalog_progress.lua": "2d029b574c3c236bbab56f8d48e94a0d37e0eeb13ccc1e36ebe5ac2b6be90a54",
+    "tests/startup_ui.lua": "c56037ad69559f38b8ef97b78c70c355d8d35ecb5b9678dfb6595ff5f2c58537"
+  }
+}

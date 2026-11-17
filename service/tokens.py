@@ -6,6 +6,11 @@ import secrets
 from replays import encode, now
 
 MODES = ('default', 'selected', 'randomSelected', 'randomAll')
+TOKEN_INDEXES = (
+    'CREATE INDEX token_names ON token_images(name COLLATE NOCASE,id)',
+    'CREATE INDEX token_printings ON token_images(printing_id)',
+    'CREATE INDEX token_oracles ON token_images(oracle_id)',
+)
 
 
 def token_name(value):
@@ -36,12 +41,12 @@ def public_token(item):
 
 class TokenCatalog:
     @staticmethod
-    def create_tokens(c):
+    def create_tokens(c, *, indexes=True):
         c.executescript('''CREATE TABLE token_images(id TEXT PRIMARY KEY,printing_id TEXT NOT NULL,oracle_id TEXT NOT NULL,face INTEGER NOT NULL,name TEXT NOT NULL,type_line TEXT NOT NULL,power TEXT,toughness TEXT,colors TEXT NOT NULL,payload TEXT NOT NULL);
-            CREATE INDEX token_names ON token_images(name COLLATE NOCASE,id);
-            CREATE INDEX token_printings ON token_images(printing_id);
-            CREATE INDEX token_oracles ON token_images(oracle_id);
             CREATE TABLE token_links(parent_name TEXT NOT NULL COLLATE NOCASE,printing_id TEXT NOT NULL,PRIMARY KEY(parent_name,printing_id));''')
+        if indexes:
+            for statement in TOKEN_INDEXES:
+                c.execute(statement)
 
     @staticmethod
     def index_tokens(c, raw):

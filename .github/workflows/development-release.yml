@@ -84,7 +84,7 @@ jobs:
         if: steps.published.outputs.already_published != 'true'
         run: |
           sudo apt-get update
-          sudo apt-get install --yes --no-install-recommends python3 python3-pil python3-yaml rpm nsis love desktop-file-utils dbus-daemon libglib2.0-bin xz-utils
+          sudo apt-get install --yes --no-install-recommends python3 python3-pil python3-yaml rpm nsis love desktop-file-utils dbus-daemon libglib2.0-bin xz-utils p7zip-full
           mkdir -p build/ci/reports
 
       - name: Check services, publish guards and installer helpers
@@ -97,6 +97,8 @@ jobs:
           python3 scripts/ci/test_promote_latest.py -v 2>&1 | tee build/ci/reports/latest-promotion.log
           python3 scripts/ci/test_workflow.py -v 2>&1 | tee build/ci/reports/workflow-tests.log
           python3 packaging/test_python_dependencies.py -v 2>&1 | tee build/ci/reports/python-dependencies.log
+          python3 packaging/test_payload.py -v 2>&1 | tee build/ci/reports/payload-permissions.log
+          python3 packaging/windows/test_graphics.py -v 2>&1 | tee build/ci/reports/windows-graphics.log
           python3 packaging/flatpak/test_build.py -v 2>&1 | tee build/ci/reports/flatpak-builder.log
           dbus-run-session -- python3 packaging/linux/test_installer.py -v 2>&1 | tee build/ci/reports/linux-installer.log
           dbus-run-session -- python3 packaging/flatpak/test_installer.py -v 2>&1 | tee build/ci/reports/flatpak-installer.log

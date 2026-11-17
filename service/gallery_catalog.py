@@ -5,6 +5,12 @@ from artists import artist_links
 from search_text import words, register_search
 
 IMAGE_KINDS = ("normal", "large", "art_crop")
+GALLERY_INDEXES = (
+    "CREATE INDEX gallery_name ON gallery(name COLLATE NOCASE,id)",
+    "CREATE INDEX gallery_artist ON gallery(artist COLLATE NOCASE,name COLLATE NOCASE,id)",
+    "CREATE INDEX gallery_set ON gallery(set_code,lang,name COLLATE NOCASE,id)",
+    "CREATE INDEX gallery_variant ON gallery(variant,lang,name COLLATE NOCASE,id)",
+)
 
 
 def images(value):
@@ -13,18 +19,17 @@ def images(value):
 
 class GalleryCatalog:
     @staticmethod
-    def create_gallery(connection):
+    def create_gallery(connection, *, indexes=True):
         connection.executescript("""
             CREATE TABLE gallery(id TEXT PRIMARY KEY,printing_id TEXT NOT NULL,
                 face INTEGER NOT NULL,oracle_id TEXT NOT NULL,name TEXT NOT NULL,
                 artist TEXT NOT NULL,set_code TEXT NOT NULL,lang TEXT NOT NULL,
                 year TEXT NOT NULL,variant TEXT NOT NULL,search TEXT NOT NULL,payload TEXT NOT NULL);
             CREATE UNIQUE INDEX gallery_printing_face ON gallery(printing_id,face);
-            CREATE INDEX gallery_name ON gallery(name COLLATE NOCASE,id);
-            CREATE INDEX gallery_artist ON gallery(artist COLLATE NOCASE,name COLLATE NOCASE,id);
-            CREATE INDEX gallery_set ON gallery(set_code,lang,name COLLATE NOCASE,id);
-            CREATE INDEX gallery_variant ON gallery(variant,lang,name COLLATE NOCASE,id);
         """)
+        if indexes:
+            for statement in GALLERY_INDEXES:
+                connection.execute(statement)
 
     @staticmethod
     def index_gallery(connection, raw):

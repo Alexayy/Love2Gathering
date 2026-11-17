@@ -2,6 +2,21 @@
 local json=require('lib.json')
 local Startup={};Startup.__index=Startup
 local labels={dependencies='Dependencies',storage='Database and image cache',version='Installed version',assets='Resources',catalog='Card catalog',build='XMage build',bridge='XMage bridge',rooms='Private rooms',modules='Client modules',graphics='Graphics and fonts',artwork='Local opening artwork',audio='Sound resources',preferences='Saved theme, profile and library',ready='Services ready'}
+function Startup.catalogMessage(index)
+    index=index or{}
+    local seconds=tonumber(index.seconds)
+    local elapsed=seconds and seconds>=1 and' · '..math.floor(seconds)..'s'or''
+    if index.phase=='checking'then return'Checking the existing local card index'end
+    if index.state=='waiting'or index.phase=='waiting'then return'Waiting for another local card index to finish'..elapsed end
+    if index.phase=='indexes'then
+        return'Preparing local card and artwork search · '..tostring(index.indexesDone or 0)..' / '..tostring(index.indexesTotal or 0)..elapsed
+    end
+    local text='Reading local card metadata'
+    local size,read=tonumber(index.totalBytes),tonumber(index.bytesRead)
+    if size and size>0 and read then text=text..' · '..math.floor(math.max(0,math.min(.99,read/size))*100)..'%'end
+    if tonumber(index.lines)and tonumber(index.lines)>0 then text=text..' · '..tostring(index.lines)..' entries'end
+    return text..' · '..tostring(index.cards or 0)..' cards'
+end
 function Startup.new(model,renderer,preferences)
     local modules={}
     for _,name in ipairs(love.filesystem.getDirectoryItems('app'))do if name:match('%.lua$')and name~='http_worker.lua'and name~='startup.lua'then modules[#modules+1]='app.'..name:gsub('%.lua$','')end end
@@ -122,6 +137,7 @@ function Startup:update(dt)
         end
     end
     local catalog=self.catalog;local engine=self.engine;local room=self.room
+    if catalog and catalog.ready then self:check('catalog','ready','Local card metadata is ready')end
     if catalog and catalog.ready and self.errorKind=='catalog'then self.error=nil;self.errorKind=nil;self.allowOffline=false end
     if self.phase=='services'and catalog and catalog.ready and engine and engine.engine=='XMage'and room and(room.status=='ok'or room.ok)and self.personalizationReady then
         self.m.catalogHealth=catalog;self.m.engineHealth=engine
@@ -129,8 +145,8 @@ function Startup:update(dt)
     elseif catalog and catalog.index and catalog.index.state=='error'then self.error=catalog.index.error or'Card metadata index failed';self.errorKind='catalog';self.allowOffline=true
     elseif catalog and self.time>8 and not self.path then self.message='Some local services are unavailable. The saved library can still be opened.';self.allowOffline=true
     elseif self.time>30 and not catalog then self.message='Waiting for the local catalog. Start this client with run.sh.'
+    elseif catalog and not catalog.ready then self.message=Startup.catalogMessage(catalog.index);self:check('catalog','loading',self.message)
     elseif self.hydration and not self.personalizationReady then self.message=self.hydrationError or self.handoffMessage or self.hydration.message or'Loading saved theme, profile and library'
-    elseif catalog and not catalog.ready then self.message='Indexing local card metadata · '..tostring((catalog.index or{}).cards or 0)..' cards'
     else self.message='Checking catalog, XMage bridge and private rooms'end
 end
 function Startup:progress()

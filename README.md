@@ -6,7 +6,7 @@ A LÖVE desktop client with Slab controls, a 2D Magic table and a fanned hand. *
 
 ## Installers
 
-Release builds include DEB, relocatable RPM, Flatpak, a Windows setup executable and a Linux installer with a folder picker. See [installation and build instructions](packaging/README.md) for custom locations such as `/mnt/Games/Love2Gathering`, menu shortcuts, dependencies and uninstall behavior. Saves and image caches remain separate from the application folder.
+Release builds include DEB, relocatable RPM, Flatpak, a Windows setup executable and a Linux installer with a folder picker. Windows packages check OpenGL before opening the desktop and automatically use a bundled CPU renderer when the Windows driver is insufficient; a dedicated graphics card is not required. See [installation and build instructions](packaging/README.md) for custom locations such as `/mnt/Games/Love2Gathering`, menu shortcuts, dependencies and uninstall behavior. Saves and image caches remain separate from the application folder.
 
 Pushes to `development` build the installers and publish a `DEV-<version>-<attempt>-<revision>` prerelease. Pushes to `master` publish a normal `v<version>` release. Both use [Releases](https://github.com/Alexayy/Love2Gathering/releases), with the exact version/revision embedded in About. Use `bash scripts/push-development.sh` after committing to check the outgoing XMage pin and push only the parent branch. The helper leaves the engine submodule untouched; [CI and publishing details](packaging/README.md#build-again) describe the checks and reports. Releases whose workflow files differ from the default branch may need the optional `RELEASE_TOKEN` secret; [token setup](packaging/README.md#build-again) explains the GitHub permission requirement.
 
@@ -24,7 +24,7 @@ Install **Java 21, Python 3 and LÖVE 11.5** (Pillow enables small image variant
 ./run.sh
 ```
 
-The launcher starts the local card catalog, XMage, room-code gateway and the desktop window. The first build downloads Java dependencies; if Maven is unavailable, the script downloads a local copy using `curl` and `tar`. The supplied large `assets/all-cards*.jsonl` source is indexed locally into `service/data/catalog.sqlite`. Indexing progress appears in the client; set `LOVE2GATHERING_CATALOG_SOURCE` to select a particular snapshot.
+The launcher starts the local card catalog, XMage, room-code gateway and the desktop window. The first build downloads Java dependencies; if Maven is unavailable, the script downloads a local copy using `curl` and `tar`. The supplied large `assets/all-cards*.jsonl` source is indexed locally into `service/data/catalog.sqlite`. The client shows source-reading percentage and entry/card counts, then search preparation and elapsed time; even translated sections and another instance building the index report activity. Finished indexes are reused. Set `LOVE2GATHERING_CATALOG_SOURCE` to select a particular snapshot.
 
 The loading screen waits for your saved theme, colors, profile, decks and panel layout, applies the saved display settings, then prepares the icon graphics before opening the client. Its rotating circle and percentage show progress; reduced motion keeps the circle still. If saved data cannot be read, **Retry loading saved data** retries it instead of opening a default profile. Local artwork remains usable while a background image download runs.
 
@@ -255,6 +255,8 @@ Open **Settings → Storage → Cleanup** to inspect image/replay counts, disk u
 Deleting SQL images/events makes pages reusable. **Compact database** is a separate explicit action for saves and image databases that can return that space to their drives; it needs temporary free space and is unavailable during active/pending recording. Do not close the app during compaction. No cleanup or image download runs automatically at startup. [Storage behavior and limits](service/STORAGE.md) describes safe scopes, estimates and recovery.
 
 ## Verification and development
+
+For standalone model checks, use `lua5.4` if your default `lua` lacks the `utf8` module.
 
 ```sh
 python3 -m unittest discover -s service/tests -v

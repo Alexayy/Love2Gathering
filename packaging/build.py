@@ -69,6 +69,24 @@ def copy_deck_payload(source, destination):
               or p.relative_to(source).as_posix() == 'preconstructed/catalog.jsonl.gz')
 
 
+def copy_bridge(source, destination):
+    """System installs must not retain private mktemp permissions from the build."""
+    jar = source / 'xmage-bridge-1.0.0.jar'
+    try:
+        with zipfile.ZipFile(jar) as archive:
+            archive.getinfo('love2gathering/EngineBridge.class')
+    except (OSError, KeyError, zipfile.BadZipFile) as exc:
+        raise SystemExit('The prebuilt bridge is unreadable or lacks EngineBridge; rebuild it before packaging.') from exc
+    dependencies = sorted((source / 'lib').glob('*.jar'))
+    if not dependencies:
+        raise SystemExit('The prebuilt bridge dependency directory is empty.')
+    (destination / 'lib').mkdir(parents=True)
+    for item in [jar, *dependencies]:
+        target = destination / item.relative_to(source)
+        shutil.copyfile(item, target)
+        target.chmod(0o644)
+
+
 def asset_paths():
     for folder in CURATED:
         path = ROOT / 'assets' / folder
@@ -134,10 +152,7 @@ def common_payload(output, source, *, channel='source', branch=None, tag=''):
         archive.writestr('build-info.json', json.dumps(info, indent=2) + '\n')
     copy_tree(ROOT / 'service', target / 'service', lambda p: p.parent == ROOT / 'service' and p.suffix == '.py')
     copy_deck_payload(ROOT / 'decks', target / 'decks')
-    (target / 'bridge/target/lib').mkdir(parents=True)
-    shutil.copy2(jar, target / 'bridge/target' / jar.name)
-    for dependency in sorted((ROOT / 'bridge/target/lib').glob('*.jar')):
-        shutil.copy2(dependency, target / 'bridge/target/lib' / dependency.name)
+    copy_bridge(ROOT / 'bridge/target', target / 'bridge/target')
     shutil.copy2(ROOT / 'bridge/card-map.json', target / 'bridge/card-map.json')
     (target / 'scripts').mkdir()
     shutil.copy2(ROOT / 'scripts/download-card-images.py', target / 'scripts/download-card-images.py')
@@ -181,7 +196,7 @@ def common_payload(output, source, *, channel='source', branch=None, tag=''):
     release = {'applicationId': APP_ID, 'name': 'Love: 2 Gathering', 'version': VERSION,
                'sourceRevision': revision, 'engineRevision': engine,
                'channel': channel, 'branch': branch, 'tag': tag, 'builtAtUTC': info['builtAtUTC'],
-               'metadataSource': source.name, 'includesUserData': False, 'catalogApi': 14,
+               'metadataSource': source.name, 'includesUserData': False, 'catalogApi': 15,
                'sourceDirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT).strip())}
     (target / 'release.json').write_text(json.dumps(release, indent=2) + '\n')
     (target / 'love2gathering').write_text('#!/bin/sh\nset -eu\napp_file=$(readlink -f -- "$0")\napp_dir=$(CDPATH= cd -- "$(dirname -- "$app_file")" && pwd)\nexec python3 "$app_dir/launcher.py" "$@"\n')
@@ -192,12 +207,21 @@ def common_payload(output, source, *, channel='source', branch=None, tag=''):
 
 
 def seal(target):
+    # Payloads become root-owned in RPM/DEB. Source/build umasks and atomic
+    # mktemp publication must never make their contents private to the builder.
+    target.chmod(0o755)
     entries = {}
     for path in sorted(target.rglob('*')):
+        if path.is_symlink():
+            continue
+        if path.is_dir():
+            path.chmod(0o755)
         if path.is_file() and not path.is_symlink() and path.name != 'payload-manifest.json':
+            path.chmod(0o755 if path.stat().st_mode & 0o111 else 0o644)
             with path.open('rb') as stream:
                 entries[path.relative_to(target).as_posix()] = hashlib.file_digest(stream, 'sha256').hexdigest()
     (target / 'payload-manifest.json').write_text(json.dumps({'version': 1, 'files': entries}, indent=2) + '\n')
+    (target / 'payload-manifest.json').chmod(0o644)
 
 
 def linux_payload(output, common):

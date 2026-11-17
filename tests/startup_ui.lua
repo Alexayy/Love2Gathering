@@ -4,6 +4,9 @@ local json=require('lib.json');local clock=0;local scenarioName='launcher-build'
 local function health(service)
  if service=='catalog'then
   if scenarioName=='metadata-missing'then return{status='ok',ready=false,apiVersion=15,index={state='error',error='Fixture: configured local card metadata is missing'},storage={dataDirectory='/tmp/isolated-startup-fixture'}},nil,200 end
+  if scenarioName=='catalog-reading'then return{status='ok',ready=false,apiVersion=15,index={state='indexing',phase='reading',lines=32000,cards=0,bytesRead=512,totalBytes=1024}},nil,200 end
+  if scenarioName=='catalog-indexes'then return{status='ok',ready=false,apiVersion=15,index={state='indexing',phase='indexes',cards=42000,indexesDone=6,indexesTotal=14,seconds=45}},nil,200 end
+  if scenarioName=='catalog-waiting'then return{status='ok',ready=false,apiVersion=15,index={state='waiting',phase='waiting',cards=0,seconds=90}},nil,200 end
   return{status='ok',ready=true,apiVersion=15,index={state='ready',cards=12},storage={dataDirectory='/tmp/isolated-startup-fixture'}},nil,200
  elseif service=='engine'then
   if scenarioName=='bridge-offline'then return nil,'Fixture: bridge unavailable',503 end
@@ -60,6 +63,19 @@ local function scenario()
  check(start:progress()==1 and m.startupReport and m.startupReport.checks.ready.state=='ready','Successful gate retains its measured startup report')
  check(m.loaded and m.settingsLoaded and m.profileLoaded and m.playerName=='Startup Fixture'and p.appliedLoaded and start.finalGraphicsReady and noWrites(),'Actual Model saved data and applied personalized graphics finish before startup handoff without writes')
  shot('ready-1120')
+ -- Catalog work remains visible even while saved-state enrichment waits for it.
+ local reading=fresh('catalog-reading')
+ ready(function()return reading.phase=='services'and reading.catalog and reading.message and reading.message:find('32000 entries',1,true)end,'translated metadata reading progress')
+ check(not reading.ready and reading.message:find('50%',1,true)and reading.message:find('0 cards',1,true),'Translated metadata reports actual input entries and compressed bytes even before the first English card')
+ shot('catalog-reading-1120')
+ local indexes=fresh('catalog-indexes')
+ ready(function()return indexes.phase=='services'and indexes.catalog and indexes.message and indexes.message:find('6 / 14',1,true)end,'search preparation progress')
+ check(not indexes.ready and indexes.message:find('Preparing local card and artwork search',1,true)and indexes.message:find('45s',1,true),'Final search preparation reports its own phase and elapsed heartbeat before catalog readiness')
+ shot('catalog-indexes-1120')
+ local waiting=fresh('catalog-waiting')
+ ready(function()return waiting.phase=='services'and waiting.catalog and waiting.message and waiting.message:find('Waiting for another local card index',1,true)end,'shared metadata build lock')
+ check(not waiting.ready and waiting.message:find('90s',1,true),'A second desktop reports elapsed lock waiting without displaying stalled zero-card indexing')
+ shot('catalog-waiting-1120')
  -- A failed shader/font warmup must restore the framebuffer before drawing its diagnostic.
  local graphics=fresh('graphics-failure');graphics.phase='graphics'
  local surface=r.assets.surface;r.assets.surface=function(self,name,...)if name=='spotlight'then error('Fixture: graphics warmup failed')end;return surface(self,name,...)end

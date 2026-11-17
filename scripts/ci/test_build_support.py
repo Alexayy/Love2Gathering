@@ -199,6 +199,8 @@ class PayloadTests(unittest.TestCase):
                          'decks/app.sqlite', 'decks/user.log', 'decks/build_library.py'):
                 (root / name).write_bytes(b'must not ship')
             source = root / 'cards.jsonl'; source.write_text(json.dumps(CARD) + '\n')
+            with zipfile.ZipFile(root / 'bridge/target/xmage-bridge-1.0.0.jar', 'w') as archive:
+                archive.writestr('love2gathering/EngineBridge.class', b'fixture bytecode')
             slab=root/'lib/Slab/init.lua';slab.parent.mkdir(parents=True);slab.write_text('--[[\nMIT License\nRetained fixture copyright\n--]]\nreturn{}')
             jar=root/'bridge/target/lib/fixture.jar';jar.parent.mkdir(parents=True)
             with zipfile.ZipFile(jar,'w')as archive:

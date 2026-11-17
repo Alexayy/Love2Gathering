@@ -37,6 +37,12 @@ shortcut and offers a Desktop shortcut. Its default is a per-user Programs
 folder. Installed Apps / its uninstaller removes application files while saves,
 cache and settings remain outside the installation folder.
 
+Windows checks the actual OpenGL context before opening the client and bundles
+a private Mesa LLVMpipe CPU fallback for VM/basic-display drivers. It keeps a
+working native driver by default; `--graphics software` forces the fallback.
+No dedicated GPU, system driver replacement or post-install download is needed.
+See [Windows runtime details](windows/README.md) for provenance and diagnostics.
+
 ## System packages
 
 The **DEB** installs the application under `/opt/love2gathering`, plus its command,
@@ -96,6 +102,12 @@ that small-card image preparation is unavailable. The installed `--check`
 requires a working JPEG decoder. Python bytecode generation is
 disabled so launching does not populate the application folder. Installers do
 not run Purge, relocate saves, or remove user data during uninstall.
+
+Common/Linux payloads normalize directories to 0755, ordinary files to 0644 and
+executables to 0755. This includes bridge JARs atomically published from private
+build temporaries: RPM/DEB installs remain readable after package ownership
+becomes root. Package construction and installed checks also verify that the
+bridge contains its main class and that its dependencies are readable.
 
 Managed bulk downloads and image-pack imports yield to visible/selected image
 requests in their catalog process. A separately launched downloader CLI has its

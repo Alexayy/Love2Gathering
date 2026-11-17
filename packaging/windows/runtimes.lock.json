@@ -11,6 +11,14 @@
     "sha256": "1ec066fb61ba5e8c73e29e048cd07c26850f74585e3a116005135b31b8004890",
     "filename": "python-3.13.11-embed-amd64.zip"
   },
+  "mesa": {
+    "version": "26.3.0",
+    "url": "https://github.com/mmozeiko/build-mesa/releases/download/26.3.0/mesa-llvmpipe-x64-26.3.0.7z",
+    "sha256": "11dc079e356f33ce2ff84aa399c975da1a7bdd4c470f6eef4cf359ad8b9ca80f",
+    "filename": "mesa-llvmpipe-x64-26.3.0.7z",
+    "provider": "mmozeiko/build-mesa; Mesa 26.3.0 with statically linked LLVM 23.1.5",
+    "files": ["opengl32.dll"]
+  },
   "java": {
     "version": "21.0.13+9.0.LTS",
     "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13%2B9/OpenJDK21U-jre_x64_windows_hotspot_21.0.13_9.zip",

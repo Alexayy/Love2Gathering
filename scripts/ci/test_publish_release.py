@@ -130,7 +130,7 @@ class PublishTests(unittest.TestCase):
             (self.dist / name).write_bytes(value)
         (self.dist / 'install-flatpak.py').write_text('import argparse\nAPP_ID = ' + repr(publisher.APP_ID))
         pillow={'sha256':'d'*64,'version':'13.0.0','includesNativeCode':True,'includesLicenses':True}
-        windows={component: {'sha256': 'a' * 64} for component in ('love', 'python', 'java')}
+        windows={component: {'sha256': 'a' * 64} for component in ('love', 'python', 'java', 'mesa')}
         windows['pillow']={**pillow,'platform':'windows-cp313'}
         (self.dist / 'windows-runtime-provenance.json').write_text(json.dumps(windows))
         (self.dist / 'flatpak-native-provenance.json').write_text(json.dumps(
@@ -174,6 +174,14 @@ class PublishTests(unittest.TestCase):
                 patch.object(publisher, 'GitHub', side_effect=AssertionError('must not contact GitHub')):
             self.assertEqual(publisher.main(['--dist', str(self.dist), '--version', VERSION,
                 '--tag', TAG, '--commit', COMMIT, '--metadata-report', str(self.metadata), '--prepare-only']), 0)
+
+    def test_missing_software_renderer_provenance_stops_release_preparation(self):
+        path = self.dist / 'windows-runtime-provenance.json'
+        provenance = json.loads(path.read_text())
+        del provenance['mesa']
+        path.write_text(json.dumps(provenance))
+        with self.assertRaisesRegex(publisher.ReleaseError, 'Windows runtime provenance'):
+            self.prepare()
 
     def test_success_creates_private_draft_then_publishes_after_exact_assets_verified(self):
         files = self.prepare()
