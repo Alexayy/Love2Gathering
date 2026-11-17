@@ -30,7 +30,7 @@ jobs:
           submodules: false
           persist-credentials: false
 
-      - name: Reject any outgoing XMage pin or source-URL change
+      - name: Verify the reviewed XMage pin and source URL
         env:
           BEFORE: ${{ github.event.before }}
         run: |
@@ -64,7 +64,7 @@ jobs:
         if: steps.published.outputs.already_published != 'true'
         run: |
           git -c fetch.recurseSubmodules=false submodule update --init --recursive --depth 1
-          test "$(git -C engine/mage rev-parse HEAD)" = d9b266fc981024873ac7ec5f90ee7121a060725e
+          test "$(git -C engine/mage rev-parse HEAD)" = c5a5215fa086f487c793627446d5d27e81dfbc97
 
       - name: Set up Java 21
         if: steps.published.outputs.already_published != 'true'
@@ -78,7 +78,7 @@ jobs:
         uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: .tools/m2
-          key: maven-${{ runner.os }}-java21-d9b266fc98-${{ hashFiles('bridge/pom.xml', 'engine/mage/**/pom.xml') }}
+          key: maven-${{ runner.os }}-java21-c5a5215fa0-${{ hashFiles('bridge/pom.xml', 'engine/mage/**/pom.xml') }}
 
       - name: Install native build tools
         if: steps.published.outputs.already_published != 'true'
@@ -108,6 +108,10 @@ jobs:
       - name: Build the pinned XMage engine and bridge
         if: steps.published.outputs.already_published != 'true'
         run: bash scripts/build-engine.sh 2>&1 | tee build/ci/reports/engine-build.log
+
+      - name: Verify native bridge and upstream compatibility
+        if: steps.published.outputs.already_published != 'true'
+        run: bash scripts/test-engine-fixtures.sh 2>&1 | tee build/ci/reports/native-fixtures.log
 
       - name: Build common payload and Linux DEB, RPM and folder installer
         if: steps.published.outputs.already_published != 'true'

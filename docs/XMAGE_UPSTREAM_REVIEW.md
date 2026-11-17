@@ -1,13 +1,41 @@
-# XMage upstream review — 2026-11-14
+# XMage update — 2026-11-17
 
-The installed submodule remains **d9b266fc981024873ac7ec5f90ee7121a060725e**, committed November 12, 2026. `.gitmodules` and the submodule's `origin` both identify the official `https://github.com/magefree/mage.git` repository. No checkout, fetch, engine source edit or gitlink update was performed for this review. [Pinned commit](https://github.com/magefree/mage/commit/d9b266fc981024873ac7ec5f90ee7121a060725e).
+The integration advances from `d9b266fc981024873ac7ec5f90ee7121a060725e` to **`c5a5215fa086f487c793627446d5d27e81dfbc97`**, the exact upstream development revision reviewed on November 17. This contains **65 commits, 270 changed files and 34 new card implementation classes**. The version label advances from 1.4.63V1 to 1.4.63V2 while Maven artifacts remain 1.4.63. The official submodule URL is unchanged; no local engine source changes were made. [Exact comparison](https://github.com/magefree/mage/compare/d9b266fc981024873ac7ec5f90ee7121a060725e...c5a5215fa086f487c793627446d5d27e81dfbc97).
 
-The latest published release checked is **xmage_1.4.63V1**, published October 31, 2026. Our pin is newer than that published release, so selecting “latest release” would not be an upgrade to this integration. Its draft/AI, downloader and stock-client animation improvements already precede our pin. The LÖVE frontend has its own renderer/downloader; stock Java-client UI changes do not automatically appear here. [Official release](https://github.com/magefree/mage/releases/tag/xmage_1.4.63V1), [official release notes](https://github.com/magefree/mage/wiki/Release-1.4.63).
+## Added cards and sets
 
-The reviewed development head is **b4f7bf74caaebeb48ba5131bb757f3419553b50c**, committed November 14, 2026 at 16:06:39 UTC. GitHub's comparison reports **45 commits ahead**, no commits behind, **131 changed files**, and **28 added card implementation classes** since our pin. This is a moving development branch; the exact reviewed SHA, rather than the name `master`, identifies these findings. [Reviewed head](https://github.com/magefree/mage/commit/b4f7bf74caaebeb48ba5131bb757f3419553b50c), [exact comparison](https://github.com/magefree/mage/compare/d9b266fc981024873ac7ec5f90ee7121a060725e...b4f7bf74caaebeb48ba5131bb757f3419553b50c).
+| Set | Newly implemented cards |
+| --- | --- |
+| MSC | Archnemesis; Doom's Time Platform; Extract Power; Galactus, Devourer of Worlds; Glorious Purpose; H.E.R.B.I.E., Lovable Robot; Iron Monger, Sadistic Tycoon; Living Laser; Sauron, Dino Devotee; Typhoid Mary, Fractured; Ultron, Unlimited |
+| MSH | Political Triumph; Robot Domination; Taskmaster, Mercenary Mimic |
+| NAU | Abyssal Lotus; Calmwater Mentor; Ring of Unity; Salinae, the Ocean Mother; Shimmering Citadel; Tecton, Malignant Ruin |
+| FRA | Jace's Machinations; Sanctum Lurker; Uldaros Theorix |
+| FRC | Dack Fayden, Helping Hand; Jace, Multiverse Architect; Jhoira, Weatherlight Corsair; Teferi's Reproach |
+| HOB | Azog, Moria's Ruin; Elrond, Moon-Reader; Woodland Weavemaster |
+| TRK | U.S.S. Voyager, Lone Wanderer |
+| TRC | Borg Incursion |
+| BOT | Soundwave, Sonic Spy |
+| MKC | Eye of Duskmantle |
 
-Relevant changes include more card implementations and sets/boosters, corrections involving double-faced cards entering/receiving counters, blink/copy interactions, multiplayer Balance handling, attack requirements across multiple defenders, and richer surveil/connive events. These are rules/card changes, not merely artwork updates. The changed core includes Combat, PermanentImpl, CardImpl, PlayerImpl, GameEvent and requirement effects; the HumanPlayer plugin and native draft implementation are not changed in this comparison.
+New set definitions are **Nauctis: The Sunken Realm (NAU)**, **Nauctis: The Sunken Realm Commander (NAC)** and **Wizards Play Network 2027 (PW27)**. NAC adds a Crucible of Worlds printing; PW27 adds four promotional printings of existing cards. A set definition is not a complete implemented set or permission to draft it: NAU's upstream booster support remains disabled until its details exist. Installed implementation coverage and current format legality remain separate checks. [Set sources at the reviewed revision](https://github.com/magefree/mage/tree/c5a5215fa086f487c793627446d5d27e81dfbc97/Mage.Sets/src/mage/sets).
 
-Compatibility assessment is an inference from the reviewed diff, **not an upgrade acceptance result**. The unchanged HumanPlayer implementation reduces prompt-adapter churn, but changes in combat requirements, event payloads, face-down exile and continuous effects still require real regression tests. Our Angel of Vitality display bug was corrected by projecting native boosted P/T; advancing upstream is unnecessary for that fix. This comparison also adds no HumanPlayer whole-board auto-tapper.
+## Changes the client must follow
 
-A future upgrade should be evaluated in a separate checkout at the exact candidate SHA, rebuild the native modules/card map and bridge, and rerun the native fixture gate, bundled deck starts, production gameplay/recordings, multiplayer privacy, drafts, profile propagation and actual choice UI checks. Only a tested engine revision should advance the parent gitlink. Current work keeps the existing tested engine pin.
+| Upstream change | Integration handling |
+| --- | --- |
+| `ACTIVATED_ABILITY` now also covers mana abilities, which do not create stack objects; Loot, the Pathfinder uses `ExhaustManaAbility` | Preserve null-safe event projection and the native ability/color wheel. The compatibility fixture activates ordinary mana and pays/chooses Loot's native exhaust mana, checking the empty stack and resulting mana. |
+| Sanctum Lurker changes the state-based action for zero-loyalty planeswalkers | Display the native board and counters without frontend death heuristics. The fixture checks survival at zero loyalty and native removal after Lurker leaves. |
+| Connive/surveil event payloads and conditional random modes | Retain generic native choices and event metadata; no Lua card-specific rules or fabricated options. These remain engine decisions. |
+| Double-faced entering/counters, blink/copy, transformed/merged permanents in Thieves' Auction/Gerrymandering, Balance with departed players and multiple-defender attack requirements | Consume native state/projections. Native, multiplayer/privacy and recording checks protect the adapter boundary; they do not prove every changed card interaction. |
+| New implementations, set printings and installed inventory | Regenerate `bridge/card-map.json` during the engine build and rebuild all required engine/bridge artifacts. Report the exact revision in capabilities, About, source attribution, release provenance and publication guards. |
+| Stock Java client image/download/UI updates | These do not update the LÖVE renderer, local catalog or artwork downloader automatically. Keep our existing exact-printing and explicit-download contracts. |
+
+The build downloads current **metadata only** through `scripts/ci/prepare-metadata.py`. The separate November 17 verification source contains 120,139 printings (656,621,303 bytes), updated at 10:06:30 UTC, SHA256 `271185c794ec19ae11bf844c7c582988d90b536e9793c616f060fede82ad0b13`. The supplied September source and user saves remain intact. All 34 added names are present in that source, including the front-face alias for Soundwave, Sonic Spy. A new engine implementation appears in the Builder only when its card also exists in the selected metadata source; format legality still comes from native validation. No card images are acquired for this update.
+
+## Verification
+
+`scripts/build-engine.sh` rebuilds the required XMage modules, generated card map and bridge against the new pin. Upstream API changes require a clean reactor build to avoid old card bytecode remaining compatible only with the prior engine. `UpstreamCompatibilityFixture` adds **51 native checks** covering all 34 installed new classes, the new set printings, exact revision, mana events without stack objects, exhaust payment/color choice, the zero-loyalty exception and an unchanged Nimble Obstructionist constructor that detects stale bytecode. [Focused report](../bridge/tests/upstream-compatibility-report.json).
+
+The fresh payload also passed the existing native fixture gate, all 20 bundled deck startups, a completed eight-turn game, replay delivery/reopening/outage/crash recovery, native priority, human-seat multiplayer privacy and draft HTTP checks. Separate library-top, native recovery and gameplay-presentation gates rebuilt and checked their production adapter classes. [Final integration report](../bridge/tests/upstream-integration-report.json) records the exact payload hashes and evidence scopes. These tests do not establish every new card interaction or native Windows/Fedora installer behavior.
+
+The publication guard permits the exact previously published development/master base snapshots only for this reviewed transition. Every outgoing commit and the index must use the new canonical pin and the unchanged official `.gitmodules`; unexpected or intermediate pins, extra gitlinks and downgrades remain rejected. Only the parent branch is published, with recursive submodule pushes disabled.

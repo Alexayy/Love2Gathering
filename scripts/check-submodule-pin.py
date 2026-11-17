@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reject any outgoing change to the supplied XMage gitlink or .gitmodules.
+"""Require the reviewed XMage gitlink and unchanged official source URL.
 
 This inspects parent Git objects/index entries only. It deliberately does not
 checkout, stage, reset, clean, commit or push anything inside the submodule.
@@ -12,8 +12,15 @@ import subprocess
 import sys
 
 ENGINE_PATH = 'engine/mage'
-ENGINE_PIN = 'd9b266fc981024873ac7ec5f90ee7121a060725e'
+ENGINE_PIN = 'c5a5215fa086f487c793627446d5d27e81dfbc97'
 GITMODULES_BLOB = 'ba0dc072e733b30fdbf680dc0fb9b651ec0d7f32'
+# The user-authorized November 17 upgrade may start from these exact published
+# branch heads. Only the base snapshot is exempt; every outgoing commit and
+# the index must use ENGINE_PIN. No downgrade or intermediate pin is allowed.
+UPGRADE_BASES = {
+    '0c797b1db53540c99a8739230818646f195544c5': 'd9b266fc981024873ac7ec5f90ee7121a060725e',
+    '89cd81d1e950cf5da0418b0134bd6d5537215366': 'd9b266fc981024873ac7ec5f90ee7121a060725e',
+}
 
 
 class GuardError(ValueError):
@@ -31,10 +38,10 @@ def commit_id(reference):
     return git('rev-parse', '--verify', '--end-of-options', reference + '^{commit}').decode().strip()
 
 
-def check_entries(entries, label):
+def check_entries(entries, label, pin=ENGINE_PIN):
     gitlinks = {path: (mode, oid, stage) for path, mode, oid, stage in entries if mode == '160000'}
-    if gitlinks != {ENGINE_PATH: ('160000', ENGINE_PIN, '0')}:
-        raise GuardError(label + ': XMage gitlink must remain ' + ENGINE_PIN + '; no other gitlinks may be added')
+    if gitlinks != {ENGINE_PATH: ('160000', pin, '0')}:
+        raise GuardError(label + ': XMage gitlink must remain ' + pin + '; no other gitlinks may be added')
     modules = [(mode, oid, stage) for path, mode, oid, stage in entries if path == '.gitmodules']
     if modules != [('100644', GITMODULES_BLOB, '0')]:
         raise GuardError(label + ': .gitmodules must remain unchanged with the supplied magefree/mage URL')
@@ -69,7 +76,8 @@ def check(base=None, head='HEAD', index=False):
         outgoing = git('rev-list', '--reverse', base_id + '..' + head_id).decode().splitlines()
         revisions = list(dict.fromkeys([base_id, *outgoing, head_id]))
     for revision in revisions:
-        check_entries(list(tree_entries(revision)), 'Commit ' + revision[:12])
+        pin = UPGRADE_BASES.get(revision, ENGINE_PIN) if base and revision == base_id and revision != head_id else ENGINE_PIN
+        check_entries(list(tree_entries(revision)), 'Commit ' + revision[:12], pin)
     if index:
         check_entries(list(index_entries()), 'Index')
     return {'passed': True, 'enginePath': ENGINE_PATH, 'enginePin': ENGINE_PIN,

@@ -1,7 +1,7 @@
 """Installed validator profiles from the pinned XMage capability fixture.
 These basic preflight bounds are not a reproduction of native format rules.
-Source: bridge installed capabilities, engine d9b266fc981024873ac7ec5f90ee7121a060725e.
-Fixture SHA256: 9cae320ee4b88109f274dd09d364e46d904b4b2a23feee196bd74af83b256710.
+Source: bridge installed capabilities, engine c5a5215fa086f487c793627446d5d27e81dfbc97.
+Installed inventory is rechecked by NativeRecoveryFixture; runtime legality stays native.
 Limited remains a native draft pool; unavailable game variants are excluded.
 """
 ROWS = [

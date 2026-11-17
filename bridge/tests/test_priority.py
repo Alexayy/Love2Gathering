@@ -60,7 +60,7 @@ def main():
     for worker in readers: worker.start()
     try:
         deck={'name':'Priority production test','format':'Modern','main':[{'name':'Plains','count':60}], 'sideboard':[], 'commander':[]}
-        call('/session/start',{'format':'Modern','recordingPort':args.recording_port,'playerName':'Priority Human','botName':'Priority Bot','deck':deck,'botDeck':deck,
+        call('/session/start',{'format':'Modern','recordingPort':args.recording_port,'startingSeatId':'local','playerName':'Priority Human','botName':'Priority Bot','deck':deck,'botDeck':deck,
                                'priority':{'autoPass':True,'stops':{'own':['PRECOMBAT_MAIN'],'opponent':['END_TURN']}}})
         state=wait(lambda s: s.get('prompt'), 'No native pregame prompt')
         human=next(p for p in state['players'] if p['human'])

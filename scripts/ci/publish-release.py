@@ -19,7 +19,7 @@ import tempfile
 import zipfile
 
 REPOSITORY = 'Alexayy/Love2Gathering'
-ENGINE_REVISION = 'd9b266fc981024873ac7ec5f90ee7121a060725e'
+ENGINE_REVISION = 'c5a5215fa086f487c793627446d5d27e81dfbc97'
 APP_ID = 'io.github.Alexayy.Love2Gathering'
 MARKER = b'__LOVE2GATHERING_ARCHIVE__\n'
 

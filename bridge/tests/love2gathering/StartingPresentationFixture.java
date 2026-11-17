@@ -58,7 +58,12 @@ public final class StartingPresentationFixture {
             java.lang.reflect.Field cursor=GameImpl.class.getDeclaredField("playerList");cursor.setAccessible(true);cursor.set(s.game,s.game.getState().getPlayerList(s.human.getId()));
             Card card=TriggerFixture.card(name);
             s.game.cheat(s.human.getId(),TriggerFixture.NONE,Collections.singletonList(card),Collections.emptyList(),TriggerFixture.NONE,TriggerFixture.NONE,TriggerFixture.NONE);
-            if(commander)s.human.addCommanderId(card.getId());
+            if(commander){
+                s.human.addCommanderId(card.getId());
+                // This fixture starts from a Modern shell rather than native
+                // Commander pregame, so install the native commander's watcher.
+                s.game.getState().addWatcher(new mage.watchers.common.CommanderInfoWatcher("Commander",card.getId(),true));
+            }
             s.human.getManaPool().addMana(Mana.GreenMana(12),s.game,card.getSpellAbility());s.human.getManaPool().addMana(Mana.WhiteMana(12),s.game,card.getSpellAbility());
             Future<Boolean> cast=worker.submit(()->s.human.cast(card.getSpellAbility(),s.game,false,null));
             if(x>=0){

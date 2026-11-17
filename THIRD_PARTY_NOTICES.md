@@ -34,7 +34,7 @@ determination or legal approval is asserted here.
 
 | Component | Retained terms and source |
 | --- | --- |
-| XMage | MIT, copyright 2010 betasteward@gmail.com and contributors. Complete notice: [licenses/XMage-MIT.txt](licenses/XMage-MIT.txt). [Pinned source](https://github.com/magefree/mage/tree/d9b266fc981024873ac7ec5f90ee7121a060725e); the submodule is not relicensed by this project. |
+| XMage | MIT, copyright 2010 betasteward@gmail.com and contributors. Complete notice: [licenses/XMage-MIT.txt](licenses/XMage-MIT.txt). [Pinned source](https://github.com/magefree/mage/tree/c5a5215fa086f487c793627446d5d27e81dfbc97); the submodule is not relicensed by this project. |
 | Slab | MIT, copyright 2019–2021 Love2D Community. Complete notice extracted unchanged from its retained source header: [licenses/Slab-MIT.txt](licenses/Slab-MIT.txt). [Upstream](https://github.com/flamendless/Slab). Modified source headers remain intact. |
 | Kenney | CC0 1.0. Notices remain in `assets/kenney/ui/`, `theme/`, `particles/` and `runtime/licenses/`. [Support / usage](https://kenney.nl/support); [assets](https://kenney.nl/assets). See exact provenance and contributor names in [the pack catalog](assets/KENNEY_CATALOG.md) and retained notices. Kenney's logo is not licensed as project branding. |
 | Mana | Prepared font: SIL OFL 1.1; [complete OFL](assets/keyrune/OFL.txt), [upstream notice](assets/keyrune/LICENSE-mana.md). [Source](https://github.com/andrewgioia/mana). Underlying mana/tap/type images remain Wizards copyright. CSS/LESS/Sass use MIT; these terms do not grant trademark rights. |
