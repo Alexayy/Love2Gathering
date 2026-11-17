@@ -44,7 +44,7 @@ check(#r.pendingBoardFX==1 and r.pendingBoardFX[1].kind=='damage','Noncombat bur
 r.model.settings.reducedMotion=true;check(Board.offset(r,host)==0,'Reduced motion suppresses card displacement');r.model.settings.reducedMotion=false
 r.model.settings.animations=false;check(Board.offset(r,host)==0,'Disabling animations suppresses card displacement');r.model.settings.animations=true
 game.revision=8;game.combat.groups={};game.players[1].battlefield={aura};game.players[1].graveyard={host};Board.update(r,.01)
-check(r.pendingBoardFX[#r.pendingBoardFX].kind=='death','A battlefield-to-graveyard transition shatters; other disappearances are not inferred as death')
+check(r.pendingBoardFX[#r.pendingBoardFX].kind=='death','A battlefield-to-graveyard transition keeps a generic destination effect; no cause is inferred')
 game.revision=9;game.animationEvents[4]={id='between-polls-death',type='zone',targetId='aura',fromZone='BATTLEFIELD',toZone='GRAVEYARD'}
 game.players[1].battlefield={};game.players[1].graveyard={host}
 Board.update(r,.01)
@@ -63,7 +63,7 @@ local Model=require('app.model');local m=setmetatable({byName={['Angel of Vitali
 local live=m:cardData({id='native-id',name='Angel of Vitality',power='5',toughness='5',counters={['+1/+1']=1}})
 check(live.id=='printing-id'and live.objectId=='native-id'and live.power=='5'and metadata.power=='2','Artwork identity stays distinct from current native P/T and the catalog is not mutated')
 local quake={model={settings={boardImpactIntensity=.55},game={gameId='quake',revision=1,players={{id='p',life=20,battlefield={host,aura},hand={},graveyard={}}},stack={}}},colors=r.colors}
-Board.update(quake,.01);quake.model.game.revision=2;quake.model.game.animationEvents={{id='native-impact',type='impact',sourceId='host',playerId='p',manaValue=7}}
+Board.update(quake,.01);quake.model.game.revision=2;quake.model.game.animationEvents={{id='native-impact',type='impact',entry=true,sourceId='host',targetId='host',playerId='p',manaValue=7}}
 Board.update(quake,.01)
 check(Board.worldOffset(quake)==0,'A native impact eases in from rest instead of jumping')
 Board.update(quake,.15);local qx,qy=Board.worldOffset(quake);local ax,ay,aa=Board.offset(quake,host);local bx,by,ba=Board.offset(quake,aura)
@@ -76,5 +76,9 @@ Board.update(quake,1);check(quake.boardImpact==nil,'Impact settles fully without
 quake.model.game.revision=3;Board.update(quake,.01);check(quake.boardImpact==nil,'A retained native resolution event shakes only once')
 quake.model.game.revision=4;quake.model.game.stack={{id='countered',manaValue=20}};Board.update(quake,.01)
 quake.model.game.revision=5;quake.model.game.stack={};Board.update(quake,.01);check(quake.boardImpact==nil,'Stack disappearance alone never invents a resolved large spell')
+quake.model.game.revision=6;quake.model.game.animationEvents={{id='old-resolution-only',type='impact',sourceId='host',playerId='p',manaValue=20}}
+Board.update(quake,.01);check(quake.boardImpact==nil,'Successful spell resolution without a real battlefield entry never creates an entry slam')
+quake.model.settings.cameraShake=false;quake.model.game.revision=7;quake.model.game.animationEvents={{id='no-shake',type='impact',entry=true,sourceId='host',targetId='host',manaValue=20}}
+Board.update(quake,.01);check(quake.boardImpact==nil,'Independent camera shake preference leaves other animation available')
 local hues={};for i=1,20 do local color=Board.linkColor(i);local key=table.concat(color,':');check(not hues[key],'Independent attack/target group '..i..' has its own color');hues[key]=true end
 print('Board presentation checks: '..passed..' passed')

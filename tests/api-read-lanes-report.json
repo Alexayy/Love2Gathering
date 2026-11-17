@@ -1,9 +1,9 @@
 {
   "fixtureSourceHashes": {
-    "tests/api_read_lanes.lua": "ae66ac7b2de71d195cd7496d068f6dbbca24a8a98c192c05679b221bae9c3048",
-    "tests/api_read_lanes.py": "0494e419e8e7dd3008f9dbd9b87d6545663e08b0826fa5adb8cc5fb46dd7165a"
+    "tests/api_read_lanes.lua": "2e815b348dcb5c4eb126449d51bf97fe18eedac01a241ad9aafbe95269d419dd",
+    "tests/api_read_lanes.py": "e82e9feb0d9244e28192f336a21e3485aac9c83579489a670a3595e03679d390"
   },
-  "output": "/tmp/love2gathering-mechanics-read-lanes-8o9n0vcz",
+  "output": "/tmp/love2gathering-mechanics-read-lanes-0ww6a92z",
   "result": {
     "allWorkerThreadsTerminated": true,
     "checks": [
@@ -68,6 +68,14 @@
         "passed": true
       },
       {
+        "message": "A real room action reaches HTTP while slow capability and room-envelope reads remain pending",
+        "passed": true
+      },
+      {
+        "message": "A transient busy capability read retries without disconnecting the room",
+        "passed": true
+      },
+      {
         "message": "A real delayed old native state is rejected after session replacement",
         "passed": true
       },
@@ -96,6 +104,10 @@
         "passed": true
       },
       {
+        "message": "Only the safe busy read retries; the native room action reaches HTTP exactly once",
+        "passed": true
+      },
+      {
         "message": "Every actual HTTP worker exits after its bounded queue is drained",
         "passed": true
       },
@@ -111,83 +123,88 @@
           "event": "mutation-start",
           "path": "/session/action",
           "probe": "native-A",
-          "seconds": 0.062062
-        },
-        {
-          "actionStillHeld": true,
-          "event": "state",
-          "phase": "native",
-          "seconds": 0.124776
+          "seconds": 0.070061
         },
         {
           "actionStillHeld": true,
           "event": "health",
           "phase": "native",
-          "seconds": 0.125096
+          "seconds": 0.131492
+        },
+        {
+          "actionStillHeld": true,
+          "event": "state",
+          "phase": "native",
+          "seconds": 0.131918
         },
         {
           "event": "mutation-finish",
           "probe": "native-A",
           "readsArrived": true,
-          "seconds": 0.52529
+          "seconds": 0.532092
         },
         {
           "event": "mutation-start",
           "path": "/session/priority",
           "probe": "native-B",
-          "seconds": 0.525861
+          "seconds": 0.533345
         },
         {
           "event": "mutation-finish",
           "firstMutationFinished": true,
           "probe": "native-B",
-          "seconds": 0.525867
+          "seconds": 0.533353
         },
         {
           "event": "mutation-start",
           "path": "/client/rooms/owned-live/game/action",
           "probe": "room-A",
-          "seconds": 0.529749
+          "seconds": 0.539329
         },
         {
           "actionStillHeld": true,
           "event": "health",
           "phase": "room",
-          "seconds": 0.592431
+          "seconds": 0.602436
         },
         {
           "actionStillHeld": true,
           "event": "state",
           "phase": "room",
-          "seconds": 0.594091
+          "seconds": 0.604489
         },
         {
           "event": "mutation-finish",
           "probe": "room-A",
           "readsArrived": true,
-          "seconds": 0.994237
+          "seconds": 1.004663
         },
         {
           "event": "mutation-start",
           "path": "/client/rooms/owned-live/game/priority",
           "probe": "room-B",
-          "seconds": 0.994904
+          "seconds": 1.005644
         },
         {
           "event": "mutation-finish",
           "firstMutationFinished": true,
           "probe": "room-B",
-          "seconds": 0.994912
+          "seconds": 1.005654
+        },
+        {
+          "event": "room-action-before-metadata",
+          "metadataArrived": true,
+          "seconds": 1.076298
         },
         {
           "event": "state-delayed",
           "phase": "native",
-          "seconds": 0.999159
+          "seconds": 1.78278
         },
         {
           "event": "state-delayed",
           "phase": "room",
-          "seconds": 1.255541
+          "seconds": 2.041223
         }
       ],
       "healthReads": 2,
@@ -199,23 +216,32 @@
       ],
       "nativeReads": 3,
       "orderViolations": 0,
+      "roomMetadata": {
+        "actions": 1,
+        "capabilities": 2,
+        "lobby": 1
+      },
       "roomReads": 3
     },
     "nativeGame": false,
-    "seconds": 1.463104325,
+    "seconds": 2.237330035,
     "status": "pass",
     "timing": {
       "native": {
-        "healthSeconds": 0.003356105,
-        "heldMutationSeconds": 0.466429851,
-        "secondMutationSeconds": 0.466435963,
-        "stateSeconds": 0.003362437
+        "healthSeconds": 0.006901224,
+        "heldMutationSeconds": 0.468164547,
+        "secondMutationSeconds": 0.468173063,
+        "stateSeconds": 0.006906424
       },
       "room": {
-        "healthSeconds": 0.003297204,
-        "heldMutationSeconds": 0.466302833,
-        "secondMutationSeconds": 0.466307942,
-        "stateSeconds": 0.0033047190000001
+        "healthSeconds": 0.0033840970000001,
+        "heldMutationSeconds": 0.46723807,
+        "secondMutationSeconds": 0.470382668,
+        "stateSeconds": 0.003395939
+      },
+      "roomMetadata": {
+        "actionSeconds": 0.066603271,
+        "independentReads": true
       }
     },
     "workers": [
@@ -226,44 +252,46 @@
       "engineHealth",
       "engineState",
       "room",
+      "roomCapabilities",
+      "roomLobby",
       "roomState"
     ]
   },
   "schema": 1,
-  "scope": "Actual headless L\u00d6VE app/api and unmodified http_worker threads over real LuaSocket connections to an owned threaded HTTP fault fixture. Ordinary native/room mutations are held until state+health requests arrive; FIFO and generation guards are tested. Synthetic HTTP payloads, no graphics/GPU, native game, external network or user data.",
+  "scope": "Actual headless L\u00d6VE current app/api and http_worker threads over real LuaSocket connections to an owned threaded HTTP fault fixture. Native/room mutations are held until state+health reads arrive; slow room-envelope/capability reads remain independent of actions. Busy reads retry once; actions are delivered once in FIFO order. Generation guards are checked. Synthetic HTTP payloads, no graphics/GPU, native game, external network or user data.",
   "serverTerminated": true,
   "sourceHashes": {
-    "app/api.lua": "f991aaa506dbe9ec9a93b40662346515a857c26e20c1da29df4079428935b3fb",
-    "app/http_worker.lua": "0f325c84a1688cd1ccdeacb4b0d9991cb22990c3d7eac6e79cb60e277bb216e8",
+    "app/api.lua": "243644aa4e4422fa610e84a11c1124d5de993b87be8b8a2ba50dec807cd75cef",
+    "app/http_worker.lua": "78e03d989a6797561db1cdd4a9ac24e2d024698c5e4b60f77392d6d192761120",
     "app/image_decode.lua": "5c8b422d03b40931338e45798ad28b71ebb1c484c1559af4fb34b6d42632186b",
     "lib/json.lua": "522e1b89f66c9eec49e5edc9c680dbb4132c2e252f5da54397b2a77bbcc7fddd"
   },
   "sourceStillMatches": true,
   "status": "pass",
   "watchdog": {
-    "cpuSeconds": 0.08,
-    "diskBytes": 2243,
+    "cpuSeconds": 0.12,
+    "diskBytes": 2538,
     "exitCode": 0,
-    "log": "/tmp/love2gathering-mechanics-read-lanes-8o9n0vcz/runner/process.log",
+    "log": "/tmp/love2gathering-mechanics-read-lanes-0ww6a92z/runner/process.log",
     "ownedProcessIdentities": [
       {
-        "birthTicks": 7460632,
-        "cpuTicks": 7,
-        "pid": 535137,
-        "ppid": 535134,
-        "processGroup": 535137,
-        "rssBytes": 16949248,
+        "birthTicks": 1498158,
+        "cpuTicks": 11,
+        "pid": 182895,
+        "ppid": 182893,
+        "processGroup": 182895,
+        "rssBytes": 19169280,
         "state": "S",
-        "threads": 9
+        "threads": 11
       }
     ],
     "ownedProcessTerminated": true,
-    "peakRssBytes": 17342464,
+    "peakRssBytes": 19169280,
     "recovery": null,
     "sharedServiceDiskBytes": 0,
     "status": "pass",
     "threadDumps": [],
-    "wallSeconds": 1.612,
+    "wallSeconds": 2.389,
     "watchdogReason": null
   }
 }

@@ -1,0 +1,209 @@
+{
+  "checks": [
+    "New player opens the table with manual priority",
+    "1366×768 compact duel keeps the offered library card visible and actionable beside the exile extension",
+    "1366×768 compact duel keeps the native exile extension above the hand while overlaying terrain",
+    "Actual Table options button exposes both native priority policies",
+    "Auto-pass empty priority stays inside the supported table viewport",
+    "Include mana-only windows stays inside the supported table viewport",
+    "Actual automatic-priority checkbox sends complete native configure policy",
+    "Configuring automatic passing preserves separate explicit native stops",
+    "Delayed native acknowledgement disables both policy controls",
+    "Clicking disabled policy controls cannot enqueue duplicate native commands",
+    "Automatic passing is persisted in this player’s saved UI preference",
+    "Only the controlled native acknowledgement releases the policy controls",
+    "Actual mana-only checkbox explicitly opts into ignoring only native mana abilities",
+    "Mana-only opt-in survives this player’s save operation",
+    "Room reconnect leaves both preference controls visibly disabled",
+    "Actual offline checkbox clicks neither send commands nor replace saved player preferences",
+    "The unanswered native choice remains readable during reconnect",
+    "Reconnect allows explicit Full Control while retaining the separate mana-only preference",
+    "An unsupported native policy is disabled instead of guessed by the client",
+    "Actual Close options button returns to the same match",
+    "Policy controls retain match and current native prompt identity",
+    "1120×720 compact duel keeps the offered library card visible and actionable beside the exile extension",
+    "1120×720 compact duel keeps the native exile extension above the hand while overlaying terrain",
+    "Actual compact library-card click routes its current offered UUID and prompt",
+    "A native offered mana-undo action remains available in the compact toolbar",
+    "Offline mana-undo control is visibly disabled and cannot consume a native choice",
+    "Actual mana-undo click uses only the current offered native response",
+    "Actual Table options opens immediately before a remote terminal result",
+    "A completed duel retires its hidden options window and transfers input to the result",
+    "Actual Main menu button remains clickable after completion with Table options previously open"
+  ],
+  "ledger": [
+    {
+      "body": {
+        "autoPass": true,
+        "command": "configure",
+        "passWithOnlyMana": false,
+        "stops": {
+          "opponent": [
+            "DECLARE_BLOCKERS"
+          ],
+          "own": [
+            "UPKEEP"
+          ]
+        }
+      },
+      "method": "POST",
+      "path": "/session/priority",
+      "service": "engine"
+    },
+    {
+      "body": {
+        "matchPrefs": {
+          "priority": {
+            "autoPass": true,
+            "passWithOnlyMana": false,
+            "stops": {
+              "opponent": [
+                "DECLARE_BLOCKERS"
+              ],
+              "own": [
+                "UPKEEP"
+              ]
+            }
+          }
+        }
+      },
+      "method": "PUT",
+      "path": "/ui-layout",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "autoPass": true,
+        "command": "configure",
+        "passWithOnlyMana": true,
+        "stops": {
+          "opponent": [
+            "DECLARE_BLOCKERS"
+          ],
+          "own": [
+            "UPKEEP"
+          ]
+        }
+      },
+      "method": "POST",
+      "path": "/session/priority",
+      "service": "engine"
+    },
+    {
+      "body": {
+        "matchPrefs": {
+          "priority": {
+            "autoPass": true,
+            "passWithOnlyMana": true,
+            "stops": {
+              "opponent": [
+                "DECLARE_BLOCKERS"
+              ],
+              "own": [
+                "UPKEEP"
+              ]
+            }
+          }
+        }
+      },
+      "method": "PUT",
+      "path": "/ui-layout",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "autoPass": false,
+        "command": "configure",
+        "passWithOnlyMana": true,
+        "stops": {
+          "opponent": [
+            "DECLARE_BLOCKERS"
+          ],
+          "own": [
+            "UPKEEP"
+          ]
+        }
+      },
+      "method": "POST",
+      "path": "/session/priority",
+      "service": "engine"
+    },
+    {
+      "body": {
+        "matchPrefs": {
+          "priority": {
+            "autoPass": false,
+            "passWithOnlyMana": true,
+            "stops": {
+              "opponent": [
+                "DECLARE_BLOCKERS"
+              ],
+              "own": [
+                "UPKEEP"
+              ]
+            }
+          }
+        }
+      },
+      "method": "PUT",
+      "path": "/ui-layout",
+      "service": "catalog"
+    },
+    {
+      "body": {
+        "expectedGameId": "SYNTHETIC-TABLE-OPTIONS",
+        "promptId": 13,
+        "type": "uuid",
+        "value": "library-top-native"
+      },
+      "method": "POST",
+      "path": "/session/action",
+      "service": "engine"
+    },
+    {
+      "body": {
+        "expectedGameId": "SYNTHETIC-TABLE-OPTIONS",
+        "promptId": 14,
+        "type": "string",
+        "value": "undo-native-value"
+      },
+      "method": "POST",
+      "path": "/session/action",
+      "service": "engine"
+    }
+  ],
+  "logicalSize": [
+    1120,
+    720
+  ],
+  "passed": true,
+  "physicalSize": [
+    1120,
+    720
+  ],
+  "scope": "Actual LÖVE11.5/Slab Table options and checkbox mouse input with controlled delayed native transport acknowledgements, real model/persistence requests and isolated VFS. Synthetic native-contract duel; no native game, network or user store writes.",
+  "screenshots": [
+    "duel-exile-library-1366",
+    "table-options-opted-in",
+    "table-options-reconnecting",
+    "duel-exile-library-1120",
+    "terminal-options-lock-cleared"
+  ],
+  "userStoreModified": false,
+  "sourceHashes": {
+    "app/priority.lua": "2ce115f36bc82e3bdab90999e5403b07d8f3ef8daf7082f8214dcb251984d5ef",
+    "app/model.lua": "908d659b4e5592b876d4a91446d472dca338ceec01d0be7e6e715a845b91c078",
+    "app/match_ui.lua": "b990fa7bf44360dcb9a8469225088978b3a23471cf5d795a1ca91499a732ca7b",
+    "app/view.lua": "31e58c61fc1f1c4a6766b7a23d46e35cb5b9d7a0ce87f9d903b51c5c4daad39b",
+    "app/table_panels.lua": "d9580339db3935ccfa39a23d5495e21d6b94dc9eea60d422fcb23e9fede69be7",
+    "app/table.lua": "b46e7c8d0b11b2177c1e76a4ff9276ed4df6ee67fb95ce2f26a0fec22d5ca11c",
+    "app/table_hud.lua": "b5c1b30b53c3d26094f352eed51d944c7196728ef304dcabff07c9018ba95b4a",
+    "app/table_presentation.lua": "ba49df73113e7ff741b37fe9accad21b278166da3df732a6a7c3dd0f2de7deeb",
+    "app/renderer.lua": "3df326b0229d81d09b18c64910ba735eb4991d027dcb7165cc54a7bc6ca639ae",
+    "app/layout.lua": "527a354c7259b952ce6972234357405210be116243415426bfc640e1c0fda1b8",
+    "tests/table_options_ui.lua": "fd62c89b0305f9c8251188a87f06ac6eda993b342c32d23d62c79216094e6bf1",
+    "tests/table_options_ui.sh": "666bc099ac30a8bdb749c292ac711524d328ba41ba716dbfaee17e480be0f0a3"
+  },
+  "sourceStillMatches": true,
+  "fixtureDirectory": "/tmp/love2gathering-table-options.NzY7Xo"
+}

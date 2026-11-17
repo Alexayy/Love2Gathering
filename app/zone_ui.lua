@@ -2,12 +2,14 @@
 -- prompt actionability remain separate; this module grants no permissions.
 local Choices=require('app.card_choices')
 local Presentation=require('app.card_presentation')
+local Actions=require('app.card_actions')
 local UI={}
 local function visible(card)return type(card)=='table'and not card.hidden and not card.faceDown end
 function UI.details(card)
     if not visible(card)then return'Face-down card'end
     local lines={tostring(card.name or card.label or'Card')};local context=card.faceDownContext
-    if context then lines[#lines+1]='Face-down battlefield · native P/T '..tostring(context.nativePT or'unknown')..' · '..tostring(context.damage or 0)..' damage marked'
+    if context and card.zone and card.zone~='BATTLEFIELD'then lines[#lines+1]=card.zone=='EXILED'and'Face-down in exile · private identity'or'Face-down card · private identity'
+    elseif context then lines[#lines+1]='Face-down battlefield · native P/T '..tostring(context.nativePT or'unknown')..' · '..tostring(context.damage or 0)..' damage marked'
     else local stats=Presentation.stats(card);if stats then lines[#lines+1]=stats.label end end
     if card.tapped then lines[#lines+1]='Tapped'end
     local names={};for name,count in pairs(card.counters or{})do if tonumber(count)and tonumber(count)~=0 then names[#names+1]=name end end;table.sort(names)
@@ -24,6 +26,7 @@ function UI.entries(zone,query)
     return out
 end
 function UI.build(v,w,h)
+    v.zoneCardHits={};v.r.zoneCardRects={}
     local m,S=v.m,v.S;local zone=m.zoneView;if not zone then return end
     if not v.zoneUiOpening or v.zoneUiOpening.zone~=zone then v.zoneUiOpening={zone=zone,waiting=true}end
     local opening=v.zoneUiOpening
@@ -36,6 +39,7 @@ function UI.build(v,w,h)
     -- Consume that complete opening gesture before its images accept clicks.
     local ready=not opening.waiting
     local pw,ph=math.min(1040,w-70),math.min(680,h-135)
+    v.zonePanelRect={x=(w-pw)/2,y=math.max(72,(h-ph)/2),w=pw,h=ph}
     v:window('zone-view',(w-pw)/2,math.max(72,(h-ph)/2),pw,ph,zone.label or'Cards',{BgColor={.025,.04,.06,.98}})
     local inner=select(1,S.GetWindowSize())-42
     if S.Button('Close zone',{W=inner,H=30,Disabled=not ready})then m.zoneView=nil;S.EndWindow();return end
@@ -54,14 +58,24 @@ function UI.build(v,w,h)
         local entry=entries[position];local card=entry.card;local index=position-zone.offset
         if(index-1)%cols~=0 then S.SameLine({Pad=8})elseif index>1 then S.NewLine()end
         S.PushID('zone-card-'..tostring(card.id or entry.index))
-        local actionable=entry.visible and not m.replay and m:canSelect(card.id)
-        local selected=S.Button(entry.name,{W=cw,H=ch,Image={Image=Choices.cardImage(v,card,cw,ch)},Active=actionable,Disabled=not ready or not entry.visible or m.actionBusy,Tooltip=UI.details(card)..(actionable and'\nAvailable for this action'or'\nRight-click to inspect')})
+        local actionable=entry.visible and not m.replay and not m.roomDisconnected and m:canSelect(card.id)
+        local rawX,rawY=S.GetCursorPos({Absolute=true});local x,y=require('lib.Slab.Internal.UI.Window').TransformPoint(rawX,rawY)
+        local hit={x=x,y=y,w=cw,h=ch,card=card,ready=ready,available=actionable,zone=zone};v.zoneCardHits[#v.zoneCardHits+1]=hit
+        v.r.zoneCardRects[card.id]=hit
+        local selected=S.Button(entry.name,{W=cw,H=ch,Image={Image=Choices.cardImage(v,card,cw,ch)},Active=actionable,Disabled=not ready or not entry.visible or m.actionBusy or m.roomDisconnected,Tooltip=UI.details(card)..(actionable and'\nAvailable now · click or drag out to play; Actions shows native options'or'\nRight-click to inspect')})
+        if actionable then
+            local draw=require('lib.Slab.Internal.Core.DrawCommands')
+            -- Queue the frame with Slab so clipping/scaling matches the image.
+            draw.Rectangle('line',rawX+1,rawY+1,cw-2,ch-2,v.r.colors.accent,3,10,3)
+            draw.Rectangle('fill',rawX+5,rawY+27,45,21,{.025,.06,.05,.96},3)
+            draw.Print('PLAY',rawX+10,rawY+29,v.r.colors.accent,v.r.fonts[12])
+        end
         if ready and entry.visible and S.IsControlHovered()then m.choiceHover={card=card};if S.IsMouseClicked(2)then
             if zone.libraryPlayerId then m:inspectLibraryTop(zone.libraryPlayerId,card.id,zone.libraryGameId)else m.inspectCard=card end
         end end
         S.PopID()
         if selected then
-            if actionable and m:selectCard(card)then m.zoneView=nil
+            if actionable and Actions.select(m,card)then if not m.cardActionSheet then m.zoneView=nil end
             elseif zone.libraryPlayerId then m:inspectLibraryTop(zone.libraryPlayerId,card.id,zone.libraryGameId)
             else m.previewCard=card;m.inspectCard=card end
             break
@@ -69,5 +83,32 @@ function UI.build(v,w,h)
     end
     if#entries==0 then S.Text(#(zone.cards or{})==0 and(zone.libraryPlayerId and'The top card is not currently visible.'or'This zone is empty.')or'No matching cards.',{Color=v.r.colors.muted})end
     S.EndListBox();S.EndWindow()
+end
+local function contains(box,x,y)return box and x>=box.x and x<=box.x+box.w and y>=box.y and y<=box.y+box.h end
+function UI.press(v,x,y,button)
+    local m=v.m;if button~=1 or not m.zoneView or m.actionBusy or m.replay or m.roomDisconnected then return false end
+    for i=#(v.zoneCardHits or{}),1,-1 do local hit=v.zoneCardHits[i]
+        if hit.ready and hit.available and contains(hit,x,y)then
+            local current=m:prompt();v.zoneDrag={hit=hit,x=x,y=y,startX=x,startY=y,gameId=m.game and m.game.gameId,promptId=current and current.id};return true
+        end
+    end
+    return false
+end
+function UI.move(v,x,y)
+    local drag=v.zoneDrag;if not drag then return false end
+    drag.x=x;drag.y=y;drag.moved=drag.moved or math.abs(x-drag.startX)+math.abs(y-drag.startY)>6;return true
+end
+function UI.release(v,x,y,button)
+    local drag=v.zoneDrag;if button~=1 or not drag then return false end
+    v.zoneDrag=nil;local m=v.m;local current=m:prompt()
+    if not m.zoneView or m.zoneView~=drag.hit.zone or m.roomDisconnected or m.replay or not current or current.id~=drag.promptId or (m.game and m.game.gameId)~=drag.gameId then return true end
+    if not drag.moved or not contains(v.zonePanelRect,x,y)then
+        if Actions.select(m,drag.hit.card)and not m.cardActionSheet then m.zoneView=nil end
+    end
+    return true
+end
+function UI.ghost(v)
+    local drag=v.zoneDrag;if not drag or not drag.moved or v.m.roomDisconnected then return end
+    v.r:drawCard(drag.hit.card,drag.x-50,drag.y-70,100,140,{noHit=true,kind='zone-drag'})
 end
 return UI

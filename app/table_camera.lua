@@ -7,14 +7,14 @@ function Camera:configure(view,count)
     if self.signature==signature then return end
     self.signature=signature
     self.view=view;self.columns=2;self.rows=math.ceil(count/2)
-    -- This is a world-space table. Card sizes do not shrink to fit four seats.
-    self.cellW=math.max(1040,math.min(1560,view.w*.92))
-    self.cellH=math.max(760,math.min(940,view.h*.98));self.gap=22
+    -- Stable world-space seats share one overview/focus camera transform.
+    local seatH=(view.h-18*(self.rows-1))/self.rows
+    self.cellW=math.max(640,math.min((view.w-18)/2,seatH*1.7))
+    self.cellH=math.max(390,seatH,self.cellW/1.7);self.gap=18
     self.width=self.columns*(self.cellW+self.gap)-self.gap
     self.height=self.rows*(self.cellH+self.gap)-self.gap
     self.overviewZoom=math.min(view.w/self.width,view.h/self.height)
-    self.focusZoom=1
-    if not self.ready then self.x=self.width/2;self.y=self.height/2;self.zoom=1;self.mode='free';self:bound();self.ready=true
+    if not self.ready then self.ready=true;self:overview(true)
     elseif self.mode=='overview' then self:overview(true)
     elseif self.focusIndex then self:focus(self.focusIndex,true)
     else self:bound() end
@@ -33,19 +33,19 @@ function Camera:overview(immediate)
     if immediate then self.x=self.target.x;self.y=self.target.y;self.zoom=self.target.zoom;self:bound() end
 end
 function Camera:focus(index,immediate)
-    local zoom=self.mode=='overview' and self.focusZoom or self.zoom
+    local zoom=self.mode=='overview' and math.min(2,math.max(1.15,self.overviewZoom*1.6))or self.zoom
     self.mode='focus';self.focusIndex=index;local c=self:cell(index)
     self.target={x=c.x+c.w/2,y=c.y+math.min(c.h/2,self.view.h/(2*zoom)),zoom=zoom}
     if immediate then self.x=self.target.x;self.y=self.target.y;self.zoom=self.target.zoom;self:bound() end
 end
-function Camera:followTurn(playerId,turn,seats,enabled,immediate)
+function Camera:followTurn(playerId,turn,seats,enabled,immediate,blocked)
     if not playerId then return false end
     local key=tostring(turn or '')..':'..tostring(playerId)
     local changed=self.observedTurn~=key
-    local enabledNow=enabled~=false
+    local enabledNow=enabled==true
     local justEnabled=enabledNow and self.followEnabled==false
     self.observedTurn=key;self.followEnabled=enabledNow
-    if not enabledNow or not(changed or justEnabled)then return false end
+    if blocked or not enabledNow or not(changed or justEnabled)then return false end
     for index,player in ipairs(seats or{})do
         if player.id==playerId then self:focus(index,immediate);return true end
     end
@@ -53,7 +53,7 @@ function Camera:followTurn(playerId,turn,seats,enabled,immediate)
 end
 function Camera:zoomAt(factor,x,y)
     local t=self:transform();local wx,wy=(x-t.x)/self.zoom,(y-t.y)/self.zoom
-    local zoom=clamp(self.zoom*factor,.45,1.65)
+    local zoom=clamp(self.zoom*factor,math.min(.45,self.overviewZoom*.8),2.2)
     self.x=wx-(x-self.view.x-self.view.w/2)/zoom
     self.y=wy-(y-self.view.y-self.view.h/2)/zoom
     self.zoom=zoom;self.target=nil;self.mode='free';self.focusIndex=nil;self:bound()

@@ -43,18 +43,23 @@ r.boardPlayers={human=game.players[1],bot=game.players[2]}
 Board.links(r)
 local core,owner,heads,origins,targets={},{},{},{},{}
 for _,entry in ipairs(commands)do
- if entry.kind=='line'and entry.width==6 then core[#core+1]=entry end
- if entry.kind=='line'and entry.width==11 then owner[#owner+1]=entry end
- if entry.kind=='polygon'and entry.width==11 then heads[#heads+1]=entry end
+ if entry.kind=='line'and entry.width==4 then core[#core+1]=entry end
+ if entry.kind=='line'and entry.width==8 then owner[#owner+1]=entry end
+ if entry.kind=='polygon'and entry.width==8 then heads[#heads+1]=entry end
  if entry.kind=='circle'and entry.values[4]==9 then origins[#origins+1]=entry end
 end
 for _,entry in ipairs(r.icons)do if entry.name=='focus'then targets[#targets+1]=entry end end
-check(#core>0 and #owner>0 and #heads==2 and #origins==2,'Attack shafts, heads and origin markers have stronger geometry')
+check(#core>0 and #owner>0 and #heads==2 and #origins==2,'Attack shafts, heads and origin markers remain directional and readable')
 check(json.encode(core[1].color)~=json.encode(core[#core].color),'Different attackers retain distinct inner colors')
 check(json.encode(owner[1].color)==json.encode(Board.color(r,'bot'))and json.encode(owner[#owner].color)==json.encode(Board.color(r,'human')),'Each larger arrow retains its actual player outline')
 local tip=heads[1].values;local baseWidth=math.sqrt((tip[4]-tip[6])^2+(tip[5]-tip[7])^2)
-check(math.abs(baseWidth-28)<.001,'Attack arrowhead has a visible28pixel outer base')
-check(targets[1].size==22 and targets[2].size==22 and targets[3].size==18,'Attack target markers grow while stack targets retain their geometry')
+check(math.abs(baseWidth-24)<.001,'Attack arrowhead has a readable bounded24pixel outer base')
+check(targets[1].size==22 and targets[2].size==22 and#targets==2,'Only actual combat targets render until a stack object is inspected')
+check(#r.boardLinks==2 and r.boardLinks[1].targetId=='human'and r.boardLinks[1].to.x==650,'Attack geometry is recorded at the actual native recipient')
+r.stackRows={ability={x=900,y=300,w=160,h=80,visible=true}};r.hoverStackId='ability';r.boardLinks={};commands={};Board.links(r)
+local connection;for _,link in ipairs(r.boardLinks)do if link.kind=='stack'then connection=link end end
+check(connection and connection.sourceId=='ability'and connection.targetId=='b'and connection.from.x>=900 and connection.to.x<=450,'Hovered stack connection uses exact current row and current target edge')
+r.hoverStackId=nil;r.boardLinks={};commands={};r.icons={};Board.links(r)
 check(r.labels[1]=='BLOCKED'and r.hits[1].tooltip:find('Removing its blockers',1,true),'Confirmed native block remains visible after a blocker disappears')
 local rendered=json.encode(commands);commands={};r.icons={};r.model.settings.reducedMotion=false;Board.links(r)
 check(json.encode(commands)==rendered,'Static attack indicators do not add movement when motion preference changes')

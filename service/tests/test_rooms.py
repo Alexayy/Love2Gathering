@@ -27,7 +27,7 @@ class NativeFixture:
             self.retries[(path, body['idempotencyKey'])] = (copy.deepcopy(body), copy.deepcopy(result))
         return result
 
-    def call(self, method, path, body=None):
+    def call(self, method, path, body=None, timeout=None):
         self.calls.append((method, path, copy.deepcopy(body)))
         from urllib.parse import parse_qs, urlsplit
         query = parse_qs(urlsplit(path).query);path = urlsplit(path).path
@@ -358,9 +358,9 @@ class RoomTests(unittest.TestCase):
 
     def test_close_during_native_start_reclaims_late_game(self):
         engine = self.a.engine;original = engine.call;entered = threading.Event();release = threading.Event()
-        def delayed(method, path, body=None):
+        def delayed(method, path, body=None, timeout=None):
             if path == '/multiplayer/start': entered.set();release.wait(2)
-            return original(method, path, body)
+            return original(method, path, body, timeout=timeout)
         engine.call = delayed
         created = self.create();joined = self.join(created)
         for server, connection in ((self.a, created), (self.b, joined)):
@@ -413,10 +413,10 @@ class RoomTests(unittest.TestCase):
         for server, connection in ((self.a, created), (self.b, joined)):
             self.client(server, connection, '/draft/deck', {'main': [], 'basics': {}})
         entered = threading.Event();release = threading.Event();original = self.a.engine.call
-        def delayed(method, path, body=None):
+        def delayed(method, path, body=None, timeout=None):
             if path == '/multiplayer/start' and any(s['seatId'] == joined['participantId'] for s in body['seats']):
                 body = copy.deepcopy(body);entered.set();release.wait(2)
-            return original(method, path, body)
+            return original(method, path, body, timeout=timeout)
         self.a.engine.call = delayed
         self.client(self.a, created, '/start', {});self.assertTrue(entered.wait(2))
         self.client(self.b, joined, '/leave', {});release.set();self.wait_phase(created, 'playing')
@@ -431,8 +431,8 @@ class RoomTests(unittest.TestCase):
             self.client(server, connection, '/deck', {'deck': {'name': 'Deck', 'format': 'Commander'}})
             self.client(server, connection, '/ready', {'ready': True})
         original = self.a.engine.call;lost = [False]
-        def lose_once(method, path, body=None):
-            result = original(method, path, body)
+        def lose_once(method, path, body=None, timeout=None):
+            result = original(method, path, body, timeout=timeout)
             if path == '/multiplayer/start' and not lost[0]:
                 lost[0] = True;raise RoomError('Simulated response loss after accepted start', 503)
             return result
@@ -455,8 +455,8 @@ class RoomTests(unittest.TestCase):
         for server, connection in ((self.a, created), (self.b, joined)):
             self.client(server, connection, '/draft/deck', {'main': [], 'basics': {}})
         original = self.a.engine.call;lost = [False]
-        def lose_once(method, path, body=None):
-            result = original(method, path, body)
+        def lose_once(method, path, body=None, timeout=None):
+            result = original(method, path, body, timeout=timeout)
             if path == '/draft/next-round' and not lost[0]:
                 lost[0] = True;raise RoomError('Simulated response loss after accepted round', 503)
             return result

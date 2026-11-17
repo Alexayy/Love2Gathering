@@ -17,6 +17,38 @@ The work used shell commands for focused source discovery, builds and local runs
 
 ## Continuing work
 
+The November 18 table revision keeps XMage authoritative for zone offers, costs,
+targets and current mechanics. `NativeCardActions` publishes detached native
+options; `app/card_actions.lua` exposes one action sheet and a labeled playable
+exile hand. A capability is not an available action. `app/card_choices.lua`
+stages reversible multi-card selections under a stable native interaction ID,
+then reconciles exact offered UUID responses only after confirmation.
+
+`table_presentation`, `table_hud` and `table_panels` share terrain/dock geometry.
+The canonical multiplayer overview uses compact rectangular playmats and rear
+land rows. The hand overlays terrain. Stack rows provide exact clipped anchors;
+only a hovered row draws its current target connections. `Renderer:font`
+normalizes dynamic badge sizes through the real bounded font cache, including
+small many-keyword stack thumbnails. Preserve this production raster path in
+graphical tests; a stub renderer can hide missing font sizes.
+
+Room reads have bounded deadlines and independent worker lanes. A reconnect
+fences input until the exact assigned native game/perspective is reconciled.
+Only idempotent reads retry automatically; ambiguous create/join operations use
+bounded intent keys to recover the original seat. Priority policy is per player:
+manual by default, optional empty-window passing, separate mana-only opt-in,
+native unknown-legality holds, and explicit stops always win.
+
+Current focused evidence: `tests/presentation_overhaul_ui.sh`,
+`tests/table_options_ui.sh`, `tests/zone_actions_ui.sh`,
+`bridge/tests/test_zone_actions.py`, `tests/table_production.py`, and
+`tests/table-production-report.json`. The latter completes a genuine native
+duel and rotates every seat in 4/5/6-player games with real SQLite recordings.
+Synthetic geometry/crowding, native focused fixtures, exported-frame UI and
+normal-start production games remain distinct acceptance scopes.
+See [zone contracts](docs/ZONE_ACTIONS.md) and
+[mechanic coverage/assets](docs/PRESENTATION_VFX.md).
+
 1. Read `AGENTS.md`, then inspect the files for the requested behavior. Use the architecture table there to assign ownership.
 2. Trace gameplay decisions into XMage before changing the frontend. Extend the existing prompt contract when information is missing; keep presentation separate from rules.
 3. For parallel work, agree on JSON fields and file ownership before writes. Send concise findings and dependencies back to the integration owner.

@@ -78,6 +78,49 @@ The UI fences responses by connection opening, mutation sequence, room revision 
 
 ## Verification scope
 
+Room reads and native choices have separate transport lanes. Capability and
+room-envelope reads cannot queue an action behind a slow metadata scan. Native
+reads have a 2.5-second per-hop limit and a shared five-second envelope budget;
+the public hop is limited to six seconds, below the desktop worker's eight
+seconds. A failed read may retry once, then polls back off up to eight seconds.
+Waiting/reconnecting status retains the existing seat, game and unanswered
+choice. A lost mutation acknowledgement triggers a fresh read, never a replay
+of that action/pick. Definite validation failures remain validation failures.
+
+Create/join intents carry a stable desktop request identity. New room hosts
+advertise `membershipIdempotency` and receive a separate random private key.
+Only the exact same operation and canonical payload may reuse that key; a
+duplicate in flight is fenced. Both hops retain at most 1,024 small identity
+records for one hour. A retry resumes the same authenticated seat/room and does
+not allocate another member. Closed/departed memberships cannot be resurrected.
+When a legacy host gives an unknown, malformed or failed reply after a possible
+allocation, another POST is blocked because that host cannot confirm safe reuse.
+
+Table priority is a per-player policy. New players default to manual control;
+saved `autoPass` values remain intact. `passWithOnlyMana` is a separate opt-in
+and considers only XMage's native legal abilities across every zone and native
+special actions. Stops and Full Control take precedence. Targets, payments,
+combat and other mandatory decisions are never automatically answered. A
+failed or noncurrent native legality inventory holds priority conservatively.
+The policy never taps a source or generates mana on the player's behalf.
+
+- `service/tests/test_room_transport.py`: real delayed HTTP responses, bounded
+  composed reads, lost membership replies, same-seat recovery, operation/payload
+  conflicts, in-flight fencing, capacity/expiry and legacy uncertainty.
+- `tests/api_read_lanes.py`: actual LÖVE/LuaSocket workers prove that held room
+  metadata does not delay a native action, one busy read retries, and the action
+  reaches HTTP exactly once. Payloads are controlled transport fixtures.
+- `PriorityFixture`: native mana-only opt-in, manual defaults, explicit stops,
+  unavailable legality, legal instant/flash responses and mandatory choices.
+- `tests/table_options_ui.sh`: actual Slab checkbox clicks verify complete
+  native policy requests, per-player preference saves, delayed acknowledgements
+  and disabled controls during reconnect. Its synthetic duel also checks compact
+  exile/library targets, native-offered mana undo and completion while options
+  are open. It uses isolated VFS and controlled replies, not a native game.
+- `lua5.4 tests/stack_presentation.lua`: exact docked stack-row identities,
+  clipping, modal/scroll hover retirement and rematch/seat resets. Actual dock
+  rendering and hover are covered separately by `presentation_overhaul_ui.sh`.
+
 - `python3 -m unittest discover -s service/tests -p test_rooms.py -v`: real HTTP gateways with a synthetic native adapter. Checks authorization, private projections, native capability mapping, rejected decks, host/guest scope, stale-round actions, explicit forfeiture, start/close races, byes and draw-rematch orchestration. This is not rules evidence.
 - `lua tests/api_rooms.lua` and `lua tests/rooms_model.lua`: deterministic transport fencing and room/draft editing contracts.
 - `tests/draft_ui.sh`: actual LÖVE/Slab presentation/input with controlled projections.

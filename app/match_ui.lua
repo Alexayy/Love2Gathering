@@ -18,44 +18,10 @@ local function option(v,choice,width)
     if v.S.Button(label,{W=width,H=math.max(38,(breaks+1)*20+14),VLines=breaks+1,Tooltip=choice.label,Disabled=v.m.actionBusy}) then v.m:answerChoice(choice) end
     v.S.PopID()
 end
-function UI.toolbar(v,w,h)
-    local S,m=v.S,v.m
-    local prompt=m.prompt and m:prompt();local undo=not m.replay and prompt and prompt.undoChoice
-    local toolbarW=undo and 298 or 262
-    v:window('match-toolbar',w-toolbarW-16,10,toolbarW,34,nil,{AllowFocus=false})
-    local buttons={
-        {m.roomConnectionId and 'Room' or 'Lobby','home',function() if m.roomConnectionId then m:showRooms() else m.page='lobby' end end},
-        {'Settings','settings',function() m.settingsOpen=not m.settingsOpen end},
-        {'Show / hide log','log',function() m.logOpen=not (m.logOpen~=false);m:setUIOption('logOpen',m.logOpen) end,m.logOpen~=false},
-        {'Show / hide stack','stack',function() m.stackOpen=not (m.stackOpen~=false);m:setUIOption('stackOpen',m.stackOpen) end,m.stackOpen~=false},
-        {'Save replay','save',function() m:saveReplay() end,nil,m.roomGameActive and m.game and m.game.replayAvailable==false},
-        {'Replay library','replay',function() m:showReplays() end},
-        {m.replay and 'Close replay' or 'Concede match',m.replay and 'close' or 'concede',function() if m.replay then m:closeReplay() else m.confirmConcede=true end end},
-    }
-    if undo then table.insert(buttons,1,{undo.label or'Undo last mana action','undo',function()m:answerChoice(undo)end,nil,m.actionBusy or m.priorityBusy})end
-    for i,item in ipairs(buttons) do if i>1 then S.SameLine() end;iconButton(v,item[1],item[2],item[3],item[4],item[5],28) end
-    S.EndWindow()
-    if not m.replay and m.api.status then
-        local pending=m.api:status(m.roomConnectionId and'room'or'engine')
-        local execution=m.game and m.game.execution or{}
-        local stopping=execution.stopRequested==true and execution.terminationConfirmed~=true
-        if pending.oldestSeconds>=2 or stopping then
-            v:window('engine-transport-status',w-430,50,414,52,nil,{AllowFocus=false,BgColor={.025,.04,.06,.99}})
-            S.Textf(stopping and'Stopping game · waiting for engine confirmation'or string.format('Waiting for engine response · %.1fs',pending.oldestSeconds),{W=390,Color=v.r.colors.gold})
-            S.Textf(stopping and'The game thread has not confirmed termination.'or m.concedePending and'Concession requested; native result is not confirmed.'or'You can open Settings, inspect the log or request Concede.',{W=390,Color=v.r.colors.muted})
-            S.EndWindow()
-        end
-    end
-end
+function UI.toolbar(v,w,h)return require('app.table_panels').toolbar(v,w,h)end
 function UI.priority(v,w,h)
     local m,S=v.m,v.S;if m.replay or not m.game or m.game.running==false then return end
-    local prompt=m:prompt();local extra=prompt and prompt.undoChoice and 36 or 0
-    local state=m.game.priority or {};local options=m:priorityOptions()
-    v:window('priority-mode',w-356-extra,10,70,34,nil,{AllowFocus=false})
-    iconButton(v,options.autoPass and 'Automatic priority · click for full control' or 'Full control · click for automatic priority',options.autoPass and 'play' or 'pause',function() m:toggleAutoPass() end,not options.autoPass,m.priorityBusy,28)
-    S.SameLine()
-    iconButton(v,'Choose combat step stops','settings',function() v.combatStopsOpen=not v.combatStopsOpen end,v.combatStopsOpen,false,28)
-    S.EndWindow()
+    local state=m.game.priority or{};local options=m:priorityOptions()
     local stop=Priority.stopPresentation(m,Priority.beforeDamage,'opponent');local C=v.r.colors
     local tint=stop.status=='on'and C.accent or stop.status=='off'and C.muted or C.gold
     local fill=stop.status=='on'and{tint[1]*.24,tint[2]*.24,tint[3]*.24,1}
@@ -65,7 +31,7 @@ function UI.priority(v,w,h)
     tooltip=tooltip..'\n'..(stop.status=='on'and'ON · confirmed by XMage. After Done confirms blockers, priority stops before damage.'
         or stop.status=='off'and'OFF · confirmed by XMage. Click to enable this stop.'
         or stop.pending and'WAIT · a native priority update is still pending.'or'Not yet confirmed by XMage; the saved choice is not shown as active.')
-    v:window('before-damage-stop',w-238,76,222,36,nil,{AllowFocus=false,Border=0,BgColor={0,0,0,0},AutoSizeContent=false})
+    v:window('before-damage-stop',w-238,108,222,34,nil,{AllowFocus=false,Border=0,BgColor={0,0,0,0},AutoSizeContent=false})
     local image=v.r.assets:buttonImage('block',stop.label,208,32,{font=v.r.fonts[12],iconSize=24,color=tint,iconTint=tint,gap=8})
     if S.Button('Stop after confirmed blockers, before combat damage · opponents’ turns',{Image={Image=image},W=208,H=32,Tooltip=tooltip,
         Color=fill,HoverColor=hover,PressColor=hover,Disabled=stop.pending})then m:togglePhaseStop(Priority.beforeDamage,'opponent')end
@@ -95,73 +61,8 @@ function UI.priority(v,w,h)
         S.EndWindow()
     end
 end
-function UI.log(v,w,h)
-    local m,S=v.m,v.S;local L=Layout.table(w,h);m.logHover=nil
-    if m.logOpen==false then return end
-    v:window('floating-log',L.log.x,L.log.y,L.log.w,L.log.h,'Match log')
-    S.Text('You',{Color={.32,.91,.73}});S.SameLine();S.Text(v.m.roomGameActive and 'Opponents' or 'Bot',{Color={.74,.59,1}});S.SameLine();S.Text('Actions',{Color={.48,.77,1}});S.SameLine()
-    local verbose=((m.uiLayout or {}).matchPrefs or {}).logVerbose==true
-    if S.CheckBox(verbose,'Verbose',{Tooltip='Include stack triggers and resolutions. Hover an entry for its full text.'})then m:setUIOption('logVerbose',not verbose)end
-    S.Separator()
-    local log=m.game and m.game.log or {}
-    local width=select(1,S.GetWindowSize())-32
-    for _,entry in ipairs(Log.entries(log,m.game and m.game.players,verbose))do
-        S.PushID('log-'..entry.index)
-        S.Rectangle({W=4,H=19,Color=entry.actorColor,Rounding=2});S.SameLine()
-        local source=Log.source(entry,m.game);local data=source and(m:cardData(source)or source);local art=data and(m:getArt(data,true)or CardChoices.cardImage(v,source,64,90))
-        S.Image('log-icon',{Image=art or v.r.assets:iconImage(entry.icon,18),W=art and 13 or 18,H=18,Tooltip=source and source.name or entry.category})
-        if source and S.IsControlHovered()then m.logHover={card=source}end
-        S.SameLine()
-        local text,height=RichText.canvas(v.r,entry.text,width-38,{size=14,color=entry.color,maxLines=2})
-        S.Image('log-text',{Image=text,W=width-38,H=height,Tooltip=entry.fullText})
-        S.PopID()
-    end
-    S.EndWindow()
-end
-function UI.stack(v,w,h)
-    local S,m=v.S,v.m;local stack=m.game and m.game.stack or {};m.stackHits={};m.stackHover=nil
-    if #stack==0 or m.stackOpen==false then return end
-    local prompt=m:prompt();if prompt and prompt.type=='order' then return end
-    local choiceKey=prompt and table.concat({tostring(m.roomConnectionId or'practice'),tostring(m.game.gameId),tostring(prompt.id)},':')
-    if prompt and CardChoices.prefersBoard(m,prompt)and v.stackChoiceExpandedPrompt~=choiceKey then
-        -- A floating stack can cover the very permanent XMage asks the user
-        -- to choose (notably a sacrifice cost in a small duel window).
-        -- Fold its presentation, preserving the real stack and saved layout.
-        v:window('stack-selection-summary',w-278,78,262,34,nil,{AllowFocus=false})
-        if S.Button('Show stack while choosing',{W=246,H=28,Image={Image=v.r.assets:buttonImage('stack','Stack · '..#stack..' · expand',246,28)},Tooltip='Stack folded to leave battlefield choices accessible. Expand to inspect it.'})then v.stackChoiceExpandedPrompt=choiceKey end
-        S.EndWindow();return
-    end
-    local panelH=m.replay and math.min(360,math.max(100,h-520)) or math.min(430,h-365)
-    v:window('floating-stack',w-536,340,386,panelH,'Stack · '..#stack)
-    local width=select(1,S.GetWindowSize())-32
-    for i,object in ipairs(stack) do
-        local source=type(object.sourceCard)=='table'and object.sourceCard.name and object.sourceCard or {name=object.artName or object.sourceName or object.name}
-        local data=m:cardData(source) or source;local art=m:getArt(data,true)or CardChoices.cardImage(v,source,76,106)
-        local x,y=S.GetCursorPos({Absolute=true});local cardW=76;local cardH=106
-        S.PushID('stack-'..tostring(object.id or i))
-        if art then
-            if S.Button('Inspect source card',{Image={Image=art},W=cardW,H=cardH,Tooltip=source.name}) then m.inspectCard=source end
-        else S.Rectangle({W=cardW,H=cardH,Color={.10,.14,.20},Rounding=5}) end
-        S.Indent(cardW+12)
-        S.SetCursorPos(x+cardW+12,y,{Absolute=true})
-        S.Text((object.isTop or (object.isTop==nil and i==1)) and 'RESOLVES NEXT' or ('STACK '..i),{Color=v.r.colors.purple})
-        S.Textf(object.sourceName or object.name or source.name or 'Ability',{W=width-cardW-18,Color=v.r.colors.text})
-        local rules=object.rules
-        if not rules or rules=='' then rules=data.oracle_text or source.rules or source.type or data.type_line or '' end
-        if type(rules)=='table' then rules=table.concat(rules,'\n') end
-        RichText.slab(v,'stack-rules',rules,width-cardW-18,{size=14,color=v.r.colors.muted})
-        local _,bottom=S.GetCursorPos({Absolute=true})
-        S.Unindent(cardW+12)
-        local sx,sy=Window.TransformPoint(x,y);local wx,wy=S.GetWindowPosition();local ww,wh=S.GetWindowSize()
-        local hit={x=sx,y=sy,w=width,h=math.max(cardH,bottom-y),clip={x=wx,y=wy+(S.GetStyle().WindowTitleH or 20),w=ww,h=wh},id=object.id,sourceId=object.sourceId,sourceCard=source,targets=object.targets or {}}
-        m.stackHits[#m.stackHits+1]=hit
-        local mx,my=Layout.mouse()
-        if not Window.IsObstructedAtMouse()and mx>=hit.x and mx<=hit.x+hit.w and my>=math.max(hit.y,hit.clip.y)and my<=math.min(hit.y+hit.h,hit.clip.y+hit.clip.h)then m.stackHover=hit end
-        S.SetCursorPos(x,math.max(y+cardH,bottom)+10,{Absolute=true});S.Separator()
-        S.PopID()
-    end
-    S.EndWindow()
-end
+function UI.log(v,w,h)return require('app.table_panels').log(v,w,h)end
+function UI.stack(v,w,h)return require('app.table_panels').stack(v,w,h)end
 function UI.prompt(v,w,h)
     local S,m=v.S,v.m;local p=m:prompt();if CardChoices.build(v,w,h,p)then return end;if not p then return end
     if p.mulligan then
@@ -170,8 +71,8 @@ function UI.prompt(v,w,h)
         S.PushFont(v.r.fonts[24]);S.Text('Keep this hand?',{Color=v.r.colors.text});S.PopFont();S.NewLine()
         S.Text(p.mulligan.free and 'Your first Commander mulligan is free.' or 'Choose your starting hand.',{Color=v.r.colors.muted});S.NewLine()
         local bw=(mw-36)/2
-        if S.Button('Keep',{W=bw,H=46,Disabled=m.actionBusy}) then m:answerChoice(p.mulligan.keepChoice) end;S.SameLine()
-        if S.Button('Mulligan Down to '..tostring(p.mulligan.downTo),{W=bw,H=46,Disabled=m.actionBusy}) then m:answerChoice(p.mulligan.mulliganChoice) end
+        if S.Button('Keep',{W=bw,H=46,Disabled=m.actionBusy or m.roomDisconnected}) then m:answerChoice(p.mulligan.keepChoice) end;S.SameLine()
+        if S.Button('Mulligan Down to '..tostring(p.mulligan.downTo),{W=bw,H=46,Disabled=m.actionBusy or m.roomDisconnected}) then m:answerChoice(p.mulligan.mulliganChoice) end
         S.EndWindow();return
     end
     if p.manaWheel then return end
@@ -179,26 +80,27 @@ function UI.prompt(v,w,h)
         local controls={}
         for _,choice in ipairs(p.choices or {}) do if choice.responseType~='uuid' then controls[#controls+1]=choice end end
         local endTurn=p.priority==true
-        local bw=math.min(430,150*math.max(1,#controls)+(endTurn and 152 or 0));local x=w-bw-16
-        v:window('priority-controls',x,h-62,bw,49)
+        local bw=math.min(600,190*math.max(1,#controls)+32+(endTurn and 152 or 0));local x=w-bw-16
+        v:window('priority-controls',x,h-65,bw,54)
         for i,choice in ipairs(controls) do
             if i>1 then S.SameLine() end
             S.PushID('control-'..i)
-            if S.Button(choice.label or 'Pass',{W=(bw-32-(endTurn and 152 or 0))/math.max(1,#controls)-4,H=32,Disabled=m.actionBusy or m.priorityBusy}) then m:answerChoice(choice) end
+            local label=p.priority and 'Pass Priority'or choice.label or require('app.table_presentation').primary(p,m.game)
+            if S.Button(label,{W=(bw-32-(endTurn and 152 or 0))/math.max(1,#controls)-4,H=44,Disabled=m.actionBusy or m.roomDisconnected or m.priorityBusy}) then m:answerChoice(choice) end
             S.PopID()
         end
         if endTurn then
             if #controls>0 then S.SameLine() end
-            if S.Button('End Turn',{Image={Image=v.r.assets:buttonImage('next','End Turn',144,32)},W=144,H=32,Disabled=m.actionBusy or m.priorityBusy}) then m:endTurn() end
+            if S.Button('End Turn',{Image={Image=v.r.assets:buttonImage('next','End Turn',144,32)},W=144,H=44,Disabled=m.actionBusy or m.roomDisconnected or m.priorityBusy}) then m:endTurn() end
         end
         S.EndWindow();return
     end
     local pw=360;local ph=math.min(400,math.max(185,115+#(p.choices or {})*45));local width=pw-32
-    v:window('floating-actions',w-pw-18,134,pw,ph,'Choose an action')
+    v:window('floating-actions',math.max(24,(w-pw)/2),math.max(162,h*.32),pw,ph,'Choose an action',{AllowMove=false})
     RichText.slab(v,'prompt-message',p.message or '',width,{size=16,color=v.r.colors.text});S.NewLine()
     if p.type=='order' then
         S.Textf('Leftmost resolves first.',{W=width,Color=v.r.colors.muted})
-        if S.Button('Confirm order',{W=width,H=38,Disabled=m.actionBusy}) then m:submitOrder() end
+        if S.Button('Confirm order',{W=width,H=38,Disabled=m.actionBusy or m.roomDisconnected}) then m:submitOrder() end
     else
         for _,key in ipairs({'pile1','pile2'}) do
             if p[key] and #p[key]>0 then
@@ -215,18 +117,18 @@ function UI.prompt(v,w,h)
                 v.amountValues[i]=v.amountValues[i] or tostring(entry.defaultValue or entry.min or 0)
                 if S.Input('amount-'..i,{Text=v.amountValues[i],NumbersOnly=true,MinNumber=entry.min or 0,MaxNumber=entry.max,W=width,H=30}) then v.amountValues[i]=S.GetInputText() end
             end
-            if S.Button('Confirm distribution',{W=width,H=36,Disabled=m.actionBusy}) then
+            if S.Button('Confirm distribution',{W=width,H=36,Disabled=m.actionBusy or m.roomDisconnected}) then
                 local values=require('lib.json').array();for i=1,#(p.amountMessages or {}) do values[i]=tonumber(v.amountValues[i]) or 0 end
                 m:answer('multi_amount',values)
             end
         elseif p.type=='amount' or p.type=='integer' then
             if v.numberPrompt~=p.id then v.numberPrompt=p.id;v.numberValue=tostring(p.min or 0) end
             if S.Input('amount',{Text=v.numberValue,NumbersOnly=true,MinNumber=p.min or 0,MaxNumber=p.max,W=width,H=30}) then v.numberValue=S.GetInputText() end
-            if S.Button('Confirm amount',{W=width,H=36,Disabled=m.actionBusy}) then m:answer('integer',tonumber(v.numberValue) or 0) end
+            if S.Button('Confirm amount',{W=width,H=36,Disabled=m.actionBusy or m.roomDisconnected}) then m:answer('integer',tonumber(v.numberValue) or 0) end
         elseif (p.type=='string' or p.type=='text') and #(p.choices or {})==0 then
             if v.textPrompt~=p.id then v.textPrompt=p.id;v.textValue='' end
             if S.Input('response',{Text=v.textValue,W=width,H=30,Align='left'}) then v.textValue=S.GetInputText() end
-            if S.Button('Confirm',{W=width,H=36,Disabled=m.actionBusy}) then m:answer('string',v.textValue) end
+            if S.Button('Confirm',{W=width,H=36,Disabled=m.actionBusy or m.roomDisconnected}) then m:answer('string',v.textValue) end
         end
     end
     S.EndWindow()

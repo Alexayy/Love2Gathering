@@ -1,6 +1,11 @@
 -- Presentation of authoritative projections only. No legality or combat rules.
 local Board={}
 local Dice=require('app.dice')
+local Mechanics=require('app.mechanic_fx')
+Board.mechanicBadges=true
+function Board.mechanicTooltip(card)return Mechanics.tooltip(card)end
+function Board.cardUnderlay(r,card,x,y,w,h,options)return Mechanics.cardUnderlay(r,card,x,y,w,h,options)end
+function Board.cardOverlay(r,card,x,y,w,h,options)return Mechanics.cardOverlay(r,card,x,y,w,h,options)end
 local palette={{.70,.53,1},{.34,.69,1},{1,.64,.30},{1,.43,.64},{.67,.83,.34},{.45,.82,.88},{.88,.65,.91},{.84,.76,.48},{.55,.73,.98}}
 local function list(value)return type(value)=='table'and value or{}end
 local function id(value)return type(value)=='table'and(value.id or value.targetId or value.playerId)or value end
@@ -14,9 +19,15 @@ local function pulse(age,duration)
     local t=age/duration;local attack=math.min(1,t/.14);attack=attack*attack*(3-2*attack)
     return math.sin(t*math.pi*2.2)*attack*(1-t)^2
 end
+local function interacting(r)
+    local m=r.model
+    if r.drag or r.panning or m.inspectCard or m.zoneView or m.cardActionSheet then return true end
+    local prompt=m.prompt and m:prompt()
+    return prompt and not prompt.priority
+end
 function Board.worldOffset(r)
     local e=r.boardImpact
-    if not e or r.model.settings.reducedMotion or r.model.settings.animations==false then return 0,0 end
+    if not e or interacting(r)or r.model.settings.reducedMotion or r.model.settings.animations==false or r.model.settings.cameraShake==false or r.model.settings.presentationPacing=='Minimal' then return 0,0 end
     local amount=pulse(e.age,e.duration)*e.intensity
     return amount*5,amount*3
 end
@@ -33,6 +44,8 @@ end
 function Board.damageActor(r,cards,event)
     -- Damage event.playerId belongs to the damaged player/permanent controller.
     -- Attribute the outline only to an observed native source controller.
+    if type(event.controllerId)=='string'then return event.controllerId end
+    if type(event.sourceControllerId)=='string'then return event.sourceControllerId end
     return(cards[event.sourceId]or(r.oldBoardCards or{})[event.sourceId]or{}).controllerId
 end
 function Board.index(game)
@@ -51,6 +64,10 @@ function Board.index(game)
             end
         end
     end
+    for _,item in ipairs(list(game and game.stack))do
+        local card=item.sourceCard;local key=item.sourceId or(type(card)=='table'and card.id)
+        if type(card)=='table'and type(key)=='string'and not cards[key]then cards[key]=card end
+    end
     return cards,players,attached,curses
 end
 function Board.blockStatus(group)
@@ -61,7 +78,7 @@ function Board.blockStatus(group)
 end
 function Board.prepare(r)
     r.boardCards,r.boardPlayers,r.boardAttached,r.boardCurses=Board.index(r.model.game)
-    r.playerRects={};r.boardLinks={}
+    r.playerRects={};r.boardLinks={};r.previousStackRows=r.stackRows or r.previousStackRows;r.ambientParticleCount=0
     r.boardCommanders={}
     for _,player in pairs(r.boardPlayers)do for _,commander in ipairs(list(player.commanders))do
         if commander.id then r.boardCommanders[commander.id]=commander end
@@ -130,9 +147,14 @@ function Board.anchor(r,key)
     if current and current.kind=='pile'and previous and(previous.kind=='permanent'or previous.kind=='attachment')then return previous end
     local box=current or(r.playerRects or{})[key]or previous or(r.previousPlayerRects or{})[key]
     if box then return box end
-    for _,hit in ipairs(r.model.stackHits or{})do if hit.id==key or hit.sourceId==key then return hit end end
+    local row=(r.stackRows and r.stackRows[key])or(r.previousStackRows and r.previousStackRows[key])
+    if row and row.visible~=false then return row.box or row end
+    for _,hit in ipairs(r.model.stackHits or{})do if hit.id==key then return hit end end
 end
-local function add(r,e)r.pendingBoardFX=r.pendingBoardFX or{};r.pendingBoardFX[#r.pendingBoardFX+1]=e end
+local function add(r,e)
+    r.pendingBoardFX=r.pendingBoardFX or{}
+    if#r.pendingBoardFX<96 then r.pendingBoardFX[#r.pendingBoardFX+1]=e end
+end
 local function particles(r,e)
     if r.sound then
         local sound=e.kind=='cast'and'cast'or(e.kind=='resolve'or e.kind=='life_gain')and'resolve'or'impact'
@@ -141,7 +163,7 @@ local function particles(r,e)
     end
     if not r.model.settings.reducedMotion and r.model.settings.animations~=false then
         local kind=e.kind=='cast'and'cast'or e.kind=='resolve'and'resolve'or e.kind=='life_gain'and'resolve'or'impact'
-        r:burst(kind,e.x,e.y,e.kind=='death'and 26 or 12)
+        if e.kind~='death'then r:burst(kind,e.x,e.y,12)end
         if(e.kind=='clash'or e.kind=='strike')and e.from and e.target then
             r.cardMotions[e.sourceId]={dx=(e.target.x-e.from.x)*.28,dy=(e.target.y-e.from.y)*.28,age=0,duration=.52}
         end
@@ -155,12 +177,15 @@ function Board.update(r,dt)
     if r.model.settings.reducedMotion or r.model.settings.animations==false then r.cardMotions={}end
     r.seenVisualEvents=r.seenVisualEvents or{}
     r.fxClock=(r.fxClock or 0)+dt
+    r.mechanicDirector=r.mechanicDirector or Mechanics.newDirector()
+    Mechanics.update(r.mechanicDirector,dt,r.model.settings)
     for key,e in pairs(r.cardMotions)do e.age=e.age+dt;if e.age>e.duration then r.cardMotions[key]=nil end end
     for i=#r.boardEffects,1,-1 do local e=r.boardEffects[i];e.age=e.age+dt;if e.age>=0 and not e.spawned then particles(r,e)end;if e.age>e.duration then table.remove(r.boardEffects,i)end end
     local game=r.model.game;if not game then return end
     local identity=r.model.replay or game.gameId
     local seeking=r.model.replay and r.fxReplayIndex and r.model.replay.index~=r.fxReplayIndex and r.model.replay.index~=r.fxReplayIndex+1
-    if r.fxIdentity~=identity or seeking then
+    local rollback=r.fxRevision and tonumber(game.revision)and tonumber(game.revision)<r.fxRevision
+    if r.fxIdentity~=identity or seeking or rollback then
         r.fxIdentity=identity;r.fxRevision=nil;r.oldBoardLife=nil;r.oldBoardCards=nil;r.oldCombatKey=nil;r.seenVisualEvents={};r.boardEffects={};r.cardMotions={};r.pendingBoardFX={}
         r.combatAnimationStep=nil;r.combatAnimationStart=nil;r.combatAnimationUntil=nil
         r.visualStepEpoch=nil;r.boardImpact=nil
@@ -168,6 +193,7 @@ function Board.update(r,dt)
     r.fxReplayIndex=r.model.replay and r.model.replay.index
     if r.fxRevision==game.revision and not r.model.replay then return end
     local cards,players=Board.index(game)
+    Mechanics.observe(r.mechanicDirector,game,cards,identity,seeking or rollback)
     local deathTargets={}
     if r.oldBoardLife then
         for key,p in pairs(players)do
@@ -178,8 +204,8 @@ function Board.update(r,dt)
         for key,old in pairs(r.oldBoardCards or{})do if grave[key]and not(r.oldBoardGrave or{})[key]then add(r,{kind='death',targetId=key,card=old});deathTargets[key]=true end end
         local before=r.oldStackIds or{}
         for _,stack in ipairs(list(game.stack))do if not before[stack.id]then add(r,{kind='cast',sourceId=stack.sourceId or stack.id,ownerId=stack.controllerId,card=stack.sourceCard})end end
-        local current={};for _,stack in ipairs(list(game.stack))do current[stack.id]=true end
-        for key,old in pairs(before)do if not current[key]then add(r,{kind='resolve',sourceId=old.sourceId or old.id,ownerId=old.controllerId})end end
+        -- Stack disappearance can mean countering, not successful resolution.
+        -- A truthful native outcome supplies all resolution celebration.
     end
     local retainedEvents={}
     for _,event in ipairs(list(game.animationEvents))do
@@ -187,7 +213,10 @@ function Board.update(r,dt)
         if key then retainedEvents[key]=true end
         if key and not r.seenVisualEvents[key]then
             if event.type=='step'then r.visualStepEpoch=key end
-            if r.oldBoardLife and event.type=='impact'and(event.commander==true or(tonumber(event.manaValue)or 0)>5)and not r.model.settings.reducedMotion and r.model.settings.animations~=false then
+            local actualEntry=event.entry==true or event.operation=='entry'or event.toZone=='BATTLEFIELD'
+            local impactCard=cards[event.targetId]or cards[event.sourceId]
+            local publicImpact=impactCard and not impactCard.hidden and not impactCard.faceDown and event.hidden~=true
+            if r.oldBoardLife and event.type=='impact'and actualEntry and publicImpact and(event.commander==true or(tonumber(event.manaValue)or 0)>5)and not r.model.settings.reducedMotion and r.model.settings.animations~=false and r.model.settings.cameraShake~=false and r.model.settings.presentationPacing~='Minimal' then
                 local level=math.max(0,math.min(1,tonumber(r.model.settings.boardImpactIntensity)or .55))
                 r.boardImpact={age=0,duration=.92,seed=hash(key),intensity=level*2*(event.commander and 1.15 or math.min(1.4,.8+(tonumber(event.manaValue)or 6)/20))}
                 if r.sound then r:sound('table-impact')end
@@ -222,14 +251,17 @@ function Board.update(r,dt)
     r.fxRevision=game.revision
 end
 function Board.offset(r,card)
-    if r.model.settings.animations==false or r.model.settings.reducedMotion then return 0,0,0 end
+    if interacting(r)or r.model.settings.animations==false or r.model.settings.reducedMotion then return 0,0,0 end
     local scale=r.worldTransform and r.worldTransform.scale or 1
     local dx,dy,angle=0,0,0
+    if r.mechanicDirector then
+        local mx,my,ma=Mechanics.offset(r.mechanicDirector,card,r.model.settings);dx=dx+mx/scale;dy=dy+my/scale;angle=angle+ma
+    end
     local motion=r.cardMotions and r.cardMotions[card.id]
     if motion and motion.age>=0 then
         local progress=math.sin(math.pi*math.min(1,motion.age/motion.duration));dx,dy=motion.dx*progress/scale,motion.dy*progress/scale
     end
-    local e=r.boardImpact
+    local e=r.model.settings.cameraShake~=false and r.boardImpact
     if e then
         local seed=hash(tostring(card.id)..':'..e.seed);local lag=(seed%7)*.009
         local amount=pulse(e.age-lag,e.duration-lag)*e.intensity
@@ -247,16 +279,21 @@ function Board.flush(r)
         local at=target or from
         if at then
             e.age=-(e.delay or 0);e.duration=(e.kind=='life_gain'or e.kind=='life_loss')and 1.7 or(e.kind=='damage'and 1.25 or .65);e.x=at.x;e.y=at.y;e.from=from;e.target=target
+            if#r.boardEffects>=96 then table.remove(r.boardEffects,1)end
             r.boardEffects[#r.boardEffects+1]=e
             if e.age>=0 then particles(r,e)end
         end
     end
     r.pendingBoardFX={}
+    if r.mechanicDirector then Mechanics.flush(r.mechanicDirector,function(key)return Board.anchor(r,key)end,r.previousCardRects,r.playerRects,r.zoneRects,r.previousZoneRects,r.stackRows,r.model.game and r.model.game.stack)end
 end
-local function line(r,a,b,c,dashed,outline,attack)
+local function line(r,a,b,c,dashed,outline,attack,metadata)
     if not a or not b then return end
     local dx,dy=b.x-a.x,b.y-a.y;local length=math.sqrt(dx*dx+dy*dy);if length<1 then return end
     local ux,uy=dx/length,dy/length
+    r.boardLinks=r.boardLinks or{}
+    r.boardLinks[#r.boardLinks+1]={from={x=a.x,y=a.y},to={x=b.x,y=b.y},attack=not not attack,color=c,
+        kind=metadata and metadata.kind or'effect',sourceId=metadata and metadata.sourceId,targetId=metadata and metadata.targetId}
     local function stroke(color,width,tip)
         tint(color,.94);love.graphics.setLineWidth(width)
         if dashed then for distance=0,length,attack and 26 or 16 do local finish=math.min(length,distance+(attack and 18 or 10));love.graphics.line(a.x+ux*distance,a.y+uy*distance,a.x+ux*finish,a.y+uy*finish)end
@@ -264,8 +301,8 @@ local function line(r,a,b,c,dashed,outline,attack)
         local tipX,tipY=b.x-ux*(tip*2),b.y-uy*(tip*2)
         love.graphics.polygon('fill',b.x,b.y,tipX-uy*tip,tipY+ux*tip,tipX+uy*tip,tipY-ux*tip)
     end
-    if outline then stroke(outline,attack and 11 or 6.5,attack and 14 or 7.5)end
-    stroke(c,attack and 6 or 2.5,attack and 10 or 4.5)
+    if outline then stroke(outline,attack and 8 or 4,attack and 12 or 6)end
+    stroke(c,attack and 4 or 1.7,attack and 8 or 4)
     if attack then
         if outline then tint(outline);love.graphics.circle('fill',a.x,a.y,9)end
         tint(c);love.graphics.circle('fill',a.x,a.y,5.5)
@@ -279,8 +316,8 @@ function Board.links(r)
     for index,group in ipairs(list((game.combat or{}).groups))do
         local a=point(Board.anchor(r,group.attackerId));local b=point(Board.anchor(r,group.defenderId))
         local owner=group.attackingPlayerId or((r.boardCards or{})[group.attackerId]or{}).controllerId or game.activePlayerId
-        line(r,a,b,Board.linkColor(index),true,Board.color(r,owner),true)
-        for _,blocker in ipairs(list(group.blockerIds))do line(r,point(Board.anchor(r,blocker)),a,r.colors.gold,false)end
+        line(r,a,b,Board.linkColor(index),true,Board.color(r,owner),true,{kind='attack',sourceId=group.attackerId,targetId=group.defenderId})
+        for _,blocker in ipairs(list(group.blockerIds))do line(r,point(Board.anchor(r,blocker)),a,r.colors.gold,false,nil,nil,{kind='block',sourceId=blocker,targetId=group.attackerId})end
         local label,confirmed=Board.blockStatus(group)
         if label then
             local box=Board.anchor(r,group.attackerId)
@@ -296,13 +333,39 @@ function Board.links(r)
         end
     end
     local stackHits={};for _,hit in ipairs(r.model.stackHits or{})do stackHits[hit.id]=hit end
-    local hovered=r.model.stackHover
+    for key,row in pairs(r.stackRows or{})do stackHits[type(key)=='string'and key or row.id or row.stackId]=row end
+    local hovered=r.hoverStackId or(r.model.stackHover and r.model.stackHover.id)or r.selectedStackId or r.model.selectedStackId
+    local function bounded(box)
+        if not box or box.visible==false then return nil end
+        box=box.box or box
+        local clip=box.clip
+        if clip then
+            local x,y=math.max(box.x,clip.x),math.max(box.y,clip.y);local right,bottom=math.min(box.x+box.w,clip.x+clip.w),math.min(box.y+box.h,clip.y+clip.h)
+            if right<=x or bottom<=y then return nil end
+            return{x=x,y=y,w=right-x,h=bottom-y}
+        end
+        return box
+    end
+    local function edge(box,toward)
+        if not box or not toward then return nil end
+        local cx,cy=box.x+box.w/2,box.y+box.h/2;local dx,dy=toward.x-cx,toward.y-cy
+        local length=math.max(math.abs(dx)/math.max(1,box.w/2-1),math.abs(dy)/math.max(1,box.h/2-1),.0001)
+        return{x=cx+dx/length,y=cy+dy/length}
+    end
     for index,item in ipairs(list(game.stack))do
-        local start=point(stackHits[item.id])or point(Board.anchor(r,item.sourceId))
-        local targets=item.targetIds or item.targets or{}
-        for _,target in ipairs(list(targets))do
-            local box=Board.anchor(r,id(target))
-            if not hovered or hovered.id==item.id then line(r,start,point(box),Board.linkColor(index+#list((game.combat or{}).groups)),false,Board.color(r,item.controllerId))end
+        if hovered==item.id then
+            -- Exact stack object rows, not source-card previews or last-frame
+            -- coordinates, define these screen-space connection origins.
+            local row=bounded(stackHits[item.id]);local targets=item.targetIds or item.targets or{}
+            local changed={};for _,target in ipairs(list(item.targets))do if type(target)=='table'and target.changedZones==true then changed[id(target)]=true end end
+            if row then for _,target in ipairs(list(targets))do
+                local targetId=id(target)
+                -- A departed object's ghost/last-frame rectangle is an effect
+                -- anchor only, never a current stack-target connection.
+                local box=not changed[targetId]and not(type(target)=='table'and target.changedZones==true)and(bounded(stackHits[targetId])or bounded((r.cardRects or{})[targetId])or bounded((r.playerRects or{})[targetId]))or nil
+                local center=point(box)
+                if box and center then line(r,edge(row,center),edge(box,point(row)),Board.linkColor(index+#list((game.combat or{}).groups)),false,Board.color(r,item.controllerId),false,{kind='stack',sourceId=item.id,targetId=targetId})end
+            end end
         end
     end
 end
@@ -327,14 +390,17 @@ function Board.foreground(r)
                 else r:strong('−'..tostring(e.amount),x,y,36,c,116,'center')end
             end
         elseif e.kind=='death'then
-            tint(r.colors.red,alpha);love.graphics.setLineWidth(2)
-            for i=1,7 do local a=i*math.pi*2/7;local d=8+(moving and t*42 or 0);love.graphics.rectangle('line',e.x+math.cos(a)*d,e.y+math.sin(a)*d,9*(1-t),13*(1-t),2,2)end
+            -- This legacy snapshot observation knows only the destination.
+            -- Fracture/offering effects require explicit native operations.
+            tint(r.colors.muted or r.colors.purple,alpha);love.graphics.setLineWidth(1.5)
+            love.graphics.arc('line','open',e.x,e.y+(moving and t*18 or 0),12*(1-t*.45),0,math.pi,20)
         elseif e.kind=='clash'or e.kind=='strike'then
             local at=e.from and e.target and{x=(e.from.x+e.target.x)/2,y=(e.from.y+e.target.y)/2}or{x=e.x,y=e.y}
             tint(r.colors.gold,alpha);love.graphics.setLineWidth(3);love.graphics.circle('line',at.x,at.y,7+t*34)
         end
         end
     end
+    if r.mechanicDirector then Mechanics.draw(r.mechanicDirector,r)end
     Dice.draw(r)
 end
 return Board

@@ -407,12 +407,14 @@ public final class EngineBridge {
         }
         Map<String,Object> playmatCard(Player player){return owner.botPlaymats.get(player.getId());}
         void spellResolved(PresentationGames.Resolution spell){
-            if(!spell.commander&&spell.manaValue<=5)return;
             for(Session view:perspectives){
-                if(view.knownObject(spell.sourceId)==null&&!spell.spell.isCopy())continue;
+                MageObject visibleObject=view.knownObject(spell.sourceId);
+                if(visibleObject==null&&!spell.spell.isCopy())continue;
+                Map<String,Object> identity=visibleObject==null?null:view.card(visibleObject);
+                boolean neutral=identity!=null&&(Boolean.TRUE.equals(identity.get("hidden"))||Boolean.TRUE.equals(identity.get("faceDown")));
                 long sequence=ids.incrementAndGet();
-                view.animationEvents.addLast(map("id",game.getId()+"-impact-"+sequence,"sequence",sequence,"type","impact","nativeType","SPELL_RESOLVED",
-                    "sourceId",str(spell.sourceId),"sourceName",spell.name,"playerId",str(spell.controllerId),"commander",spell.commander,"manaValue",spell.manaValue,"timestamp",System.currentTimeMillis()));
+                view.animationEvents.addLast(map("id",game.getId()+"-impact-"+sequence,"sequence",sequence,"type","resolution","nativeType","SPELL_RESOLVED","operation","resolved","successful",true,
+                    "sourceId",str(spell.sourceId),"sourceName",neutral?"Face-down card":spell.name,"playerId",str(spell.controllerId),"commander",!neutral&&spell.commander,"manaValue",neutral?0:spell.manaValue,"hidden",neutral,"timestamp",System.currentTimeMillis()));
                 while(view.animationEvents.size()>128)view.animationEvents.removeFirst();view.publish();
             }
         }
@@ -737,6 +739,13 @@ public final class EngineBridge {
                 case ATTACHED:case UNATTACHED:type="attachment";break;
                 case ZONE_CHANGE:type="zone";break;
                 case STEP_CHANGED:case COMBAT_DAMAGE_STEP_PRE:type="step";break;
+                case DESTROYED_PERMANENT:case SACRIFICED_PERMANENT:type="departure";break;
+                case TAPPED:case UNTAPPED:type="tap";break;
+                case TURNED_FACE_UP:case TURNED_FACE_DOWN:case TRANSFORMED:case CREATURE_MUTATED:case PHASED_IN:case PHASED_OUT:type="material";break;
+                case DREW_CARD:case DISCARDED_CARD:case MILLED_CARD:type="transfer";break;
+                case COUNTERED:type="countered";break;
+                case MANA_ADDED:case MANA_PAID:type="payment";break;
+                case SCRIED:case SURVEILED:case CYCLED_CARD:case EXPLORED:case DISCOVERED:type="mechanic";break;
                 default:return false;
             }
             if(event instanceof ZoneChangeEvent&&((ZoneChangeEvent)event).getToZone()==Zone.BATTLEFIELD){
@@ -751,6 +760,16 @@ public final class EngineBridge {
                 "playerId",str(event.getPlayerId()),"amount",event.getAmount(),"combat",event instanceof DamagedEvent&&((DamagedEvent)event).isCombatDamage(),
                 "step",game.getTurnStepType()==null?null:game.getTurnStepType().name(),"timestamp",System.currentTimeMillis());
             if(event instanceof ZoneChangeEvent){visual.put("fromZone",((ZoneChangeEvent)event).getFromZone().name());visual.put("toZone",((ZoneChangeEvent)event).getToZone().name());}
+            NativeMechanics.event(this,event,source,visual);
+            if(event instanceof ZoneChangeEvent&&((ZoneChangeEvent)event).getToZone()==Zone.BATTLEFIELD&&((ZoneChangeEvent)event).isPermanentMoved()){
+                Permanent entered=((ZoneChangeEvent)event).getTarget();Map<String,Object> enteredView=card(entered);
+                boolean hidden=Boolean.TRUE.equals(enteredView.get("hidden"))||Boolean.TRUE.equals(enteredView.get("faceDown"));
+                PresentationGames.Resolution resolving=PresentationGames.entering(entered.getId());
+                int manaValue=hidden?0:resolving==null?entered.getManaValue():resolving.manaValue;
+                boolean commander=!hidden&&(resolving!=null?resolving.commander:game.getPlayers().values().stream().anyMatch(player->game.isCommanderObject(player,entered)));
+                visual.put("type",commander||manaValue>5?"impact":"entry");visual.put("operation","enter_battlefield");
+                visual.put("entry",true);visual.put("entryId",visual.get("id"));visual.put("sourceId",str(entered.getId()));visual.put("targetId",str(entered.getId()));visual.put("commander",commander);visual.put("manaValue",manaValue);visual.put("hidden",hidden);
+            }
             animationEvents.addLast(visual);while(animationEvents.size()>128)animationEvents.removeFirst();
             return true;
         }
@@ -762,6 +781,7 @@ public final class EngineBridge {
             long started=System.currentTimeMillis();owner.decisionStartedAt=started;owner.decisionPlayerId=human.getId();
             Map<String, Object> p = map("id", ids.incrementAndGet(), "playerId",str(human.getId()),"startedAt",started,"type", event.getQueryType().name().toLowerCase(Locale.ROOT), "message", clean(event.getMessage()), "min", event.getMin(), "max", event.getMax(), "required", event.isRequired());
             nativePromptId=((Number)p.get("id")).longValue();
+            human.nativeOfferedAbilities=null;
             List<Map<String, Object>> choices = new ArrayList<>();
             Set<String> targets = new LinkedHashSet<>();
             if (event.getTargets() != null) for (UUID id : event.getTargets()) addObjectChoice(choices, targets, id);
@@ -887,6 +907,10 @@ public final class EngineBridge {
             p.put("choices", choices);
             p.put("targets", targets);
             p.put("actionable",new ArrayList<>(targets));
+            if(priorityPrompt||event.getQueryType()==PlayerQueryEvent.QueryType.PLAY_MANA){
+                try{p.put("cardActions",NativeCardActions.offered(this,targets,event.getQueryType()==PlayerQueryEvent.QueryType.PLAY_MANA));}
+                catch(RuntimeException unavailable){p.put("cardActions",Collections.emptyList());p.put("actionDetailsKnown",false);}
+            }
             p.put("options", safeOptions(event.getOptions()));
             prompt = p;
             owner.publishAll();
@@ -1120,8 +1144,21 @@ public final class EngineBridge {
             view.put("sourceCard",sourceView);view.put("sourceName",name);view.put("artName",name);view.put("controllerId",str(object.getControllerId()));view.put("kind",object instanceof Spell?"spell":"ability");view.put("rules",rule);
             if(!(object instanceof Spell))view.put("name",name+" — ability");
             List<Map<String,Object>> targets=new ArrayList<>();Set<UUID> seen=new HashSet<>();
-            for(Target target:object.getStackAbility().getTargets())for(UUID id:target.getTargets())if(seen.add(id))targets.add(map("id",str(id),"name",visibleName(id)));
-            view.put("targets",targets);view.put("targetIds",targets.stream().map(t->t.get("id")).collect(Collectors.toList()));return view;
+            List<Target> allTargets=new ArrayList<>(object.getStackAbility().getAllSelectedTargets());allTargets.addAll(object.getStackAbility().getTargets());
+            for(Target target:allTargets)for(UUID id:target.getTargets())if(seen.add(id)){
+                boolean changed=target.hasChangedZones(id,game);targets.add(map("id",str(id),"name",changed?"Target changed zones":visibleName(id),"changedZones",changed));
+            }
+            List<String> modes=new ArrayList<>();for(UUID modeId:object.getStackAbility().getModes().getSelectedModes()){
+                mage.abilities.Mode mode=object.getStackAbility().getModes().get(modeId);if(mode!=null)modes.add(clean(mode.toString()));
+            }
+            view.put("modes",modes);view.put("paidOptions",object.getStackAbility().getCosts().stream().filter(cost->cost.isPaid()).map(cost->clean(cost.getText())).collect(Collectors.toList()));
+            view.put("castMode",object.getStackAbility()instanceof SpellAbility?((SpellAbility)object.getStackAbility()).getSpellAbilityCastMode().name().toLowerCase(Locale.ROOT):null);
+            if(sourceView!=null&&!Boolean.TRUE.equals(sourceView.get("hidden"))&&!Boolean.TRUE.equals(sourceView.get("faceDown"))){
+                view.put("paidMechanics",NativeMechanics.paidMechanics(this,object.getStackAbility()));
+                view.put("contributors",NativeMechanics.convokers(this,object.getStackAbility()));
+                view.put("nativeManaCostsToPay",object.getStackAbility().getManaCostsToPay().getText());
+            }
+            view.put("targets",targets);view.put("targetIds",targets.stream().filter(t->!Boolean.TRUE.equals(t.get("changedZones"))).map(t->t.get("id")).collect(Collectors.toList()));return view;
         }
         String visibleName(UUID id){Player player=game.getPlayer(id);if(player!=null)return player.getName();MageObject object=knownObject(id);return object==null?"Hidden card":String.valueOf(card(object).get("name"));}
         List<Map<String,Object>> cards(Collection<? extends MageObject> cards) { return cards.stream().map(this::card).collect(Collectors.toList()); }
@@ -1144,6 +1181,11 @@ public final class EngineBridge {
             }
             Map<String,Object> m = map("id",c.getId().toString(),"name",c.getName(),"manaCost",c.getManaCost().getText(),"type",c.getCardType(game).toString(),"rules",c.getAbilities().stream().map(a -> clean(a.getRule())).filter(s -> !s.isEmpty()).distinct().collect(Collectors.joining("\n")),"power",c.getPower().toString(),"toughness",c.getToughness().toString(),"set",c.getExpansionSetCode(),"number",c.getCardNumber());
             m.put("currentRules",m.get("rules"));m.put("keywords",NativeProjection.keywords(c));m.put("abilityIcons",NativeProjection.abilityIcons(c,game));m.put("supertypes",c.getSuperType(game).stream().map(Object::toString).collect(Collectors.toList()));
+            List<Map<String,Object>> mechanics=NativeMechanics.current(c,game);
+            m.put("currentKeywords",mechanics);m.put("mechanicCapabilities",mechanics);
+            m.put("nativeInteractions",NativeMechanics.interactions(c,game));
+            Set<String> keywordNames=new LinkedHashSet<>();for(Map<String,Object> mechanic:mechanics)keywordNames.add(String.valueOf(mechanic.get("id")));m.put("keywords",new ArrayList<>(keywordNames));
+            Zone currentZone=game.getState().getZone(c.getId());if(currentZone!=null)m.put("zone",currentZone.name());
             if(c instanceof Card) { Map<String,Object> counters=new LinkedHashMap<>(); ((Card)c).getCounters(game).forEach((name,counter)->counters.put(name,counter.getCount())); m.put("counters",counters); }
             MageObject printed=c instanceof mage.game.permanent.PermanentToken?((mage.game.permanent.PermanentToken)c).getToken():game.getCard(c.getId());
             if(c instanceof mage.game.permanent.PermanentToken&&((Permanent)c).isTransformed()&&((mage.game.permanent.PermanentToken)c).getToken().getBackFace()!=null)printed=((mage.game.permanent.PermanentToken)c).getToken().getBackFace();
@@ -1216,6 +1258,7 @@ public final class EngineBridge {
                     peek.put("supertypes",printed.getSuperType().stream().map(Object::toString).collect(Collectors.toList()));
                     peek.put("faceDown",false);peek.put("inspectionOnly",true);m.put("faceDownIdentity",peek);
                 }
+                m.put("keywords",Collections.emptyList());m.put("currentKeywords",Collections.emptyList());m.put("mechanicCapabilities",Collections.emptyList());m.put("nativeInteractions",Collections.emptyList());
             }
             return m;
         }
@@ -1273,6 +1316,13 @@ public final class EngineBridge {
         transient Map<String,Object> combatDamageContext;
         transient Cards activeTargetCards;
         transient Ability activeTargetSource;
+        transient List<ActivatedAbility> nativeOfferedAbilities;
+        transient Ability activeNativeAbility;
+        @Override public List<ActivatedAbility> getPlayable(Game originalGame,boolean hidden,Zone fromZone,boolean hideDuplicates){
+            List<ActivatedAbility> result=super.getPlayable(originalGame,hidden,fromZone,hideDuplicates);
+            if(real(originalGame)&&hidden&&fromZone==Zone.ALL&&!hideDuplicates)nativeOfferedAbilities=result;
+            return result;
+        }
         static final class Delivery {final long prompt;boolean accepted;Integer undoBookmark;Delivery(long prompt){this.prompt=prompt;}}
         private final transient ThreadLocal<Delivery> deliveryPrompt=new ThreadLocal<>();
         BridgeHuman(String name, Session session) { super(name,RangeOfInfluence.ALL,1); this.session=session; this.triggerOrder=new ArrayDeque<>(); }
@@ -1317,16 +1367,18 @@ public final class EngineBridge {
         }
         @Override public boolean activateAbility(ActivatedAbility ability,Game game) {
             UUID previous=activeManaSource;
+            Ability previousNative=activeNativeAbility;if(real(game))activeNativeAbility=ability;
             String previousKind=pendingActionKind;UUID previousSource=pendingActionSource;
             if(ability.isManaAbility()) activeManaSource=ability.getSourceId();
             if(real(game)&&!ability.isManaAbility()){pendingActionKind="activation";pendingActionSource=ability.getSourceId();}
             try { return super.activateAbility(ability,game); }
-            finally { activeManaSource=previous;pendingActionKind=previousKind;pendingActionSource=previousSource; }
+            finally { activeManaSource=previous;activeNativeAbility=previousNative;pendingActionKind=previousKind;pendingActionSource=previousSource; }
         }
         @Override public boolean cast(SpellAbility ability,Game game,boolean noMana,ApprovingObject approvingObject){
             String previous=pendingActionKind;UUID previousSource=pendingActionSource;
+            Ability previousNative=activeNativeAbility;if(real(game))activeNativeAbility=ability;
             if(real(game)){pendingActionKind="cast";pendingActionSource=ability.getSourceId();}
-            try{return super.cast(ability,game,noMana,approvingObject);}finally{pendingActionKind=previous;pendingActionSource=previousSource;}
+            try{return super.cast(ability,game,noMana,approvingObject);}finally{activeNativeAbility=previousNative;pendingActionKind=previous;pendingActionSource=previousSource;}
         }
         @Override public boolean choose(Outcome outcome,Choice choice,Game game) {
             boolean previous=choosingManaColor;
@@ -1339,7 +1391,9 @@ public final class EngineBridge {
             if(!real(game))return operation.get();
             Target previous=activeTarget;Cards previousCards=activeTargetCards;Ability previousSource=activeTargetSource;
             activeTarget=target;activeTargetCards=cards;activeTargetSource=source;
-            try{return operation.get();}finally{activeTarget=previous;activeTargetCards=previousCards;activeTargetSource=previousSource;}
+            try{return session.promptContext.contexts.isEmpty()
+                ?session.promptContext.run("select","select",null,null,source,operation):operation.get();}
+            finally{activeTarget=previous;activeTargetCards=previousCards;activeTargetSource=previousSource;}
         }
         @Override public boolean choose(Outcome outcome,Target target,Ability source,Game game,Map<String,Serializable> options){return withTarget(target,null,source,game,()->super.choose(outcome,target,source,game,options));}
         @Override public boolean chooseTarget(Outcome outcome,Target target,Ability source,Game game){return withTarget(target,null,source,game,()->super.chooseTarget(outcome,target,source,game));}

@@ -7,12 +7,17 @@ import mage.game.stack.*;
 import mage.game.events.GameEvent;
 import mage.abilities.Ability;
 import java.util.UUID;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.BiConsumer;
 
 /** Observe the completed native resolve call, without changing its rules. */
 final class PresentationGames {
+    private static final ThreadLocal<Resolution> RESOLVING=new ThreadLocal<>();
+    private static final ThreadLocal<StackObject> RESOLVING_OBJECT=new ThreadLocal<>();
+    static StackObject resolvingObject(){return RESOLVING_OBJECT.get();}
+    static Resolution entering(UUID cardId){Resolution value=RESOLVING.get();return value!=null&&Objects.equals(value.sourceId,cardId)?value:null;}
     /** Publish native concessions; only local practice has a termination policy.
      * The hook runs after XMage has processed its real concession queue. */
     static final class Lifecycle {
@@ -35,19 +40,27 @@ final class PresentationGames {
             commander=game.getPlayers().values().stream().anyMatch(player->game.isCommanderObject(player,spell.getCard()));
         }
     }
-    static Resolution before(Game game){
-        if(game.isSimulation()||game.inCheckPlayableState())return null;
-        StackObject object=game.getStack().peek();
-        return object instanceof Spell?new Resolution((Spell)object,game):null;
-    }
-    static void after(Resolution value,Consumer<Resolution> callback){
-        if(value!=null&&value.spell.isResolving()&&!value.spell.isCountered()&&callback!=null)callback.accept(value);
+    static void resolve(Game game,Consumer<Resolution> callback,Runnable nativeResolve){
+        // Simulations must never replace or clear the live resolution's cause.
+        if(game.isSimulation()||game.inCheckPlayableState()){nativeResolve.run();return;}
+        Resolution previous=RESOLVING.get();StackObject previousObject=RESOLVING_OBJECT.get();
+        StackObject object=game.getStack().peek();Resolution value=object instanceof Spell?new Resolution((Spell)object,game):null;
+        RESOLVING_OBJECT.set(object);RESOLVING.set(value);
+        try{
+            nativeResolve.run();
+            if(value!=null&&value.spell.isResolving()&&!value.spell.isCountered()&&callback!=null)callback.accept(value);
+        }finally{
+            // Restore nesting and clear context even when native execution or
+            // an optional presentation callback fails.
+            if(previous==null)RESOLVING.remove();else RESOLVING.set(previous);
+            if(previousObject==null)RESOLVING_OBJECT.remove();else RESOLVING_OBJECT.set(previousObject);
+        }
     }
     static final class Duel extends TwoPlayerDuel {
         private final Consumer<Resolution> callback;
         private final Lifecycle lifecycle;
         Duel(MultiplayerAttackOption attack,RangeOfInfluence range,Mulligan mulligan,int minimum,int life,int hand,Consumer<Resolution> callback,Lifecycle lifecycle){super(attack,range,mulligan,minimum,life,hand);this.callback=callback;this.lifecycle=lifecycle;}
-        @Override protected void resolve(){Resolution value=before(this);super.resolve();after(value,callback);}
+        @Override protected void resolve(){PresentationGames.resolve(this,callback,super::resolve);}
         @Override public void checkConcede(boolean gameThread){super.checkConcede(gameThread);if(lifecycle!=null)lifecycle.conceded(this);}
         @Override public synchronized void applyEffects(){if(lifecycle!=null)lifecycle.applying(this);super.applyEffects();}
         @Override public boolean replaceEvent(GameEvent event){if(lifecycle!=null)lifecycle.replacing(this,event);return super.replaceEvent(event);}
@@ -58,7 +71,7 @@ final class PresentationGames {
         private final Consumer<Resolution> callback;
         private final Lifecycle lifecycle;
         Commander(MultiplayerAttackOption attack,RangeOfInfluence range,Mulligan mulligan,int life,int hand,Consumer<Resolution> callback,Lifecycle lifecycle){super(attack,range,mulligan,life,hand);this.callback=callback;this.lifecycle=lifecycle;}
-        @Override protected void resolve(){Resolution value=before(this);super.resolve();after(value,callback);}
+        @Override protected void resolve(){PresentationGames.resolve(this,callback,super::resolve);}
         @Override public void checkConcede(boolean gameThread){super.checkConcede(gameThread);if(lifecycle!=null)lifecycle.conceded(this);}
         @Override public synchronized void applyEffects(){if(lifecycle!=null)lifecycle.applying(this);super.applyEffects();}
         @Override public boolean replaceEvent(GameEvent event){if(lifecycle!=null)lifecycle.replacing(this,event);return super.replaceEvent(event);}
@@ -69,7 +82,7 @@ final class PresentationGames {
         private final Consumer<Resolution> callback;
         private final Lifecycle lifecycle;
         Multiplayer(MultiplayerAttackOption attack,RangeOfInfluence range,Mulligan mulligan,int life,int hand,Consumer<Resolution> callback,Lifecycle lifecycle){super(attack,range,mulligan,life,hand);this.callback=callback;this.lifecycle=lifecycle;}
-        @Override protected void resolve(){Resolution value=before(this);super.resolve();after(value,callback);}
+        @Override protected void resolve(){PresentationGames.resolve(this,callback,super::resolve);}
         @Override public void checkConcede(boolean gameThread){super.checkConcede(gameThread);if(lifecycle!=null)lifecycle.conceded(this);}
         @Override public synchronized void applyEffects(){if(lifecycle!=null)lifecycle.applying(this);super.applyEffects();}
         @Override public boolean replaceEvent(GameEvent event){if(lifecycle!=null)lifecycle.replacing(this,event);return super.replaceEvent(event);}

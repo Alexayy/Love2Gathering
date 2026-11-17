@@ -92,13 +92,22 @@ function View:modals(w,h)
         S.EndWindow()
     end
     if m.zoneView then require('app.zone_ui').build(self,w,h)else self.zoneUiOpening=nil end
+    require('app.table_panels').commander(self,w,h)
+    require('app.card_actions').build(self,w,h)
     if m.inspectCard then
         self:window('inspect-card',w/2-185,110,370,h-180,'Card details')
         if S.Button('Close details',{W=340,H=27}) then m.inspectCard=nil
         else
             local card=m:cardData(m.inspectCard) or m.inspectCard;local art=m:getArt(card)
-            local traits=require('app.card_traits').entries(m.inspectCard)
-            if#traits>0 then
+            if not m.replay and S.Button('Actions / ways to play',{W=340,H=34})then require('app.card_actions').open(m,m.inspectCard);m.inspectCard=nil;S.EndWindow();return end
+            local mechanics=require('app.mechanic_fx').cardProfiles(m.inspectCard or card)
+            if #mechanics>0 then
+                S.Text('Mechanics and current abilities',{Color=C.gold});S.NewLine()
+                for _,entry in ipairs(mechanics)do S.Textf(entry.label..(entry.parameter and(' · '..tostring(entry.parameter))or''),{W=340,Color=C.text});S.NewLine()end
+                S.Separator()
+            end
+            local traits=require('app.card_traits').entries(m.inspectCard or card)
+            if#traits>0 and#mechanics==0 then
                 S.Text('Current abilities',{Color=C.gold})
                 for _,entry in ipairs(traits)do
                     if entry.icon then S.Image('native-trait-'..entry.name,{Image=self.r.assets:iconImage(entry.icon,20,entry.gained and C.gold or C.text),W=20,H=20});S.SameLine({CenterY=true})end
@@ -115,7 +124,7 @@ function View:modals(w,h)
                 if S.Button('Show current rules',{W=340,H=32})then self.inspectCurrentRules=not self.inspectCurrentRules end
                 if self.inspectCurrentRules then RichText.slab(self,'inspected-current-rules',card.currentRules,340,{size=16,color=C.gold})end
             end
-            local context=m.inspectCard.faceDownContext
+            local context=(m.inspectCard or card).faceDownContext
             if context then S.Textf('Face-down on the battlefield'..(context.nativePT and' · native P/T '..context.nativePT or'')..' · '..tostring(context.damage or 0)..' damage marked',{W=340,Color=C.gold})
             else local stats=require('app.card_presentation').stats(m.inspectCard);if stats then S.Textf(stats.label,{W=340,Color=C.gold})end end
             local merged=m.inspectCard.mutate
@@ -171,10 +180,15 @@ function View:build()
     local outcome=self.m.page=='table'and require('app.outcome').state(self.m)
     local completedDuel=outcome and outcome.mode=='duel'
     local endedGame=self.m.page=='table'and self.m.game and self.m.game.running==false and not self.m.replay
+    local tableIdentity=self.m.replay or self.m.game and self.m.game.gameId
+    if self.m.page~='table'or self.tableGameIdentity~=tableIdentity then
+        self.tableOptionsOpen=false;self.combatStopsOpen=false
+    end
+    self.tableGameIdentity=tableIdentity
     if endedGame then
         -- These gameplay windows are no longer built after completion. Retire
         -- their locks even if the opponent finished while they were open.
-        self.m.confirmConcede=false;self.combatStopsOpen=false
+        self.m.confirmConcede=false;self.combatStopsOpen=false;self.tableOptionsOpen=false
     end
     local Choices=require('app.card_choices');local choicePrompt=self.m.prompt and self.m:prompt()or nil
     self.cardChoiceModal=not endedGame and Choices.currentModal(self,choicePrompt)or nil
@@ -186,9 +200,9 @@ function View:build()
         self.cardChoiceModalKey=choiceKey
     end
     local lock=self.setPicker and'set-picker'or self.m.storageLocationConfirm and'storage-location-confirm'or self.themeColorEdit and'ColorPicker'or self.m.storagePurgePreview and'storage-purge-confirm'or self.m.cardPrintingPicker and'card-printing-picker'or self.m.tokenPicker and'token-art-picker'or self.brandMenu and'app-brand-menu'or self.deckSelection and'choose-deck-tiles'
-        or self.m.settingsOpen and'settings'or self.m.inspectCard and'inspect-card'or self.m.zoneView and'zone-view'
+        or self.m.settingsOpen and'settings'or self.m.inspectCard and'inspect-card'or self.m.cardActionSheet and'native-card-actions'or self.m.commanderDetails and'commander-details'or self.m.zoneView and'zone-view'
         or self.m.galleryInspect and'gallery-inspect'or self.m.deleteConfirm and'delete-deck'or self.m.archiveCopy and'archive-copy'
-        or self.m.confirmConcede and'concede-confirm'or self.combatStopsOpen and'combat-step-stops'
+        or self.m.confirmConcede and'concede-confirm'or self.combatStopsOpen and'combat-step-stops'or self.tableOptionsOpen and'table-options'
         or completedDuel and'match-complete'
         or self.cardChoiceModal
         or self.m.page=='builder'and(self.builderPopup and'builder-choice-popup'or self.builderFiltersOpen and'simplified-more-filters')

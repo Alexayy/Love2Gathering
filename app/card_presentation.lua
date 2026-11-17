@@ -43,7 +43,7 @@ function Presentation.commanderLabel(commander)
     local tax=type(commander.additionalTax)=='table'and commander.additionalTax or{}
     local cost=type(tax.manaCost)=='string'and tax.manaCost or''
     local other=type(tax.otherCosts)=='table'and table.concat(tax.otherCosts,', ')or tostring(tax.otherCosts or'')
-    local suffix=cost~=''and(' · extra '..cost)or''
+    local suffix=cost~=''and(' · Tax '..cost)or''
     if other~=''then suffix=suffix..' · '..other end
     return tostring(commander.commandZonePlays or 0)..' command casts · '..tostring(commander.deaths or 0)..' deaths'..suffix
 end

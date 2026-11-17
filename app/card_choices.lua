@@ -35,6 +35,7 @@ function UI.displayCards(panel,query)
     local out={};for _,entry in ipairs(cards)do out[#out+1]=entry.card end;return out
 end
 function UI.selectable(m,card,prompt)
+    if m.roomDisconnected then return false end
     if card.hidden or card.faceDown or card.selectable==false then return false end
     if(card.responseType or'uuid')=='uuid'and prompt and type(prompt.actionable)=='table'then
         local target=response(card).value
@@ -44,12 +45,27 @@ function UI.selectable(m,card,prompt)
     return true
 end
 function UI.state(panel)
-    local state={identity=tostring(panel.interactionId),kind=panel.kind,cards={},rows={top={},bottom={},graveyard={},offered={}},committing=false}
+    local state={identity=tostring(panel.interactionId),kind=panel.kind,cards={},rows={top={},bottom={},graveyard={},offered={}},selection={},selectionOrder={},multiple=panel.selectionMode=='multiple',minimum=tonumber(panel.min)or 0,maximum=tonumber(panel.max)or 1,committing=false}
     for _,card in ipairs(nativeCards(panel))do
         state.cards[id(card)]=card;local row=(panel.kind=='scry'or panel.kind=='surveil')and(card.selected==true and panel.selectionDestination or'top')or'offered'
         if state.rows[row]then state.rows[row][#state.rows[row]+1]=id(card)end
+        if card.selected==true then state.selection[id(card)]=true;state.selectionOrder[#state.selectionOrder+1]=id(card)end
     end
     return state
+end
+function UI.selectedCount(state)
+    local count=0;for _,selected in pairs(state.selection or{})do if selected then count=count+1 end end;return count
+end
+function UI.toggle(state,card)
+    local key=type(card)=='table'and id(card)or tostring(card)
+    if not state.multiple or state.committing or not state.cards[key]or state.cards[key].selectable==false then return false end
+    if state.selection[key]then state.selection[key]=nil
+    elseif UI.selectedCount(state)<state.maximum then state.selection[key]=true;state.selectionOrder[#state.selectionOrder+1]=key
+    else return false end
+    return true
+end
+function UI.canConfirm(state)
+    local count=UI.selectedCount(state);return count>=state.minimum and count<=state.maximum
 end
 function UI.place(state,cardId,destination,index)
     if state.committing or not state.rows[destination]or not state.cards[cardId]or state.cards[cardId].selectable==false then return false end
@@ -62,7 +78,17 @@ function UI.nextResponse(state,prompt)
     local panel=prompt and prompt.cardPanel
     if not state.committing or not panel or tostring(panel.interactionId)~=state.identity or state.lastAnswered==prompt.id then return nil end
     local offered={};for _,card in ipairs(nativeCards(panel))do offered[id(card)]=card end
-    if panel.stage=='select'and(state.kind=='scry'or state.kind=='surveil')then
+    if panel.stage=='select'and state.multiple then
+        -- The local selection is reversible until Confirm. Once confirmed,
+        -- submit only responses offered by the current native prompt.
+        for _,card in ipairs(nativeCards(panel))do if card.selected==true and not state.selection[id(card)]and card.selectable~=false then return response(card)end end
+        local emitted={};for _,key in ipairs(state.selectionOrder)do
+            if state.selection[key]and not emitted[key]then emitted[key]=true
+                if offered[key]and offered[key].selected~=true and offered[key].selectable~=false then return response(offered[key])end
+            end
+        end
+        return actualChoice(panel.doneChoice)and panel.doneChoice or nil
+    elseif panel.stage=='select'and(state.kind=='scry'or state.kind=='surveil')then
         local desired={};for _,key in ipairs(state.rows[panel.selectionDestination]or {})do desired[key]=true end
         -- Native target selection keeps selected cards and permits toggling.
         -- Reconcile those explicit flags rather than toggling a UUID twice.
@@ -97,13 +123,20 @@ local function clipped(rect,clip)
     return{x=x,y=y,w=math.max(0,right-x),h=math.max(0,bottom-y)}
 end
 local function button(v,label,icon,w,action,disabled)
-    if v.S.Button(label,{W=w,H=32,Disabled=disabled,Image={Image=v.r.assets:buttonImage(icon,label,w,32)}})then action()end
+    if v.S.Button(label,{W=w,H=32,Disabled=disabled or v.m.roomDisconnected,Image={Image=v.r.assets:buttonImage(icon,label,w,32)}})then action()end
 end
-local function card(v,object,w,h,zone,index,clip,immediate)
+local function card(v,object,w,h,zone,index,clip,immediate,selected)
     local S=v.S;local x,y=S.GetCursorPos({Absolute=true});local sx,sy=Window.TransformPoint(x,y)
     local selecting=zone=='offered'or zone=='top'or zone=='bottom'or zone=='graveyard'
     local allowed=not selecting or UI.selectable(v.m,object,v.m:prompt())
-    S.PushID('native-card-'..id(object));local clicked=S.Button(object.name or'Card',{W=w,H=h,Image={Image=image(v,object,w,h),Color=not allowed and{.36,.36,.36,.85}or nil},Tooltip=(object.name or'Card')..(allowed and' · right-click to inspect'or' · unavailable for this action · right-click to inspect'),Active=object.selected==true,Disabled=v.m.actionBusy or not allowed})
+    if selected==nil then selected=object.selected==true end
+    S.PushID('native-card-'..id(object));local clicked=S.Button(object.name or'Card',{W=w,H=h,Image={Image=image(v,object,w,h),Color=not allowed and{.36,.36,.36,.85}or nil},Tooltip=(object.name or'Card')..(selected and' · selected'or'')..(allowed and' · right-click to inspect'or' · unavailable for this action · right-click to inspect'),Active=selected,Disabled=v.m.actionBusy or not allowed})
+    if selected then
+        local draw=require('lib.Slab.Internal.Core.DrawCommands')
+        draw.Rectangle('line',x+2,y+2,w-4,h-4,v.r.colors.accent,4,10,3)
+        draw.Rectangle('fill',x+5,y+27,74,23,{.025,.06,.05,.96},3)
+        draw.Print('SELECTED',x+9,y+30,v.r.colors.accent,v.r.fonts[12])
+    end
     local hit=clipped({x=sx,y=sy,w=w,h=h},clip);hit.card=object;hit.id=id(object);hit.zone=zone;hit.index=index
     v.cardChoiceHits[#v.cardChoiceHits+1]=hit
     if S.IsControlHovered()then
@@ -174,8 +207,9 @@ function UI.modalKey(v,prompt,window)
     window=window or UI.currentModal(v,prompt);if not window then return nil end
     if window=='looked-at-cards'then local look=lookedAt(v);return look and(window..':'..look.key)or nil end
     local promptId=prompt and prompt.id
+    if window=='native-card-choices'and prompt and prompt.cardPanel then promptId=prompt.cardPanel.interactionId or promptId end
     if not promptId and window==Combat.window then promptId=v.combatChoiceState and v.combatChoiceState.prompt.id end
-    if not promptId and window=='native-card-choices'then promptId=v.cardChoiceState and v.cardChoiceState.lastAnswered end
+    if not promptId and window=='native-card-choices'then promptId=v.cardChoiceState and v.cardChoiceState.identity end
     return table.concat({window,tostring(v.m.game and v.m.game.gameId),tostring(promptId)},':')
 end
 function UI.escape(v)
@@ -295,7 +329,8 @@ function UI.build(v,w,h,prompt)
     if m.replay or m.settingsOpen then v.cardChoiceDrag=nil;v.combatChoiceDrag=nil;return false end
     if v.r and require('app.dice').busy(v.r)then v.cardChoiceDrag=nil;v.combatChoiceDrag=nil;return true end
     if Combat.build(v,w,h,prompt)then return true end
-    if not prompt and v.cardChoiceState and v.cardChoiceState.committing and m.actionBusy then return true end
+    local holding=not prompt and v.cardChoiceState and v.cardChoiceState.committing and m.actionBusy
+    if holding then prompt=v.cardChoiceState.lastPrompt end
     if UI.prefersBoard(m,prompt)then v.cardChoiceState=nil;v.cardChoiceDrag=nil;boardChoice(v,w,prompt);return true end
     if piles(v,w,h,prompt)then v.cardChoiceState=nil;v.cardChoiceDrag=nil;return true end
     local panel=prompt and prompt.cardPanel;local arrange=panel and(panel.kind=='scry'or panel.kind=='surveil')
@@ -305,8 +340,9 @@ function UI.build(v,w,h,prompt)
             v.cardChoiceState=UI.state(panel);v.cardChoiceState.identity=identity;v.cardChoiceState.gameId=m.game and m.game.gameId;v.cardChoiceDrag=nil
         end
         local state=v.cardChoiceState
+        state.lastPrompt=prompt
         for _,c in ipairs(nativeCards(panel))do state.cards[id(c)]=c end
-        if arrange then
+        if arrange or state.multiple then
             local known={};for _,c in pairs(state.cards)do known[tostring(c.id)]=true end
             v.lookDismissed=v.lookDismissed or {}
             for _,group in ipairs(m.game and m.game.lookedAt or {})do
@@ -318,13 +354,13 @@ function UI.build(v,w,h,prompt)
         if state.committing and state.lastAnswered==prompt.id and not m.actionBusy and m.answeredPrompt~=prompt.id then
             state.committing=false;state.lastAnswered=nil;state.error='Native response was not accepted. Review and confirm again.'
         end
-        if state.committing and not m.actionBusy and not m.priorityBusy then
+        if not holding and state.committing and not m.actionBusy and not m.priorityBusy then
             local answer=UI.nextResponse(state,prompt)
-            if answer then state.lastAnswered=prompt.id;m:answerChoice(answer);return true end
+            if answer then state.lastAnswered=prompt.id;m:answerChoice(answer)end
         end
         local pw=math.min(980,w-70);local cw=math.max(70,math.min(142,math.floor((pw-58)/math.min(6,math.max(3,#(panel.cards or {})))),math.floor((h-400)/2/1.4)));local ch=math.floor(cw*1.4)
         local ph=arrange and math.min(h-115,ch*2+285)or math.min(h-115,620)
-        v:window('native-card-choices',(w-pw)/2,math.max(78,(h-ph)/2),pw,ph,panel.kind=='scry'and'Scry'or panel.kind=='surveil'and'Surveil'or'Choose a card',{BgColor={.025,.04,.06,.98}})
+        v:window('native-card-choices',(w-pw)/2,math.max(78,(h-ph)/2),pw,ph,panel.kind=='scry'and'Scry'or panel.kind=='surveil'and'Surveil'or state.multiple and'Choose cards'or'Choose a card',{BgColor={.025,.04,.06,.98}})
         if v.cardChoiceDrag and Window.IsObstructed(v.cardChoiceDrag.startX,v.cardChoiceDrag.startY)then v.cardChoiceDrag=nil end
         local inner=select(1,S.GetWindowSize())-42
         S.Textf(v.r:fit(state.error or prompt.message or'Choose from the offered cards',inner,16,2),{W=inner,Color=state.error and v.r.colors.gold or v.r.colors.text});S.NewLine()
@@ -334,8 +370,11 @@ function UI.build(v,w,h,prompt)
             row(v,destination,destination=='bottom'and'Bottom'or'Graveyard',state,inner,ch+14,cw,ch)
             button(v,state.committing and'Applying native choices…'or'Confirm','check',inner,function()state.committing=true;state.error=nil end,m.actionBusy or m.priorityBusy or state.committing)
         else
+            if state.multiple then S.Text('Selected '..UI.selectedCount(state)..' / '..state.maximum..(state.committing and' · Applying native choices…'or' · Click again to deselect; Confirm applies the whole selection.'),{Color=v.r.colors.accent});S.NewLine()end
             if S.Input('native-card-search',{Text=state.query or'',W=inner,H=34,Align='left',Tooltip='Search only the cards visible for this choice'})then state.query=S.GetInputText();state.offset=0 end;S.NewLine()
-            local displayed=UI.displayCards(panel,state.query);local listH=math.max(ch+14,ph-215);local cols=math.max(1,math.floor((inner-20)/(cw+12)))
+            -- Multipick adds a persistent selection summary above the grid.
+            -- Reserve its space and the confirmation footer inside the window.
+            local displayed=UI.displayCards(panel,state.query);local listH=math.max(ch+14,ph-(state.multiple and 300 or 215));local cols=math.max(1,math.floor((inner-20)/(cw+12)))
             local pageSize=math.min(24,cols*math.max(1,math.floor(listH/(ch+12))))
             state.offset=math.max(0,math.min(state.offset or 0,math.max(0,math.floor((#displayed-1)/pageSize)*pageSize)))
             if S.Button('Previous visible cards',{W=168,H=28,Disabled=state.offset==0})then state.offset=math.max(0,state.offset-pageSize)end
@@ -345,11 +384,16 @@ function UI.build(v,w,h,prompt)
             S.BeginListBox('native-select-cards',{W=inner,H=listH})
             for position=state.offset+1,math.min(#displayed,state.offset+pageSize)do local index=position-state.offset;local c=displayed[position]
                 if(index-1)%cols~=0 then S.SameLine({Pad=8})elseif index>1 then S.NewLine()end
-                card(v,c,cw,ch,'offered',position,clip,function(chosen)if UI.selectable(m,chosen,m:prompt())then m:answerChoice(response(chosen))end end)
+                local selected;if state.multiple then selected=state.selection[id(c)]==true end
+                card(v,c,cw,ch,'offered',position,clip,function(chosen)if UI.selectable(m,chosen,m:prompt())then
+                    if state.multiple then UI.toggle(state,chosen)else m:answerChoice(response(chosen))end
+                end end,selected)
             end
             if#displayed==0 then S.Text('No matching visible cards.',{Color=v.r.colors.muted})end
             S.EndListBox();S.NewLine()
-            if actualChoice(panel.doneChoice)then button(v,panel.doneChoice.label or'Done','check',inner,function()m:answerChoice(panel.doneChoice)end,m.actionBusy)end
+            if state.multiple then
+                button(v,state.committing and'Applying native choices…'or'Confirm selection','check',inner,function()state.committing=true;state.error=nil end,m.actionBusy or state.committing or not UI.canConfirm(state))
+            elseif actualChoice(panel.doneChoice)then button(v,panel.doneChoice.label or'Done','check',inner,function()m:answerChoice(panel.doneChoice)end,m.actionBusy)end
         end
         S.EndWindow();v.cardChoiceConsumed=false;return true
     end

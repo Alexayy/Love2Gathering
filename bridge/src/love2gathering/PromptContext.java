@@ -43,6 +43,9 @@ final class PromptContext {
             "zone",zone instanceof Enum<?>?((Enum<?>)zone).name():zone==null?null:zone.toString(),"selectionDestination",destination,
             "remainingDestination",context==null?null:context.remaining,"orderDestination",context!=null&&"order".equals(context.stage)?destination:null,
             "orderDirection",context!=null&&"order".equals(context.stage)?("top".equals(destination)?"last_chosen_topmost":"last_chosen_bottommost"):null,
-            "doneChoice",done));
+            "doneChoice",done,"min",prompt.get("min"),"max",prompt.get("max"),
+            "selectedCount",cards.stream().filter(c->Boolean.TRUE.equals(c.get("selected"))).count(),
+            "selectionMode",context!=null&&"select".equals(context.kind)&&session.human.activeTarget!=null
+                &&session.human.activeTarget.getMaxNumberOfTargets()>1?"multiple":"single"));
     }
 }

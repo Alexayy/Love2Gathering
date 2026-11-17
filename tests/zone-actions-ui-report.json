@@ -1,0 +1,52 @@
+{
+  "answers": [
+    {
+      "promptId": 79,
+      "type": "uuid",
+      "value": "5de01da6-5a87-4b11-8701-75101cc52cf7"
+    },
+    {
+      "promptId": 83,
+      "type": "uuid",
+      "value": "5de6f281-818c-4e1d-8002-596cf17f780a"
+    },
+    {
+      "promptId": 7,
+      "type": "uuid",
+      "value": "c53f337f-1ed9-4357-9475-cfeddb2e09c9"
+    },
+    {
+      "promptId": 28,
+      "type": "uuid",
+      "value": "fd8897bd-2c84-4598-adb0-00d420e61700"
+    }
+  ],
+  "checks": [
+    "Actual native Memory Deluge opens a bounded select-two panel",
+    "First Memory Deluge selection is visibly staged without an engine answer",
+    "Selected card queues a visible SELECTED marker and count",
+    "Clicking the same card reverses selection before any native commitment",
+    "Two staged choices retain one open panel and submit nothing before Confirm",
+    "Confirm emits exactly the two native UUIDs across consecutive accepted prompt IDs",
+    "Selected markers and modal identity remain stable while native responses apply",
+    "Current graveyard opens through player and zone identity",
+    "Actual offered Flashback has a PLAY marker and its visible popup anchor",
+    "Highlighted native zone card owns drag input",
+    "Graveyard drag dispatches the actual card UUID and closes only after accepted submission",
+    "Highlighted native zone card owns drag input",
+    "A changed native prompt cancels an in-flight graveyard drag",
+    "Actual temporary permission creates an explicitly exiled hand extension for its three legal objects",
+    "Highlighted native zone card owns drag input",
+    "Exile popup drag forwards the actual native offer without moving any card locally",
+    "Native cleanup removes expired exile permissions from the hand extension",
+    "Owner-known native Foretell identity appears as a private exile extension",
+    "Owner can select the actual offered face-down exile object without a guessed permission",
+    "Another human never gets the private Foretell identity or an exile play control",
+    "Disconnected room preserves visible zone cards while disabling their actions",
+    "Disconnected visible offers submit no stale engine response",
+    "Read-only replay never exposes live exile actions"
+  ],
+  "passed": true,
+  "scope": "Actual L\u00d6VE/Slab input and drawing from fresh real-XMage viewer-filtered fixture frames. The accepted response sequence is replayed locally; native fixture separately proves actual cast/cost/private selection/permission/expiry. No live GUI-to-running-engine or WAN claim.",
+  "userStoreModified": false
+}

@@ -4,6 +4,13 @@ local API=require('app.api')
 local json=require('lib.json')
 local Rooms={}
 local function copy(value)return json.decode(json.encode(value))end
+local function intent(value)
+    if type(value)~='table'or value==json.null then return json.encode(value)end
+    local keys={};for key in pairs(value)do keys[#keys+1]=key end
+    table.sort(keys,function(a,b)return type(a)..tostring(a)<type(b)..tostring(b)end)
+    local parts={};for _,key in ipairs(keys)do parts[#parts+1]=type(key)..json.encode(key)..':'..intent(value[key])end
+    return'{'..table.concat(parts,',')..'}'
+end
 local function value(item)return type(item)=='table'and(item.id or item.code or item.value)or item end
 local function choose(items,current)
     for _,item in ipairs(items or {})do if value(item)==current then return current end end
@@ -104,7 +111,8 @@ function Rooms.install(Model)
         self.roomAppliedResponse=sequence
         if data.connectionId then self.roomConnectionId=data.connectionId end
         self.roomParticipantId=data.participantId or self.roomParticipantId
-        self.room=incoming;self.roomError=nil;self.roomDisconnected=false
+        self.room=incoming;self.roomError=nil;self.roomDisconnected=false;self.roomPollFailures=0
+        self.roomTransport={state='connected',failures=0,lastSuccess=self.roomClock or 0}
         local rematch=incoming.rematchRequest
         if rematch and rematch.id~=self.roomRematchNotice then
             self.roomRematchNotice=rematch.id
@@ -166,7 +174,28 @@ function Rooms.install(Model)
         self:request('room',method,path(self,suffix),body,function(data,err,details)
             if generation~=self.roomGeneration then return end
             if data then self:applyRoomSnapshot(data,generation,sequence)
-            elseif sequence>=(self.roomResponseFence or 0)then self.roomError=err or 'Room request failed';self.roomDisconnected=method=='GET'or self.roomDisconnected end
+            elseif sequence>=(self.roomResponseFence or 0)then
+                if method=='GET'then
+                    self.roomDisconnected=true
+                    self.roomPollFailures=(self.roomPollFailures or 0)+1
+                    self.roomPollTimer=math.min(8,.6*2^math.min(4,self.roomPollFailures))
+                    local retryable=not details or details.retryable==true
+                    self.roomError=(retryable and'Room update delayed — reconnecting to your existing seat. 'or'Room seat unavailable. ')..tostring(err or'No response')
+                    self.roomTransport={state=retryable and'reconnecting'or'unavailable',failures=self.roomPollFailures,message=self.roomError,
+                        retryable=retryable,kind=details and details.kind}
+                elseif not details or details.kind=='outcome_unknown'then
+                    self.roomDisconnected=true
+                    -- A lost acknowledgement is not a rejected command. Never
+                    -- replay a pick/action/mutation; refresh its existing seat.
+                    self.roomError='Command response unavailable — refreshing your seat before another command. '..tostring(err or'No response')
+                    self.roomTransport={state='reconciling',message=self.roomError,kind=details and details.kind}
+                    self.roomPollTimer=0
+                else
+                    -- A definite validation/authentication rejection is shown
+                    -- as such; it is not a transport timeout or lost command.
+                    self.roomError=err or'Room command was rejected';self.roomPollTimer=0
+                end
+            end
             if callback then callback(data,err,details)end
         end,true)
         return true
@@ -179,13 +208,23 @@ function Rooms.install(Model)
             config.profile.name=config.playerName or config.name or config.profile.name
         end
         if self.priorityOptions then config.priority=self:priorityOptions()end
+        local fingerprint=(join and'join:'or'create:')..intent(config)
+        if not self.roomConnectAttempt or self.roomConnectAttempt.fingerprint~=fingerprint then
+            self.roomConnectSequence=(self.roomConnectSequence or 0)+1
+            self.roomConnectAttempt={fingerprint=fingerprint,id='desktop-'..tostring(self):gsub('[^%w]','')..'-'..tostring(self.roomConnectSequence)}
+        end
+        config.connectionRequestId=self.roomConnectAttempt.id
         self.roomGeneration=self.roomGeneration+1;local generation=self.roomGeneration
         self.roomRequestSequence=1;self.roomResponseFence=1;self.roomAppliedResponse=0;self.roomBusy=true;self.roomError=nil
-        self:request('room','POST',join and '/client/join'or '/client/rooms',config,function(data,err)
+        self:request('room','POST',join and '/client/join'or '/client/rooms',config,function(data,err,details)
             if generation~=self.roomGeneration then return end
             self.roomBusy=false
-            if data and data.connectionId then self:applyRoomSnapshot(data,generation,1);self.roomPollTimer=0
-            else self.roomError=err or 'Could not connect to the room'end
+            if data and data.connectionId then self.roomConnectAttempt=nil;self:applyRoomSnapshot(data,generation,1);self.roomPollTimer=0
+            else
+                self.roomError=err or 'Could not connect to the room'
+                local status=details and tonumber(details.status)
+                if status and status>=400 and status<500 then self.roomConnectAttempt=nil end
+            end
             if callback then callback(data,err or self.roomError)end
         end,true)
         return true
@@ -203,16 +242,17 @@ function Rooms.install(Model)
     end
     function Model:rejoinRoom()
         if not self.roomConnectionId then return false end
-        self.roomGeneration=self.roomGeneration+1;self.roomPolling=false;self.roomBusy=false;self.roomDisconnected=false;self.roomPollTimer=0
+        self.roomGeneration=self.roomGeneration+1;self.roomPolling=false;self.roomBusy=false;self.roomDisconnected=true;self.roomPollTimer=0
+        self.roomTransport={state='reconnecting',failures=self.roomPollFailures or 0}
         return self:refreshRoom()
     end
     function Model:refreshRoom()
         if not self.roomConnectionId or self.roomPolling then return false end
-        self.roomPolling=true
+        self.roomPolling=true;self.roomPollStarted=self.roomClock or 0
         return self:roomRequest('GET','',nil,false,function()self.roomPolling=false end)
     end
     function Model:roomMutation(suffix,body,callback)
-        if self.roomBusy or not self.roomConnectionId then return false end
+        if self.roomBusy or not self.roomConnectionId or(self.roomDisconnected and suffix~='/leave')then return false end
         self.roomBusy=true
         return self:roomRequest('POST',suffix,body or {},true,function(data,err,details)
             self.roomBusy=false;self.roomPollTimer=0
@@ -298,6 +338,10 @@ function Rooms.install(Model)
     end
     function Model:updateRooms(dt)
         if not self.roomConnectionId then return end
+        self.roomClock=(self.roomClock or 0)+dt
+        if self.roomPolling and self.roomClock-(self.roomPollStarted or self.roomClock)>2.5 and not self.roomDisconnected then
+            self.roomTransport={state='waiting',message='Waiting for the room update; your seat and current choice are retained.'}
+        end
         self.roomPollTimer=(self.roomPollTimer or 0)-dt
         if self.roomPollTimer<=0 and not self.roomPolling then self.roomPollTimer=.6;self:refreshRoom()end
     end

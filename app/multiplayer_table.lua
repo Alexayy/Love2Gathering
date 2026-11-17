@@ -29,53 +29,45 @@ end
 local function seat(r,player,index,c,Table)
     local C=r.colors;local m=r.model;local selected=m:canSelect(player.id)
     local active=m.game.activePlayerId==player.id;local tint=r:playerColor(player)
-    r:panel(c.x,c.y,c.w,c.h,selected and 'accent' or 'dark')
-    r:drawPlaymat(player,c.x+8,c.y+8,c.w-16,c.h-16)
-    love.graphics.setColor(tint[1],tint[2],tint[3],active and 1 or .65)
-    love.graphics.rectangle('fill',c.x+8,c.y+9,6,c.h-18,2,2)
-    love.graphics.setLineWidth(2);love.graphics.rectangle('line',c.x+2,c.y+2,c.w-4,c.h-4,6,6)
-    r:drawAvatar(player,c.x+18,c.y+15,34)
-    r:strong(r:fit(player.name or 'Player',350,24,1),c.x+60,c.y+15,24,tint,350)
-    r:priorityBadge(player,c.x+c.w-310,c.y+67,180,22)
-    if active then r.assets:iconSymbol('turn',c.x+420,c.y+22,20,C.gold) end
-    r.assets:iconSymbol('life',c.x+c.w-108,c.y+19,23,tint)
-    r:strong(player.life,c.x+c.w-82,c.y+5,44,tint,74,'center')
-    local playerBox=r:screenRect({x=c.x+18,y=c.y+12,w=c.w-36,h=60})
+    r:panel(c.x,c.y,c.w,c.h,selected and'accent'or'dark')
+    r:drawPlaymat(player,c.x+4,c.y+4,c.w-8,c.h-8)
+    love.graphics.push('all');love.graphics.setColor(tint[1],tint[2],tint[3],active and .85 or .25)
+    love.graphics.setLineWidth(active and 2 or 1);love.graphics.rectangle('line',c.x+2,c.y+2,c.w-4,c.h-4,6,6);love.graphics.pop()
+    r:drawAvatar(player,c.x+12,c.y+12,32)
+    r:strong(r:fit(player.name or'Player',c.w-290,18,1),c.x+52,c.y+12,18,tint,c.w-290)
+    r.assets:iconSymbol('life',c.x+c.w-102,c.y+19,22,tint);r:strong(player.life,c.x+c.w-73,c.y+10,32,tint,64,'center')
+    local playerBox=r:screenRect({x=c.x+10,y=c.y+8,w=c.w-20,h=42})
     if within(r.multiplayerView,playerBox.x+playerBox.w/2,playerBox.y+playerBox.h/2)then r.playerRects[player.id]=playerBox end
-    r:hit({x=c.x+18,y=c.y+12,w=c.w-36,h=44,kind='player',card={id=player.id,name=player.name},focusIndex=index,
+    r:hit({x=c.x+10,y=c.y+8,w=c.w-20,h=42,kind='player',card={id=player.id,name=player.name},focusIndex=index,
         tooltip=Presentation.playerTooltip(player,m.game.commanderDamageEnabled)..(selected and' · legal target'or' · click to focus'),commanderDetails=true})
-    r.assets:iconSymbol('library',c.x+24,c.y+66,28,tint)
-    r:strong(player.libraryCount or 0,c.x+58,c.y+66,20,C.text)
-    r:hit({x=c.x+22,y=c.y+62,w=78,h=38,kind='library-zone',libraryPlayerId=player.id,action=function()m:openLibrary(player.id)end,tooltip=player.name..' · library: '..tostring(player.libraryCount or 0)..' · inspect the entitled top card'})
-    r.assets:iconSymbol('hand',c.x+116,c.y+66,28,tint)
-    r:strong(player.handCount or #(player.hand or {}),c.x+150,c.y+66,20,C.text)
-    r:hit({x=c.x+114,y=c.y+62,w=78,h=38,tooltip=player.name..' · hand: '..tostring(player.handCount or 0)})
-    -- Only count/back faces are drawn for opponents; no private card is inspected.
-    if not player.human then
-        for i=1,math.min(player.handCount or 0,10) do r:drawCard({},c.x+208+(i-1)*17,c.y+66,24,34,{back=true,noHit=true}) end
+    r:priorityBadge(player,c.x+12,c.y+51,166,21)
+    r.assets:iconSymbol('hand',c.x+c.w-168,c.y+17,18,tint)
+    r:text(player.handCount or #(player.hand or{}),c.x+c.w-144,c.y+18,14,C.text)
+    if active then r.assets:iconSymbol('turn',c.x+c.w-199,c.y+17,18,C.gold)end
+    local top=m:libraryTop(player)
+    if top then
+        r:drawCard(top,c.x+202,c.y+48,30,42,{kind='library-top',animate=true})
+        local hit=r.hits[#r.hits];if hit and hit.card==top then hit.libraryPlayerId=player.id;hit.libraryGameId=m.game.gameId end
+        r:zoneAnchor(player.id,'library',{x=c.x+202,y=c.y+48,w=30,h=42})
+    else
+        r:button('Library '..tostring(player.libraryCount or 0),c.x+192,c.y+51,106,34,function()m:openLibrary(player.id)end,false,{size=12})
+        r:zoneAnchor(player.id,'library',{x=c.x+192,y=c.y+51,w=106,h=34})
     end
-    local commands=player.command or {}
-    for i,card in ipairs(commands) do
-        r:drawCard(card,c.x+24,c.y+142+(i-1)*183,118.8,166.32,{kind='command',animate=true})
-    end
-    r.assets:iconSymbol('commander',c.x+43,c.y+91,19,C.gold)
-    Table.field(r,player,c.x+168,c.y+140,c.w-334,c.h-190-(player.human and 108 or 0),not player.human)
-    local zx=c.x+c.w-144
-    zone(r,player,'graveyard','graveyard',zx,c.y+142,122)
-    zone(r,player,'exile','exile',zx,c.y+202,122)
-    if m:libraryTop(player)then Table.library(r,player,zx,c.y+270,122)end
-    require('app.board_fx').playerAuras(r,player,c.x+174,c.y+104)
-    r:commanderSummary(player,c.x+410,c.y+104,c.w-440,14)
-    local mx=c.x+410
-    for _,symbol in ipairs({'W','U','B','R','G','C'}) do
-        local n=(player.mana or {})[symbol] or 0
-        if n>0 then r.assets:mana(symbol,mx,c.y+69,18);r:text(n,mx+21,c.y+70,12,C.text);mx=mx+48 end
+    local HUD=require('app.table_hud')
+    HUD.zone(r,player,'graveyard',c.x+c.w-300,c.y+49,90,true)
+    HUD.zone(r,player,'exile',c.x+c.w-200,c.y+49,90,true)
+    HUD.zone(r,player,'command',c.x+c.w-100,c.y+49,90,true)
+    r:commanderSummary(player,c.x+12,c.y+88,c.w-24,12)
+    Table.field(r,player,c.x+14,c.y+119,c.w-28,c.h-134,not player.human)
+    require('app.board_fx').playerAuras(r,player,c.x+177,c.y+72)
+    local mx=c.x+14
+    for _,symbol in ipairs({'W','U','B','R','G','C'})do
+        local n=(player.mana or{})[symbol]or 0
+        if n>0 then r.assets:mana(symbol,mx,c.y+c.h-17,14);r:text(n,mx+17,c.y+c.h-17,12,C.text);mx=mx+36 end
     end
     if Presentation.eliminated(player)then
-        love.graphics.push('all');love.graphics.setColor(.005,.009,.015,.76);love.graphics.rectangle('fill',c.x+3,c.y+3,c.w-6,c.h-6,6,6)
-        r:strong('OUT',c.x+30,c.y+c.h*.41,52,C.muted,c.w-60,'center')
-        r:strong(player.left==true and'LEFT MATCH'or'ELIMINATED',c.x+30,c.y+c.h*.41+62,22,C.muted,c.w-60,'center')
-        love.graphics.pop()
+        love.graphics.push('all');love.graphics.setColor(.005,.009,.015,.70);love.graphics.rectangle('fill',c.x+3,c.y+3,c.w-6,c.h-6,6,6)
+        r:strong(player.left and'LEFT MATCH'or'ELIMINATED',c.x+30,c.y+c.h*.48,24,C.muted,c.w-60,'center');love.graphics.pop()
     end
 end
 function Multi.draw(r,L,w,h,Table)
@@ -87,14 +79,14 @@ function Multi.draw(r,L,w,h,Table)
     camera:configure(view,#seats)
     if not camera.opened then
         local index=1;for i,p in ipairs(seats) do if p.human then index=i;break end end
-        camera:focus(index,true);camera.opened=true
+        camera:overview(true);camera.opened=true
     end
-    camera:followTurn(game.activePlayerId,game.turn,seats,m.settings.autoFollowTurn,m.settings.reducedMotion or m.settings.animations==false)
+    camera:followTurn(game.activePlayerId,game.turn,seats,m.settings.autoFollowTurn,m.settings.reducedMotion or m.settings.animations==false,require('app.table_presentation').freeze(r))
     camera:update(r.dt,m.settings.reducedMotion or m.settings.animations==false)
     r.multiplayerView=view;r.multiplayerSeats=seats
     -- Keep seat navigation left of the existing floating log/actions defaults.
-    local stripX=L.board.x+12;local stripW=L.board.w-380
-    local controlW=32;local gap=5;local playerW=math.min(194,(stripW-controlW*3-gap*(#seats+2))/#seats)
+    local stripX=L.viewport.x+6;local stripW=L.viewport.w-12
+    local controlW=34;local gap=5;local playerW=math.min(194,(stripW-controlW*4-gap*(#seats+3))/#seats)
     for i,p in ipairs(seats) do
         local x=stripX+(i-1)*(playerW+gap);local target=m:canSelect(p.id)
         local label=p.name
@@ -115,8 +107,11 @@ function Multi.draw(r,L,w,h,Table)
         end
     end
     local x=stripX+#seats*(playerW+gap)
+    local ownIndex=1;for i,p in ipairs(seats)do if p.human then ownIndex=i;break end end
+    iconButton(r,'player',nil,x,L.navY,controlW,function()camera:focus(ownIndex)end,camera.focusIndex==ownIndex)
+    r.hits[#r.hits].tooltip='My Battlefield';r.hits[#r.hits].kind='table-own';x=x+controlW+gap
     iconButton(r,'overview',nil,x,L.navY,controlW,function() camera:overview() end,camera.mode=='overview')
-    r.hits[#r.hits].tooltip='Whole table';r.hits[#r.hits].kind='table-overview'
+    r.hits[#r.hits].tooltip='Fit Table · four-player overview';r.hits[#r.hits].kind='table-overview'
     r.assets:iconSymbol('mouse-right',x+controlW+gap+7,L.navY+5,18,r.colors.muted)
     r:hit({x=x+controlW+gap,y=L.navY,w=controlW,h=28,tooltip='Right-drag to move across the table. Scroll to zoom. Right-click a card to inspect.'})
     r.assets:iconSymbol('mouse-scroll',x+2*(controlW+gap)+7,L.navY+5,18,r.colors.muted)

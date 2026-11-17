@@ -9,7 +9,9 @@ local Model=require('app.model');local Priority=require('app.priority');local js
 local n=0;local function check(ok,text)assert(ok,text);n=n+1;print('PRIORITY MODEL PASS '..text)end
 local function game(id,prompt) return {gameId=id or 'g',revision=1,running=true,prompt=prompt or {id=3,type='select',priority=true,choices={}}}end
 local m=Model.new();local options=m:priorityOptions()
-check(options.autoPass and #options.stops.own==0 and #options.stops.opponent==0,'Automatic priority defaults have no invented stops')
+check(not options.autoPass and not options.passWithOnlyMana and #options.stops.own==0 and #options.stops.opponent==0,'New players retain manual control and no invented stops')
+m.uiLayout={matchPrefs={priority={autoPass=true,stops={own={},opponent={}}}}}
+check(m:priorityOptions().autoPass and not m:priorityOptions().passWithOnlyMana,'Existing automatic preference is preserved while mana-only passing remains explicit')
 m.uiLayout={matchPrefs={phaseMarkers={END='WAIT',COMBAT='SKIP'}}}
 options=m:priorityOptions()
 check(options.stops.own[1]=='END_TURN' and options.stops.opponent[1]=='END_TURN' and #options.stops.own==1,'Only explicit legacy WAIT intentions migrate to real native stops')
@@ -43,9 +45,22 @@ m.game.priority={stops={own={'DRAW'},opponent={}}}
 local savedStops=m:phaseStop(Priority.groups[2],'own') and not m:phaseStop(Priority.groups[6],'opponent');m.game.priority=nil
 check(savedStops and not m:phaseStop(Priority.groups[6],'opponent'),'Replay stop indicators use saved native configuration and never invent legacy stops')
 m.replay=nil;m.game.prompt={id=5,type='select',priority=true};m:toggleAutoPass();command=calls[#calls]
-check(command.body.autoPass==false,'Full control is an explicit native configuration')
+check(command.body.autoPass==true and command.body.passWithOnlyMana==false,'Automatic empty priority is an explicit native configuration')
 m:setGame(game('new'));m:cancelYield();local current=calls[#calls]
 command.callback(game('g'))
 check(m.game.gameId=='new' and m.priorityBusy,'Late command replies cannot replace a new match or release its controls')
 current.callback(game('new'));check(not m.priorityBusy,'Current match acknowledgement is accepted')
+m:toggleManaOnlyPass();command=calls[#calls]
+check(command.body.passWithOnlyMana==true and command.body.autoPass==true,'Mana-only preference travels with the complete native stop policy')
+command.callback(game('new'));m.replay={id='recording'};count=#calls;m:toggleManaOnlyPass()
+check(#calls==count,'A recording cannot change the live mana-only preference')
+m.replay=nil;m.roomGameActive=true;m.roomDisconnected=true
+local saved=json.encode(m:priorityOptions());local prompt=m:prompt()
+check(not m:toggleAutoPass()and not m:toggleManaOnlyPass()and not m:togglePhaseStop(Priority.groups[1],'own'),
+    'Disconnected room rejects policy changes without replacing saved player preferences')
+check(not m:endTurn()and not m:cancelYield()and not m:priorityCommand('configure',{autoPass=true})and#calls==count,
+    'Disconnected room cannot dispatch priority commands or consume a retained native prompt')
+check(json.encode(m:priorityOptions())==saved and m:prompt()==prompt and not m.priorityBusy,
+    'Disconnected priority controls preserve the unanswered prompt and local policy')
+m.roomDisconnected=false;check(m:toggleAutoPass()and#calls==count+1,'Reconnected room can explicitly configure priority again')
 print('Priority model checks: '..n..' passed')

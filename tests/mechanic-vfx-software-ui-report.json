@@ -1,0 +1,81 @@
+{
+  "checks": [
+    {
+      "message": "Different hidden colors and mechanics produce identical neutral pixels",
+      "passed": true
+    },
+    {
+      "message": "Reduced-motion cards retain their labels/badges with no moving edge pixels",
+      "passed": true
+    },
+    {
+      "message": "Fifty synthetic confirmed outcomes use one batch flourish and bounded effects",
+      "passed": true
+    },
+    {
+      "message": "Actual native Wrath produces one 60-permanent destroy batch; spell departure is excluded",
+      "passed": true
+    },
+    {
+      "message": "Actual native indestructible survivor remains on the current battlefield",
+      "passed": true
+    },
+    {
+      "message": "Simultaneous fracture primitive budget stays bounded at 256",
+      "passed": true
+    }
+  ],
+  "director": {
+    "active": 50,
+    "drawPrimitives": 256,
+    "maxEffects": 64,
+    "maxParticles": 256,
+    "maxTrails": 32
+  },
+  "nativeWipe": {
+    "affected": 60,
+    "operation": "destroy",
+    "scope": "Actual viewer-filtered XMage prepared native Wrath outcome. Layout geometry is synthetic; only current surviving cards are drawn as live objects. Departed rectangles are noninteractive material-effect anchors.",
+    "sourceAfter": "/home/leka/Documents/Projects/Love2Gathering/build/table-overhaul/zone-actions/wipe-after.json",
+    "sourceBefore": "/home/leka/Documents/Projects/Love2Gathering/build/table-overhaul/zone-actions/wipe-before.json",
+    "survivors": 1,
+    "sourceSha256": {
+      "sourceBefore": "bbbbf1cdef58450cbc801d4ce85c35d2d4b2a1f5e974762561eb38cf582bae9a",
+      "sourceAfter": "79e0cc939690ddbf5fbd372b4b51ba35fe9fe3dcbb493b7f0e1fc291f571d6d6"
+    }
+  },
+  "passed": true,
+  "performance": {
+    "baseline": {
+      "frames": 90,
+      "maxMs": 11.166774,
+      "meanMs": 7.7427849555556,
+      "p95Ms": 9.512902
+    },
+    "effects": {
+      "frames": 131,
+      "maxMs": 47.319191,
+      "meanMs": 22.173107374046,
+      "p95Ms": 35.183961
+    },
+    "measurement": "CPU draw submission time around identical 100-card synthetic scene, after 20 warmup frames, vsync off. Effects include 50 simultaneous destroy outcomes. No full application or end-to-end GPU timing claim.",
+    "renderer": [
+      "OpenGL",
+      "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4",
+      "Mesa",
+      "llvmpipe (LLVM 20.1.2, 256 bits)"
+    ]
+  },
+  "scope": "Actual L\u00d6VE profile/effect rendering and synthetic crowded director benchmark; no native legality, Internet, full-table UX or physical GPU-independent guarantee.",
+  "sourceSha256": {
+    "app/mechanic_fx.lua": "5fee5a221ff255530bdfa3c0925b5e28c29002f502b2516bd45df9caf67b7041",
+    "app/board_fx.lua": "d823631744af522aa5963e9b1191e7ee29ac0ab1e8ef8c95a5d159b3b08062e8",
+    "tests/mechanic_fx_ui.lua": "99722c4ce1beb898d6917e6aa3b5837c2a83e13ff0f7e29bea94521ab0bca383"
+  },
+  "captures": {
+    "profiles": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx-software/profiles.png",
+    "events": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx-software/events.png",
+    "crowded": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx-software/crowded.png",
+    "native-wipe": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx-software/native-wipe.png"
+  }
+}

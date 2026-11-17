@@ -17,6 +17,7 @@ public final class PriorityFixture {
     static EngineBridge.Session setup() {
         EngineBridge.Session s = TriggerFixture.session();
         s.game.getPhase().setStep(new PreCombatMainStep());
+        s.priority.configure(JsonParser.parseString("{\"autoPass\":true,\"passWithOnlyMana\":true}").getAsJsonObject());
         return s;
     }
     static void add(EngineBridge.Session s, boolean human, String name, boolean hand) {
@@ -51,6 +52,40 @@ public final class PriorityFixture {
             require(s.game.getBattlefield().getAllActivePermanents().stream().noneMatch(p -> p.isTapped()), "Mana source must remain untapped");
             require(s.prompt == null && s.priority.autoPassCount == 2, "Automatic pass must not expose a stale manual prompt");
             return EngineBridge.map("passed", true, "emptyNativePass", true, "manaOnlyNativePass", true, "manaSourceUntouched", true);
+        } finally { s.stop(); }
+    }
+    static Map<String,Object> manualAndManaPreference() throws Exception {
+        EngineBridge.Session s = setup();
+        try {
+            PriorityController fresh = new PriorityController();
+            require(!fresh.autoPass && !fresh.passWithOnlyMana, "A new player must retain manual priority unless a preference was saved");
+            configure(s, "{\"autoPass\":true,\"passWithOnlyMana\":false}");
+            add(s, true, "Mountain", false);
+            Future<Boolean> waiting = nativePriority(s); Map<String,Object> prompt = waitPrompt(s, -1);
+            require("mana_available".equals(prompt.get("priorityReason")) && !waiting.isDone(), "Mana-only windows stay open when that preference is off");
+            require(s.priority.legalityKnown && s.priority.meaningfulActionCount == 0 && s.priority.manaAbilityCount == 1, "Only native legal mana abilities qualify for the separate preference");
+            JsonObject update = command("configure"); update.addProperty("passWithOnlyMana", true); s.priorityCommand(update);
+            require(waiting.get(10, TimeUnit.SECONDS), "Changing mana-only preference refreshes the real priority question");
+            require(!nativePriority(s).get(10, TimeUnit.SECONDS), "Explicit mana-only preference passes through XMage");
+            require(s.human.getManaPool().count() == 0 && s.game.getBattlefield().getAllActivePermanents().stream().noneMatch(p -> p.isTapped()), "Passing mana-only priority never generates mana or taps a land");
+            configure(s, "{\"stops\":{\"own\":[\"PRECOMBAT_MAIN\"],\"opponent\":[]}}");
+            long old = promptId(s); waiting = nativePriority(s); prompt = waitPrompt(s, old);
+            require("stop".equals(prompt.get("priorityReason")) && !waiting.isDone(), "Explicit phase stops win over mana-only automatic passing");
+            done(s, prompt); waiting.get(10, TimeUnit.SECONDS);
+            return EngineBridge.map("passed", true, "manualDefault", true, "manaOnlyOptIn", true, "nativeManaCount", 1, "stopPreserved", true, "manaNotActivated", true);
+        } finally { s.stop(); }
+    }
+    static Map<String,Object> unknownLegality() {
+        EngineBridge.Session s = setup();
+        try {
+            mage.game.Game failed = (mage.game.Game)java.lang.reflect.Proxy.newProxyInstance(mage.game.Game.class.getClassLoader(), new Class<?>[]{mage.game.Game.class}, (proxy, method, args) -> {
+                if (method.getName().equals("createSimulationForPlayableCalc")) throw new IllegalStateException("Native legality unavailable fixture");
+                return method.invoke(s.game, args);
+            });
+            s.priority.endTurn();
+            require(!s.priority.decide(s, s.human, failed), "A failed native legality simulation cannot authorize automatic passing");
+            require(!s.priority.legalityKnown && !s.priority.yielding && "legality_unknown".equals(s.priority.reason()), "Unknown native actions cancel yielding and retain manual control");
+            return EngineBridge.map("passed", true, "unavailableNativeLegalityDoesNotPass", true, "yieldCancelled", true);
         } finally { s.stop(); }
     }
     static Map<String,Object> instantAndFlash() throws Exception {
@@ -221,7 +256,7 @@ public final class PriorityFixture {
         Path root = Paths.get(args[0]); EngineBridge.cardMap = JsonParser.parseString(Files.readString(root.resolve("bridge/card-map.json"))).getAsJsonObject(); Copier.setLoader(PriorityFixture.class.getClassLoader());
         try {
             Map<String,Object> report = EngineBridge.map("passed", true, "kind", "Real native XMage priority passes, legal instant/flash opportunities, bot casts, targets and payment; deterministic initial zones/turn positions; no frontend UI",
-                    "emptyAndMana", emptyAndMana(), "instantAndFlash", instantAndFlash(), "stop", selectedStop(), "fullControl", fullControl(),
+                    "emptyAndMana", emptyAndMana(), "manualAndManaPreference", manualAndManaPreference(), "unknownLegality", unknownLegality(), "instantAndFlash", instantAndFlash(), "stop", selectedStop(), "fullControl", fullControl(),
                     "cancelYield", cancelYield(), "coherentSnapshots", coherentSnapshots(), "endTurn", Arrays.asList(yieldInterrupt("new_stack", false), yieldInterrupt("new_stack", true), yieldInterrupt("stop", false), yieldInterrupt("new_turn", false), yieldInterrupt("new_turn", true)), "combatChoice", combatChoice(), "mandatoryPrompts", targetsAndPayment());
             String json = EngineBridge.JSON.toJson(report); Files.writeString(root.resolve("bridge/tests/priority-report.json"), json + "\n"); System.out.println(json);
         } finally { GAME.shutdownNow(); }

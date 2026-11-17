@@ -192,6 +192,23 @@ When delegating, give agents disjoint file ownership, communicate protocol chang
 
 ## Packaging
 
+Table presentation uses `app/table_presentation.lua` shared geometry. The local
+hand overlays the terrain; do not reserve a blank lower quarter of the window.
+Keep compact rectangular playmats, rear land rows, upright tapped-card badges
+and actual library/zone/mana controls at the minimum supported size. Dynamic
+text sizes must use `Renderer:font`; small stack thumbnails with three or more
+mechanics exercise the production font/raster regression.
+
+`tests/table_options_ui.sh` checks policy checkboxes, pending acknowledgements,
+offline guards, offered mana undo and completion locks through real Slab input.
+`tests/zone_actions_ui.sh` consumes exported native frames for Deluge staging and
+graveyard/exile gestures; Java acceptance separately proves actual payment and
+resolution. Use `bridge/tests/test_zone_actions.py` and
+`tests/table_production.py` for fresh, isolated bridge checks. Never substitute
+printed keyword parsing for the current native offer, effective ability or
+confirmed cause. Preserve changed-zone target incarnation checks and initial
+snapshot/event deduplication.
+
 Settings → About reads bounded packaged `build-info.json` through `app/build_info.lua`; a source checkout reports Source build and only an actually known revision. `app/credits.lua` supplies fixed attribution links and local notice paths. Keep project MIT separate from component licenses and unverified owner-supplied rights. Retain the user's Beleren/card-back choice and the accurate removal-request notice; do not claim attribution or private sharing grants redistribution permission. `CONTRIBUTING.md`, `CREDITS.md`, `THIRD_PARTY_NOTICES.md` and `licenses/` record the source and rights boundaries.
 
 Installer CI covers `development` (`DEV-…`, prerelease) and `master` (`v…`, normal release). Packaged About identity must match release channel/branch/tag/revision, including reused stages. Keep published assets immutable. `tests/about_model.lua` and `tests/about_ui.sh` verify bounded identity/notice reading, fixed links, responsive seven-tab Settings, offline long notices and clipboard restoration. The UI fixture intercepts external links/saves and uses isolated source/package metadata; it does not publish a release or run an engine game.

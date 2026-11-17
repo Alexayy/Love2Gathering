@@ -19,7 +19,7 @@ face.hidden=true;check(P.peek(face)==face,'Hidden opponent cards cannot borrow a
 face.hidden=false;face.faceDownIdentity.id='foreign';check(P.peek(face)==face,'Peek UUID must match the actual permanent')
 face.faceDownIdentity=nil;check(P.peek(face)==face,'Ownership alone never fabricates a peek')
 local commander={commandZonePlays=2,deaths=7,additionalTax={manaCost='{4}',otherCosts={}}}
-check(P.commanderLabel(commander):find('extra {4}',1,true)and P.commanderLabel(commander):find('7 deaths',1,true),'Native tax and independent death history retain exact values')
+check(P.commanderLabel(commander):find('Tax {4}',1,true)and P.commanderLabel(commander):find('7 deaths',1,true),'Native tax and independent death history retain exact values')
 commander.additionalTax={manaCost='',otherCosts={'Pay 2 life'}}
 check(P.commanderLabel(commander):find('Pay 2 life',1,true)and not P.commanderLabel(commander):find('{14}',1,true),'Nonmana commander tax is never inferred from deaths')
 local r={model={game={combat={groups={{attackerId='a',blockerIds={'b'},declarationConfirmed=false}}}}}}
