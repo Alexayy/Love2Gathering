@@ -17,6 +17,15 @@ The work used shell commands for focused source discovery, builds and local runs
 
 ## Continuing work
 
+Complete installed-package updates are described in [UPDATING.md](docs/UPDATING.md).
+`service/updates.py` checks/downloads asynchronously and never launches a package.
+Only a supervisor-issued private context fixes the installation, channel, work
+folder and request file. The client sends candidate IDs only. The deferred helper
+rehashes the selected installer, fences the exact parent/current installed
+identity and delegates to platform installers after owned services stop. Flatpak
+uses its external, installation-aware host launcher for exact-prefix updates;
+direct old launchers retain an explicitly labeled system-installer handoff.
+
 The November 18 table revision keeps XMage authoritative for zone offers, costs,
 targets and current mechanics. `NativeCardActions` publishes detached native
 options; `app/card_actions.lua` exposes one action sheet and a labeled playable

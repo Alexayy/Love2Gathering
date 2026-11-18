@@ -82,6 +82,8 @@ def build(payload, output, cache, makensis, version):
     lock['pillow'] = pillow
     shutil.copy2(PROJECT / 'packaging/runtime/launcher.py', stage / 'launcher.py')
     shutil.copy2(PROJECT / 'packaging/runtime/windows_graphics.py', stage / 'windows_graphics.py')
+    shutil.copy2(PROJECT / 'packaging/runtime/update_handoff.py', stage / 'update_handoff.py')
+    shutil.copy2(PROJECT / 'packaging/windows/install_support.py', stage / 'install_support.py')
     icon = output / 'love2gathering.ico'
     image = stage / 'share/icons/love2gathering.png'
     if image.exists():
@@ -91,7 +93,7 @@ def build(payload, output, cache, makensis, version):
         raise ValueError('Packaged icon is missing')
     launcher = stage / 'Love2Gathering.exe'
     compile_nsis(makensis, ['-DOUTPUT=' + str(launcher), '-DICON=' + str(icon), str(HERE / 'launcher.nsi')])
-    manifest={'version':1,'files':{str(path.relative_to(stage)):hashlib.sha256(path.read_bytes()).hexdigest()for path in sorted(stage.rglob('*'))if path.is_file()and path.name!='payload-manifest.json'}}
+    manifest={'version':1,'files':{path.relative_to(stage).as_posix():hashlib.sha256(path.read_bytes()).hexdigest()for path in sorted(stage.rglob('*'))if path.is_file()and path.name!='payload-manifest.json'}}
     (stage/'payload-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     remove = output / 'windows-remove-files.nsh'
     files = sorted(path for path in stage.rglob('*') if path.is_file())

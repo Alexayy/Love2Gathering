@@ -81,6 +81,7 @@ function View:rooms(w,h) require('app.room_ui').build(self,w,h) end
 function View:draft(w,h) require('app.draft_ui').build(self,w,h) end
 function View:settings(w,h,options) require('app.settings').build(self,w,h,options) end
 function View:modals(w,h)
+    require('app.updates').pending(self,w,h)
     local S,m=self.S,self.m
     require('app.deck_picker').popup(self,w,h)
     require('app.collection_ui').modals(self,w,h)
@@ -199,7 +200,7 @@ function View:build()
         require('lib.Slab.Internal.UI.Region').ClearHotInstance();self.S.SetInputFocus(nil)
         self.cardChoiceModalKey=choiceKey
     end
-    local lock=self.setPicker and'set-picker'or self.m.storageLocationConfirm and'storage-location-confirm'or self.themeColorEdit and'ColorPicker'or self.m.storagePurgePreview and'storage-purge-confirm'or self.m.cardPrintingPicker and'card-printing-picker'or self.m.tokenPicker and'token-art-picker'or self.brandMenu and'app-brand-menu'or self.deckSelection and'choose-deck-tiles'
+    local lock=self.m.updateApplying and'update-install-pending'or self.setPicker and'set-picker'or self.m.storageLocationConfirm and'storage-location-confirm'or self.themeColorEdit and'ColorPicker'or self.m.storagePurgePreview and'storage-purge-confirm'or self.m.cardPrintingPicker and'card-printing-picker'or self.m.tokenPicker and'token-art-picker'or self.brandMenu and'app-brand-menu'or self.deckSelection and'choose-deck-tiles'
         or self.m.settingsOpen and'settings'or self.m.inspectCard and'inspect-card'or self.m.cardActionSheet and'native-card-actions'or self.m.commanderDetails and'commander-details'or self.m.zoneView and'zone-view'
         or self.m.galleryInspect and'gallery-inspect'or self.m.deleteConfirm and'delete-deck'or self.m.archiveCopy and'archive-copy'
         or self.m.confirmConcede and'concede-confirm'or self.combatStopsOpen and'combat-step-stops'or self.tableOptionsOpen and'table-options'

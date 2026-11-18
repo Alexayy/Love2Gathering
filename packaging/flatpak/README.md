@@ -19,6 +19,11 @@ chooser/CLI helper:
 python3 install-flatpak.py Love2Gathering-VERSION-x86_64.flatpak --prefix /mnt/Games/Flatpak
 ```
 
+Keep the supplied `update-host.py` beside `install-flatpak.py` when running a
+downloaded standalone helper. The builder emits both files. The installed
+command and menu entry retain the exact chosen prefix and delegate to this host
+coordinator; the app does not receive host execution permission.
+
 The helper uses the documented `FLATPAK_USER_DIR` to keep this per-user
 installation at the selected location without requiring a system configuration
 change. It registers an owned command and menu shortcut that retain that exact
@@ -41,7 +46,7 @@ health report for distinct evidence.
 The folder picker can be cancelled before any Flatpak command runs. Existing
 Flatpak repositories are supported, but their unrelated launchers/helpers and
 shortcuts are never overwritten. Installer ownership includes the selected root
-and hashes of its two helper files; modified files stop an update and remain
+and hashes of its launcher and two Python helpers; modified files stop an update and remain
 after uninstall. Dangling/symbolic shortcut conflicts are treated as existing
 files. Registration restores earlier owned helpers if a later write fails;
 Flatpak's repository and downloaded runtimes remain available for retry.
@@ -63,6 +68,41 @@ quotes, dollar signs, percent signs, backticks, equals signs and a backslash in
 the selected path. Those tests verify helper behavior; the separate native
 Flatpak sandbox report establishes actual app installation/runtime readiness.
 See `packaging/flatpak/installer-test-report.json`.
+
+## Updates in a chosen folder
+
+The installed host coordinator reads the actual owned native deployment's
+release identity and creates a private context with a random per-launch token.
+It passes that context through `LOVE2GATHERING_FLATPAK_UPDATE_CONTEXT` to its own
+`flatpak --user run` process. The catalog performs explicit release checks and
+verified complete-bundle downloads; applying writes a fixed request and closes
+the app. The context's `externalHost:true` makes `automaticInstall:true` visible
+to the app, while keeping the host prefix out of user-supplied action bodies.
+
+After the owned process exits, the host verifies the token, channel, newer
+version, commit-bound tag, candidate identity, exact filename, size and SHA-256.
+It fences deployment changes during that launch, invokes the existing owned
+folder installer for the same prefix, checks the verified native commit and
+selected release, then restarts that exact installation with a fresh token.
+There is no uninstall or data deletion. Updated bundles contain `host-tools`
+inside the verified deployment so registration also refreshes the host helpers.
+Edited helper/shortcut files retain the installer's existing protection and
+rollback behavior.
+
+An older launcher that has not yet adopted the host coordinator can still open
+a verified bundle in the system installer. That portal action is labelled as
+a handoff and does not prove a custom-prefix update. Running the current
+standalone folder helper once installs the coordinator for subsequent automatic
+updates.
+
+`test_update_host.py` exercises actual owned helper subprocesses with synthetic
+native command results. `test_host_native.py` builds two tiny offline native
+bundles from the already installed SDK/runtime and proves the actual sandbox
+app's catalog-manager download/apply, same-prefix native update, changed commit,
+verified new release, restart and saved-byte preservation. GitHub metadata is
+deterministic in that acceptance; no WAN download, full app match or card-data
+acquisition is claimed. See `host-update-test-report.json` for exact source
+hashes and native commits.
 
 ## GitHub-hosted build
 

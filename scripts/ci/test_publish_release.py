@@ -129,6 +129,7 @@ class PublishTests(unittest.TestCase):
         for name, value in zip(self.names, content):
             (self.dist / name).write_bytes(value)
         (self.dist / 'install-flatpak.py').write_text('import argparse\nAPP_ID = ' + repr(publisher.APP_ID))
+        (self.dist / 'update-host.py').write_text('import argparse\nAPP_ID = ' + repr(publisher.APP_ID))
         pillow={'sha256':'d'*64,'version':'13.0.0','includesNativeCode':True,'includesLicenses':True}
         windows={component: {'sha256': 'a' * 64} for component in ('love', 'python', 'java', 'mesa')}
         windows['pillow']={**pillow,'platform':'windows-cp313'}
@@ -156,7 +157,7 @@ class PublishTests(unittest.TestCase):
     def test_prepare_has_exact_allowlist_and_checksums_ignore_extra_files(self):
         (self.dist / 'old-version.exe').write_bytes(b'do not upload')
         files = self.prepare()
-        self.assertEqual(len(files), 13)
+        self.assertEqual(len(files), 14)
         self.assertNotIn('old-version.exe', [p.name for p in files])
         sums = dict(line.split('  ')[::-1] for line in (self.dist / 'SHA256SUMS').read_text().splitlines())
         for path in files[:-1]:
@@ -164,7 +165,8 @@ class PublishTests(unittest.TestCase):
         manifest = json.loads((self.dist / 'release-manifest.json').read_text())
         self.assertEqual(manifest['commit'], COMMIT)
         self.assertEqual(manifest['engineRevision'], publisher.ENGINE_REVISION)
-        self.assertEqual(len(manifest['assets']), 11)
+        self.assertEqual(len(manifest['assets']), 12)
+        self.assertIn('update-host.py',{entry['name']for entry in manifest['assets']})
         guide = (self.dist / 'INSTALL.md').read_text()
         self.assertIn(self.names[0], guide)
         self.assertIn(f'install-flatpak.py {self.names[-1]} --prefix ', guide)
@@ -190,7 +192,7 @@ class PublishTests(unittest.TestCase):
         self.assertIn(publisher.REPOSITORY, url)
         self.assertFalse(gh.release['draft'])
         self.assertTrue(gh.release['prerelease'])
-        self.assertEqual([c[1] for c in gh.commands], ['create'] + ['upload'] * 13 + ['edit'])
+        self.assertEqual([c[1] for c in gh.commands], ['create'] + ['upload'] * 14 + ['edit'])
         self.assertEqual({a['name'] for a in gh.assets}, {p.name for p in files})
 
     def test_master_stable_publishes_all_six_installers_without_dev_or_prerelease(self):

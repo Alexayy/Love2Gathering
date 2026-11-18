@@ -92,6 +92,16 @@ folders. Those permissions are recorded in `flatpak/build.py`.
 
 ## Data and updates
 
+The installed app now exposes an explicit updater in Settings → About. It checks
+the current channel, downloads one complete platform package, verifies its exact
+published hash/size, and applies only after closing the app and its owned
+services. Windows uses a private external worker and transactional setup;
+Linux folder installs use their staged installer; DEB/RPM use the package manager.
+The supplied Flatpak host launcher updates the same custom prefix and verifies
+the new native commit before restarting. Initial Flatpak installation needs both
+`install-flatpak.py` and `update-host.py` beside its bundle. See
+[the updater contract and acceptance scopes](../docs/UPDATING.md).
+
 The installed launcher keeps generated indexes, engine working files and logs
 under writable user storage. It follows configured database/cache directories;
 new installations use a separate `images.sqlite`. Windows and Flatpak privately

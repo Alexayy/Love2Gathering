@@ -19,9 +19,25 @@ shortcut; Start Menu entries and an uninstaller are always registered. The
 default is `%LOCALAPPDATA%\Programs\Love2Gathering`; a writable folder on
 another drive can be selected. Silent installation accepts `/S /D=PATH`, with
 `/D` last. Installation refuses a nonempty unrelated directory and verifies its
-ownership marker when reusing an existing installation. The uninstaller removes
-the generated exact file list instead of recursively removing the chosen folder;
-saved data and unrecognized extra files remain.
+ownership marker when reusing an existing installation. Windows Apps and the
+Start Menu expose the uninstaller; Windows Apps also records an explicit quiet
+uninstall command.
+
+Installation and upgrades validate the complete payload manifest, including the
+client, bridge, dependency JARs and bundled runtimes. NSIS extracts a private
+temporary Python/helper payload; that worker stages the complete replacement
+beside the selected installation. It replaces the owned tree rather than
+overlaying files, so obsolete owned runtime and JAR files disappear. An old
+sealed installation is migrated to the stronger installed-file ownership record.
+
+Running executables and exclusively locked files stop an update or uninstall
+before replacement. Close the application and retry; the installer never kills
+processes. Modified owned files stop an upgrade with their filename. Untracked
+files are copied into the replacement, and payload/shortcut/registry failures
+restore the previous installation and registration. A failed active uninstall
+retains Windows Apps registration. Successful uninstall removes unchanged owned
+files and still-owned shortcuts; untracked saves and modified files remain.
+The helper never discovers or purges external data/cache locations.
 
 `Love2Gathering.exe` starts the bundled Python supervisor without a console.
 It starts owned catalog/XMage/room processes and the desktop splash. The card
@@ -72,5 +88,28 @@ execution or a complete Windows game.
 To repeat the installed graphics acceptance with a fresh work directory:
 
 ```sh
-python3 packaging/windows/test_installer.py --installer PATH/setup.exe --wine-prefix .runtime/isolated-wine --work .runtime/windows-install-test --check-graphics
+python3 packaging/windows/test_installer.py --installer PATH/setup.exe --wine-prefix .runtime/isolated-wine --work .runtime/windows-install-test --check-graphics --check-health
 ```
+
+Add `--upgrade-installer PATH/new-setup.exe` to verify a complete newer payload
+before uninstalling. `python3 packaging/windows/test_transaction.py` creates a
+fresh isolated Wine prefix and small sealed NSIS fixtures with the real pinned
+embedded Python. Its 19 checks cover active-runtime/exclusive-file-lock refusal, modified files,
+post-publication rollback, legacy ownership migration, obsolete component
+removal, registration and SQLite preservation. It also executes the updater's
+actual deferred helper with copied Python, exact parent-process waiting, direct
+Win32 installation in a path with spaces and installed-launcher restart. The client, bridge,
+Java and LÖVE component files in that transaction fixture are labeled test data;
+this is separate from the full installed graphics/runtime checks above and does
+not establish native Windows VM/gameplay behavior. Evidence is recorded in
+`transaction-test-report.json`.
+
+`full-updater-test-report.json` separately records the complete assembled Windows
+package: all 642 sealed files were verified, installation/runtime checks, real
+catalog/XMage/room readiness, Mesa fallback and LÖVE shader pixel checks,
+complete payload reinstall and uninstall all passed under isolated Wine 11.22.
+The bundled full metadata snapshot indexed 542,909 input records into 38,452
+cards and completed all 14 indexes in 66.8 seconds on the recorded test host.
+The real installed bridge reported 32,983 implemented cards. This was an
+unpublished `sourceDirty` acceptance build with preserved SQLite test saves,
+separate from native Windows VM or completed Windows-game acceptance.

@@ -192,6 +192,23 @@ When delegating, give agents disjoint file ownership, communicate protocol chang
 
 ## Packaging
 
+Installed update controls are explicit in About; preserve offline startup and
+source-checkout behavior. Never execute an installer in a catalog HTTP worker,
+overwrite a running payload or accept client-supplied paths/commands/URLs.
+`service/updates.py` downloads a complete matching release to private staging.
+`update_handoff.py` rechecks candidate/hash/size/current release and waits for
+the exact parent after all owned services stop. Windows workers run from a
+copied interpreter outside the installation. Flatpak's owned host coordinator
+updates its exact original prefix and verifies its actual new native commit.
+Keep both host helpers in release assets, checksums and embedded `host-tools`.
+Update/uninstall must preserve databases, modified/untracked files and rollback
+registration when replacement fails. See `docs/UPDATING.md` and its focused gates.
+Private releases use only explicitly supplied updater authorization: masked
+input, no token in API status/logs/reports, DPAPI on Windows and private per-user
+configuration on Linux. Never import CLI/Codex/browser credentials. Send PATs
+only to the pinned project API; strip authorization on every redirect. Slab
+password inputs must clear their original and masked caches on external reset.
+
 Table presentation uses `app/table_presentation.lua` shared geometry. The local
 hand overlays the terrain; do not reserve a blank lower quarter of the window.
 Keep compact rectangular playmats, rear land rows, upright tapped-card badges

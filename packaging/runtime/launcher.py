@@ -178,6 +178,10 @@ def main(argv=None):
     env['LOVE2GATHERING_STARTUP_STATUS'] = str(progress_file)
     env['LOVE2GATHERING_CATALOG_SOURCE'] = str(source)
     env['LOVE2GATHERING_COORDINATOR_TOKEN'] = secrets.token_urlsafe(32)
+    from update_handoff import create_context,prepare_handoff
+    update_context=create_context(ROOT,session,env)
+    if update_context is not None:env['LOVE2GATHERING_UPDATE_CONTEXT']=str(update_context)
+    else:env.pop('LOVE2GATHERING_UPDATE_CONTEXT',None)
     children = []
     logs = []
     desktop = None
@@ -278,6 +282,13 @@ def main(argv=None):
                     child.wait(timeout=5)
         for stream in logs:
             stream.close()
+        if update_context is not None and desktop is not None and desktop.returncode==0:
+            # Every owned child has terminated before an updater is allowed to
+            # start. The independent helper also waits for this exact parent.
+            try:prepare_handoff(update_context)
+            except Exception as error:
+                (session/'update-error.txt').write_text(str(error),encoding='utf-8')
+                print('Update was not started: '+str(error),file=sys.stderr,flush=True)
 
 
 if __name__ == '__main__':

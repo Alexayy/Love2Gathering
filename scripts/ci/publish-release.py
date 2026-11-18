@@ -161,7 +161,7 @@ DEB/RPM packages use their distribution's managed installation location. Use the
 
 ## Flatpak: choose an installation location
 
-Install Flatpak and Python 3, keep `install-flatpak.py` beside the bundle, then:
+Install Flatpak and Python 3, keep `install-flatpak.py` and `update-host.py` beside the bundle, then:
 
 ```sh
 python3 install-flatpak.py {prefix}-x86_64.flatpak --prefix /mnt/Games/Love2Gathering-flatpak
@@ -227,6 +227,9 @@ def prepare(dist: Path, version: str, tag: str, commit: str, metadata_report: Pa
     helper = checked_file(dist / 'install-flatpak.py')
     if b'argparse' not in helper.read_bytes() or APP_ID.encode() not in helper.read_bytes():
         raise ReleaseError('Unexpected Flatpak installation helper')
+    updater = checked_file(dist / 'update-host.py')
+    if b'argparse'not in updater.read_bytes()or APP_ID.encode()not in updater.read_bytes():
+        raise ReleaseError('Unexpected Flatpak update coordinator')
     runtime_paths = [dist / 'windows-runtime-provenance.json', dist / 'flatpak-native-provenance.json']
     windows, flatpak = (read_json(path) for path in runtime_paths)
     for component in ('love', 'python', 'java', 'mesa'):
@@ -251,7 +254,7 @@ def prepare(dist: Path, version: str, tag: str, commit: str, metadata_report: Pa
     write_atomic(metadata_target, json.dumps(metadata, indent=2) + '\n')
     guide = dist / 'INSTALL.md'
     write_atomic(guide, instructions(version, tag, channel))
-    primary = packages + [helper] + runtime_paths + [metadata_target, guide]
+    primary = packages + [helper, updater] + runtime_paths + [metadata_target, guide]
     entries = [{'name': path.name, 'bytes': path.stat().st_size, 'sha256': digest(path)} for path in primary]
     manifest = dist / 'release-manifest.json'
     write_atomic(manifest, json.dumps({'version': version, 'tag': tag, 'repository': REPOSITORY,
@@ -377,7 +380,7 @@ def check_published(gh, version, tag, commit, channel='development', branch=None
         return False
     verify_release(release, tag, commit, channel, draft=False);verify_tag(gh, tag, commit, required=True)
     values = remote_assets(gh, release['id'])
-    primary = set(package_names(version) + ['install-flatpak.py', 'windows-runtime-provenance.json',
+    primary = set(package_names(version) + ['install-flatpak.py', 'update-host.py', 'windows-runtime-provenance.json',
                   'flatpak-native-provenance.json', 'metadata-provenance.json', 'INSTALL.md'])
     assets = {}
     for value in values:

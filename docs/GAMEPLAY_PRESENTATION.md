@@ -24,7 +24,7 @@ Practice `/session/start` and constructed `/multiplayer/start` accept `commander
 
 State exports `commanderDamageEnabled`. Each player has:
 
-- `commanders`: entries with `id`, `name`, entitled/public `card`, `commandZonePlays`, `deaths` and `additionalTax` (`manaCost`, `otherCosts`).
+- `commanders`: entries with `id`, `name`, current `zone`/`zoneName`, entitled/public `sourceCard`, `commandZonePlays`, `deaths`, native `availableCastingOptions` and `additionalTax` (`manaCost`, `otherCosts`).
 - `commanderDamageReceived`: entries with `commanderId`, `ownerId`, `name` and `amount` from the native combat-damage watcher. Disabled tracking has no fabricated ledger.
 
 Cast counts come from `CommanderPlaysCountWatcher`; death history comes from actual native dies events in an independently copied bridge watcher. Tax is the native `commanderCost` on a detached ability, including non-mana exceptions such as Liesa. A death count is never used to calculate a casting cost. [Official Commander overview](https://magic.wizards.com/en/formats/commander) describes the ordinary tax and 21-damage rule.

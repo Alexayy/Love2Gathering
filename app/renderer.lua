@@ -375,7 +375,7 @@ function Renderer:inputBlocked()
     local outcome=require('app.outcome').state(m)
     if outcome and outcome.mode=='duel'and outcome.terminal then return true end
     local dice=package.loaded['app.dice']
-    return (dice and dice.busy(self))or m.cardActionSheet or m.commanderDetails or m.storageLocationConfirm or m.storageFolderDialog or m.imagePackFileDialog or m.settingsOpen or m.zoneView or m.deleteConfirm or m.inspectCard or m.galleryInspect or m.confirmConcede or m.archiveCopy or m.storagePurgePreview or m.cardPrintingPicker or m.tokenPicker
+    return m.updateApplying or(dice and dice.busy(self))or m.cardActionSheet or m.commanderDetails or m.storageLocationConfirm or m.storageFolderDialog or m.imagePackFileDialog or m.settingsOpen or m.zoneView or m.deleteConfirm or m.inspectCard or m.galleryInspect or m.confirmConcede or m.archiveCopy or m.storagePurgePreview or m.cardPrintingPicker or m.tokenPicker
         or v and(v.tableOptionsOpen or v.cardChoiceModal or v.setPicker or v.brandMenu or v.deckSelection or v.themeColorEdit or v.combatStopsOpen or m.page=='builder'and(v.builderPopup or v.builderFiltersOpen))
         or not v and self.blockBuilderDrop
 end

@@ -167,6 +167,7 @@ def common_payload(output, source, *, channel='source', branch=None, tag=''):
             with gzip.GzipFile(filename='', mode='wb', fileobj=raw, mtime=0, compresslevel=6) as compressed:
                 shutil.copyfileobj(stream, compressed, 1024 * 1024)
     shutil.copy2(ROOT / 'packaging/runtime/launcher.py', target / 'launcher.py')
+    shutil.copy2(ROOT / 'packaging/runtime/update_handoff.py', target / 'update_handoff.py')
     icon = target / 'share/icons/love2gathering.png'
     icon.parent.mkdir(parents=True)
     shutil.copy2(ROOT / 'assets/icons/thb.png', icon)
@@ -251,6 +252,8 @@ def build_deb(output, payload):
     if stage.exists():
         shutil.rmtree(stage)
     shutil.copytree(payload, stage / 'opt/love2gathering', symlinks=True)
+    (stage/'opt/love2gathering/update-installation.json').write_text(json.dumps({'method':'deb'})+'\n')
+    seal(stage/'opt/love2gathering')
     control = stage / 'DEBIAN';control.mkdir()
     size = sum(p.stat().st_size for p in payload.rglob('*') if p.is_file()) // 1024
     (control / 'control').write_text(f'Package: love2gathering\nVersion: {VERSION}-1\nArchitecture: amd64\nMaintainer: Love2Gathering contributors\nDepends: python3 (>= 3.10), python3-pil (>= 9.1), love (>= 11.5)\nSection: games\nPriority: optional\nInstalled-Size: {size}\nHomepage: https://github.com/Alexayy/Love2Gathering\nDescription: Love: 2 Gathering XMage desktop client\n Native XMage rules, bot practice, private rooms and drafts.\n Includes a Java 21 runtime and card metadata; image downloads are explicit.\n')
@@ -277,7 +280,12 @@ def rpm_environment():
 
 def build_rpm(output, payload):
     stage = ROOT / 'build/packaging/rpm';stage.mkdir(parents=True, exist_ok=True)
-    for name in ('BUILD', 'BUILDROOT', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS'):(stage / name).mkdir(exist_ok=True)
+    selected=stage/'payload'
+    if selected.exists():shutil.rmtree(selected)
+    shutil.copytree(payload,selected,symlinks=True)
+    (selected/'update-installation.json').write_text(json.dumps({'method':'rpm'})+'\n')
+    seal(selected);payload=selected
+    for name in ('BUILD', 'BUILDROOT', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS', 'tmp'):(stage / name).mkdir(exist_ok=True)
     spec = stage / 'SPECS/love2gathering.spec'
     spec.write_text(f'''Name: love2gathering
 Version: {VERSION}
@@ -306,7 +314,7 @@ if [ "$1" -eq 0 ]; then python3 -B "$RPM_INSTALL_PREFIX/register_system.py" unre
 ''')
     binary, env = rpm_environment()
     run([binary, '-bb', '--define', '_topdir ' + str(stage), '--define', '__os_install_post %{nil}',
-         '--define', '_build_id_links none', '--define', '_binary_payload w6T8.xzdio', spec], env=env)
+         '--define', '_tmppath '+str(stage/'tmp'), '--define', '_build_id_links none', '--define', '_binary_payload w6T8.xzdio', spec], env=env)
     source = stage / 'RPMS/x86_64' / f'love2gathering-{VERSION}-1.x86_64.rpm'
     if not source.is_file():raise SystemExit('rpmbuild did not produce the selected release version')
     path = output / f'Love2Gathering-{VERSION}-linux-x86_64.rpm'

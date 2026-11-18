@@ -1,6 +1,7 @@
 """CI metadata transfer and dynamic package-version contracts without user writes."""
 import argparse
 import gzip
+from http.client import IncompleteRead
 import importlib.util
 import io
 import json
@@ -44,12 +45,62 @@ class Fetcher:
         self.data=json.dumps(records).encode()if array else gzip.compress(('\n'.join(json.dumps(x)for x in records)+'\n').encode())
     def open(self,url,*args,**kwargs):
         self.urls.append(url)
-        return Response(json.dumps(self.descriptor).encode()if len(self.urls)==1 else self.data)
+        return Response(json.dumps(self.descriptor).encode()if url.startswith('https://api.scryfall.com/bulk-data/') else self.data)
     def image(self,*args):
         raise AssertionError('A metadata build must never request card images')
 
 
 class MetadataTests(unittest.TestCase):
+    def test_truncated_gzip_restarts_complete_body_count_size_and_digest(self):
+        with tempfile.TemporaryDirectory()as tmp:
+            target=Path(tmp)/'cards.jsonl';fetcher=Fetcher([CARD,dict(CARD,id='second')]);opened=[];pauses=[];original=fetcher.open
+            def interrupted(url,*args,**kwargs):
+                if url.startswith('https://api.scryfall.com/'):
+                    return original(url,*args,**kwargs)
+                fetcher.urls.append(url)
+                # Missing footer still yields both complete records before EOF.
+                response=Response(fetcher.data[:-8]if not opened else fetcher.data);opened.append(response);return response
+            fetcher.open=interrupted
+            def pause(delay):
+                pauses.append(delay);self.assertFalse(target.exists());self.assertFalse(list(Path(tmp).glob('*.part')))
+            expected=''.join(json.dumps(card,ensure_ascii=False,separators=(',',':'))+'\n'for card in [CARD,dict(CARD,id='second')]).encode()
+            report=metadata.prepare(target,min_cards=2,max_cards=2,max_bytes=len(expected),fetcher=fetcher,pause=pause)
+            self.assertEqual(pauses,[1]);self.assertEqual(len(opened),2);self.assertTrue(all(response.closed for response in opened))
+            self.assertEqual(target.read_bytes(),expected);self.assertEqual(report['cards'],2);self.assertEqual(report['bytes'],len(expected))
+            self.assertEqual(report['sha256'],metadata.file_digest(target));self.assertFalse(list(Path(tmp).rglob('*.sqlite')))
+
+    def test_incomplete_read_and_connection_failure_restart_body_without_open_retry_multiplication(self):
+        class Interrupted(Response):
+            def __init__(self,error):super().__init__();self.error=error
+            def read(self,*args):raise self.error
+        for error in (IncompleteRead(b'partial',12),ConnectionResetError('fixture stream closed')):
+            with self.subTest(error=type(error).__name__),tempfile.TemporaryDirectory()as tmp:
+                target=Path(tmp)/'cards.jsonl';fetcher=Fetcher([CARD]);calls=[];pauses=[];original=fetcher.open
+                def open_body(url,*args,**kwargs):
+                    if url.startswith('https://api.scryfall.com/'):return original(url,*args,**kwargs)
+                    fetcher.urls.append(url);calls.append(url)
+                    return Interrupted(error)if len(calls)==1 else Response(fetcher.data)
+                fetcher.open=open_body
+                result=metadata.prepare(target,min_cards=1,fetcher=fetcher,pause=pauses.append)
+                self.assertEqual(len(calls),2);self.assertEqual(pauses,[1]);self.assertEqual(result['cards'],1)
+                self.assertEqual(json.loads(target.read_text()),CARD)
+        # Exhausted Fetcher.open already used its own status/rate-limit budget.
+        with tempfile.TemporaryDirectory()as tmp:
+            fetcher=Fetcher([CARD]);original=fetcher.open;calls=[]
+            def failed_open(url,*args,**kwargs):
+                if url.startswith('https://api.scryfall.com/'):return original(url,*args,**kwargs)
+                calls.append(url);raise OSError('fixture exhausted open budget')
+            fetcher.open=failed_open
+            with self.assertRaises(OSError):metadata.prepare(Path(tmp)/'cards.jsonl',min_cards=1,fetcher=fetcher,pause=lambda _:self.fail('Do not repeat exhausted opens'))
+            self.assertEqual(len(calls),1)
+
+    def test_exhausted_body_retries_leave_neither_metadata_provenance_nor_partial_files(self):
+        with tempfile.TemporaryDirectory()as tmp:
+            target=Path(tmp)/'cards.jsonl';fetcher=Fetcher([CARD]);fetcher.data=fetcher.data[:-8];pauses=[]
+            with self.assertRaises(EOFError):metadata.prepare(target,min_cards=1,fetcher=fetcher,stream_retries=2,pause=pauses.append)
+            self.assertEqual(pauses,[1,2]);self.assertEqual(len(fetcher.urls),4)
+            self.assertFalse(list(Path(tmp).iterdir()))
+
     def test_gzip_jsonl_provenance_and_verified_cache_use_no_image_or_store(self):
         with tempfile.TemporaryDirectory()as tmp:
             target=Path(tmp)/'cards.jsonl';fetcher=Fetcher([CARD])
@@ -84,8 +135,14 @@ class MetadataTests(unittest.TestCase):
                                ([CARD,dict(CARD,id='second')],{'min_cards':1,'max_cards':1})]:
             with self.subTest(options=options),tempfile.TemporaryDirectory()as tmp:
                 target=Path(tmp)/'cards.jsonl'
-                with self.assertRaises(ValueError):metadata.prepare(target,fetcher=Fetcher(values),**options)
+                fetcher=Fetcher(values)
+                with self.assertRaises(ValueError):metadata.prepare(target,fetcher=fetcher,pause=lambda _:self.fail('Semantic errors must not retry'),**options)
+                self.assertEqual(len(fetcher.urls),2)
                 self.assertFalse(target.exists());self.assertFalse(list(Path(tmp).glob('*.part')))
+        with tempfile.TemporaryDirectory()as tmp:
+            fetcher=Fetcher([CARD]);fetcher.data=b'not a gzip provider response'
+            with self.assertRaises(gzip.BadGzipFile):metadata.prepare(Path(tmp)/'cards.jsonl',min_cards=1,fetcher=fetcher,pause=lambda _:self.fail('Malformed gzip is not a transient truncation'))
+            self.assertEqual(len(fetcher.urls),2)
 
     def test_foreign_download_url_and_wrong_descriptor_are_rejected(self):
         for descriptor in [{'type':'default_cards','download_uri':'https://untrusted.example/cards.json'},
@@ -191,7 +248,7 @@ class PayloadTests(unittest.TestCase):
                          'licenses/Roboto-Apache-2.0.txt',
                          'assets/fonts/Beleren2016-Bold.ttf', 'assets/fonts/LICENSE-DejaVu.txt',
                          'assets/card-backs/classic-magic.jpg', 'assets/card-backs/mystic-eye.png',
-                         'assets/ASSET_GUIDE.md', 'assets/card-backs/README.md', 'packaging/runtime/launcher.py'):
+                         'assets/ASSET_GUIDE.md', 'assets/card-backs/README.md', 'packaging/runtime/launcher.py', 'packaging/runtime/update_handoff.py'):
                 path = root / name; path.parent.mkdir(parents=True, exist_ok=True); path.write_text('fixture')
             catalog = root / 'decks/preconstructed/catalog.jsonl.gz'
             catalog.write_bytes(gzip.compress(b'{"_meta":{"version":1}}\n{"id":"precon:fixture"}\n'))

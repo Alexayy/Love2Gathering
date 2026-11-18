@@ -2,6 +2,8 @@ Unicode true
 !include "MUI2.nsh"
 !include "FileFunc.nsh"
 !include "LogicLib.nsh"
+!include "Sections.nsh"
+Var DesktopArgument
 Name "Love: 2 Gathering"
 OutFile "${OUTPUT}"
 InstallDir "$LOCALAPPDATA\Programs\Love2Gathering"
@@ -65,55 +67,64 @@ FunctionEnd
 Section "Application and bundled runtimes" Application
   SectionIn RO
   SetShellVarContext current
-  SetOutPath "$INSTDIR"
+  InitPluginsDir
+  ; Run the replacement worker and its Python from a private temporary payload,
+  ; never from executables that the transaction needs to replace or remove.
+  SetOutPath "$PLUGINSDIR\payload"
   File /r "${PAYLOAD}\*.*"
-  FileOpen $0 "$INSTDIR\.love2gathering-owned" w
-  FileWrite $0 "io.github.Alexayy.Love2Gathering ${VERSION}$\r$\n"
-  FileClose $0
-  WriteUninstaller "$INSTDIR\Uninstall.exe"
-  CreateDirectory "$SMPROGRAMS\Love2Gathering"
-  CreateShortcut "$SMPROGRAMS\Love2Gathering\Love2Gathering.lnk" "$INSTDIR\Love2Gathering.exe"
-  CreateShortcut "$SMPROGRAMS\Love2Gathering\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
-  WriteRegStr HKCU "Software\Love2Gathering" "InstallDir" "$INSTDIR"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Love2Gathering" "DisplayName" "Love: 2 Gathering"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Love2Gathering" "DisplayVersion" "${VERSION}"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Love2Gathering" "InstallLocation" "$INSTDIR"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Love2Gathering" "UninstallString" '$\"$INSTDIR\Uninstall.exe$\"'
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Love2Gathering" "DisplayIcon" "$INSTDIR\Love2Gathering.exe"
-  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Love2Gathering" "NoModify" 1
-  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Love2Gathering" "NoRepair" 1
+  WriteUninstaller "$PLUGINSDIR\payload\Uninstall.exe"
+  SetOutPath "$PLUGINSDIR\links"
+  CreateShortcut "$PLUGINSDIR\links\application.lnk" "$INSTDIR\Love2Gathering.exe"
+  CreateShortcut "$PLUGINSDIR\links\uninstall.lnk" "$INSTDIR\Uninstall.exe"
+  CreateShortcut "$PLUGINSDIR\links\desktop.lnk" "$INSTDIR\Love2Gathering.exe"
+  StrCpy $DesktopArgument ""
+  ; Application is section 0, the optional Desktop section is section 1.
+  SectionGetFlags 1 $0
+  IntOp $0 $0 & ${SF_SELECTED}
+  ${If} $0 != 0
+    StrCpy $DesktopArgument "--desktop-shortcut"
+  ${EndIf}
+  ClearErrors
+  ExecWait '$\"$PLUGINSDIR\payload\runtime\python\pythonw.exe$\" -B $\"$PLUGINSDIR\payload\install_support.py$\" install --prefix $\"$INSTDIR$\" --source $\"$PLUGINSDIR\payload$\" --links $\"$PLUGINSDIR\links$\" --version $\"${VERSION}$\" --result $\"$PLUGINSDIR\result.json$\" $DesktopArgument' $0
+  IfErrors install_failed
+  StrCmp $0 0 install_done
+  install_failed:
+    StrCpy $1 "Installation could not finish. The previous installation and registration were retained."
+    FileOpen $2 "$PLUGINSDIR\result.txt" r
+    IfErrors +3
+    FileRead $2 $1
+    FileClose $2
+    IfSilent +2
+    MessageBox MB_ICONSTOP "$1"
+    SetErrorLevel 2
+    Quit
+  install_done:
 SectionEnd
 
 Section /o "Desktop shortcut" Desktop
-  CreateShortcut "$DESKTOP\Love2Gathering.lnk" "$INSTDIR\Love2Gathering.exe"
+  ; The application section stages this option in its transactional helper.
 SectionEnd
 
 Section "Uninstall"
   SetShellVarContext current
-  IfFileExists "$INSTDIR\.love2gathering-owned" owned
-    MessageBox MB_ICONSTOP "This folder is not a recognized Love2Gathering installation. No files were removed."
-    Abort
-  owned:
-  FileOpen $0 "$INSTDIR\.love2gathering-owned" r
-  FileRead $0 $1
-  FileClose $0
-  StrLen $2 "io.github.Alexayy.Love2Gathering "
-  StrCpy $1 $1 $2
-  ${If} $1 != "io.github.Alexayy.Love2Gathering "
-    Abort
-  ${EndIf}
-  ; Generated exact file list: never recursively delete a user-selected directory.
-  !include "${REMOVE_LIST}"
-  Delete "$INSTDIR\.love2gathering-owned"
-  Delete "$INSTDIR\Uninstall.exe"
-  RMDir "$INSTDIR"
-  ReadRegStr $0 HKCU "Software\Love2Gathering" "InstallDir"
-  StrCmp $0 "$INSTDIR" 0 shortcuts_done
-  Delete "$SMPROGRAMS\Love2Gathering\Love2Gathering.lnk"
-  Delete "$SMPROGRAMS\Love2Gathering\Uninstall.lnk"
-  RMDir "$SMPROGRAMS\Love2Gathering"
-  Delete "$DESKTOP\Love2Gathering.lnk"
-  DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Love2Gathering"
-  DeleteRegKey HKCU "Software\Love2Gathering"
-  shortcuts_done:
+  InitPluginsDir
+  SetOutPath "$PLUGINSDIR\support"
+  File /oname=install_support.py "${PAYLOAD}\install_support.py"
+  SetOutPath "$PLUGINSDIR\support\runtime\python"
+  File /r "${PAYLOAD}\runtime\python\*.*"
+  ClearErrors
+  ExecWait '$\"$PLUGINSDIR\support\runtime\python\pythonw.exe$\" -B $\"$PLUGINSDIR\support\install_support.py$\" uninstall --prefix $\"$INSTDIR$\" --result $\"$PLUGINSDIR\result.json$\"' $0
+  IfErrors uninstall_failed
+  StrCmp $0 0 uninstall_done
+  uninstall_failed:
+    StrCpy $1 "Uninstallation could not finish. Close the installed application and try again. Registration was retained."
+    FileOpen $2 "$PLUGINSDIR\result.txt" r
+    IfErrors +3
+    FileRead $2 $1
+    FileClose $2
+    IfSilent +2
+    MessageBox MB_ICONSTOP "$1"
+    SetErrorLevel 2
+    Quit
+  uninstall_done:
 SectionEnd

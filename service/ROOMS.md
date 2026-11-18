@@ -120,6 +120,12 @@ The policy never taps a source or generates mana on the player's behalf.
 - `lua5.4 tests/stack_presentation.lua`: exact docked stack-row identities,
   clipping, modal/scroll hover retirement and rematch/seat resets. Actual dock
   rendering and hover are covered separately by `presentation_overhaul_ui.sh`.
+- `python3 tests/table_production.py`: a fresh bridge-only build and owned real
+  catalog run a complete native duel, then 4/5/6-player Commander openings and
+  full turn rounds with native MAD bots. It checks server-owned 2d6 starting
+  order, all seats and bot land plays, private hands, native deck validation and
+  actual recordings. `tests/table-production-report.json` records exact build
+  hashes and cleanup; these are HTTP games, separate from graphical fixtures.
 
 - `python3 -m unittest discover -s service/tests -p test_rooms.py -v`: real HTTP gateways with a synthetic native adapter. Checks authorization, private projections, native capability mapping, rejected decks, host/guest scope, stale-round actions, explicit forfeiture, start/close races, byes and draw-rematch orchestration. This is not rules evidence.
 - `lua tests/api_rooms.lua` and `lua tests/rooms_model.lua`: deterministic transport fencing and room/draft editing contracts.

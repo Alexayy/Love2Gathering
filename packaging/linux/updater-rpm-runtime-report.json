@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "scope": "Actual RPM installed root-owned in Fedora container; runtime version checks and real XMage/catalog/room readiness as uid65534. One-card packaged metadata; no desktop, VM or full-match claim.",
+  "image": "l2g-rpm-verification:local",
+  "imageId": "sha256:85fc15101a3ecfc60823df37b80b4fe3547c7fb7307daf827ee8618b4e366c37",
+  "distribution": {
+    "ID": "fedora",
+    "VERSION_ID": "44",
+    "PRETTY_NAME": "Fedora Linux 44 (Container Image)"
+  },
+  "uid": 65534,
+  "bridgeOwnerUid": 0,
+  "bridgeMode": "0644",
+  "rpmSha256": "ffb36df55dece5a90cb4e87f28b585eb871d170a80dd5c70b569fe525e57faf4",
+  "catalogCards": 1,
+  "catalogApi": 15,
+  "engineRevision": "c5a5215fa086f487c793627446d5d27e81dfbc97",
+  "payloadFilesVerified": 301,
+  "runtimes": {
+    "passed": true,
+    "root": "/opt/love2gathering",
+    "java": "openjdk version \"21.0.13.0.3\" 2026-10-24",
+    "love": "LOVE 11.5 (Mysterious Mysteries)",
+    "python": "3.14.10",
+    "images": {
+      "available": true,
+      "pillow": "12.3.0",
+      "jpeg": true
+    }
+  },
+  "userStorageIsolated": true,
+  "sourceSha256": {
+    "packaging/build.py": "eb93c6b7d8325648ea7b4708a2994fada499f8d93460a07d7a429cf68d040cd0",
+    "packaging/runtime/launcher.py": "d9e3835abd71c937d78eb913e8d631de0d695159feb3a192151623a692b0280c",
+    "packaging/linux/test_rpm_runtime.py": "e6dc8c9187d1672cb9201f111dfeea262d71dea498185952710110e307816e22"
+  }
+}

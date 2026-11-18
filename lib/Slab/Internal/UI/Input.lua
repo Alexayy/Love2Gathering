@@ -1037,10 +1037,23 @@ function Input.Begin(Id, Options)
 			Instance.Lines = nil
 		end
 
-		Instance.Text = Options.Text == nil and Instance.Text or Options.Text
-
 		if Options.IsPassword then
-			Instance.Text = Instance.PasswordText == nil and Instance.Text or Instance.PasswordText
+			-- Password contents belong to the caller just like ordinary input.
+			-- Refresh all three representations after external replacement/clear;
+			-- retaining the old mask also retained its recoverable original text.
+			if Instance.OrigText ~= Options.Text then
+				Instance.OrigText = Options.Text
+				Instance.PasswordText = string.rep(Instance.PasswordChar, #Instance.OrigText)
+				if Focused == nil then
+					TextCursorPos = min(TextCursorPos, #Instance.PasswordText)
+					TextCursorAnchor = -1
+					DragSelect = false
+					if Options.Text == "" then LastText = "" end
+				end
+			end
+			Instance.Text = Instance.PasswordText
+		else
+			Instance.Text = Options.Text == nil and Instance.Text or Options.Text
 		end
 	end
 

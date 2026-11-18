@@ -60,6 +60,7 @@ function About.build(view,width)
     heading(data.title or'Love: 2 Gathering','info')
     for _,row in ipairs(Build.lines(state.info))do paragraph(row.label..' · '..row.value,C.muted)end
     if button(view,'about-copy-build','Copy build details','export',width)then love.system.setClipboardText(Build.summary(state.info))end;S.NewLine()
+    require('app.updates').build(view,width,state.info)
     paragraph(data.notice,C.gold)
     showLinks(data.links,'about-project')
     if state.linkError then paragraph(state.linkError,C.gold)end

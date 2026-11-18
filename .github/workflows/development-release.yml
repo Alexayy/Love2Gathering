@@ -98,6 +98,7 @@ jobs:
           python3 scripts/ci/test_workflow.py -v 2>&1 | tee build/ci/reports/workflow-tests.log
           python3 packaging/test_python_dependencies.py -v 2>&1 | tee build/ci/reports/python-dependencies.log
           python3 packaging/test_payload.py -v 2>&1 | tee build/ci/reports/payload-permissions.log
+          python3 packaging/runtime/test_update_handoff.py -v 2>&1 | tee build/ci/reports/update-handoff.log
           python3 packaging/windows/test_graphics.py -v 2>&1 | tee build/ci/reports/windows-graphics.log
           python3 packaging/flatpak/test_build.py -v 2>&1 | tee build/ci/reports/flatpak-builder.log
           dbus-run-session -- python3 packaging/linux/test_installer.py -v 2>&1 | tee build/ci/reports/linux-installer.log

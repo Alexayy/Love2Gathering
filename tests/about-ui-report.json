@@ -3,20 +3,20 @@
     "https://github.com/Alexayy/Love2Gathering"
   ],
   "captures": [
-    "/tmp/love2gathering-about-ui-IHnrkd/about-page-build.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-project-license.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-font-rights.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-card-back-rights.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-credits-bottom.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-complete-credits.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-page-1120.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-popup-1120.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-popup-license.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-popup-long-license-end.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-popup-final-policy.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-popup-bottom.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-popup-scaled.png",
-    "/tmp/love2gathering-about-ui-IHnrkd/about-source-build.png"
+    "/tmp/love2gathering-about-ui-8fbrFv/about-page-build.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-project-license.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-font-rights.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-card-back-rights.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-credits-bottom.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-complete-credits.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-page-1120.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-popup-1120.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-popup-license.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-popup-long-license-end.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-popup-final-policy.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-popup-bottom.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-popup-scaled.png",
+    "/tmp/love2gathering-about-ui-8fbrFv/about-source-build.png"
   ],
   "checks": [
     "Production settings routing opens a page outside a match",
@@ -116,13 +116,13 @@
   ],
   "scope": "Real L\u00d6VE/Slab page and in-game popup input, scrolling, local credit documents and supplied fonts/icons. Build manifest and background match are explicit fixtures; browser calls intercepted; no live service/user settings/native game.",
   "sourceSha256": {
-    "app/about.lua": "2915037de2949232f18510ea77a722774072e30cf7578748d290881cedd75484",
+    "app/about.lua": "7cd05aab0828ff802c04429b0408e12124dfe96ff3febd8b31049ba20d9edcef",
     "app/build_info.lua": "53f59788c94b7c6e5351a0ce17a7801ec901d284b65f5545df123361b52a9b56",
-    "app/credits.lua": "837cd96a7f80413367e68598a94e7c9e663b83f2b18680071004abc21e83daab",
-    "app/settings.lua": "8589ff271ba000fda73c20c71cbb70ec6a5ceb899fd77017ecc3c96d298ce1c0",
+    "app/credits.lua": "647aa5ab0f397764ee18c787d9d343e963a05393d61545695b650e624f35baa3",
+    "app/settings.lua": "8e50fa9f032232a285c4383251019e52c2144aa25705c56577247667a3c5d146",
     "LICENSE": "d9894f7092d168bbef757ecafd54bbd19eb46c59d00dd04dbee6304ac855a301",
     "CREDITS.md": "19d95e0b52c136e6b909a6cfba16c7472e0d39326c2711d5daff6ee690c0becb",
-    "THIRD_PARTY_NOTICES.md": "81e07bbe178c3984de5c30b4fd8a68b088cebceb8f925cfbda202bc09d582ffe",
+    "THIRD_PARTY_NOTICES.md": "8b6a060689019f8b65bc640131a61f310c18a6caac2dfce3758b61ca98d46fa5",
     "tests/about_ui.lua": "b02b30a9c2b81d1aee66b28079861f89bb588cd7a3aeaf0b5afc7e0d63bec3fe"
   }
 }
