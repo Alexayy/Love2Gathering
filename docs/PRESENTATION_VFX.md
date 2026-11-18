@@ -55,6 +55,16 @@ Events have stable `id`/`sequence`, `nativeType`, `operation`, exact
 to a graveyard never implies destroy or sacrifice. `operation='resolved'`
 requires `successful=true` or `success=true` for a resolution outcome.
 
+`causeSourceId` retains the original native card UUID separately from an event's
+stack-object `sourceId`. Exact stack rows accept either the native stack UUID or
+its original source UUID; paired native zone-to-stack events retain the casting
+zone. `paymentForId` and `contributorId` identify accepted Convoke payments.
+Native costs tags also export committed `contributors` and `paidMechanics`.
+Convoke uses the scoped actual special action, Evoke uses the paid native costs
+tag/typed trigger condition, and Extort life events use the actual resolving
+stack ability only when its source identity matches. Keyword presence alone
+does not supply these causes.
+
 An actual permanent entering the battlefield emits `entry=true`,
 `operation='enter_battlefield'` with its native permanent UUID, commander flag
 and mana value. Native commander and mana-value-above-five entries get the
@@ -175,10 +185,25 @@ python3 scripts/report-mechanic-coverage.py --metadata build/update-verification
 
 ## Acceptance evidence
 
-`tests/mechanic_fx.lua` passes 115 pure presentation contracts;
+`tests/mechanic_fx.lua` passes 121 pure presentation contracts;
 `tests/board_fx.lua` passes 52; `tests/combat_indicators.lua` passes 19. Lua 5.1
 syntax validation also passes for these modules and the graphical harness.
 These pure checks are not native rules tests.
+
+`bridge/tests/test_mechanic_causes.py` compiles and runs
+`MechanicCauseFixture.java` against a fresh or hash-verified bridge JAR. Its 33
+checks exercise accepted native Evoke cost/entry/later sacrifice, Extort payment
+and exact life transfer, five accepted Convoke contributors without pool mana,
+Mutate merge without entry, hidden Morph/paid face-up without another entry,
+new Haste attacker selection, legal Reach-versus-Flying interception, and actual
+native Trample damage assignment in a prepared combat group. Only initial
+zones/resources and the Trample group are prepared; this is not a complete
+production game or GUI acceptance. `tests/mechanic_causes.lua` consumes those
+actual frames and passes 20 director/endpoint contracts using synthetic geometry.
+
+The GUI harness additionally captures eight detailed native outcome scenes at
+`build/presentation-vfx/native-causes.png`, retaining exact source-frame hashes.
+This caught stack/source UUID mismatches that synthetic event fixtures did not.
 
 `tests/mechanic_fx_ui.sh` draws through actual LÖVE, verifies identical pixels
 for different hidden colors/mechanics, verifies still reduced-motion pixels,
@@ -197,10 +222,10 @@ consumption evidence, not a complete playable-match or full-table UX test.
 Final reports include exact source hashes, renderer identity and capture paths:
 `tests/mechanic-vfx-ui-report.json` and
 `tests/mechanic-vfx-software-ui-report.json`. The software run uses Mesa
-llvmpipe; its 100-card baseline mean/p95 is 7.74/9.51 ms and effects mean/p95 is
-22.17/35.18 ms. The primary OpenGL 4.6 Radeon run (Ryzen 7 6800HS integrated
-graphics, Mesa 25.2.8) measures baseline mean/p95 1.18/1.69 ms and effects
-3.38/4.57 ms. These measurements expose the cost of maximum crowded effects on
+llvmpipe; its 100-card baseline mean/p95 is 8.23/12.93 ms and effects mean/p95 is
+16.51/17.83 ms. The primary OpenGL 4.6 Radeon run (Ryzen 7 6800HS integrated
+graphics, Mesa 25.2.8) measures baseline mean/p95 0.59/0.94 ms and effects
+1.99/2.55 ms. These measurements expose the cost of maximum crowded effects on
 software rendering; Fast/Minimal, ambient and intensity controls reduce
 presentation load. The reports retain full measurements and source hashes.
 

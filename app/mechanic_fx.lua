@@ -401,7 +401,7 @@ local function eventProfile(e,card,operation)
         or operation=='damage'and e.combat==true and(tonumber(e.amount)or 0)>0 and{trample=true,first_strike=true,double_strike=true,lifelink=true}
     if contextual then for _,p in ipairs(FX.cardProfiles(card))do if contextual[p.id]then return p end end end
 end
-function FX.queue(d,event,card,impact)
+function FX.queue(d,event,card,impact,origin)
     local operation=FX.operation(event)
     if not operation then d.stats.unknownSemantics=d.stats.unknownSemantics+1;return end
     if operation=='step'then return end
@@ -417,9 +417,10 @@ function FX.queue(d,event,card,impact)
     local e=table.remove(d.pool)or{}
     for key in pairs(e)do e[key]=nil end
     e.id=event.id or event.sequence;e.operation=operation;e.sourceId=event.sourceId;e.targetId=event.targetId or event.sourceId
+    e.causeSourceId=event.causeSourceId;e.paymentForId=event.paymentForId
     e.playerId=event.playerId;e.controllerId=event.controllerId;e.ownerId=event.ownerId or card and card.ownerId or event.playerId;e.card=card;e.profile=eventProfile(event,card,operation)
     e.stackId=event.stackId or event.stackObjectId;e.abilityId=event.abilityId
-    e.fromZone=event.fromZone;e.toZone=event.toZone;e.amount=event.amount;e.batchId=event.batchId or event.resolutionId
+    e.fromZone=event.fromZone or origin and origin.fromZone;e.toZone=event.toZone;e.amount=event.amount;e.batchId=event.batchId or event.resolutionId
     e.hidden=card and(card.hidden or card.faceDown)or event.hidden==true;e.commander=not e.hidden and(event.commander==true or impact and impact.commander==true)
     if e.hidden then e.profile=nil end
     e.manaValue=not e.hidden and tonumber(impact and impact.manaValue or event.manaValue)or 0;e.combat=event.combat==true;e.step=event.step
@@ -444,12 +445,18 @@ function FX.observe(d,game,cards,identity,seeking)
         if target and event.type=='zone'and event.toZone=='BATTLEFIELD'and event.fromZone~='BATTLEFIELD'then entries[target]=true end
         if target and event.type=='impact'and(event.entry==true or event.operation=='entry')then impacts[target]=event end
     end
+    local castOrigins={}
     for _,event in ipairs(list(game.animationEvents))do
+        if event.type=='zone'and event.toZone=='STACK'then
+            if event.targetId then castOrigins[event.targetId]=event end
+            if event.sourceId then castOrigins[event.sourceId]=event end
+        end
         local key=event.id or event.sequence
         if remember(d,key)and not initial then
             local op=FX.operation(event)
             local material=op=='entry'or op=='destroy'or op=='sacrifice'or op=='exile'or op=='departure'or op=='return'or op=='draw'or op=='discard'or op=='mill'or op=='face_up'or op=='merge'
-            local card=material and(cards[event.targetId]or cards[event.sourceId])or cards[event.sourceId]or cards[event.targetId]
+            local sourceCard=cards[event.causeSourceId]or cards[event.sourceId]
+            local card=material and(cards[event.targetId]or sourceCard)or sourceCard or cards[event.targetId]
             local target=event.targetId or event.sourceId
             local batchId=event.batchId or event.resolutionId
             local boardAffected=boardOperationPriority[op]and(op~='departure'and op~='exile'and op~='return'or event.fromZone=='BATTLEFIELD')
@@ -462,7 +469,7 @@ function FX.observe(d,game,cards,identity,seeking)
             end
             -- A native zone entry and its post-resolution impact enrich one
             -- card arrival, rather than creating a duplicate rise/settle.
-            if not(event.type=='impact'and target and entries[target])then FX.queue(d,event,card,impacts[target])end
+            if not(event.type=='impact'and target and entries[target])then FX.queue(d,event,card,impacts[target],op=='cast'and(castOrigins[event.causeSourceId]or castOrigins[event.sourceId]))end
         end
     end
     d.initialized=true;d.revision=tonumber(game.revision)or d.revision
@@ -490,20 +497,20 @@ function FX.flush(d,anchor,previous,playerRects,zoneRects,previousZoneRects,stac
     end
     local function stackBox(e)
         if not stackRows then return nil end
-        local row=stackRows[e.stackId or e.abilityId]
+        local row=stackRows[e.stackId or e.abilityId]or stackRows[e.sourceId]
         if not row then for _,item in ipairs(list(stack))do
-            if item.sourceId==e.sourceId and(e.operation~='cast'or item.kind=='spell'or item.kind==nil)then row=stackRows[item.id];if row then break end end
+            if(item.sourceId==(e.paymentForId or e.causeSourceId or e.sourceId)or item.id==e.sourceId)and(e.operation~='cast'or item.kind=='spell'or item.kind==nil)then row=stackRows[item.id];if row then break end end
         end end
         if row and row.visible~=false then return row.box or row end
     end
     for _,e in ipairs(d.pending)do
         local old=previous and previous[e.targetId]
-        e.from=anchorPoint(anchor,e.sourceId)or(old and center(old))
+        e.from=anchorPoint(anchor,e.causeSourceId or e.sourceId)or anchorPoint(anchor,e.sourceId)or(old and center(old))
         local target=anchor(e.targetId)or(old and old)
         e.box=target;e.to=target and center(target)or anchorPoint(anchor,e.playerId or e.controllerId)
         local sourceZone=zone(previousZoneRects,e.ownerId,e.fromZone)or zone(zoneRects,e.ownerId,e.fromZone)
         local targetZone=zone(zoneRects,e.ownerId,e.toZone)
-        local sourceCard=previous and(previous[e.sourceId]or previous[e.targetId])
+        local sourceCard=previous and(previous[e.causeSourceId]or previous[e.sourceId]or previous[e.targetId])
         if e.operation=='entry'then
             e.from=center(sourceCard or sourceZone)or e.from
         elseif e.operation=='cast'then

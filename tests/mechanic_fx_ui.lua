@@ -6,6 +6,7 @@ local samples={baseline={},effects={}};local profileNames={'flashback','jump_sta
 local cards={};local director;local requested=false;local assets;local font
 local fonts={}
 local nativeBefore,nativeAfter,nativeDirector,nativeAnchors,nativeSurvivors
+local nativeScenes={}
 local function check(ok,label)assert(ok,label);results.checks[#results.checks+1]={passed=true,message=label};print('VFX UI PASS '..label)end
 local function text(value,x,y,size,color,width,align)
  size=math.floor(size or 15);if not fonts[size]then fonts[size]=love.graphics.newFont('assets/fonts/DejaVuSans.ttf',size)end
@@ -75,6 +76,31 @@ function love.load()
   check(survivors==1,'Actual native indestructible survivor remains on the current battlefield')
   results.nativeWipe={sourceBefore=beforePath,sourceAfter=afterPath,affected=nativeDirector.major.count,survivors=survivors,operation=nativeDirector.major.operation,scope='Actual viewer-filtered XMage prepared native Wrath outcome. Layout geometry is synthetic; only current surviving cards are drawn as live objects. Departed rectangles are noninteractive material-effect anchors.'}
  end
+ local causeFolder=os.getenv('LOVE2GATHERING_VFX_NATIVE_CAUSES')
+ if causeFolder then
+  local definitions={{'Evoke','evoke-before','evoke-cast'},{'Convoke','convoke-before','convoke-cast'},{'Extort','extort-trigger','extort-complete'},{'Mutate','mutate-before','mutate-complete'},
+   {'Face up','morph-face-down','morph-face-up'},{'Haste','haste-before','haste-attacking'},{'Reach','haste-attacking','reach-blocking'},{'Trample','trample-before','trample-complete'}}
+  local function read(name)local f=assert(io.open(causeFolder..'/'..name..'.json'));local raw=f:read('*a');f:close();return json.decode(raw)end
+  local sources={}
+  for i,definition in ipairs(definitions)do
+   local scene={name=definition[1],x=20+(i-1)%4*475,y=105+math.floor((i-1)/4)*460,current={},previous={},players={},zones={},rows={},director=FX.newDirector()}
+   local before,after=read(definition[2]),read(definition[3]);scene.after=after;sources[definition[2]]=causeFolder..'/'..definition[2]..'.json';sources[definition[3]]=causeFolder..'/'..definition[3]..'.json'
+   local function geometry(game,boxes)
+    for pi,p in ipairs(game.players)do
+     scene.players[p.id]={x=scene.x+10,y=scene.y+50+(pi-1)*28,w=100,h=22};scene.zones[p.id]={}
+     for _,zone in ipairs({'hand','graveyard','exile','library','command'})do scene.zones[p.id][zone]={x=scene.x+12,y=scene.y+100+(pi-1)*90,w=70,h=90}end
+     for ci,c in ipairs(p.battlefield or{})do boxes[c.id]={x=scene.x+10+(ci-1)%5*88,y=scene.y+220+(pi-1)*112,w=80,h=112}end
+    end
+    for si,item in ipairs(game.stack)do scene.rows[item.id]={x=scene.x+275,y=scene.y+100+(si-1)*72,w=165,h=62,visible=true,name=item.name}end
+   end
+   geometry(before,scene.previous);scene.rows={};geometry(after,scene.current)
+   FX.observe(scene.director,before,Board.index(before),before.gameId);FX.observe(scene.director,after,Board.index(after),after.gameId)
+   FX.flush(scene.director,function(id)return scene.current[id]or scene.players[id]or scene.rows[id]end,scene.previous,scene.players,scene.zones,scene.zones,scene.rows,after.stack)
+   nativeScenes[#nativeScenes+1]=scene
+  end
+  check(#nativeScenes==8,'Eight detailed mechanic scenes consume actual native outcomes and public current traits')
+  results.nativeCauses={sources=sources,scenes=#nativeScenes,scope='Actual accepted native Evoke/Convoke/Extort/Mutate/Morph-face-up/Haste/Reach and prepared Trample outcomes. Presentation geometry is synthetic and noninteractive; no full-table UX claim.'}
+ end
 end
 function love.update(dt)
  frame=frame+1;clock=clock+dt;renderer.dt=dt;renderer.fxClock=clock
@@ -87,9 +113,10 @@ function love.update(dt)
    results.performance={baseline=summary(samples.baseline),effects=summary(samples.effects),renderer={love.graphics.getRendererInfo()},measurement='CPU draw submission time around identical 100-card synthetic scene, after 20 warmup frames, vsync off. Effects include 50 simultaneous destroy outcomes. No full application or end-to-end GPU timing claim.'}
    check(director.stats.drawPrimitives<=director.maxParticles,'Simultaneous fracture primitive budget stays bounded at 256')
    results.director={active=#director.events,maxEffects=director.maxEffects,maxTrails=director.maxTrails,maxParticles=director.maxParticles,drawPrimitives=director.stats.drawPrimitives}
-   if nativeDirector then mode='native';frame=0 else finish()end
+   if nativeDirector then mode='native';frame=0 elseif#nativeScenes>0 then mode='causes';frame=0 else finish()end
   end)
- elseif mode=='native'and frame>18 and not requested then capture('native-wipe',finish)
+ elseif mode=='native'and frame>18 and not requested then capture('native-wipe',function()if#nativeScenes>0 then mode='causes';frame=0 else finish()end end)
+ elseif mode=='causes'and frame>18 and not requested then capture('native-causes',finish)
  end
 end
 function love.draw()
@@ -109,6 +136,19 @@ function love.draw()
    FX.flush(d,function()return{x=x+36,y=y,w=194,h=272}end);d.events[1].age=.23;FX.draw(d,renderer)
   end
   text('Operation-specific material signatures require explicit native semantics; this scene supplies labeled fixtures.',80,700,16,{.66,.73,.79},1740,'center')
+ elseif mode=='causes'then
+  renderer.model.canSelect=function()return false end
+  text('Actual native mechanic outcomes • synthetic noninteractive geometry',24,55,16,{.86,.81,.71},1800)
+  for _,scene in ipairs(nativeScenes)do
+   love.graphics.setColor(.13,.20,.26,.65);love.graphics.rectangle('line',scene.x,scene.y,457,448,5,5);text(scene.name,scene.x+10,scene.y+10,16,{.77,.87,.91},440)
+   for _,player in ipairs(scene.after.players)do
+    local p=scene.players[player.id];text((player.name or'Player')..' '..tostring(player.life),p.x,p.y,11,{.68,.78,.85},160)
+    for _,card in ipairs(player.battlefield or{})do local b=scene.current[card.id];drawCard(card,b.x,b.y,b.w,b.h,true)end
+   end
+   for _,row in pairs(scene.rows)do love.graphics.setColor(.16,.25,.30,.9);love.graphics.rectangle('line',row.x,row.y,row.w,row.h,3,3);text(row.name,row.x+7,row.y+8,12,{.78,.85,.91},row.w-14)end
+   for _,e in ipairs(scene.director.events)do e.age=.22 end
+   renderer.tableLayout={viewport={x=scene.x,y=scene.y,w=457,h=448}};FX.draw(scene.director,renderer)
+  end
  elseif mode=='native'then
   renderer.model.canSelect=function()return false end
   text('Actual XMage Wrath outcome • 60 destroyed, 1 current survivor • synthetic noninteractive effect geometry',24,55,16,{.86,.81,.71},1800)

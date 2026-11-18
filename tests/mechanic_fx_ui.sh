@@ -23,6 +23,8 @@ if [ -f "$native_before" ] && [ -f "$native_after" ];then
  export LOVE2GATHERING_VFX_NATIVE_BEFORE="$native_before"
  export LOVE2GATHERING_VFX_NATIVE_AFTER="$native_after"
 fi
+native_causes="$project_dir/build/presentation-vfx/native-mechanic-audit"
+if [ -f "$native_causes/trample-complete.json" ];then export LOVE2GATHERING_VFX_NATIVE_CAUSES="$native_causes";fi
 LOVE2GATHERING_VFX_OUTPUT="$output" love "$test_dir"
 python3 - "$project_dir" "$output" "$report_file" <<'PY'
 import hashlib,json,pathlib,sys
@@ -33,6 +35,9 @@ report['captures']={name:str(output/(name+'.png'))for name in ('profiles','event
 if report.get('nativeWipe'):
  report['captures']['native-wipe']=str(output/'native-wipe.png')
  report['nativeWipe']['sourceSha256']={name:hashlib.sha256(pathlib.Path(report['nativeWipe'][name]).read_bytes()).hexdigest()for name in ('sourceBefore','sourceAfter')}
+if report.get('nativeCauses'):
+ report['captures']['native-causes']=str(output/'native-causes.png')
+ report['nativeCauses']['sourceSha256']={name:hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()for name,path in report['nativeCauses']['sources'].items()}
 report_file.write_text(json.dumps(report,indent=2)+'\n')
 print(json.dumps(report['performance'],indent=2))
 PY
