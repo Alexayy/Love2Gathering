@@ -14,12 +14,11 @@ import sys
 ENGINE_PATH = 'engine/mage'
 ENGINE_PIN = '2a96b0ac129dfd77946eaad536184d3b35fb5e64'
 GITMODULES_BLOB = 'ba0dc072e733b30fdbf680dc0fb9b651ec0d7f32'
-# The reviewed upgrades may start from these exact published
-# branch heads. Only the base snapshot is exempt; every outgoing commit and
-# the index must use ENGINE_PIN. No downgrade or intermediate pin is allowed.
+PREVIOUS_DEVELOPMENT_BASE = '0c797b1db53540c99a8739230818646f195544c5'
+PREVIOUS_DEVELOPMENT = 'da29c6fe11c97a5c60aacf393e5bb0dc6c54af2a'
 UPGRADE_BASES = {
-    'da29c6fe11c97a5c60aacf393e5bb0dc6c54af2a': 'c5a5215fa086f487c793627446d5d27e81dfbc97',
-    '0c797b1db53540c99a8739230818646f195544c5': 'd9b266fc981024873ac7ec5f90ee7121a060725e',
+    PREVIOUS_DEVELOPMENT: 'c5a5215fa086f487c793627446d5d27e81dfbc97',
+    PREVIOUS_DEVELOPMENT_BASE: 'd9b266fc981024873ac7ec5f90ee7121a060725e',
     '89cd81d1e950cf5da0418b0134bd6d5537215366': 'd9b266fc981024873ac7ec5f90ee7121a060725e',
 }
 
@@ -69,6 +68,7 @@ def index_entries():
 def check(base=None, head='HEAD', index=False):
     head_id = commit_id(head)
     revisions = [head_id]
+    historical_pins = {}
     if base:
         base_id = commit_id(base)
         ancestor = subprocess.run(['git', '--no-replace-objects', 'merge-base', '--is-ancestor', base_id, head_id], capture_output=True)
@@ -76,8 +76,15 @@ def check(base=None, head='HEAD', index=False):
             raise GuardError('The publish base is not an ancestor of HEAD; this guard never authorizes a force push')
         outgoing = git('rev-list', '--reverse', base_id + '..' + head_id).decode().splitlines()
         revisions = list(dict.fromkeys([base_id, *outgoing, head_id]))
+        if base_id in UPGRADE_BASES:
+            historical_pins[base_id] = UPGRADE_BASES[base_id]
+        if PREVIOUS_DEVELOPMENT in outgoing:
+            # A normal merge brings these exact, previously reviewed commits into
+            # master. A new commit with the same old pin is outside this range.
+            published = git('rev-list', PREVIOUS_DEVELOPMENT_BASE + '..' + PREVIOUS_DEVELOPMENT).decode().splitlines()
+            historical_pins.update(dict.fromkeys(published, UPGRADE_BASES[PREVIOUS_DEVELOPMENT]))
     for revision in revisions:
-        pin = UPGRADE_BASES.get(revision, ENGINE_PIN) if base and revision == base_id and revision != head_id else ENGINE_PIN
+        pin = ENGINE_PIN if revision == head_id else historical_pins.get(revision, ENGINE_PIN)
         check_entries(list(tree_entries(revision)), 'Commit ' + revision[:12], pin)
     if index:
         check_entries(list(index_entries()), 'Index')

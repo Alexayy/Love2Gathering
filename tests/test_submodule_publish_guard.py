@@ -73,11 +73,15 @@ class SubmodulePublishGuardTests(unittest.TestCase):
         self.base = self.git('rev-parse', 'HEAD').stdout.strip()
         self.assertNotEqual(self.guard().returncode, 0)
 
-    def upgrade_guard(self, *args):
-        # Substitute only the exact allowlisted base SHA with this fixture's
-        # independently created old base; production has no override switch.
+    def upgrade_guard(self, *args, published_refs=None):
+        # Use this temporary repository's commits for published snapshots.
         check = self.root / 'upgrade-check.py'
-        check.write_text(CHECK.read_text().replace('0c797b1db53540c99a8739230818646f195544c5', self.base))
+        source = CHECK.read_text()
+        refs = {'0c797b1db53540c99a8739230818646f195544c5': self.base}
+        refs.update(published_refs or {})
+        for original, fixture in refs.items():
+            source = source.replace(original, fixture)
+        check.write_text(source)
         return subprocess.run(['python3', str(check), '--base', self.base, '--index', *args],
                               cwd=self.repo, capture_output=True, text=True)
 
@@ -115,6 +119,45 @@ class SubmodulePublishGuardTests(unittest.TestCase):
         (self.repo / '.gitmodules').write_text(MODULES.replace('magefree/mage', 'someone/other'))
         self.git('add', '.gitmodules')
         self.assertNotEqual(self.upgrade_guard().returncode, 0)
+
+    def test_merge_of_previously_published_development(self):
+        self.old_upgrade_base()
+        development_base = self.base
+        self.git('checkout', '-qb', 'master')
+        self.git('commit', '--allow-empty', '-qm', 'previous master release')
+        self.base = self.git('rev-parse', 'HEAD').stdout.strip()
+        self.git('checkout', '-q', 'development')
+        previous_pin = 'c5a5215fa086f487c793627446d5d27e81dfbc97'
+        self.git('update-index', '--cacheinfo', '160000,' + previous_pin + ',engine/mage')
+        self.git('commit', '-qm', 'first reviewed upgrade')
+        self.commit('published client change\n')
+        published = self.git('rev-parse', 'HEAD').stdout.strip()
+        refs = {
+            '0c797b1db53540c99a8739230818646f195544c5': development_base,
+            'da29c6fe11c97a5c60aacf393e5bb0dc6c54af2a': published,
+            '89cd81d1e950cf5da0418b0134bd6d5537215366': self.base,
+        }
+        self.git('update-index', '--cacheinfo', '160000,' + PIN + ',engine/mage')
+        self.git('commit', '-qm', 'current reviewed upgrade')
+        self.git('checkout', '-q', 'master')
+        self.git('merge', '--no-ff', '-qm', 'promote development', 'development')
+
+        result = self.upgrade_guard(published_refs=refs)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('"outgoingCommits": 4', result.stdout)
+        old_head = self.upgrade_guard('--base', development_base, '--head', published, published_refs=refs)
+        self.assertNotEqual(old_head.returncode, 0)
+        self.assertIn(published[:12], old_head.stderr)
+
+        # A new side-branch commit uses the identical old tree but was never published.
+        self.git('checkout', '-qb', 'unreviewed', published)
+        self.git('commit', '--allow-empty', '-qm', 'unreviewed old-pin snapshot')
+        unreviewed = self.git('rev-parse', 'HEAD').stdout.strip()
+        self.git('checkout', '-q', 'master')
+        self.git('merge', '--no-ff', '-s', 'ours', '-qm', 'merge unreviewed branch', 'unreviewed')
+        result = self.upgrade_guard(published_refs=refs)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(unreviewed[:12], result.stderr)
 
     def test_parent_publish_ignores_dirty_nested_repo_and_never_pushes_it(self):
         parent_remote = self.root / 'parent.git'; child_remote = self.root / 'engine.git'
