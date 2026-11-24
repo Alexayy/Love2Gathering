@@ -12,12 +12,13 @@ import subprocess
 import sys
 
 ENGINE_PATH = 'engine/mage'
-ENGINE_PIN = 'c5a5215fa086f487c793627446d5d27e81dfbc97'
+ENGINE_PIN = '2a96b0ac129dfd77946eaad536184d3b35fb5e64'
 GITMODULES_BLOB = 'ba0dc072e733b30fdbf680dc0fb9b651ec0d7f32'
-# The user-authorized November 17 upgrade may start from these exact published
+# The reviewed upgrades may start from these exact published
 # branch heads. Only the base snapshot is exempt; every outgoing commit and
 # the index must use ENGINE_PIN. No downgrade or intermediate pin is allowed.
 UPGRADE_BASES = {
+    'da29c6fe11c97a5c60aacf393e5bb0dc6c54af2a': 'c5a5215fa086f487c793627446d5d27e81dfbc97',
     '0c797b1db53540c99a8739230818646f195544c5': 'd9b266fc981024873ac7ec5f90ee7121a060725e',
     '89cd81d1e950cf5da0418b0134bd6d5537215366': 'd9b266fc981024873ac7ec5f90ee7121a060725e',
 }

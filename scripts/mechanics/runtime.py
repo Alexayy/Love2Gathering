@@ -16,7 +16,7 @@ import urllib.request
 import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
-PIN = 'c5a5215fa086f487c793627446d5d27e81dfbc97'
+PIN = '2a96b0ac129dfd77946eaad536184d3b35fb5e64'
 # The runner owns signal policy; worker watchdogs observe this shared fence.
 RUN_CANCELLED = threading.Event()
 

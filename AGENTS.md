@@ -181,7 +181,7 @@ Image streaming checks are indexed in `tests/image-streaming-priority-report.jso
 
 Use `scripts/build-engine.sh` after engine/bridge changes; for bridge-only iteration, the existing local Maven installation can package `bridge/pom.xml` using `.tools/m2`. Do not claim a new source change is accepted while testing an older running jar. Visually inspect real LÖVE screenshots for layout changes and record failed or unverified gates separately.
 
-The reviewed November 17 XMage integration is pinned at `c5a5215fa086f487c793627446d5d27e81dfbc97`. `docs/XMAGE_UPSTREAM_REVIEW.md` records its exact changes and acceptance scopes. Future upgrades still require explicit authorization and native/privacy/draft/profile/UI regression checks before advancing the gitlink; never modify engine source for a client fix.
+The reviewed November 24 XMage integration is pinned at `2a96b0ac129dfd77946eaad536184d3b35fb5e64`. `docs/XMAGE_UPSTREAM_REVIEW.md` records its exact changes and acceptance scopes. Future upgrades still require explicit authorization and native/privacy/draft/profile/UI regression checks before advancing the gitlink; never modify engine source for a client fix.
 
 Room/draft protocol and hosting are documented in `service/ROOMS.md` and `bridge/DRAFT.md`. `tests/rooms_live.py` uses two explicitly isolated gateways and creates/closes only its own rooms; `bridge/tests/test_room_multiplayer.py` and `test_draft.py` need owned authenticated engines. Their acceptance data must not include live credentials. GUI tests with synthetic projections and actual native multiplayer/draft HTTP games establish different behavior; keep those scopes separate. WAN reachability/HTTPS hosting needs separate infrastructure verification.
 

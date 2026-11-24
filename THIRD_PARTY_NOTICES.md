@@ -34,7 +34,7 @@ determination or legal approval is asserted here.
 
 | Component | Retained terms and source |
 | --- | --- |
-| XMage | MIT, copyright 2010 betasteward@gmail.com and contributors. Complete notice: [licenses/XMage-MIT.txt](licenses/XMage-MIT.txt). [Pinned source](https://github.com/magefree/mage/tree/c5a5215fa086f487c793627446d5d27e81dfbc97); the submodule is not relicensed by this project. |
+| XMage | MIT, copyright 2010 betasteward@gmail.com and contributors. Complete notice: [licenses/XMage-MIT.txt](licenses/XMage-MIT.txt). [Pinned source](https://github.com/magefree/mage/tree/2a96b0ac129dfd77946eaad536184d3b35fb5e64); the submodule is not relicensed by this project. |
 | Windows software OpenGL | Mesa 26.3.0 with statically linked LLVM 23.1.5, from [mmozeiko/build-mesa](https://github.com/mmozeiko/build-mesa/releases/tag/26.3.0). Private runtime fallback only; no system driver replacement. Complete copyright notices, SPDX license texts, LLVM exceptions and provenance are retained under `runtime/mesa/licenses/` in the Windows payload and `packaging/windows/licenses/` in source. |
 | Slab | MIT, copyright 2019–2021 Love2D Community. Complete notice extracted unchanged from its retained source header: [licenses/Slab-MIT.txt](licenses/Slab-MIT.txt). [Upstream](https://github.com/flamendless/Slab). Modified source headers remain intact. |
 | Kenney | CC0 1.0. Notices remain in `assets/kenney/ui/`, `theme/`, `particles/` and `runtime/licenses/`. [Support / usage](https://kenney.nl/support); [assets](https://kenney.nl/assets). See exact provenance and contributor names in [the pack catalog](assets/KENNEY_CATALOG.md) and retained notices. Kenney's logo is not licensed as project branding. |

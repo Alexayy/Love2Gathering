@@ -64,7 +64,7 @@ jobs:
         if: steps.published.outputs.already_published != 'true'
         run: |
           git -c fetch.recurseSubmodules=false submodule update --init --recursive --depth 1
-          test "$(git -C engine/mage rev-parse HEAD)" = c5a5215fa086f487c793627446d5d27e81dfbc97
+          test "$(git -C engine/mage rev-parse HEAD)" = 2a96b0ac129dfd77946eaad536184d3b35fb5e64
 
       - name: Set up Java 21
         if: steps.published.outputs.already_published != 'true'
@@ -78,7 +78,7 @@ jobs:
         uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: .tools/m2
-          key: maven-${{ runner.os }}-java21-c5a5215fa0-${{ hashFiles('bridge/pom.xml', 'engine/mage/**/pom.xml') }}
+          key: maven-${{ runner.os }}-java21-2a96b0ac12-${{ hashFiles('bridge/pom.xml', 'engine/mage/**/pom.xml') }}
 
       - name: Install native build tools
         if: steps.published.outputs.already_published != 'true'

@@ -14,7 +14,7 @@ Pushes to `development` build the installers and publish a `DEV-<version>-<attem
 
 ## Start
 
-XMage is a Git submodule pinned to reviewed revision `c5a5215fa086f487c793627446d5d27e81dfbc97` (November 17, 2026), including 34 newly implemented cards and three new set definitions since the prior pin. The [upstream review](docs/XMAGE_UPSTREAM_REVIEW.md) lists changes and client follow-up. Clone this repository with `git clone --recurse-submodules https://github.com/Alexayy/Love2Gathering.git`. For an existing clone, initialize it from the project root:
+XMage is a Git submodule pinned to reviewed revision `2a96b0ac129dfd77946eaad536184d3b35fb5e64` (November 24, 2026), including 12 newly implemented cards and multiplayer and last-known-information fixes since the prior pin. The [upstream review](docs/XMAGE_UPSTREAM_REVIEW.md) lists changes and client follow-up. Clone this repository with `git clone --recurse-submodules https://github.com/Alexayy/Love2Gathering.git`. For an existing clone, initialize it from the project root:
 
 ```sh
 git submodule update --init --recursive

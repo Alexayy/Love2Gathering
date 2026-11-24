@@ -7,7 +7,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 CHECK = ROOT / 'scripts/check-submodule-pin.py'
 PUSH = ROOT / 'scripts/push-development.sh'
-PIN = 'c5a5215fa086f487c793627446d5d27e81dfbc97'
+PIN = '2a96b0ac129dfd77946eaad536184d3b35fb5e64'
 OTHER = '1234567890abcdef1234567890abcdef12345678'
 MODULES = '[submodule "engine/mage"]\n\tpath = engine/mage\n\turl = https://github.com/magefree/mage.git\n'
 

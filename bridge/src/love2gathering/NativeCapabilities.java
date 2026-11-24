@@ -11,7 +11,7 @@ import static love2gathering.EngineBridge.map;
 
 /** Installed implementation inventory, never a card-legality claim. */
 final class NativeCapabilities {
-    static final String ENGINE_REVISION="c5a5215fa086f487c793627446d5d27e81dfbc97";
+    static final String ENGINE_REVISION="2a96b0ac129dfd77946eaad536184d3b35fb5e64";
     private static Map<String,Class<? extends DeckValidator>> validators;
     private static List<Map<String,Object>> descriptors;
     private static JsonObject registrySource;

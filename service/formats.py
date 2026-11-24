@@ -1,6 +1,6 @@
 """Installed validator profiles from the pinned XMage capability fixture.
 These basic preflight bounds are not a reproduction of native format rules.
-Source: bridge installed capabilities, engine c5a5215fa086f487c793627446d5d27e81dfbc97.
+Source: bridge installed capabilities, engine 2a96b0ac129dfd77946eaad536184d3b35fb5e64.
 Installed inventory is rechecked by NativeRecoveryFixture; runtime legality stays native.
 Limited remains a native draft pool; unavailable game variants are excluded.
 """

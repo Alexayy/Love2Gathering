@@ -22,11 +22,15 @@ public final class UpstreamCompatibilityFixture {
         s.game.applyEffects();s.game.getState().clearTriggeredAbilities();s.game.getStack().clear();
     }
     static void registry(){
-        List<String> newCards=Arrays.asList("Abyssal Lotus","Archnemesis","Azog, Moria's Ruin","Borg Incursion","Calmwater Mentor","Dack Fayden, Helping Hand","Doom's Time Platform","Elrond, Moon-Reader","Extract Power","Eye of Duskmantle","Galactus, Devourer of Worlds","Glorious Purpose","H.E.R.B.I.E., Lovable Robot","Iron Monger, Sadistic Tycoon","Jace, Multiverse Architect","Jace's Machinations","Jhoira, Weatherlight Corsair","Living Laser","Political Triumph","Ring of Unity","Robot Domination","Salinae, the Ocean Mother","Sanctum Lurker","Sauron, Dino Devotee","Shimmering Citadel","Soundwave, Sonic Spy","Taskmaster, Mercenary Mimic","Tecton, Malignant Ruin","Teferi's Reproach","Typhoid Mary, Fractured","U.S.S. Voyager, Lone Wanderer","Uldaros Theorix","Ultron, Unlimited","Woodland Weavemaster");
+        List<String> newCards=Arrays.asList("Abyssal Lotus","Archnemesis","Azog, Moria's Ruin","Borg Incursion","Calmwater Mentor","Dack Fayden, Helping Hand","Doom's Time Platform","Elrond, Moon-Reader","Extract Power","Eye of Duskmantle","Galactus, Devourer of Worlds","Glorious Purpose","H.E.R.B.I.E., Lovable Robot","Iron Monger, Sadistic Tycoon","Jace, Multiverse Architect","Jace's Machinations","Jhoira, Weatherlight Corsair","Living Laser","Political Triumph","Ring of Unity","Robot Domination","Salinae, the Ocean Mother","Sanctum Lurker","Sauron, Dino Devotee","Shimmering Citadel","Soundwave, Sonic Spy","Taskmaster, Mercenary Mimic","Tecton, Malignant Ruin","Teferi's Reproach","Typhoid Mary, Fractured","U.S.S. Voyager, Lone Wanderer","Uldaros Theorix","Ultron, Unlimited","Woodland Weavemaster",
+            "Baron Vladimir Harkonnen", "Chani, Blade of Sietch Tabr", "Deliver from Chaos",
+            "Hercules, Olympian Hero", "Hugh, First of Many", "Muad'Dib, Prophet Foretold",
+            "Nog, Ambitious Cadet", "Paul Atreides, Ducal Heir", "Photon, Mighty Marvel",
+            "Queen's Diamond", "Reverend Mother Jessica", "Transwarp Hub");
         @SuppressWarnings("unchecked")List<String> installed=(List<String>)NativeCapabilities.cards().get("names");
         for(String name:newCards){Card card=TriggerFixture.card(name);check(name.equals(card.getName())&&installed.contains(name),"New concrete card is installed: "+name);}
         check("Nimble Obstructionist".equals(TriggerFixture.card("Nimble Obstructionist").getName()),"Unchanged cards link against updated native target-filter signatures");
-        check("c5a5215fa086f487c793627446d5d27e81dfbc97".equals(NativeCapabilities.cards().get("engineRevision")),"Installed registry reports the exact updated revision");
+        check("2a96b0ac129dfd77946eaad536184d3b35fb5e64".equals(NativeCapabilities.cards().get("engineRevision")),"Installed registry reports the exact updated revision");
         for(String set:Arrays.asList("NAU","NAC","PW27"))check(EngineBridge.cardMap.entrySet().stream().anyMatch(e->e.getValue().getAsJsonObject().getAsJsonObject("printings").has(set)),"Generated card map includes new set "+set);
     }
     static void manaEvent(){

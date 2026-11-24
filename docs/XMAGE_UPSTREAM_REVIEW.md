@@ -1,3 +1,9 @@
+# XMage update, November 24, 2026
+
+The official master revision [2a96b0ac](https://github.com/magefree/mage/commit/2a96b0ac129dfd77946eaad536184d3b35fb5e64) is 23 commits ahead of the November 17 pin. The tree changes 65 files and keeps Maven artifact version 1.4.63. [Compare the two revisions](https://github.com/magefree/mage/compare/c5a5215fa086f487c793627446d5d27e81dfbc97...2a96b0ac129dfd77946eaad536184d3b35fb5e64).
+
+The update adds 12 card implementations across SLD, MSC, TRK and TRC. Myriad, voting, shared token creation and life comparisons now account for players who left a multiplayer game. Multiple spells now use the permanent’s last known mana value. XMage also updates random discard and shuffle, Lathril activation and Feeding Grounds. The adapter continues to use native rule decisions and native per-seat visibility.
+
 # XMage update — 2026-11-17
 
 The integration advances from `d9b266fc981024873ac7ec5f90ee7121a060725e` to **`c5a5215fa086f487c793627446d5d27e81dfbc97`**, the exact upstream development revision reviewed on November 17. This contains **65 commits, 270 changed files and 34 new card implementation classes**. The version label advances from 1.4.63V1 to 1.4.63V2 while Maven artifacts remain 1.4.63. The official submodule URL is unchanged; no local engine source changes were made. [Exact comparison](https://github.com/magefree/mage/compare/d9b266fc981024873ac7ec5f90ee7121a060725e...c5a5215fa086f487c793627446d5d27e81dfbc97).
