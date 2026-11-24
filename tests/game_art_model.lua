@@ -71,4 +71,51 @@ cache.api.routeGeneration=0;cache.roomConnectionId='another-local-seat';check(no
 cache.roomConnectionId=nil;cache.game.localPlayerId='unentitled';check(not valid(),'Losing the unique local perspective immediately invalidates pending hand work')
 cache.game.localPlayerId='local';cache.storageLocationBlocked=true;cache:updateGameArtwork()
 check(not valid()and cache.gameArtWarmup==nil and #pending==2,'Preparing a storage move stops new warmup requests and invalidates its callbacks')
+
+-- Scryfall returns the combined name even when XMage names only the visible face.
+local LiveModel=require('app.model')
+local front,back='Delver of Secrets','Insectile Aberration'
+local whole=front..' // '..back
+local function payload(face)
+    return {id='delver-oracle',name=whole,printing_id='delver-print',layout='transform',requested_face=face,
+        image_uris={normal='front'},card_faces={{name=front,image_uris={normal='front'}},{name=back,image_uris={normal='back'}}}}
+end
+local localHand={{id='front-object',name=front},{id='back-object',name=back}}
+local faces=setmetatable({settings={localArtworkOnly=true},byName={},lookupPending={},art={},catalogHealth={ready=true},
+    game={gameId='faces',running=true,localPlayerId='p',players={{id='p',hand=localHand}}}},LiveModel)
+local metadataReads,scanRequests,cropFaces=0,{},{}
+faces.api={request=function(_,service,method,path,body,callback)
+    if service=='art' then
+        scanRequests[#scanRequests+1]=path;callback('scan-fixture',nil,200)
+    elseif method=='POST' then
+        if body.kind=='art_crop' then cropFaces[body.face]=true end
+        callback({},nil,200)
+    elseif path:match('^/cards/') then
+        metadataReads=metadataReads+1
+        local face
+        if path:find('Insectile',1,true) then face=1 elseif path:find('Delver',1,true) then face=0 end
+        callback(payload(face),nil,200)
+    end
+end}
+faces:cardData(localHand[2])
+check(faces:cardData(localHand[2]).requested_face==1 and metadataReads==1 and not faces.byName[whole],
+    'Back-face inspection caches the successful face-name lookup once and leaves the canonical name independent')
+faces:rememberCard(payload(nil))
+faces:cardData(localHand[1])
+local frontData,backData=faces:cardData(localHand[1]),faces:cardData(localHand[2])
+check(frontData.requested_face==0 and backData.requested_face==1 and metadataReads==2 and faces.byName[whole].requested_face==nil,
+    'Canonical, front and back names retain their independent face selections')
+faces:getArt(localHand[1],true);faces:getArt(localHand[2],true)
+check(#scanRequests==2 and scanRequests[1]:find('face=0&',1,true) and scanRequests[2]:find('face=1&',1,true),
+    'The same double-faced printing loads distinct original scans for each native face')
+localHand[1].selectedPrintingId='delver-print';localHand[2].selectedPrintingId='delver-print'
+for _=1,6 do faces:updateGameArtwork()end
+local exactFaces={}
+for _,path in ipairs(scanRequests)do
+    if path:find('exact=1',1,true) then exactFaces[tonumber(path:match('face=(%d+)'))]=true end
+end
+check(faces.gameArtwork.handTotal==2 and faces.gameArtwork.handReady==2 and #scanRequests==4
+    and exactFaces[0] and exactFaces[1],
+    'Exact-hand warmup distinguishes native face names sharing one selected printing ID')
+check(cropFaces[0] and cropFaces[1],'Disk warmup also retains the selected face for each crop')
 print('Game artwork/activity checks: '..checks)

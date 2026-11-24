@@ -227,6 +227,21 @@ class Member:
         self.priority = copy.deepcopy(priority)
 
 
+def default_bot_deck(fmt, seats):
+    """Prefer a bundled list that the fewest seats at this table already use."""
+    directory = Path(__file__).resolve().parents[1] / 'decks'
+    catalog = json.loads((directory / 'library.json').read_text(encoding='utf-8'))
+    candidates = [item for item in catalog if item['format'] == fmt]
+    if not candidates:
+        return None
+    used = [seat.deck.get('name') for seat in seats if seat.deck]
+    selected = min(candidates, key=lambda item: used.count(item['name']))
+    deck = json.loads((directory / (selected['id'] + '.json')).read_text(encoding='utf-8'))
+    # This is the immutable Starter entry, even if a host has an edited original.
+    deck['id'] = 'starter-' + selected['id']
+    return deck
+
+
 class Room:
     def __init__(self, config, owner, public_origin):
         self.id = secrets.token_urlsafe(12)
@@ -259,7 +274,7 @@ class Room:
         self.revision += 1
         self.touched = time.monotonic()
 
-    def public(self):
+    def public(self, viewer):
         now = time.monotonic()
         if self.rematch_request and self.rematch_request['deadline'] <= now:
             self.rematch_request = None
@@ -272,7 +287,9 @@ class Room:
                 'members': [{'id': p.id, 'name': p.name, 'bot': p.bot, 'ready': p.ready,
                              'profile': copy.deepcopy(p.profile),
                              'connected': p.bot or (not p.left and now - p.last_seen < 20),
-                             'deckName': p.deck.get('name') if p.deck else None}
+                             'deckName': p.deck.get('name') if p.deck else None,
+                             **({'deckId': p.deck['id']} if viewer.id == self.host_id and p.bot and p.deck
+                                and isinstance(p.deck.get('id'), str) else {})}
                             for p in self.members.values()],
                 'draft': self.draft_public,
                 'matches': [{key: value for key, value in match.items() if key in ('id', 'seatIds', 'finished', 'winnerSeatId', 'error')}
@@ -480,7 +497,7 @@ class Registry:
         if draft is not None and room.phase in ('building', 'playing', 'completed'):
             draft['tournament'] = read('/draft/pairings?draftId=' + quote(room.draft_id))
         with room.lock:
-            public = room.public()
+            public = room.public(member)
             public['canStart'] = member.id == room.host_id and room.phase in ('lobby', 'building') and len(room.members) == room.config['maxPlayers'] and all(p.ready for p in room.members.values())
             public['canNextRound'] = member.id == room.host_id and room.phase == 'playing' and room.config['kind'] == 'draft' and bool(room.games) and all(p.get('finished') for p in room.games.values())
             public['canRematch'] = room.phase == 'playing' and room.config['kind'] == 'constructed' and bool(game) and game.get('running') is False and not game.get('error') and all(not p.left and p.ready for p in room.members.values())
@@ -550,10 +567,10 @@ class Registry:
                 elif room.phase == 'lobby':
                     if len(room.members) != room.config['maxPlayers']:
                         raise RoomError('Fill the empty seats or choose fewer seats before creating the room', 409)
+                    if room.config['kind'] == 'constructed' and any(not p.deck for p in room.members.values()):
+                        raise RoomError('Choose a deck for every constructed seat before starting', 409)
                     if any(not p.ready for p in room.members.values()):
                         raise RoomError('Every player must be ready', 409)
-                    if room.config['kind'] == 'constructed' and any(not p.deck for p in room.members.values() if not p.bot):
-                        raise RoomError('Every human player must choose a deck', 409)
                     room.phase = 'starting'
                     task = self.start_room
                 else:
@@ -607,19 +624,34 @@ class Registry:
                         raise RoomError('Choose your deck before becoming ready')
                     member.ready = value['ready']
                 elif command == 'deck':
+                    target = member
+                    if 'botSeatId' in value:
+                        self.owner(room, member)
+                        seat_id = value['botSeatId']
+                        target = room.members.get(seat_id) if isinstance(seat_id, str) else None
+                        if room.config['kind'] != 'constructed' or not target or not target.bot:
+                            raise RoomError('Choose an existing constructed bot seat')
                     deck = value.get('deck')
                     if not isinstance(deck, dict) or str(deck.get('format', '')).casefold() != room.config['format'].casefold():
                         raise RoomError('Choose a deck in the room format')
                     # Native validation still happens when XMage starts the match.
-                    member.deck = copy.deepcopy(deck);member.ready = False
+                    target.deck = copy.deepcopy(deck)
+                    target.ready = target.bot
                 else:
                     self.owner(room, member)
                     humans = sum(not p.bot for p in room.members.values())
                     count = integer(value.get('count'), 0, room.config['maxPlayers'] - humans, 'Bot seats')
-                    room.members = {key: p for key, p in room.members.items() if not p.bot}
-                    for index in range(count):
+                    existing = [p for p in room.members.values() if p.bot]
+                    seats = dict(room.members)
+                    for bot in existing[count:]:
+                        del seats[bot.id]
+                    for index in range(len(existing), count):
                         bot = Member('XMage Bot ' + str(index + 1), bot=True)
-                        room.members[bot.id] = bot
+                        if room.config['kind'] == 'constructed':
+                            bot.deck = default_bot_deck(room.config['format'], seats.values())
+                            bot.ready = bot.deck is not None
+                        seats[bot.id] = bot
+                    room.members = seats
                 room.changed()
             return self.envelope(room, member, private=False)
         if command == 'draft/pick':
@@ -672,7 +704,7 @@ class Registry:
 
     def start_room(self, room):
         seats = [{'seatId': p.id, 'name': p.name, 'profile': copy.deepcopy(p.profile), 'type': 'bot' if p.bot else 'human',
-                  'deck': p.deck or room.members[room.host_id].deck, 'settings': p.settings, 'priority': p.priority}
+                  'deck': p.deck, 'settings': p.settings, 'priority': p.priority}
                  for p in room.members.values()]
         if room.config['kind'] == 'draft':
             draft = copy.deepcopy(room.config['draft'])

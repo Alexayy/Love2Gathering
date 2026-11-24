@@ -5,6 +5,7 @@ import com.sun.net.httpserver.*;
 import mage.MageObject;
 import mage.ApprovingObject;
 import mage.abilities.*;
+import mage.abilities.costs.mana.ManaCost;
 import mage.abilities.mana.ActivatedManaAbilityImpl;
 import mage.abilities.mana.ManaAbility;
 import mage.cards.*;
@@ -787,11 +788,20 @@ public final class EngineBridge {
             if (event.getTargets() != null) for (UUID id : event.getTargets()) addObjectChoice(choices, targets, id);
             if (event.getCards() != null) for (UUID id : event.getCards()) addObjectChoice(choices, targets, id, true);
             if (event.getPerms() != null) for (Permanent perm : event.getPerms()) addObjectChoice(choices, targets, perm.getId());
+            NativeManaPayment.Sources manaSources = new NativeManaPayment.Sources(this);
             if (event.getAbilities() != null) {
                 boolean allMana=!event.getAbilities().isEmpty() && event.getAbilities().stream().allMatch(Ability::isManaAbility);
                 for (Ability a : event.getAbilities()) {
                     Map<String,Object> choice=map("id", a.getId().toString(), "sourceId", str(a.getSourceId()), "label", clean(a.getRule()), "responseType", "uuid");
-                    if(a instanceof ManaAbility) choice.put("manaColors",manaColors(((ManaAbility)a).getProducableManaTypes(game)));
+                    if(a instanceof SpellAbility) {
+                        SpellAbility spell=(SpellAbility)a;
+                        // A permanent spell's ordinary rules label can be empty.
+                        String rule=(String)choice.get("label");
+                        choice.put("label",clean(spell.getName()));
+                        choice.put("manaCost",spell.getManaCosts().getText());
+                        if(!rule.isBlank())choice.put("detail",rule);
+                    }
+                    if(a instanceof ManaAbility) choice.put("manaColors",manaSources.colors(a));
                     choices.add(choice);
                 }
                 if(allMana) p.put("manaWheel",manaWheel(event.getAbilities().get(0).getSourceId(),"ability"));
@@ -852,15 +862,15 @@ public final class EngineBridge {
                 case PLAY_MANA:
                     // These are XMage's actual playable objects, rather than all
                     // visible cards. Timing, costs, mana and land limits stay in XMage.
-                    for(UUID id:actionableObjects(event)) addObjectChoice(choices,targets,id);
-                    choices.add(map("id", "done", "label", event.getQueryType() == PlayerQueryEvent.QueryType.PLAY_MANA ? "Cancel payment" : "Pass / Done", "responseType", "boolean", "value", true));
-                    if (event.getQueryType() == PlayerQueryEvent.QueryType.PLAY_MANA) {
-                        ManaPool pool = human.getManaPool();
-                        String[] types = {"WHITE", "BLUE", "BLACK", "RED", "GREEN", "COLORLESS"};
-                        String[] symbols = {"W", "U", "B", "R", "G", "C"};
-                        int[] counts = {pool.getWhite(),pool.getBlue(),pool.getBlack(),pool.getRed(),pool.getGreen(),pool.getColorless()};
-                        for (int i=0;i<types.length;i++) if (counts[i]>0) choices.add(map("id","mana-"+symbols[i],"label","Pay {"+symbols[i]+"} from pool ("+counts[i]+")","responseType","mana","value",types[i]));
+                    boolean payment = event.getQueryType() == PlayerQueryEvent.QueryType.PLAY_MANA;
+                    if (payment) NativeManaPayment.addPoolChoices(choices, human.getManaPool());
+                    for (UUID id : actionableObjects(event, manaSources)) {
+                        Map<String,Object> card = addObjectChoice(choices, targets, id);
+                        if (payment && card != null && !Boolean.TRUE.equals(card.get("hidden"))) {
+                            choices.addAll(manaSources.choices(id, (String)card.get("name")));
+                        }
                     }
+                    choices.add(map("id", "done", "label", payment ? "Cancel payment" : "Pass / Done", "responseType", "boolean", "value", true));
                     if (event.getOptions() != null && event.getOptions().containsKey("specialButton")) choices.add(map("id", "special", "label", clean(event.getOptions().get("specialButton").toString()), "responseType", "string"));
                     else if(!game.getState().getSpecialActions().getControlledBy(human.getId(),event.getQueryType()==PlayerQueryEvent.QueryType.PLAY_MANA).isEmpty()) choices.add(map("id","special","label","Special action (delve / convoke / other)","responseType","string"));
                     break;
@@ -908,14 +918,14 @@ public final class EngineBridge {
             p.put("targets", targets);
             p.put("actionable",new ArrayList<>(targets));
             if(priorityPrompt||event.getQueryType()==PlayerQueryEvent.QueryType.PLAY_MANA){
-                try{p.put("cardActions",NativeCardActions.offered(this,targets,event.getQueryType()==PlayerQueryEvent.QueryType.PLAY_MANA));}
+                try{p.put("cardActions",NativeCardActions.offered(this,choices,event.getQueryType()==PlayerQueryEvent.QueryType.PLAY_MANA ? manaSources : null));}
                 catch(RuntimeException unavailable){p.put("cardActions",Collections.emptyList());p.put("actionDetailsKnown",false);}
             }
             p.put("options", safeOptions(event.getOptions()));
             prompt = p;
             owner.publishAll();
         }
-        Set<UUID> actionableObjects(PlayerQueryEvent event) {
+        Set<UUID> actionableObjects(PlayerQueryEvent event, NativeManaPayment.Sources manaSources) {
             Set<UUID> ids=new LinkedHashSet<>();
             Map<String,Serializable> options=event.getOptions();
             if(event.getQueryType()==PlayerQueryEvent.QueryType.SELECT) {
@@ -935,7 +945,7 @@ public final class EngineBridge {
                 visible.addAll(human.getGraveyard().getCards(game));
                 visible.addAll(game.getExile().getAllCards(game));
                 visible.addAll(game.getCommanderCardsFromCommandZone(human,CommanderCardType.ANY));
-                for(MageObject object:visible) if(!human.usableManaAbilities(object,game).isEmpty()) ids.add(object.getId());
+                for(MageObject object:visible) if(manaSources.collect(object)) ids.add(object.getId());
             }
             return ids;
         }
@@ -958,16 +968,17 @@ public final class EngineBridge {
             if (options != null) options.forEach((k,v) -> { if (v instanceof String || v instanceof Number || v instanceof Boolean) out.put(k,v);else if(v instanceof Enum<?>)out.put(k,((Enum<?>)v).name()); });
             return out;
         }
-        void addObjectChoice(List<Map<String, Object>> choices, Set<String> targets, UUID id) {
-            addObjectChoice(choices,targets,id,false);
+        Map<String,Object> addObjectChoice(List<Map<String, Object>> choices, Set<String> targets, UUID id) {
+            return addObjectChoice(choices,targets,id,false);
         }
-        void addObjectChoice(List<Map<String, Object>> choices, Set<String> targets, UUID id,boolean granted) {
-            if (!targets.add(id.toString())) return;
+        Map<String,Object> addObjectChoice(List<Map<String, Object>> choices, Set<String> targets, UUID id,boolean granted) {
+            if (!targets.add(id.toString())) return null;
             MageObject object = game.getObject(id);
             if(object==null&&granted)object=game.getCard(id);
             Player p = game.getPlayer(id);
             Map<String,Object> view=object!=null ? card(object,granted) : null;
             choices.add(map("id", id.toString(), "label", view != null ? view.get("name") : p != null ? p.getName() : id.toString(), "responseType", "uuid", "card", view));
+            return view;
         }
         void action(JsonObject action) throws Exception {
             if("concede".equals(text(action,"type",""))){
@@ -1040,6 +1051,11 @@ public final class EngineBridge {
                     deliver = () -> human.setResponseString(answer); break;
                 }
                 case "mana": { ManaType answer = ManaType.valueOf(value.getAsString().toUpperCase(Locale.ROOT)); deliver = () -> human.setResponseManaType(human.getId(), answer); break; }
+                case NativeManaPayment.SOURCE_RESPONSE: {
+                    NativeManaPayment.SourceSelection answer = NativeManaPayment.selection(value.getAsString());
+                    deliver = () -> human.setManaSourceResponse(answer);
+                    break;
+                }
                 default: throw new IllegalArgumentException("Unknown response type: " + type);
             }
             inputQueue.submit(p,()->{recordAction(action.deepCopy());priority.acknowledge(p);prompt=null;},deliver);
@@ -1092,8 +1108,7 @@ public final class EngineBridge {
                 for (Player p : game.getPlayers().values()) {
                     List<Map<String,Object>> battlefield = new ArrayList<>();
                     for (Permanent permanent : game.getBattlefield().getAllActivePermanents()) if (p.getId().equals(permanent.getControllerId())) battlefield.add(card(permanent));
-                    ManaPool mana = p.getManaPool();
-                    players.add(map("id", p.getId().toString(), "seat", seatOf(p), "seatId", seatIdOf(p), "name", p.getName(), "isHuman", p instanceof BridgeHuman, "isLocal", p.getId().equals(human.getId()), "human", p.getId().equals(human.getId()), "profile", playerProfile(p), "avatarCard", avatarCard(p), "playmatCard",playmatCard(p), "life", p.getLife(), "hand", p.getId().equals(human.getId()) ? cards(p.getHand().getCards(game)) : Collections.emptyList(), "handCount", p.getHand().size(), "libraryCount", p.getLibrary().size(), "libraryTop",NativeProjection.libraryTop(this,p),"libraryTopVisibility",NativeProjection.libraryTopVisibility(this,p), "sideboardCount",p.getSideboard().size(), "graveyard", cards(p.getGraveyard().getCards(game)), "battlefield", battlefield, "command", cards(game.getCommanderCardsFromCommandZone(p, CommanderCardType.ANY)), "exile",cards(game.getExile().getAllCards(game).stream().filter(c -> p.getId().equals(c.getOwnerId())).collect(Collectors.toList())),"mana", map("W",mana.getWhite(),"U",mana.getBlue(),"B",mana.getBlack(),"R",mana.getRed(),"G",mana.getGreen(),"C",mana.getColorless()), "won",p.hasWon(),"lost",p.hasLost(),"attachmentIds",NativeProjection.ids(p.getAttachments())));
+                    players.add(map("id", p.getId().toString(), "seat", seatOf(p), "seatId", seatIdOf(p), "name", p.getName(), "isHuman", p instanceof BridgeHuman, "isLocal", p.getId().equals(human.getId()), "human", p.getId().equals(human.getId()), "profile", playerProfile(p), "avatarCard", avatarCard(p), "playmatCard",playmatCard(p), "life", p.getLife(), "hand", p.getId().equals(human.getId()) ? cards(p.getHand().getCards(game)) : Collections.emptyList(), "handCount", p.getHand().size(), "libraryCount", p.getLibrary().size(), "libraryTop",NativeProjection.libraryTop(this,p),"libraryTopVisibility",NativeProjection.libraryTopVisibility(this,p), "sideboardCount",p.getSideboard().size(), "graveyard", cards(p.getGraveyard().getCards(game)), "battlefield", battlefield, "command", cards(game.getCommanderCardsFromCommandZone(p, CommanderCardType.ANY)), "exile",cards(game.getExile().getAllCards(game).stream().filter(c -> p.getId().equals(c.getOwnerId())).collect(Collectors.toList())),"mana", NativeManaPayment.pool(p.getManaPool()), "won",p.hasWon(),"lost",p.hasLost(),"attachmentIds",NativeProjection.ids(p.getAttachments())));
                 }
                 for(Map<String,Object> view:players){Player nativePlayer=game.getPlayer(UUID.fromString(view.get("id").toString()));view.put("commanders",NativeProjection.commanders(this,nativePlayer));view.put("commanderDamageReceived",NativeProjection.commanderDamageReceived(this,nativePlayer));}
                 List<Map<String,Object>> stack = new ArrayList<>();
@@ -1308,6 +1323,9 @@ public final class EngineBridge {
         final transient Session session;
         final transient Deque<UUID> triggerOrder;
         transient UUID activeManaSource;
+        private transient NativeManaPayment.SourceSelection deliveredManaSource;
+        private transient NativeManaPayment.SourceSelection paymentManaSource;
+        private transient UUID requestedManaAbility;
         transient boolean choosingManaColor;
         transient UUID selectedBlockerId;
         transient String pendingActionKind;
@@ -1323,14 +1341,29 @@ public final class EngineBridge {
             if(real(originalGame)&&hidden&&fromZone==Zone.ALL&&!hideDuplicates)nativeOfferedAbilities=result;
             return result;
         }
-        static final class Delivery {final long prompt;boolean accepted;Integer undoBookmark;Delivery(long prompt){this.prompt=prompt;}}
+        static final class Delivery {final long prompt;boolean accepted;Integer undoBookmark;NativeManaPayment.SourceSelection manaSource;Delivery(long prompt){this.prompt=prompt;}}
         private final transient ThreadLocal<Delivery> deliveryPrompt=new ThreadLocal<>();
         BridgeHuman(String name, Session session) { super(name,RangeOfInfluence.ALL,1); this.session=session; this.triggerOrder=new ArrayDeque<>(); }
         BridgeHuman(BridgeHuman original) { super(original); session=original.session; triggerOrder=original.triggerOrder; }
         @Override public BridgeHuman copy() { return new BridgeHuman(this); }
         boolean deliverNative(long id,Runnable action){Delivery expected=new Delivery(id);deliveryPrompt.set(expected);try{if(session!=null&&session.nativePromptId==id)action.run();return expected.accepted;}finally{deliveryPrompt.remove();}}
         void setUndoResponse(int bookmark){Delivery expected=deliveryPrompt.get();if(expected==null)throw new IllegalStateException("Undo requires a fenced native delivery");expected.undoBookmark=bookmark;setResponseString("bridge-native-undo");}
-        @Override protected boolean waitResponseOpen(){boolean ready=super.waitResponseOpen();Delivery expected=deliveryPrompt.get();boolean accepted=ready&&(expected==null||session!=null&&session.nativePromptId==expected.prompt&&session.running&&!session.owner.stopRequested&&!hasLeft());if(expected!=null){expected.accepted=accepted;if(accepted&&expected.undoBookmark!=null)session.undoBookmark=expected.undoBookmark;}return accepted;}
+        void setManaSourceResponse(NativeManaPayment.SourceSelection source) {
+            Delivery expected = deliveryPrompt.get();
+            if (expected == null) throw new IllegalStateException("Mana source requires a fenced native delivery");
+            expected.manaSource = source;
+            setResponseUUID(source.sourceId());
+        }
+        @Override protected boolean waitResponseOpen(){
+            boolean ready=super.waitResponseOpen();Delivery expected=deliveryPrompt.get();
+            boolean accepted=ready&&(expected==null||session!=null&&session.nativePromptId==expected.prompt&&session.running&&!session.owner.stopRequested&&!hasLeft());
+            if(expected!=null){
+                expected.accepted=accepted;
+                if(accepted&&expected.undoBookmark!=null)session.undoBookmark=expected.undoBookmark;
+                if(accepted&&expected.manaSource!=null)deliveredManaSource=expected.manaSource;
+            }
+            return accepted;
+        }
         @Override protected void waitForResponse(Game game){
             super.waitForResponse(game);
             if(real(game)&&session.undoBookmark!=null){
@@ -1365,6 +1398,30 @@ public final class EngineBridge {
             Zone zone=game.getState().getZone(object.getId());
             return zone==null ? Collections.emptyMap() : getUseableManaAbilities(object,zone,game);
         }
+        @Override protected boolean playManaHandling(Ability abilityToCast, ManaCost unpaid, String promptText, Game game) {
+            try { return super.playManaHandling(abilityToCast, unpaid, promptText, game); }
+            finally { deliveredManaSource = null; }
+        }
+        @Override protected void playManaAbilities(UUID objectId, Ability abilityToCast, ManaCost unpaid, Game game) {
+            NativeManaPayment.SourceSelection selection = deliveredManaSource;
+            deliveredManaSource = null;
+            NativeManaPayment.SourceSelection previous = paymentManaSource;
+            UUID previousAbility = requestedManaAbility;
+            paymentManaSource = selection != null && objectId.equals(selection.sourceId()) ? selection : null;
+            requestedManaAbility = paymentManaSource == null ? null : paymentManaSource.abilityId();
+            try { super.playManaAbilities(objectId, abilityToCast, unpaid, game); }
+            finally { paymentManaSource = previous; requestedManaAbility = previousAbility; }
+        }
+        @Override protected Map<UUID, ActivatedManaAbilityImpl> getUseableManaAbilities(MageObject object, Zone zone, Game game) {
+            Map<UUID, ActivatedManaAbilityImpl> nativeAbilities = super.getUseableManaAbilities(object, zone, game);
+            if (requestedManaAbility == null || !real(game) || !paymentManaSource.sourceId().equals(object.getId())) return nativeAbilities;
+            // The native payment path still checks phase, availability and costs. Limit only its
+            // first source lookup to the user's exact offered ability before native auto-selection.
+            UUID id = requestedManaAbility;
+            requestedManaAbility = null;
+            nativeAbilities.keySet().retainAll(Collections.singleton(id));
+            return nativeAbilities;
+        }
         @Override public boolean activateAbility(ActivatedAbility ability,Game game) {
             UUID previous=activeManaSource;
             Ability previousNative=activeNativeAbility;if(real(game))activeNativeAbility=ability;
@@ -1383,7 +1440,21 @@ public final class EngineBridge {
         @Override public boolean choose(Outcome outcome,Choice choice,Game game) {
             boolean previous=choosingManaColor;
             choosingManaColor=outcome==Outcome.PutManaInPool;
-            try { return super.choose(outcome,choice,game); }
+            try {
+                NativeManaPayment.SourceSelection selection = paymentManaSource;
+                if (real(game) && canRespond() && selection != null && selection.color() != null
+                        && choosingManaColor && choice.isManaColorChoice() && !choice.isKeyChoice()
+                        && activeNativeAbility != null && selection.abilityId().equals(activeNativeAbility.getId())
+                        && choice.getChoices().contains(selection.color())) {
+                    // Follow the native choice lifecycle with the answer already picked in the payment window.
+                    paymentManaSource = null;
+                    choice.onChooseStart(game, getId());
+                    choice.setChoice(selection.color());
+                    choice.onChooseEnd(game, getId(), selection.color());
+                    return true;
+                }
+                return super.choose(outcome,choice,game);
+            }
             finally { choosingManaColor=previous; }
         }
         boolean real(Game game){return session!=null&&game==session.game&&!game.isSimulation()&&!game.inCheckPlayableState();}

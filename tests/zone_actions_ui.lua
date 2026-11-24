@@ -64,6 +64,13 @@ local function scenario()
     check(#answers==before+1 and answers[#answers].value==flash.id and not m.zoneView,'Graveyard drag dispatches the actual card UUID and closes only after accepted submission')
     adopt('flashback-offer');wait(.2);own=localPlayer();m:openZone(own.id,'graveyard');wait(.3);before=#answers;drag(hitFor(v.zoneCardHits,flash.id),true)
     check(#answers==before and m.zoneView,'A changed native prompt cancels an in-flight graveyard drag')
+    local held=hitFor(v.zoneCardHits,flash.id)
+    local hx,hy=held.x+held.w/2,held.y+held.h/2
+    move(hx,hy);wait(.06);down=true;S.OnMousePressed(mouse.x,mouse.y,1,false,1)
+    check(Zone.press(v,hx,hy,1),'An offered graveyard card accepts a fresh press')
+    wait(.06);m.game.prompt.id=m.game.prompt.id+1;wait(.06)
+    down=false;S.OnMouseReleased(mouse.x,mouse.y,1,false,1);Zone.release(v,hx,hy,1);wait(.16)
+    check(#answers==before and m.zoneView,'Releasing over the same card after the prompt changes cannot submit a second Slab click')
     adopt('exile-extension-offered');mode='zone';wait(.25);own=localPlayer()
     local extension=Actions.extension(m);check(#extension==3 and extension[1].zone=='EXILED','Actual temporary permission creates an explicitly exiled hand extension for its three legal objects')
     m:openZone(own.id,'exile');wait(.3);local exiled=extension[1];before=#answers;shot('exile-zone');drag(hitFor(v.zoneCardHits,exiled.id))
@@ -73,6 +80,15 @@ local function scenario()
     check(#extension==1 and extension[1].name=='Doomskar'and extension[1].faceDownContext and extension[1].inspectionOnly,'Owner-known native Foretell identity appears as a private exile extension')
     own=localPlayer();m:openZone(own.id,'exile');wait(.3);check(hitFor(v.zoneCardHits,extension[1].id).available,'Owner can select the actual offered face-down exile object without a guessed permission');shot('foretell-private-zone')
     adopt('foretell-hidden-opponent');wait(.2);check(#Actions.extension(m)==0,'Another human never gets the private Foretell identity or an exile play control')
+    adopt('shark-typhoon-ability-choice');wait(.3)
+    local cast,cycle
+    for _,choice in ipairs(m:prompt().choices)do
+        if choice.label=='Cast Shark Typhoon'then cast=choice
+        elseif choice.label:find('Cycling {X}{1}{U}',1,true)==1 then cycle=choice end
+    end
+    check(cast and cycle and buttons[cast.label]and buttons[cycle.label],'The actual native ability picker displays separate Shark Typhoon cast and cycling buttons')
+    shot('shark-typhoon-ability-choice');before=#answers;click(buttons[cast.label])
+    check(#answers==before+1 and answers[#answers].value==cast.id,'Clicking Cast Shark Typhoon dispatches its exact spell UUID')
     adopt('flashback-offer');wait(.2);own=localPlayer();m:openZone(own.id,'graveyard');m.roomDisconnected=true;wait(.3);before=#answers
     check(not hitFor(v.zoneCardHits,own.graveyard[1].id).available and not Zone.press(v,500,400,1),'Disconnected room preserves visible zone cards while disabling their actions')
     check(#answers==before,'Disconnected visible offers submit no stale engine response')
@@ -81,7 +97,7 @@ local function scenario()
 end
 function love.load()
     S.SetINIStatePath(nil);S.Initialize({'nocursor'},true);Cursor=require('lib.Slab.Internal.Core.Cursor');Window=require('lib.Slab.Internal.UI.Window')
-    for _,name in ipairs({'memory-deluge-before-selection','memory-deluge-one-selected','memory-deluge-complete','flashback-offer','exile-extension-offered','exile-permission-expired','foretell-offered-owner','foretell-hidden-opponent'})do frames[name]=json.decode(assert(love.filesystem.read('native/'..name..'.json')))end
+    for _,name in ipairs({'memory-deluge-before-selection','memory-deluge-one-selected','memory-deluge-complete','flashback-offer','exile-extension-offered','exile-permission-expired','foretell-offered-owner','foretell-hidden-opponent','shark-typhoon-ability-choice'})do frames[name]=json.decode(assert(love.filesystem.read('native/'..name..'.json')))end
     love.mouse.getPosition=function()return mouse.x,mouse.y end;love.mouse.isDown=function(button)return button==1 and down or false end
     m=Model.new();m.page='table';m.settings.showCardArt=false;m.settings.sfxEnabled=false;m.settings.particles=false;m.settings.animations=false;m.catalogHealth.ready=false;m.uiLayout={};m.engineHealth.ok=true
     function m:answer(kind,value)

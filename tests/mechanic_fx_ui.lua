@@ -1,5 +1,6 @@
 -- Actual LÖVE drawing with labeled synthetic scenes and optional native frames.
 local FX=require('app.mechanic_fx');local Board=require('app.board_fx');local Assets=require('app.assets');local json=require('lib.json')
+local Renderer=require('app.renderer');local utf8=require('utf8')
 local output=assert(os.getenv('LOVE2GATHERING_VFX_OUTPUT'))
 local mode='profiles';local frame=0;local clock=0;local renderer;local results={checks=json.array(),performance={},scope='Actual LÖVE profile/effect rendering and synthetic crowded director benchmark; no native legality, Internet, full-table UX or physical GPU-independent guarantee.'}
 local samples={baseline={},effects={}};local profileNames={'flashback','jump_start','evoke','convoke','mutate','face_down','haste','extort','trample','reach','flying','ward'}
@@ -8,9 +9,12 @@ local fonts={}
 local nativeBefore,nativeAfter,nativeDirector,nativeAnchors,nativeSurvivors
 local nativeScenes={}
 local function check(ok,label)assert(ok,label);results.checks[#results.checks+1]={passed=true,message=label};print('VFX UI PASS '..label)end
-local function text(value,x,y,size,color,width,align)
+local function fontAt(size)
  size=math.floor(size or 15);if not fonts[size]then fonts[size]=love.graphics.newFont('assets/fonts/DejaVuSans.ttf',size)end
- love.graphics.setFont(fonts[size]);love.graphics.setColor(color or{.85,.91,.95});love.graphics.printf(tostring(value),x,y,width or 250,align or'left')
+ return fonts[size]
+end
+local function text(value,x,y,size,color,width,align)
+ love.graphics.setFont(fontAt(size));love.graphics.setColor(color or{.85,.91,.95});love.graphics.printf(tostring(value),x,y,width or 250,align or'left')
 end
 local function fakeCard(id,mechanic)return{id=id,name=mechanic:gsub('_',' '),colors={'U'},currentKeywords={{id=mechanic,name=mechanic:gsub('_',' ')}},type='Creature',power='3',toughness='3'}end
 local function base(card,x,y,w,h)
@@ -26,7 +30,7 @@ end
 local function drawCard(card,x,y,w,h,fx)
  if fx then FX.cardUnderlay(renderer,card,x,y,w,h,{kind='permanent'})end
  base(card,x,y,w,h)
- if fx then FX.cardOverlay(renderer,card,x,y,w,h,{kind='permanent'})end
+ if fx then FX.cardOverlay(renderer,card,x,y,w,h,{kind='permanent'},w-48)end
 end
 local function privacyPixels(card)
  local c=love.graphics.newCanvas(220,320);love.graphics.push('all');love.graphics.setCanvas(c);love.graphics.clear(.01,.02,.03,1)
@@ -43,6 +47,65 @@ function love.load()
  assets=Assets.new();font=love.graphics.newFont('assets/fonts/DejaVuSans.ttf',15)
  renderer={model={settings={animations=true,particles=true,vfxIntensity=.85,ambientKeywordFX=true,cameraShake=true,distortion=true}},assets=assets,fxClock=1.3,dt=1/60,colors={text={.9,.94,.98}}}
  renderer.model.canSelect=function(_,id)return id~='secret' end
+ renderer.text=function(_,...)return text(...)end
+ renderer.font=function(_,size)return fontAt(size)end
+ renderer.fit=Renderer.fit
+ local missing={}
+ for name,point in pairs(require('assets.keyrune.glyphs'))do
+  if name:match('^ability%-')or name=='flashback'then
+   if not assets:font(24):hasGlyphs(utf8.char(point))then missing[#missing+1]=name end
+  end
+ end
+ check(#missing==0,'Every named ability mapping is present in the bundled Mana font: '..table.concat(missing,', '))
+ local original=assets.iconSymbol
+ local drawn={}
+ assets.iconSymbol=function(self,name,...)
+  drawn[#drawn+1]=name
+  return original(self,name,...)
+ end
+ local textCalls={}
+ renderer.text=function(_,label,...)textCalls[#textCalls+1]=label;return text(label,...)end
+ local card={id='badges',currentKeywords={{id='cycling'},{id='flying'},{id='shroud'}}}
+ FX.cardOverlay(renderer,card,12,12,110,146,{kind='permanent'},58)
+ check(drawn[1]=='ability-cycling' and drawn[2]=='ability-flying','Battlefield overlay draws pinned Cycling and Flying glyphs through the Mana asset renderer')
+ FX.cardOverlay(renderer,fakeCard('fallback','shroud'),12,12,110,146,{kind='permanent'},55)
+ check(textCalls[#textCalls]=='Shroud' and #drawn==2,
+  'An unmapped keyword paints its name instead of a substitute icon ('..table.concat(textCalls,', ')..'; '..#drawn..' glyphs)')
+ require('app.card_actions')
+ local noKeywords={id='mana-source',currentKeywords={}}
+ local offers={{objectId=noKeywords.id,options={{label='First ability'},{label='Second ability'}}}}
+ renderer.model.prompt=function()return {cardActions=offers}end
+ FX.cardOverlay(renderer,noKeywords,12,12,110,146,{kind='permanent'})
+ check(textCalls[#textCalls]=='2','An offered permanent with zero keywords still displays its two native actions')
+ renderer.model.prompt=nil
+ local compact=love.graphics.newCanvas(64,96)
+ love.graphics.push('all')
+ love.graphics.setCanvas(compact);love.graphics.clear(0,0,0,0)
+ FX.cardOverlay(renderer,{id='secret',faceDown=true,hidden=true},0,0,64,96,{kind='permanent'},10)
+ love.graphics.pop()
+ local pixels=compact:newImageData()
+ local _,_,_,alpha=pixels:getPixel(15,84)
+ check(alpha==0,'A compact face-down card keeps its power/toughness area clear when the shell badge cannot fit')
+ pixels:release();compact:release()
+ local live=Renderer.new({settings={animations=false},cardData=function(_,c)return c end,getArt=function()end,canSelect=function()return false end})
+ local legacy={id='recorded-creature',name='Recorded creature',type='Creature',power='4',toughness='3',keywords={'trample'},printing={keywords={}}}
+ local count,grantedLabel=0,false
+ local iconSymbol,strong=live.assets.iconSymbol,live.strong
+ live.assets.iconSymbol=function(self,name,...)
+  if name=='trample' or name=='ability-trample' then count=count+1 end
+  return iconSymbol(self,name,...)
+ end
+ live.strong=function(self,label,...)
+  if label=='Trample' then grantedLabel=true end
+  return strong(self,label,...)
+ end
+ for _,current in ipairs({false,{{id='trample',name='trample'}}})do
+  legacy.currentKeywords=current or nil
+  count,grantedLabel=0,false
+  live:drawCard(legacy,12,12,135,190,{kind='permanent',noHit=true})
+  check(count==1 and grantedLabel,(current and 'Current' or 'Legacy')..' native keyword data draws one Trample glyph and identifies the granted ability')
+ end
+ assets.iconSymbol=original
  renderer.text=function(_,...)return text(...)end
  for i,name in ipairs(profileNames)do cards[i]=fakeCard('profile-'..i,name);if name=='face_down'then cards[i].faceDown=true;cards[i].hidden=true end end
  local a=fakeCard('secret','haste');a.faceDown=true;a.hidden=true;a.colors={'R'}

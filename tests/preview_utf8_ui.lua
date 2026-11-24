@@ -52,6 +52,7 @@ function love.load()
  S.SetINIStatePath(nil);S.Initialize({},true);love.mouse.getPosition=function()return mouse.x,mouse.y end;love.mouse.isDown=function()return false end
  m={settings=json.decode(json.encode(Preferences.defaults)),page='table',game={gameId='utf8-fixture',players={}},uiLayout={},toasts={}}
  m.settings.windowMode='Windowed';m.settings.resolution='1440x900';m.settings.skybox='Off';m.settings.vsync=false;m.settings.sfxEnabled=false;m.settings.musicEnabled=false
+ function m:prompt()return prompt end
  function m:cardData(card)return card end;function m:getArt()return nil end;function m:canSelect()return false end;function m:answerChoice()error('A hover must not answer a native choice')end
  r=Renderer.new(m);v=View.new(S,m,r);p=Preferences.new(m,S,r);v.preferences=p;p:apply(true);p.appliedLoaded=true
  runner=coroutine.create(scenario)

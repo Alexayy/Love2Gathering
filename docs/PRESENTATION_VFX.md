@@ -9,8 +9,11 @@ combat presentation, current anchors and renderer integration.
 ## Visible language
 
 Card edges carry at most one dominant and one secondary mechanic signature,
-with two static badges and `+N` for additional mechanics. The inspector retains
-the complete named list. Static badges, native P/T, counters and action markers
+with up to two static badges and `+N` for additional mechanics when space allows.
+The static badges and named inspector entries use the bundled Mana glyphs for
+matching abilities. An unmapped mechanic can use its name in the badge space
+and always retains its label in the inspector and tooltip. Static badges,
+native P/T, counters and action markers
 remain readable when animation, particles, intensity or ambient effects are off.
 The branching action marker uses the actual offered native object, and shows an
 option count only when `app/card_actions.lua` supplies that native option list.
@@ -26,8 +29,8 @@ A subdued capability marker describes an interaction, not current legality.
 | Face down / face up | Neutral folded shell; public shell unfolds only after the native face-up event |
 | Haste | Leading speed streak; stronger cue on native actionable objects and declared attacks |
 | Extort | Toll clock; actual native life transfers travel toward the source/controller |
-| Trample | Overflow chevron; sparse attacking dust and accent on actual damage |
-| Reach | Net silhouette and interception arc, distinct from Flying's open wing/lift |
+| Trample | Sparse attacking dust and overflow accent on actual damage |
+| Reach | Interception arc, distinct from Flying's lift |
 
 Native damage remains exact: a keyword never invents damage, retaliation, a
 first-strike participant or trample overflow. A recipe needs an exact native
@@ -45,6 +48,12 @@ Cards expose current `currentKeywords` and `mechanicCapabilities` descriptor
 arrays, including `id`, `name`, `category`, `nativeClass`, `parameter` and native
 provenance where available. An explicitly empty current array suppresses older
 printing keywords. `card.mechanics` can provide a complete combined array.
+Each mechanic occupies one badge. Its inspector entry retains every distinct
+native cost or rule for that mechanic, including both equip costs on Blackblade
+Reforged. A known combat keyword granted beyond the original printing is marked
+in gold on the table and labeled in the inspector. This also applies to recordings
+with legacy keyword lists. Offered objects with no keyword can still show their
+native action count.
 Cache invalidation follows replacement descriptor arrays and
 `characteristicsRevision`.
 
@@ -79,9 +88,10 @@ departed cards as interactive ghost cards.
 
 ## Renderer hooks and coordinates
 
-`Board.cardUnderlay(r, card, x, y, w, h, options)` runs before the card surface;
-`Board.cardOverlay(...)` runs after the upright text/badge layer. Coordinates
-are local to the current card transform, supplied by the renderer. Skip either
+`Board.cardUnderlay(r, card, x, y, w, h, options)` runs before the card surface.
+`Board.cardOverlay(...)` runs after the text and badges. On the battlefield, the
+title and type bands, illustration and badges share the card’s rotation throughout
+the tap animation. Coordinates are local to the current card transform. Skip either
 hook for `presentationGhost` or `imageOnly` previews. A public face-down view
 passes `kind='permanent'`, `kind='attachment'` or `publicFaceDown=true`.
 `Board.mechanicBadges` tells the renderer to avoid a duplicate legacy badge row;
@@ -185,7 +195,7 @@ python3 scripts/report-mechanic-coverage.py --metadata build/update-verification
 
 ## Acceptance evidence
 
-`tests/mechanic_fx.lua` passes 121 pure presentation contracts;
+`tests/mechanic_fx.lua` passes 129 pure presentation contracts;
 `tests/board_fx.lua` passes 52; `tests/combat_indicators.lua` passes 19. Lua 5.1
 syntax validation also passes for these modules and the graphical harness.
 These pure checks are not native rules tests.

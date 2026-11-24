@@ -2,15 +2,23 @@
 local Camera={};Camera.__index=Camera
 local function clamp(v,low,high) return math.max(low,math.min(high,v)) end
 function Camera.new() return setmetatable({x=0,y=0,zoom=1},Camera) end
-function Camera:configure(view,count)
-    local signature=table.concat({view.x,view.y,view.w,view.h,count},':')
+function Camera:configure(view,count,requiredSeatWidth)
+    -- Keep the extra room for the rest of the match, so removing a permanent
+    -- does not pull the playmats and camera back together.
+    self.expandedW=math.max(self.expandedW or 0,math.min(1728,math.ceil((requiredSeatWidth or 0)/128)*128))
+    local rows=math.ceil(count/2);local gap=18
+    local seatH=(view.h-gap*(rows-1))/rows
+    local cellW=math.max(760,math.min((view.w-gap)/2,seatH*1.7),self.expandedW)
+    local signature=table.concat({view.x,view.y,view.w,view.h,count,cellW},':')
     if self.signature==signature then return end
     self.signature=signature
-    self.view=view;self.columns=2;self.rows=math.ceil(count/2)
     -- Stable world-space seats share one overview/focus camera transform.
-    local seatH=(view.h-18*(self.rows-1))/self.rows
-    self.cellW=math.max(640,math.min((view.w-18)/2,seatH*1.7))
-    self.cellH=math.max(390,seatH,self.cellW/1.7);self.gap=18
+    -- Reposition a manually panned camera with the right-hand column.
+    if self.mode=='free' and self.cellW and self.x>=self.cellW+gap/2 then
+        self.x=self.x+cellW-self.cellW
+    end
+    self.view=view;self.columns=2;self.rows=rows
+    self.cellW=cellW;self.cellH=math.max(420,seatH);self.gap=gap
     self.width=self.columns*(self.cellW+self.gap)-self.gap
     self.height=self.rows*(self.cellH+self.gap)-self.gap
     self.overviewZoom=math.min(view.w/self.width,view.h/self.height)
@@ -33,7 +41,11 @@ function Camera:overview(immediate)
     if immediate then self.x=self.target.x;self.y=self.target.y;self.zoom=self.target.zoom;self:bound() end
 end
 function Camera:focus(index,immediate)
-    local zoom=self.mode=='overview' and math.min(2,math.max(1.15,self.overviewZoom*1.6))or self.zoom
+    local zoom=self.zoom
+    if self.mode=='overview' then zoom=math.min(2,math.max(1.15,self.overviewZoom*1.6))
+    elseif self.mode=='focus' and self.target then zoom=self.target.zoom end
+    zoom=math.min(zoom,self.view.w/self.cellW)
+    if self.view.fitSeatHeight then zoom=math.min(zoom,self.view.h/self.cellH)end
     self.mode='focus';self.focusIndex=index;local c=self:cell(index)
     self.target={x=c.x+c.w/2,y=c.y+math.min(c.h/2,self.view.h/(2*zoom)),zoom=zoom}
     if immediate then self.x=self.target.x;self.y=self.target.y;self.zoom=self.target.zoom;self:bound() end

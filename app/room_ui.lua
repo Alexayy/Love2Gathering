@@ -2,6 +2,7 @@
 -- by app.rooms; this view never enumerates public or discoverable rooms.
 local Rooms=require('app.rooms')
 local Shared=require('app.draft_ui')
+local DeckPicker=require('app.deck_picker')
 local UI={}
 function UI.layout(w,h)
     local margin,gap=26,16;local width=w-margin*2
@@ -126,7 +127,19 @@ local function members(v,width,height)
         S.NewLine(.4);info(v,member.bot and'XMage bot'or forfeited and'Left the table'or member.connected==false and'Disconnected · seat retained'or'Connected',inner,member.connected==false and v.r.colors.gold or v.r.colors.muted)
         if forfeited then info(v,'Left · XMage completes this draft seat',inner,v.r.colors.gold)
         elseif draftSeat and room.phase=='drafting'then info(v,(draftSeat.picking and'Choosing'or'Waiting')..' · '..tostring(draftSeat.poolCount or 0)..' picked',inner)end
-        if member.deckName then info(v,member.deckName,inner)end
+        if type(member.deckName)=='string' then info(v,member.deckName,inner)end
+        local config=room.config or {}
+        if member.bot and room.hostId==m.roomParticipantId and room.phase=='lobby' and config.kind=='constructed' then
+            local seatId=member.id
+            S.NewLine(.4)
+            if Shared.button(v,'Choose deck','library',math.min(inner,180),30,{
+                    Disabled=m.roomBusy or m.roomDisconnected,Tooltip='Choose a '..config.format..' deck for '..member.name}) then
+                local connection=m.roomConnectionId
+                DeckPicker.open(v,'room-bot-deck-'..seatId,member.deckId,config.format,function(id)
+                    if connection==m.roomConnectionId then m:selectRoomDeck(id,seatId)end
+                end)
+            end
+        end
         S.Separator();S.NewLine();S.PopID()
     end
     if m.roomDraft and m.roomDraft.tournament then S.NewLine();Shared.tournament(v,m.roomDraft,inner)end

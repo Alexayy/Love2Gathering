@@ -6,6 +6,7 @@ import sys
 import threading
 import time
 import unittest
+from unittest.mock import patch
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
@@ -40,7 +41,7 @@ class NativeFixture:
                 if saved[0] != body: raise RoomError('Idempotency key conflicts with previous request')
                 return copy.deepcopy(saved[1])
         if path == '/multiplayer/capabilities':
-            return {'formats': ['Modern', 'Commander', 'Limited'], 'games': [
+            return {'formats': ['Modern', 'Commander', 'Legacy', 'Limited'], 'games': [
                 {'format': 'Constructed', 'minPlayers': 2, 'maxPlayers': 2},
                 {'format': 'Commander', 'minPlayers': 2, 'maxPlayers': 10},
                 {'format': 'Limited', 'minPlayers': 2, 'maxPlayers': 10}],
@@ -222,6 +223,70 @@ class RoomTests(unittest.TestCase):
         self.client(self.a, created, '/rematch', {})
         self.wait_phase(created, 'playing')
         self.assertFalse([body for _, path, body in self.a.engine.calls if path == '/multiplayer/start'][-1]['commanderDamage'])
+
+    def test_constructed_bots_keep_their_selected_decks_and_seats(self):
+        created = self.create(maximum=4)
+        joined = self.join(created)
+        with patch('rooms.default_bot_deck', side_effect=[{'name': 'First'}, RoomError('Unavailable starter')]):
+            with self.assertRaises(HTTPError):
+                self.client(self.a, created, '/bots', {'count': 2})
+        self.assertFalse(any(p['bot'] for p in self.client(self.a, created)['room']['members']))
+        state = self.client(self.a, created, '/bots', {'count': 1})
+        bot = next(p for p in state['room']['members'] if p['bot'])
+        self.assertTrue(bot['deckId'].startswith('starter-commander-'))
+        selected = {'id': 'local-bot-list', 'name': 'Goblin partners', 'format': 'Commander',
+                    'commander': ['Rograkh, Son of Rohgahh', 'Kediss, Emberclaw Familiar'],
+                    'main': [{'name': 'Mountain', 'count': 98}]}
+        request = {'botSeatId': bot['id'], 'deck': selected}
+        with self.assertRaises(HTTPError) as denied:
+            self.client(self.b, joined, '/deck', request)
+        self.assertEqual(denied.exception.code, 403)
+        for invalid in (joined['participantId'], 'gone', None):
+            with self.subTest(seat=invalid), self.assertRaises(HTTPError):
+                self.client(self.a, created, '/deck', dict(request, botSeatId=invalid))
+        with self.assertRaises(HTTPError):
+            self.client(self.a, created, '/deck', dict(request, deck=dict(selected, format='Modern')))
+        self.client(self.a, created, '/deck', request)
+        for count in (2, 1, 2):
+            state = self.client(self.a, created, '/bots', {'count': count})
+            bots = [p for p in state['room']['members'] if p['bot']]
+            self.assertEqual((bots[0]['id'], bots[0]['deckId'], bots[0]['deckName'], bots[0]['ready']),
+                             (bot['id'], selected['id'], selected['name'], True))
+        guest = self.client(self.b, joined)
+        self.assertNotIn('local-bot-list', json.dumps(guest))
+        self.assertNotIn('Rograkh', json.dumps(guest))
+        for gateway, connection in ((self.a, created), (self.b, joined)):
+            self.client(gateway, connection, '/deck', {'deck': {'name': 'Human deck', 'format': 'Commander'}})
+            self.client(gateway, connection, '/ready', {'ready': True})
+        self.client(self.a, created, '/start', {})
+        self.wait_phase(created, 'playing')
+        seats = [body['seats'] for _, path, body in self.a.engine.calls if path == '/multiplayer/start'][-1]
+        submitted = {p['seatId']: p['deck'] for p in seats}
+        self.assertEqual(submitted[bot['id']], selected)
+        starter = submitted[bots[1]['id']]
+        self.assertTrue(starter['id'].startswith('starter-commander-'))
+        self.assertEqual(sum(card['count'] for card in starter['main'] + starter['commander']), 100)
+        self.assertNotEqual(starter['commander'], selected['commander'])
+
+    def test_constructed_bot_without_a_starter_needs_its_own_deck(self):
+        created = self.a.request('/client/rooms', {'format': 'Legacy', 'maxPlayers': 2})
+        host_deck = {'name': 'Host deck', 'format': 'Legacy'}
+        self.client(self.a, created, '/deck', {'deck': host_deck})
+        self.client(self.a, created, '/ready', {'ready': True})
+        state = self.client(self.a, created, '/bots', {'count': 1})
+        bot = next(p for p in state['room']['members'] if p['bot'])
+        self.assertFalse(bot['ready'])
+        self.assertIsNone(bot['deckName'])
+        with self.assertRaises(HTTPError) as unassigned:
+            self.client(self.a, created, '/start', {})
+        self.assertEqual(unassigned.exception.code, 409)
+        self.assertFalse(self.a.engine.games)
+        bot_deck = dict(host_deck, name='Bot deck')
+        self.client(self.a, created, '/deck', {'botSeatId': bot['id'], 'deck': bot_deck})
+        self.client(self.a, created, '/start', {})
+        self.wait_phase(created, 'playing')
+        seats = [body['seats'] for _, path, body in self.a.engine.calls if path == '/multiplayer/start'][-1]
+        self.assertEqual([p['deck'] for p in seats], [host_deck, bot_deck])
 
     def test_constructed_rematch_requires_finished_game_and_other_human_consent(self):
         created, joined, state = self.ready_game()

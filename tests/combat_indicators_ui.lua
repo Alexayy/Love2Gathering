@@ -47,8 +47,12 @@ local function scenario()
   love.window.setMode(size[1],size[2],{vsync=0,resizable=true});require('app.assets').invalidateRasterCaches();S.SetScale(Layout.setScale(size[3]))
   m.uiLayout={matchPrefs={priority={autoPass=true,stops={own=json.array(),opponent=json.array()}}}};m:setGame(fixture());move(0,0);wait(.15)
   local w,h=Layout.dimensions();local button=assert(buttons[label]);local name=size[1]..'-ui'..Layout.scale
-  check(button.w==208 and button.h==32,'Quick stop is a readable208×32control '..name)
-  check(button.x>=w-250 and button.x+button.w<=w and button.y>=74 and button.y+button.h<=112,'Quick stop stays between phase row and terrain '..name)
+  check(button.w==208 and button.h==32,'Quick stop is a readable 208×32 control '..name)
+  local phaseBottom=0
+  for _,hit in ipairs(r.hits)do if hit.kind=='phase-stop'then phaseBottom=math.max(phaseBottom,hit.y+hit.h)end end
+  local terrainTop=r.tableLayout.viewport.y
+  check(phaseBottom>0 and button.x>=w-250 and button.x+button.w<=w and button.y>=phaseBottom and button.y+button.h<=terrainTop,
+      ('Quick stop at %.0f..%.0f clears phase stops (%.0f) and terrain (%.0f) in %s'):format(button.y,button.y+button.h,phaseBottom,terrainTop,name))
   check(button.tooltip:find('OFF · confirmed',1,true),'Disabled stop is explicitly confirmed OFF '..name)
   local offInk=imageInk(button.image);shots[#shots+1]={name=name..'-off',button=copy({x=button.x,y=button.y,w=button.w,h=button.h}),state='off'};wait(.08)
   local count=#requests;click(button)

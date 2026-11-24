@@ -68,7 +68,7 @@ local function scenario()
     fixture('look');local looked=finish('look');ready(function()return #(v.cardChoiceHits or {})>0 and buttons.Close end,'Retained native looked-at popup did not open')
     check(looked.nativeResult.nativeTransientListCleared and m.game.lookedAt[1].id and v.cardChoiceHits[1].card.id==looked.nativeResult.lookedAtCardId,'Native retained look identity opens its entitled card after the transient list has cleared')
     local viewed=v.cardChoiceHits[1].card;ready(function()return m:getArt(m:cardData(viewed),true)end,'Real looked-at artwork did not load',20);shot('native-look-at')
-    click(v.cardChoiceHits[1],2);check(m.inspectCard and m.inspectCard.id==viewed.id,'Actual right-click inspects the native looked-at card')
+    click(v.cardChoiceHits[1],3);check(m.inspectCard and m.inspectCard.id==viewed.id,'Middle-click opens details of the native looked-at card')
     click(buttons['Close details']);click(buttons.Close);wait(.25);local closedLook=request('GET','/fixture/result');reports.look=closedLook
     check(#closedLook.acceptedActions==0 and#v.cardChoiceHits==0,'Closing the retained native look popup sends no engine answer and keeps that identity dismissed')
     fixture('cancel');ready(function()return m:prompt()and m:prompt().cancelChoice and buttons['Done / Cancel']end,'Native pre-sacrifice cancel was not offered');shot('woe-strider-cancel')

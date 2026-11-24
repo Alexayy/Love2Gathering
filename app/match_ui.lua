@@ -11,12 +11,94 @@ local function iconButton(v,label,icon,action,active,disabled,size)
     size=size or 38
     if S.Button(label,{Image={Image=v.r.assets:iconImage(icon,size-8)},W=size,H=size,Tooltip=label,Active=active,Disabled=disabled}) then action() end
 end
-local function option(v,choice,width)
-    local label=v.r:fit(tostring(choice.label or choice.id),width-20,16,3)
-    local _,breaks=label:gsub('\n','')
-    v.S.PushID('choice-'..tostring(choice.id or choice.value or label))
-    if v.S.Button(label,{W=width,H=math.max(38,(breaks+1)*20+14),VLines=breaks+1,Tooltip=choice.label,Disabled=v.m.actionBusy}) then v.m:answerChoice(choice) end
+local function option(v,promptKey,choice,width)
+    local label=tostring(choice.label or choice.id)
+    v.S.PushID(promptKey..':'..tostring(choice.id or choice.value or label))
+    if RichText.button(v,label,label,width,{tooltip=choice.detail or label,
+            disabled=v.m.actionBusy or v.m.roomDisconnected or v.m.priorityBusy or choice.selectable==false}) then
+        v.m:answerChoice(choice)
+    end
     v.S.PopID()
+end
+local function priorityControls(v,w,h,prompt)
+    local S,m=v.S,v.m
+    local endTurn=prompt.priority==true
+    local pass=endTurn and Priority.passChoice(prompt)
+    local choices={}
+    for _,choice in ipairs(prompt.choices or {}) do
+        if choice.responseType~='uuid' and choice~=pass then choices[#choices+1]=choice end
+    end
+    local gap,passWidth,endWidth=6,194,110
+    local fixed=(pass and passWidth+gap or 0)+(endTurn and endWidth+gap or 0)
+    local widthLimit=math.max(68,math.floor((w-40-fixed)/math.max(1,#choices))-gap)
+    local widths,total={},fixed
+    for i,choice in ipairs(choices) do
+        local label=tostring(choice.label or choice.id)
+        widths[i]=math.min(widthLimit,258,math.max(80,v.r.fonts[14]:getWidth(label)+24))
+        total=total+widths[i]+gap
+    end
+    if total==0 then return end
+    local width=total-gap
+    v:window('priority-controls',w-width-20,h-59,width+2,46,nil,{Border=0,BgColor={0,0,0,0},AutoSizeContent=false})
+    local key=CardChoices.promptKey(m,prompt)
+    local disabled=m.actionBusy or m.roomDisconnected or m.priorityBusy
+    local x,y=S.GetCursorPos({Absolute=true})
+    local function place(buttonWidth)
+        S.SetCursorPos(x,y,{Absolute=true})
+        x=x+buttonWidth+gap
+    end
+    for i,choice in ipairs(choices) do
+        place(widths[i])
+        local label=tostring(choice.label or choice.id)
+        S.PushID(key..':'..tostring(choice.id))
+        if RichText.button(v,label,label,widths[i],{size=14,maxLines=1,height=42,disabled=disabled or choice.selectable==false}) then m:answerChoice(choice) end
+        S.PopID()
+    end
+    if endTurn then
+        place(endWidth)
+        S.PushID(key)
+        if S.Button('End Turn',{W=endWidth,H=42,Disabled=disabled,Tooltip='Yield priority until a configured stop'}) then m:endTurn() end
+        S.PopID()
+    end
+    if pass then
+        place(passWidth)
+        S.PushID(key..':'..tostring(pass.id))
+        local C=v.r.colors
+        local ink=disabled and C.muted or {.12,.085,.035,1}
+        local image=v.r.assets:buttonImage('play','Pass Priority   [Space]',passWidth,42,
+            {font=v.r.fonts[16],iconSize=16,color=ink,iconTint=ink})
+        if S.Button('Pass Priority',{Image={Image=image},W=passWidth,H=42,Disabled=disabled,
+                Color=disabled and C.panel or C.gold,HoverColor={1,.84,.47,1},PressColor={.85,.59,.23,1},
+                Tooltip=pass.label or 'Pass priority'}) then m:answerChoice(pass) end
+        S.PopID()
+    end
+    S.EndWindow()
+end
+local function abilityChoices(v,w,h,prompt)
+    local S,m=v.S,v.m;local choices=prompt.choices or{}
+    local pw=math.min(520,w-48);local ph=math.min(380,h-130,92+#choices*48)
+    local width=pw-32
+    v:window('native-ability-choice',(w-pw)/2,math.max(116,(h-ph)/2),pw,ph,'Choose an action',{AllowMove=false})
+    RichText.slab(v,'ability-prompt-message',prompt.message or'',width,{size=16,maxLines=2});S.NewLine()
+    local promptKey=CardChoices.promptKey(m,prompt)
+    if v.abilityPromptKey~=promptKey then
+        require('lib.Slab.Internal.UI.Region').ResetTransform(Window.GetItemId('native-ability-choices'))
+        v.abilityPromptKey=promptKey
+    end
+    S.BeginListBox('native-ability-choices',{W=width,H=ph-65})
+    for _,choice in ipairs(choices)do
+        local label=tostring(choice.label or choice.id)
+        local text=label;local tooltip=label
+        if type(choice.manaCost)=='string'and choice.manaCost~=''then
+            text=text..'  '..choice.manaCost
+            tooltip=tooltip..'\nMana cost before choices: '..choice.manaCost
+        end
+        if type(choice.detail)=='string'and choice.detail~=''then tooltip=tooltip..'\n'..choice.detail end
+        S.PushID(promptKey..':'..tostring(choice.id))
+        if RichText.button(v,label,text,width-18,{tooltip=tooltip,disabled=m.actionBusy or m.roomDisconnected or m.priorityBusy or choice.selectable==false})then m:answerChoice(choice)end
+        S.PopID()
+    end
+    S.EndListBox();S.EndWindow()
 end
 function UI.toolbar(v,w,h)return require('app.table_panels').toolbar(v,w,h)end
 function UI.priority(v,w,h)
@@ -31,7 +113,8 @@ function UI.priority(v,w,h)
     tooltip=tooltip..'\n'..(stop.status=='on'and'ON · confirmed by XMage. After Done confirms blockers, priority stops before damage.'
         or stop.status=='off'and'OFF · confirmed by XMage. Click to enable this stop.'
         or stop.pending and'WAIT · a native priority update is still pending.'or'Not yet confirmed by XMage; the saved choice is not shown as active.')
-    v:window('before-damage-stop',w-238,108,222,34,nil,{AllowFocus=false,Border=0,BgColor={0,0,0,0},AutoSizeContent=false})
+    local stopBox=Layout.beforeDamage(w)
+    v:window('before-damage-stop',stopBox.x,stopBox.y,stopBox.w,stopBox.h,nil,{AllowFocus=false,Border=0,BgColor={0,0,0,0},AutoSizeContent=false})
     local image=v.r.assets:buttonImage('block',stop.label,208,32,{font=v.r.fonts[12],iconSize=24,color=tint,iconTint=tint,gap=8})
     if S.Button('Stop after confirmed blockers, before combat damage · opponents’ turns',{Image={Image=image},W=208,H=32,Tooltip=tooltip,
         Color=fill,HoverColor=hover,PressColor=hover,Disabled=stop.pending})then m:togglePhaseStop(Priority.beforeDamage,'opponent')end
@@ -76,24 +159,11 @@ function UI.prompt(v,w,h)
         S.EndWindow();return
     end
     if p.manaWheel then return end
+    if require('app.mana_payment_ui').build(v,w,h,p) then return end
+    if p.type=='choose_ability'then abilityChoices(v,w,h,p);return end
     if p.type=='select' then
-        local controls={}
-        for _,choice in ipairs(p.choices or {}) do if choice.responseType~='uuid' then controls[#controls+1]=choice end end
-        local endTurn=p.priority==true
-        local bw=math.min(600,190*math.max(1,#controls)+32+(endTurn and 152 or 0));local x=w-bw-16
-        v:window('priority-controls',x,h-65,bw,54)
-        for i,choice in ipairs(controls) do
-            if i>1 then S.SameLine() end
-            S.PushID('control-'..i)
-            local label=p.priority and 'Pass Priority'or choice.label or require('app.table_presentation').primary(p,m.game)
-            if S.Button(label,{W=(bw-32-(endTurn and 152 or 0))/math.max(1,#controls)-4,H=44,Disabled=m.actionBusy or m.roomDisconnected or m.priorityBusy}) then m:answerChoice(choice) end
-            S.PopID()
-        end
-        if endTurn then
-            if #controls>0 then S.SameLine() end
-            if S.Button('End Turn',{Image={Image=v.r.assets:buttonImage('next','End Turn',144,32)},W=144,H=44,Disabled=m.actionBusy or m.roomDisconnected or m.priorityBusy}) then m:endTurn() end
-        end
-        S.EndWindow();return
+        priorityControls(v,w,h,p)
+        return
     end
     local pw=360;local ph=math.min(400,math.max(185,115+#(p.choices or {})*45));local width=pw-32
     v:window('floating-actions',math.max(24,(w-pw)/2),math.max(162,h*.32),pw,ph,'Choose an action',{AllowMove=false})
@@ -109,7 +179,8 @@ function UI.prompt(v,w,h)
                 S.Separator()
             end
         end
-        for _,choice in ipairs(p.choices or {}) do option(v,choice,width) end
+        local promptKey=CardChoices.promptKey(m,p)
+        for _,choice in ipairs(p.choices or {}) do option(v,promptKey,choice,width) end
         if p.type=='multi_amount' then
             if v.amountPrompt~=p.id then v.amountPrompt=p.id;v.amountValues={} end
             for i,entry in ipairs(p.amountMessages or {}) do

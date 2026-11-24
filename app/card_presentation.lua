@@ -1,5 +1,50 @@
 -- Derived labels only. Native values, permissions and answers remain unchanged.
 local Presentation={}
+local function typeWords(value)
+    if type(value)=='table' then value=table.concat(value,' ') end
+    return tostring(value or ''):lower()
+end
+local cardTypes={artifact='Artifact',battle='Battle',creature='Creature',enchantment='Enchantment',instant='Instant',
+    kindred='Kindred',land='Land',planeswalker='Planeswalker',sorcery='Sorcery',tribal='Tribal'}
+function Presentation.battlefieldTypes(card)
+    local types={}
+    if card.hidden then return types end
+    -- The native projection can explicitly have no types. Never substitute
+    -- its printed face, or the private identity of a face-down permanent.
+    local kind=typeWords(card.type or card.cardType or card.type_line)
+    kind=kind:match('^(.-) // ') or kind
+    kind=kind:match('^(.-) —') or kind:match('^(.-) –') or kind:match('^(.-) %-') or kind
+    for word in kind:gmatch('%a+')do
+        local label=cardTypes[word]
+        if label then types[#types+1]=label end
+    end
+    return types
+end
+function Presentation.battlefieldRole(card,types)
+    local role='support'
+    for _,kind in ipairs(types or Presentation.battlefieldTypes(card))do
+        if kind=='Creature' then return 'creatures' end
+        if kind=='Planeswalker' then role='walkers'
+        elseif kind=='Land' and role~='walkers' then role='lands' end
+    end
+    -- Opposing face-down objects omit their type, but can still be publicly
+    -- attacking, blocking or have a native creature power and toughness.
+    if card.faceDown and (card.attacking or card.blocking or tonumber(card.power) and tonumber(card.toughness)) then
+        return 'creatures'
+    end
+    return role
+end
+function Presentation.isBasicLand(card)
+    local printed=type(card.printing)=='table' and card.printing or {}
+    local kind=typeWords(card.type or card.cardType or card.type_line or printed.type_line or printed.type)
+    if not kind:match('%f[%a]land%f[%A]') then return false end
+    local supertypes=card.supertypes
+    if supertypes==nil then
+        if typeWords(card.type_line or kind):match('%f[%a]basic%f[%A]') then return true end
+        supertypes=printed.supertypes or printed.type_line
+    end
+    return typeWords(supertypes):match('%f[%a]basic%f[%A]')~=nil
+end
 function Presentation.eliminated(player)return player.lost==true or player.left==true end
 function Presentation.phaseKey(game)
     local step=tostring(game.step or''):upper():gsub('[^%w]+','_')
@@ -17,10 +62,34 @@ function Presentation.manaCost(card,data)
     if type(card.mana_cost)=='string'then return card.mana_cost end
     return type(data)=='table'and type(data.mana_cost)=='string'and data.mana_cost or''
 end
+-- XMage projections can contain Java list strings or JSON arrays, depending on
+-- the field and recording version. Keep current characteristics separate from print data.
+local function typePart(value)
+    if type(value)=='table' then value=table.concat(value,' ') end
+    if type(value)~='string' then return '' end
+    return (value:gsub('[%[%],]',' '):gsub('%s+',' '):match('^%s*(.-)%s*$'))
+end
+function Presentation.currentTypeLine(card)
+    if card.hidden or card.faceDown then return '' end
+    local kind=typePart(card.type)
+    if kind=='' then return '' end
+    local super=typePart(card.supertypes)
+    local sub=typePart(card.subtypes)
+    return (super~='' and super..' ' or '')..kind..(sub~='' and ' · '..sub or '')
+end
+function Presentation.counterSummary(card)
+    local labels={}
+    for name,count in pairs(card.counters or {}) do
+        if type(count)=='table' then name,count=count.name or count.type or name,count.count or count.amount end
+        if tonumber(count) and tonumber(count)>0 then labels[#labels+1]=tostring(name)..' ×'..count end
+    end
+    table.sort(labels)
+    return table.concat(labels,', ')
+end
 function Presentation.stats(card)
     local power,toughness=card.power,card.toughness
-    if power==nil or toughness==nil or tostring(power)==''or tostring(toughness)==''then return nil end
-    if tostring(power)=='0'and tostring(toughness)=='0'and not tostring(card.type_line or card.type or''):lower():find('creature',1,true)then return nil end
+    if (type(power)~='string' and type(power)~='number') or (type(toughness)~='string' and type(toughness)~='number') or power=='' or toughness=='' then return nil end
+    if tostring(power)=='0' and tostring(toughness)=='0' and not typeWords(card.type or card.type_line):match('%f[%a]creature%f[%A]') then return nil end
     local damage=math.max(0,tonumber(card.damage)or 0)
     local remaining=tonumber(toughness)and(tonumber(toughness)-damage)or nil
     local native=tostring(power)..'/'..tostring(toughness)
@@ -61,7 +130,7 @@ function Presentation.commanderDamageSummary(player,enabled)
 end
 function Presentation.playerTooltip(player,enabled)
     local lines={(player.name or'Player')..' · '..tostring(player.life or 0)..' life',
-        tostring(player.handCount or 0)..' in hand · '..tostring(player.libraryCount or 0)..' in library'}
+        tostring(tonumber(player.handCount) or '?')..' in hand · '..tostring(player.libraryCount or 0)..' in library'}
     local summary=Presentation.commanderDamageSummary(player,enabled)
     if summary then
         lines[#lines+1]=enabled and'Highest damage received from one commander: '..tostring(highestCommanderDamage(player))or summary

@@ -13,7 +13,7 @@ local function localPlayer(game)
     if not game.localPlayerId and not explicit and humans==1 then return only end
 end
 local function identity(card)
-    return tostring(card.selectedPrintingId or card.printing_id or card.name)..':'..tostring(card.requested_face or 0)
+    return tostring(card.selectedPrintingId or card.printing_id or card.name)..':'..tostring(card.requested_face or card.name)
 end
 local function scope(m,game,player)
     if not game or not player then return end
@@ -34,10 +34,11 @@ local function entry(state,card)
     end
     return item
 end
-local function belongs(card,printed)
-    if card.name==printed.name then return true end
-    for _,face in ipairs(printed.card_faces or{})do if face.name==card.name then return true end end
-    return false
+local function printingFace(card,printed)
+    if card.name==printed.name then return card.requested_face or printed.requested_face or 0 end
+    for index,face in ipairs(printed.card_faces or{})do
+        if face.name==card.name then return card.requested_face or index-1 end
+    end
 end
 function GameArt.install(Model)
     function Model:updateGameArtwork()
@@ -57,7 +58,7 @@ function GameArt.install(Model)
             local card=item.card;local printing=card.selectedPrintingId or card.printing_id
             if card.image_uris and(not printing or card.printing_id==printing)then item.data=card;return card end
             local cached=printing and self.printingMetadata and self.printingMetadata[printing]
-            if cached and cached.card and belongs(card,cached.card)then
+            if cached and cached.card and printingFace(card,cached.card)~=nil then
                 item.data=cached.card;return item.data
             end
             if not printing and self.byName[card.name]then item.data=self.byName[card.name];return item.data end
@@ -69,9 +70,9 @@ function GameArt.install(Model)
                 item.metadataPending=false;state.metadataPending=false
                 if not current()then return end
                 value=value and(value.card or value)
-                if not err and code==200 and value and belongs(card,value)then
+                if not err and code==200 and value and printingFace(card,value)~=nil then
                     item.data=value
-                    if not printing then self:rememberCard(value)
+                    if not printing then self:rememberCard(value,card.name)
                     else
                         self.printingMetadata=self.printingMetadata or{}
                         self.printingMetadata[printing]={card=value}
@@ -83,7 +84,7 @@ function GameArt.install(Model)
         end
         local function exact(item,data)
             local card={};for key,value in pairs(data)do card[key]=value end
-            card.requested_face=item.card.requested_face or data.requested_face or 0
+            card.requested_face=printingFace(item.card,data)
             card.printingExact=item.card.printingExact or item.card.selectedPrintingId~=nil;card.printingResolved=true
             return card
         end
@@ -142,7 +143,7 @@ function GameArt.install(Model)
         local kind=not item.kinds.normal and'normal'or not item.kinds.art_crop and'art_crop'or nil
         if not kind then state.index=state.index+1;state.completed=(state.completed or 0)+1;return end
         state.downloadPending=true
-        self.api:request('catalog','POST','/art/download',{printingId=data.printing_id or data.id,face=item.card.requested_face or data.requested_face or 0,kind=kind},function(_,err,code)
+        self.api:request('catalog','POST','/art/download',{printingId=data.printing_id or data.id,face=printingFace(item.card,data),kind=kind},function(_,err,code)
             state.downloadPending=false
             if not current()then return end
             -- A refused/missing remote image is reported once, never a tight

@@ -9,6 +9,9 @@ local function applyFrame(model,index)
     replay.index=math.max(1,math.min(#replay.frames,math.floor(tonumber(index) or 1)))
     local frame=replay.frames[replay.index]
     model.game=frame.data;model.page='table';replay.elapsed=0
+    model:refreshLibraryViews()
+    model:refreshZoneView()
+    model:refreshTableInspection()
     model.orderPrompt=nil;model.promptOrder={}
 end
 function Replays.install(Model)
@@ -37,6 +40,8 @@ function Replays.install(Model)
             self.livePromptOrder={id=self.orderPrompt,choices=self.promptOrder}
         end
         local replay={id=id,frames={},index=1,speed=(self.uiLayout and self.uiLayout.replayPrefs or {}).speed or 1,playing=false,elapsed=0}
+        self:clearTablePreview();self:closeTableInspection()
+        self.zoneView=nil;self.cardActionSheet=nil
         self.replay=replay
         self.replayLoading=true;self.replayLoadProgress=0
         self:request('catalog','GET','/replays/'..API.escape(id),nil,function(metadata)
@@ -75,6 +80,8 @@ function Replays.install(Model)
         if not self.replay then return end
         local live,order=self.liveGame,self.livePromptOrder
         self.replay=nil;self.replayLoading=false
+        self:clearTablePreview();self:closeTableInspection()
+        self.zoneView=nil;self.cardActionSheet=nil
         self.game=nil;self.liveGame=nil;self.livePromptOrder=nil;self.pollTimer=0
         self.orderPrompt=nil;self.promptOrder={}
         if live then

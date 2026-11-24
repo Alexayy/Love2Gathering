@@ -3,6 +3,7 @@ local Model=require('app.model')
 local Renderer=require('app.renderer')
 local View=require('app.view')
 local Layout=require('app.layout')
+local Priority=require('app.priority')
 local Preferences=require('app.preferences')
 local Storage=require('app.storage')
 local Startup=require('app.startup')
@@ -76,9 +77,10 @@ function love.draw()
 end
 function love.mousepressed(x,y,button,touch,clicks)
     if startup and not startup.ready then startup:press(x,y,button);return end
-    if button==2 then local lx,ly=Layout.toLogical(x,y);if require('app.drag_cancel').cancel(renderer,view,lx,ly)then return end end
-    Slab.OnMousePressed(x,y,button,touch,clicks)
     local lx,ly=Layout.toLogical(x,y)
+    if button==2 and require('app.drag_cancel').cancel(renderer,view,lx,ly)then return end
+    if button==3 and renderer:inspectPreviewAt(lx,ly)then renderer.previewMiddleDown=true;return end
+    Slab.OnMousePressed(x,y,button,touch,clicks)
     local choices=package.loaded['app.card_choices']
     if choices and choices.press(view,lx,ly,button)then return end
     local zones=package.loaded['app.zone_ui'];if zones and zones.press and zones.press(view,lx,ly,button)then return end
@@ -90,6 +92,7 @@ end
 function love.mousereleased(x,y,button,touch,clicks)
     if startup and not startup.ready then return end
     if button==2 and renderer.dragCancelRight then renderer.dragCancelRight=nil;return end
+    if button==3 and renderer.previewMiddleDown then renderer.previewMiddleDown=nil;return end
     Slab.OnMouseReleased(x,y,button,touch,clicks);local lx,ly=Layout.toLogical(x,y)
     local choices=package.loaded['app.card_choices'];if choices and choices.release(view,lx,ly,button)then return end
     local zones=package.loaded['app.zone_ui'];if zones and zones.release and zones.release(view,lx,ly,button)then return end
@@ -113,6 +116,7 @@ function love.keypressed(key,scancode,isrepeat)
     if startup and not startup.ready then if key=='escape'then love.event.quit()end;return end
     Slab.OnKeyPressed(key,scancode,isrepeat)
     if key=='escape'then
+        if model.page=='table'and model.inspectCard then model:closeTableInspection();return end
         if require('app.drag_cancel').cancel(renderer,view,Layout.mouse())then renderer.dragCancelRight=nil;return end
         local choices=package.loaded['app.card_choices'];if choices and choices.escape and choices.escape(view)then return end
         if view.setPicker then require('app.set_picker').close(view);return end
@@ -120,16 +124,17 @@ function love.keypressed(key,scancode,isrepeat)
         if model.cardPrintingPicker then model:closeCardPrintings();return end
         if model.tokenPicker then model:closeTokenPicker();return end
         if view.brandMenu then view.brandMenu=nil;return end
+        if model.page=='table'and not renderer:inputBlocked()then model:clearTablePreview()end
         model:closeSettings();model.zoneView=nil;model.cardActionSheet=nil;model.commanderDetails=nil;model.deleteConfirm=nil;model.inspectCard=nil;model.galleryInspect=nil;model.confirmConcede=false;model.archiveCopy=nil;model.storagePurgePreview=nil;model.storageLocationConfirm=nil;model.storageFolderDialog=nil;model.imagePackFileDialog=nil
         view.builderPopup=nil;view.builderFiltersOpen=nil;view.themeColorEdit=nil;view.combatStopsOpen=false;view.tableOptionsOpen=false;require('app.deck_picker').close(view)
         return
     end
     if not Slab.IsAnyInputFocused()and not renderer:inputBlocked()then
-        if key=='space' and model.page=='table' then
+        if key=='space' and not isrepeat and model.page=='table' then
             if model.replay then model:toggleReplay()
             else
-                local p=model:prompt()
-                if p then for _,c in ipairs(p.choices or {}) do if tostring(c.label):lower():find('pass',1,true) then model:answerChoice(c);break end end end
+                local choice=Priority.passChoice(model:prompt())
+                if choice then model:answerChoice(choice) end
             end
         elseif model.replay and key=='left' then model:stepReplay(-1)
         elseif model.replay and key=='right' then model:stepReplay(1)

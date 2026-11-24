@@ -88,6 +88,7 @@ def copy_bridge(source, destination):
 
 
 def asset_paths():
+    yield ROOT / 'assets/battlefield/courtyard.jpg'
     for folder in CURATED:
         path = ROOT / 'assets' / folder
         if path.exists():

@@ -271,10 +271,20 @@ function Rooms.install(Model)
         if not request or request.id~=requestId or request.requesterId~=self.roomParticipantId then return false end
         return self:roomMutation('/rematch-cancel',{requestId=request.id})
     end
-    function Model:selectRoomDeck(id)
+    function Model:selectRoomDeck(id,botSeatId)
         local deck=self:findDeck(id);if not deck then return false end
-        self.roomDeckId=id
-        return self:roomMutation('/deck',{deck=copy(deck)})
+        if botSeatId then
+            local room=self.room
+            if not room or room.phase~='lobby' or room.hostId~=self.roomParticipantId then return false end
+            local config=room.config or {}
+            local bot=find(room.members,botSeatId)
+            if not bot or not bot.bot or config.kind~='constructed' or type(deck.format)~='string' or
+                    deck.format:lower()~=tostring(config.format):lower() then return false end
+            return self:roomMutation('/deck',{botSeatId=botSeatId,deck=copy(deck)})
+        end
+        return self:roomMutation('/deck',{deck=copy(deck)},function(data)
+            if data then self.roomDeckId=id end
+        end)
     end
     function Model:setRoomBots(count,callback)return self:roomMutation('/bots',{count=math.max(0,math.floor(tonumber(count)or 0))},callback)end
     function Model:startRoom()if self.storageLocationBlocked then self:toast('Restart or cancel the storage location change before starting a match.',true);return false end;return self:roomMutation('/start',{})end

@@ -113,6 +113,55 @@ public final class ZoneActionsFixture {
         }finally{s.stop();}
     }
     static boolean keyword(Map<String,Object> card,String key){return list(card.get("currentKeywords")).stream().anyMatch(row->key.equals(row.get("id")));}
+    static void castingOrCycling()throws Exception{
+        EngineBridge.Session s=ActionabilityFixture.setup();
+        ExecutorService executor=worker();
+        try{
+            Card shark=TriggerFixture.card("Shark Typhoon");
+            List<Card> lands=new ArrayList<>();
+            for(int i=0;i<6;i++)lands.add(TriggerFixture.card("Island"));
+            s.game.cheat(s.human.getId(),TriggerFixture.NONE,Collections.singletonList(shark),
+                lands.subList(0,2).stream().map(c->new PutToBattlefieldInfo(c,false)).toList(),
+                TriggerFixture.NONE,TriggerFixture.NONE,TriggerFixture.NONE);
+            s.human.getManaPool().setAutoPayment(false);
+            List<Map<String,Object>> options=list(offered(s,shark).get("options"));
+            check(options.size()==1&&"activated".equals(options.get(0).get("kind")),"At two blue sources XMage offers only Shark Typhoon's cycling ability");
+
+            GameplayPresentationFixture.field(s,s.human,lands.subList(2,6).toArray(Card[]::new));
+            s.game.getState().setActivePlayerId(s.bot.getId());
+            options=list(offered(s,shark).get("options"));
+            check(options.size()==1&&"activated".equals(options.get(0).get("kind")),"On the opponent's turn only cycling is available even with six mana sources");
+
+            s.game.getState().setActivePlayerId(s.human.getId());
+            long previous=id(s.prompt);
+            Future<Boolean> priority=executor.submit(()->s.human.priority(s.game));
+            Map<String,Object> selecting=waitPrompt(s,previous);
+            GameplayPresentationFixture.answer(s,selecting,"uuid",shark.getId().toString());
+            Map<String,Object> choosing=waitPrompt(s,id(selecting));
+            check("choose_ability".equals(choosing.get("type")),"The real hand click offers a native choice with six untapped Islands and automatic payment disabled");
+            List<Map<String,Object>> choices=list(choosing.get("choices"));
+            Map<String,Object> cast=choices.stream().filter(c->shark.getSpellAbility().getId().toString().equals(c.get("id"))).findFirst().orElseThrow();
+            check("Cast Shark Typhoon".equals(cast.get("label"))&&"{5}{U}".equals(cast.get("manaCost")),"The native spell UUID has a visible cast label and its regular mana cost");
+            check(choices.stream().anyMatch(c->!c.get("id").equals(cast.get("id"))&&String.valueOf(c.get("label")).startsWith("Cycling {X}{1}{U}")),"The cycling rule keeps its distinct cost and its own UUID");
+            save("shark-typhoon-ability-choice",s);
+            answer(s,choosing,cast);
+
+            previous=id(choosing);
+            for(Card land:lands){
+                Map<String,Object> payment=waitPrompt(s,previous);
+                if(land==lands.get(0))check("play_mana".equals(payment.get("type"))&&"cast".equals(object(payment.get("pendingAction")).get("kind")),"Selecting the regular spell enters native spell payment without an X prompt");
+                GameplayPresentationFixture.answer(s,payment,"uuid",land.getId().toString());
+                Map<String,Object> floating=waitPrompt(s,id(payment));
+                Map<String,Object> blue=list(floating.get("choices")).stream().filter(c->"mana".equals(c.get("responseType"))&&"BLUE".equals(c.get("value"))).findFirst().orElseThrow();
+                answer(s,floating,blue);
+                previous=id(floating);
+            }
+            check(priority.get(10,TimeUnit.SECONDS),"The real priority action completes after tapping and spending native mana");
+            check(s.game.getStack().peek() instanceof Spell spell&&shark.getId().equals(spell.getSourceId())&&spell.getSpellAbility().getSpellAbilityCastMode()==SpellAbilityCastMode.NORMAL,"Shark Typhoon enters the stack in NORMAL spell cast mode");
+            executor.submit(()->s.game.getStack().resolve(s.game)).get(10,TimeUnit.SECONDS);
+            check(s.game.getPermanent(shark.getId())!=null&&s.human.getManaPool().isEmpty(),"The actual enchantment resolves on the battlefield after spending all six mana");
+        }finally{executor.shutdownNow();s.stop();}
+    }
     static void jumpStart()throws Exception{
         EngineBridge.Session s=ActionabilityFixture.setup();try{
             Card insight=TriggerFixture.card("Chemister's Insight"),fuel=TriggerFixture.card("Island");
@@ -193,8 +242,8 @@ public final class ZoneActionsFixture {
     public static void main(String[] args)throws Exception{
         Thread.currentThread().setName("GAME zone fixture main");org.apache.log4j.BasicConfigurator.configure();org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.WARN);
         Path root=Paths.get(args[0]);output=Paths.get(args[1]);Files.createDirectories(output);EngineBridge.cardMap=JsonParser.parseString(Files.readString(root.resolve("bridge/card-map.json"))).getAsJsonObject();Copier.setLoader(ZoneActionsFixture.class.getClassLoader());
-        String failure=null;try{flashback(false);flashback(true);exile();jumpStart();foretell();currentKeywords();largeWipe();targetIncarnation();}catch(Throwable problem){failure=problem.toString();problem.printStackTrace();}
-        Files.writeString(output.resolve("result.json"),EngineBridge.JSON.toJson(EngineBridge.map("passed",failure==null,"failure",failure,"checks",checks,"scope","Real native Flashback/Memory Deluge, private multipick, Jump-start discard/payment, exiled spell/land offers and expiry through native cleanup, effective gained/lost abilities, and sixty-creature Wrath with an indestructible survivor and actual resolution batch. Deterministic initial zones/resources and explicit cleanup boundary; no complete shuffled-game or GUI claim.")));
+        String failure=null;try{flashback(false);flashback(true);exile();castingOrCycling();jumpStart();foretell();currentKeywords();largeWipe();targetIncarnation();}catch(Throwable problem){failure=problem.toString();problem.printStackTrace();}
+        Files.writeString(output.resolve("result.json"),EngineBridge.JSON.toJson(EngineBridge.map("passed",failure==null,"failure",failure,"checks",checks,"scope","Real native Flashback/Memory Deluge, private multipick, regular cast or cycling offers and manual spell payment, Jump-start discard/payment, exiled spell/land offers and expiry through native cleanup, effective gained/lost abilities, and sixty-creature Wrath with an indestructible survivor and actual resolution batch. Deterministic initial zones/resources and explicit cleanup boundary; no complete shuffled-game or GUI claim.")));
         System.exit(failure==null?0:1);
     }
 }

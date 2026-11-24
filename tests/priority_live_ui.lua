@@ -32,11 +32,9 @@ local function screenshot(name,gold)
 end
 local function pass()
     local prompt=m:prompt();assert(prompt,'Native prompt disappeared before Pass')
-    for _,choice in ipairs(prompt.choices or {})do
-        if choice.id=='done' or tostring(choice.label):lower():find('pass',1,true)then
-            local box=buttons[choice.label];if box then click(box);return true end
-        end
-    end
+    local choice=Priority.passChoice(prompt)
+    local box=choice and buttons[prompt.priority and 'Pass Priority' or choice.label]
+    if box then click(box);return true end
     return false
 end
 local function stop()

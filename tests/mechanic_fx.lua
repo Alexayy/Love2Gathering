@@ -5,12 +5,30 @@ local required={'flashback','jump_start','evoke','convoke','mutate','morph','meg
 for _,name in ipairs(required)do local p=FX.profile(name);check(p.coverage=='explicit'and p.glyph~='unknown'and p.recipe~='neutral','Authored named profile '..name)end
 check(FX.profile('First strike').id=='first_strike'and FX.profile('Jump-start').id=='jump_start','Native identifiers normalize without interpreting rules text')
 check(FX.profile('New unknown mechanic').coverage=='generic','An unknown mechanic remains an honest generic static label')
+check(FX.profile('Flying').icon=='ability-flying' and FX.profile('First strike').icon=='ability-first-strike'
+    and FX.profile('Trample').icon=='ability-trample','Common current combat keywords use the Mana Arena glyphs')
+check(FX.profile('Cycling').icon=='ability-cycling' and FX.profile('Jump-start').icon=='ability-jumpstart'
+    and FX.profile('Flashback').icon=='flashback','Native alternate interactions resolve their exact published glyph names')
+check(FX.profile('Hexproof from red').icon=='ability-hexproof-red' and not FX.profile('Hexproof from planeswalkers').icon,
+    'Colored hexproof uses a matching glyph and unsupported variants keep their specific text')
+check(not FX.profile('Shroud').icon and FX.profile('Shroud').label=='shroud','Unmapped keywords retain a text label')
 check(FX.profile('paradigm').coverage=='unsupported','An explicit native TODO is not advertised as an implemented mechanic')
 local card={id='card',colors={'U'},currentKeywords={{id='flying'}},mechanicCapabilities={{id='flashback'}}}
 local ps=FX.cardProfiles(card);check(#ps==2 and ps[1].id=='flashback','Current native keywords compose with alternate interaction capabilities')
 check(FX.hasOptions(card),'An alternate play capability has the shared options affordance')
 card.currentKeywords={{id='reach'}};check(FX.cardProfiles(card)[2].id=='reach','Replaced native characteristics invalidate the per-card presentation cache')
 check(#FX.cardProfiles({id='removed',currentKeywords={},keywords={'haste'}})==0,'An explicitly empty current keyword list suppresses printed abilities that were lost')
+local equips={{id='equip',parameter='Equip legendary creature {3}'},{id='equip',parameter='Equip {7}'}}
+local equipment=FX.cardProfiles({currentKeywords=equips,mechanicCapabilities=equips})
+check(#equipment==1 and equipment[1].parameter=='Equip legendary creature {3}\nEquip {7}' and not FX.profile('equip').parameter,
+    'Blackblade Reforged keeps both distinct native equip costs in its inspector and one battlefield badge')
+local granted={keywords={'trample'},currentKeywords={{id='trample',name='trample'}},printing={keywords={}}}
+check(FX.cardProfiles(granted)[1].gained and FX.tooltip(granted)=='Trample · granted',
+    'A granted native combat keyword stays identified when the current descriptor array is present')
+granted.printing.keywords={'trample'}
+check(not FX.cardProfiles(granted)[1].gained,'Replacing printed keyword metadata refreshes the grant indication')
+granted.currentKeywords={}
+check(#FX.cardProfiles(granted)==0,'Legacy traits cannot restore an explicitly removed current ability')
 local secret={id='secret',hidden=true,faceDown=true,colors={'R'},currentKeywords={{id='haste'}},mechanicCapabilities={{id='mutate'}}}
 check(#FX.cardProfiles(secret)==1 and FX.cardProfiles(secret)[1].id=='face_down'and not FX.hasOptions(secret),'Hidden faces never leak their printed mechanics or private capabilities')
 check(FX.color(secret)[1]==FX.color({faceDown=true,colors={'U'}})[1],'A hidden color cannot change effect tint')

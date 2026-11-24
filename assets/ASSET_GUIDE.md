@@ -1,6 +1,10 @@
 # Asset analysis and runtime selection
 
-The supplied distributions were inspected before integration: image contact sheets on the client's dark background, actual PNG dimensions and decoded alpha, font glyph rendering and CSS code points, and OGG codec/duration/channel metadata. No new artwork was generated. The current curated selection includes about **7.6 MiB** of new runtime icons, cursors, short sounds and five skybox panoramas, plus the earlier approximately 840 KB UI/particle/icon selection. Full supplied pack directories remain intact. The [complete Kenney catalog](KENNEY_CATALOG.md) records the current inventory and selection rationale.
+The supplied distributions were inspected before integration: image contact sheets on the client's dark background, actual PNG dimensions and decoded alpha, font glyph rendering and CSS code points, and OGG codec/duration/channel metadata. The current curated selection includes about **7.6 MiB** of new runtime icons, cursors, short sounds and five skybox panoramas, plus the earlier approximately 840 KB UI/particle/icon selection. Full supplied pack directories remain intact. The [complete Kenney catalog](KENNEY_CATALOG.md) records the current inventory and selection rationale.
+
+## Battlefield courtyard
+
+The original overhead limestone courtyard in `battlefield/courtyard.jpg` was generated with OpenAI ImageGen for this project in November 2026. The game ships a 1672×941 JPEG. It fills the duel viewport and each multiplayer battlefield beneath the players’ chosen playmat art. Playmat opacity controls its visibility, and high contrast darkens the surface.
 
 ## Fonts and icon
 
@@ -155,7 +159,7 @@ The new semantic icon names are `profile`, `avatar`, `settings`, `save`, `delete
 
 `undo` uses the existing supplied Board Game Icons **Default (64px) / arrow_counterclockwise.png**, already curated at `runtime/icons/arrow_counterclockwise.png`. Its alpha bounds are `(4,8)`–`(60,56)` and the original CC0 provenance is retained. It is shown only for an actual native reversible mana bookmark. No mirrored clockwise icon or guessed font glyph substitutes for it.
 
-Additional verified Mana 1.17.1 mappings support defender, double strike, first strike, flash, indestructible, menace, reach, surveil, vigilance and ward, alongside the six earlier keywords. Code points come from the [official pinned CSS](https://raw.githubusercontent.com/andrewgioia/mana/v1.17.1/css/mana.css) and are tested against the actual bundled font. No unrelated board-game icon substitutes for a Magic keyword.
+Mechanic badges use named designs from the bundled Mana 1.17.1 font, including Arena combat abilities and Cycling. Code points come from the [publisher's pinned CSS](https://github.com/andrewgioia/mana/blob/v1.17.1/css/mana.min.css), Git blob `b3a8b64421533ade1ab258b8f2f9dd4d584cd6ed`. The bundled font is byte-identical to the corresponding upstream TTF, Git blob `6b3b45830887d91c3271df329e5b3aee2cdb9eff`. The mechanic UI test checks glyph coverage in that font. Keyrune supplies the set symbols. Mechanics without a matching glyph retain their name in the inspector and tooltip and use a text badge when space is available.
 
 `Theme.install` now emits one quiet UI click per accepted button/checkbox/list selection, independent of hover/paint frames. It remains idempotent and observes the applied sound toggle/volume. `Assets:playSound` keeps its 12-voice bound and supplies reviewed click/cast/resolve/impact/confirm/cancel/shuffle clips. Native game-event sound triggers belong to the renderer; static dice never roll or make random sounds.
 

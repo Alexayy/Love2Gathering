@@ -36,4 +36,24 @@ do
     check(not c:followTurn('d',5,seats,true,true,false)and c.mode=='free','Ending an interaction does not replay a blocked camera jump')
     check(c:followTurn('a',6,seats,true,true,false)and c.focusIndex==1,'A later turn can follow after the interaction ends')
 end
+do
+    local c=Camera.new();local v={x=20,y=146,w=1160,h=660}
+    c:configure(v,4);local normalW,normalH=c.cellW,c.cellH
+    c:focus(2,true);c:pan(0,0)
+    local offset=c.x-c:cell(2).x
+    c:configure(v,4,1500)
+    check(c.cellW>=1500 and c.cellW>normalW and c.cellH==normalH,'Crowded terrain gains width independent of card height')
+    check(c.mode=='free' and math.abs(c.x-c:cell(2).x-offset)<.001,'Widening terrain preserves the manually panned seat position')
+    c:configure(v,4,600)
+    check(c.cellW>=1500,'Removing permanents does not collapse the playmats')
+    c:overview(true);local right,bottom=c:project(c.width,c.height)
+    check(right<=v.x+v.w+.01 and bottom<=v.y+v.h+.01,'Expanded world fits the overview')
+    c:focus(3,true)
+    check(c.zoom>c.overviewZoom and c.cellW*c.zoom<=v.w+.01,'Focusing expanded terrain fits the selected seat horizontally')
+    c:configure(v,4,100000)
+    check(c.cellW<2000,'Exceptional board size keeps the world bounded')
+    check(c.focusIndex==3 and c.cellW*c.zoom<=v.w+.01,'An already focused seat still fits after its battlefield widens')
+    c:overview(true);c:focus(3);local requested=c.target.zoom;c:focus(2)
+    check(c.target.zoom==requested,'Switching seats mid-animation retains the requested focus zoom')
+end
 print('Camera checks: '..n..' passed (presentation geometry only)')

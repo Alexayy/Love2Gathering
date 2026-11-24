@@ -9,7 +9,7 @@ mkdir -p "$test_dir/assets/fonts" "$test_dir/assets/kenney" "$test_dir/native" "
 cp -R "$project_dir/assets/keyrune" "$project_dir/assets/icons" "$project_dir/assets/card-backs" "$test_dir/assets/"
 for name in runtime ui particles sounds theme;do cp -R "$project_dir/assets/kenney/$name" "$test_dir/assets/kenney/";done
 cp "$project_dir/assets/fonts/"*.ttf "$test_dir/assets/fonts/"
-for name in memory-deluge-before-selection memory-deluge-one-selected memory-deluge-complete flashback-offer exile-extension-offered exile-permission-expired foretell-offered-owner foretell-hidden-opponent;do cp "$native_dir/$name.json" "$test_dir/native/";done
+for name in memory-deluge-before-selection memory-deluge-one-selected memory-deluge-complete flashback-offer exile-extension-offered exile-permission-expired foretell-offered-owner foretell-hidden-opponent shark-typhoon-ability-choice;do cp "$native_dir/$name.json" "$test_dir/native/";done
 cp "$project_dir/tests/zone_actions_ui.lua" "$test_dir/main.lua"
 cat > "$test_dir/conf.lua" <<'EOF'
 function love.conf(t)

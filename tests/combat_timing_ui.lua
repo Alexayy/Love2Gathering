@@ -74,7 +74,7 @@ local function scenario()
     local gore=assert(cardHit('Goreclaw, Terror of Qal Sisma')).card
     check(goreReport.nativeResult.gainedTrample and gore.currentRules:find('\ntrample',1,true),'Actual Goreclaw native attack trigger grants live Trample independently from printed rules')
     check(strong.Trample,'Actual battlefield renderer visibly labels the temporary gained Trample ability');shot('goreclaw-gained-trample')
-    click(cardHit('Goreclaw, Terror of Qal Sisma'),2);ready(function()return m.inspectCard and buttons['Show current rules']end,'Current native card details did not open')
+    click(cardHit('Goreclaw, Terror of Qal Sisma'),3);ready(function()return m.inspectCard and buttons['Show current rules']end,'Current native card details did not open')
     check(textLedger['Trample · granted'],'Actual card details visibly identify temporary granted Trample')
     click(assert(buttons['Show current rules']));check(v.inspectCurrentRules,'Current native rules can be expanded separately from catalog printing');shot('goreclaw-current-rules')
     local out=assert(io.open('/tmp/love2gathering-combat-timing-ui-'..tostring(requested or'all')..'-report.json','w'));out:write(json.encode({passed=true,checks=checks,cases=reports,scope='Actual main.lua callbacks, Slab controls and asynchronous HTTP against test-only native initial zones; production Session.action, actual blocker confirmation, native pre-damage stop, Ayara cost and real combat damage; requested and actual display dimensions retained'}));out:close();print('COMBAT TIMING UI COMPLETE '..#checks..' checks');love.event.quit(0)

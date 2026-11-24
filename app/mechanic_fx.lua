@@ -1,4 +1,6 @@
 -- Viewer-filtered presentation only. This module never computes legal actions.
+local manaGlyphs=require('assets.keyrune.glyphs')
+local Traits=require('app.card_traits')
 local FX={}
 local tau=math.pi*2
 local EMPTY={}
@@ -11,6 +13,13 @@ local aliases={jumpstart='jump_start',firststrike='first_strike',doublestrike='d
     modal_double_faced='modal_double_faced',double_faced='transform',face_down='face_down',megamorph='megamorph',
     totem_armor='umbra_armor',land_walk='landwalk',spell_mastery='spell_mastery',['doctor_s_companion']='doctors_companion',
     ['council_s_dilemma']='councils_dilemma'}
+local iconAliases={
+    flashback='flashback',jump_start='ability-jumpstart',
+    daybound='ability-daybound-nightbound',nightbound='ability-daybound-nightbound',
+    hexproof_base='ability-hexproof',hexproof_from_black='ability-hexproof-black',
+    hexproof_from_blue='ability-hexproof-blue',hexproof_from_green='ability-hexproof-green',
+    hexproof_from_red='ability-hexproof-red',hexproof_from_white='ability-hexproof-white',
+}
 local cache=setmetatable({},{__mode='k'})
 local function list(t)return type(t)=='table'and t or EMPTY end
 local function outlinePolygon(...)love.graphics.polygon('line',...)end
@@ -20,8 +29,12 @@ function FX.normalize(value)
     value=tostring(value or''):gsub('(%l)(%u)','%1_%2'):lower():gsub("['’]",'_'):gsub('[_%s%-]+','_'):gsub('^_+',''):gsub('_+$','')
     return aliases[value]or value
 end
+local function badgeIcon(id)
+    local name=iconAliases[id] or ('ability-'..id:gsub('_','-'))
+    return manaGlyphs[name] and name or nil
+end
 local function register(id,glyph,recipe,category,weight,coverage)
-    profiles[id]={id=id,label=id:gsub('_',' '),glyph=glyph,recipe=recipe,category=category or'keyword',weight=weight or 1,
+    profiles[id]={id=id,label=id:gsub('_',' '),icon=badgeIcon(id),glyph=glyph,recipe=recipe,category=category or'keyword',weight=weight or 1,
         coverage=coverage or'explicit',duration=.68,intensity=.7,bounds='edge',sorting='card_overlay',quality='bounded'}
 end
 local rows={
@@ -133,15 +146,16 @@ function FX.profile(value)
     local id=FX.normalize(type(value)=='table'and(value.id or value.name)or value)
     if profiles[id]then return profiles[id]end
     if unsupported[id]then return{id=id,label=type(value)=='table'and(value.name or id)or tostring(value),glyph='unknown',recipe='neutral',category='native_stub',coverage='unsupported',weight=0,limitation=unsupported[id]}end
-    return{id=id,label=type(value)=='table'and(value.name or id:gsub('_',' '))or tostring(value),glyph='unknown',recipe='neutral',category=type(value)=='table'and value.category or'unknown',coverage='generic',weight=0,duration=.4,intensity=.3}
+    return{id=id,label=type(value)=='table'and(value.name or id:gsub('_',' '))or tostring(value),icon=badgeIcon(id),glyph='unknown',recipe='neutral',category=type(value)=='table'and value.category or'unknown',coverage='generic',weight=0,duration=.4,intensity=.3}
 end
 function FX.cardProfiles(card)
     if type(card)~='table'then return{}end
     if card.hidden and not card.faceDown then return EMPTY end
     if card.faceDown then return faceDownProfiles end
+    local printed=type(card.printing)=='table' and card.printing.keywords
     local saved=cache[card]
-    if saved and saved.mechanics==card.mechanics and saved.current==card.currentKeywords and saved.capabilities==card.mechanicCapabilities and saved.keywords==card.keywords and saved.revision==card.characteristicsRevision then return saved.profiles end
-    local out,seen={},{}
+    if saved and saved.mechanics==card.mechanics and saved.current==card.currentKeywords and saved.capabilities==card.mechanicCapabilities and saved.keywords==card.keywords and saved.printed==printed and saved.revision==card.characteristicsRevision then return saved.profiles end
+    local out,byId,parameters={},{},{}
     local source=card.mechanics
     if type(source)~='table'then
         source={}
@@ -149,20 +163,45 @@ function FX.cardProfiles(card)
         for _,value in ipairs(list(card.mechanicCapabilities))do source[#source+1]=value end
     end
     for _,value in ipairs(list(source))do
-        local p=FX.profile(value)
-        if type(value)=='table'and(value.parameter~=nil or value.name)then
-            local instance={};for k,v in pairs(p)do instance[k]=v end
-            instance.parameter=value.parameter;instance.label=value.name or p.label
-            instance.nativeClass=value.nativeClass;instance.rule=value.rule
-            p=instance
+        local profile=FX.profile(value)
+        if profile.id~='' then
+            local instance=byId[profile.id]
+            if not instance then
+                instance={}
+                for key,field in pairs(profile)do instance[key]=field end
+                byId[profile.id]=instance
+                out[#out+1]=instance
+            end
+            if type(value)=='table' then
+                instance.label=value.name or instance.label
+                instance.nativeClass=instance.nativeClass or value.nativeClass
+                instance.rule=instance.rule or value.rule
+                -- A card can have several native costs for the same mechanic,
+                -- and the bridge can also repeat them in its capability list.
+                local detail=value.parameter or value.rule
+                if (type(detail)=='string' and detail~='') or type(detail)=='number' then
+                    detail=tostring(detail)
+                    local seen=parameters[profile.id] or {}
+                    parameters[profile.id]=seen
+                    if not seen[detail] then
+                        instance.parameter=instance.parameter and (instance.parameter..'\n'..detail) or detail
+                        seen[detail]=true
+                    end
+                end
+            end
         end
-        if p.id~=''and not seen[p.id]then seen[p.id]=true;out[#out+1]=p end
+    end
+    if type(printed)=='table' then
+        for _,trait in ipairs(Traits.entries(card))do
+            local entry=byId[trait.name]
+            if entry and trait.gained then entry.gained=true;entry.label=trait.label end
+        end
     end
     table.sort(out,function(a,b)return a.weight==b.weight and a.id<b.id or a.weight>b.weight end)
-    cache[card]={profiles=out,mechanics=card.mechanics,current=card.currentKeywords,capabilities=card.mechanicCapabilities,keywords=card.keywords,revision=card.characteristicsRevision};return out
+    cache[card]={profiles=out,mechanics=card.mechanics,current=card.currentKeywords,capabilities=card.mechanicCapabilities,keywords=card.keywords,printed=printed,revision=card.characteristicsRevision};return out
 end
 function FX.tooltip(card)
-    local labels={};for _,p in ipairs(FX.cardProfiles(card))do labels[#labels+1]=p.label..(p.coverage=='generic'and' · static label; no authored effect'or p.coverage=='unsupported'and' · native implementation unavailable'or'')end
+    local labels={};for _,p in ipairs(FX.cardProfiles(card))do labels[#labels+1]=p.label..(p.gained and ' · granted' or p.coverage=='generic'and' · no authored effect'or p.coverage=='unsupported'and' · native implementation unavailable'or'')end
     return table.concat(labels,' · ')
 end
 local special={alternative_cost=true,additional_cost=true,payment=true,permission=true,activated=true,special_action=true}
@@ -276,22 +315,64 @@ function FX.cardUnderlay(r,card,x,y,w,h,options)
     end
     love.graphics.pop()
 end
-function FX.cardOverlay(r,card,x,y,w,h,options)
+local function drawBadges(r,profiles,x,y,width,size,c)
+    local count,used,fallback=0,0,nil
+    for _,profile in ipairs(profiles)do
+        if profile.icon and r.assets.iconSymbol then
+            if used+size+2>width then break end
+            local bx=x+used
+            love.graphics.setColor(.018,.027,.038,.94)
+            love.graphics.rectangle('fill',bx,y,size+2,size+2,3,3)
+            local color=profile.gained and r.colors.gold or c
+            r.assets:iconSymbol(profile.icon,bx+1,y+1,size,{color[1],color[2],color[3],count==0 and .95 or .82})
+            used=used+size+4;count=count+1
+            if count==2 then break end
+        elseif not fallback then fallback=profile end
+    end
+    local remaining=width-used
+    if count<2 and fallback and remaining>=18 and r.text and r.font and r.fit then
+        local label=fallback.label:gsub('^%l',string.upper)
+        local fontSize=math.floor(math.min(12,size*.72))
+        local font=r:font(fontSize)
+        local textWidth=font:getWidth(label)
+        if textWidth+8>remaining then
+            fontSize=math.max(9,math.floor(fontSize*(remaining-8)/textWidth))
+            font=r:font(fontSize)
+        end
+        local badgeWidth=math.min(remaining,font:getWidth(label)+8)
+        local caption=r:fit(label,badgeWidth-8,fontSize,1)
+        love.graphics.setColor(.018,.027,.038,.94)
+        love.graphics.rectangle('fill',x+used,y,badgeWidth,size+2,3,3)
+        r:text(caption,x+used+4,y+(size+2-font:getHeight())/2,fontSize,fallback.gained and r.colors.gold or c,badgeWidth-8,'center')
+        used=used+badgeWidth+2;count=count+1
+    end
+    if #profiles>count and r.text and r.font then
+        local text='+'..(#profiles-count);local fontSize=math.min(12,size*.72);local font=r:font(fontSize)
+        if font:getWidth(text)<=width-used then r:text(text,x+used,y+(size+2-font:getHeight())/2,fontSize,c)end
+    end
+end
+function FX.cardOverlay(r,card,x,y,w,h,options,badgeRight,badgeBottom,headerH)
     if options and(options.presentationGhost or options.imageOnly)then return end
     if not card then return end
     local publicFaceDown=card.faceDown and options and(options.kind=='permanent'or options.kind=='attachment'or options.publicFaceDown)
     if card.hidden and not publicFaceDown then return end
-    local ps=FX.cardProfiles(card);if#ps==0 then return end
+    local ps=FX.cardProfiles(card)
+    local selectable=card.id and r.model.canSelect and r.model:canSelect(card.id)
+    if #ps==0 and not selectable then return end
     local s,intensity,moving=FX.settings(r);local c=FX.color(card);local clock=r.fxClock or 0
-    local selectable=r.model.canSelect and r.model:canSelect(card.id)or false
-    local badge=clamp(w*.16,14,23);local by=y+h-badge-4;local count=math.min(2,#ps)
+    local badge=clamp(w*.16,14,23)
+    local by=y+(badgeBottom or h-4)-badge-2
+    local badgeWidth=(badgeRight or w-4)-4
     love.graphics.push('all')
-    for i=1,count do
-        local bx=x+4+(i-1)*(badge+3)
-        love.graphics.setColor(.018,.027,.038,.94);love.graphics.rectangle('fill',bx-1,by-1,badge+2,badge+2,3,3)
-        tint(c,i==1 and .95 or .66);FX.glyph(ps[i],bx,by,badge,clock)
+    if publicFaceDown then
+        if badgeWidth>=badge+2 then
+            love.graphics.setColor(.018,.027,.038,.94)
+            love.graphics.rectangle('fill',x+3,by,badge+2,badge+2,3,3)
+            tint(c,.95);FX.glyph(ps[1],x+4,by+1,badge,clock)
+        end
+    else
+        drawBadges(r,ps,x+4,by,badgeWidth,badge,c)
     end
-    if#ps>2 and r.text then r:text('+'..(#ps-2),x+5+count*(badge+3),by+2,math.min(13,badge*.7),c,28,'left')end
     if publicFaceDown then
         tint(c,.45);love.graphics.setLineWidth(1)
         love.graphics.line(x+7,y+h*.18,x+w*.5,y+h*.29,x+w-7,y+h*.18)
@@ -302,7 +383,7 @@ function FX.cardOverlay(r,card,x,y,w,h,options)
         local record=selectable and Actions and Actions.record and Actions.record(r.model,card)
         local count=record and type(record.options)=='table'and#record.options or 0
         local selected=r.model.cardActionSheet and r.model.cardActionSheet.objectId==card.id
-        local cx,cy=x+w-15,y+15;local alpha=selectable and 1 or .42
+        local cx,cy=x+w-15,y+(headerH and math.min(h-13,headerH+11) or 15);local alpha=selectable and 1 or .42
         if selected then tint(c,.13);love.graphics.circle('fill',cx,cy,14)end
         tint(c,alpha);ring(cx,cy,10,.48,-.4);love.graphics.setLineWidth(1.8)
         love.graphics.line(cx,cy+5,cx,cy-4,cx-4,cy-7);love.graphics.line(cx,cy-1,cx+5,cy-5)

@@ -2,23 +2,28 @@
 local json=require('lib.json');local calls={}
 package.preload['app.api']=function()
  local API={escape=function(v)return tostring(v)end}
- function API.new()return{escape=API.escape,routeGeneration=0,request=function(_,service,method,path,body,callback)calls[#calls+1]={service=service,path=path,body=body,callback=callback}end,update=function()end,quit=function()end,setNativeSession=function()end,status=function()return{oldestSeconds=0}end}end
+ function API.new()return{escape=API.escape,routeGeneration=0,request=function(_,service,method,path,body,callback)
+  if method=='POST' then calls[#calls+1]={service=service,path=path,body=body,callback=callback} end
+ end,update=function()end,quit=function()end,setNativeSession=function()end,status=function()return{oldestSeconds=0}end}end
  return API
 end
 local S=require('lib.Slab');local Model=require('app.model');local Renderer=require('app.renderer');local View=require('app.view');local Preferences=require('app.preferences');local Layout=require('app.layout');local Table=require('app.table')
+assert(love.filesystem.load('application-main.lua'))()
+local pointer={move=love.mousemoved,press=love.mousepressed,release=love.mousereleased}
+love.mousemoved,love.mousepressed,love.mousereleased=nil,nil,nil
 local out=assert(os.getenv('L2G_MECHANICS_CLIENT_OUTPUT'));local count=tonumber(os.getenv('L2G_MECHANICS_CLIENT_COUNT'))or 10
 local variant=os.getenv('L2G_MECHANICS_CLIENT_VARIANT')or'equal';local stackCount=tonumber(os.getenv('L2G_MECHANICS_CLIENT_STACK'))or 0
-local m,r,v,p,runner,Cursor,Window,Region;local wake,clock,frame=0,0,0;local mouse={x=1,y=1};local down={};local keys={};local buttons,inputs,choices,choiceRegions,zoneCards={},{},{},{},{}
+local m,r,v,p,runner,Cursor,Region;local wake,clock,frame=0,0,0;local mouse={x=1,y=1};local down={};local keys={};local buttons,inputs,choices,choiceRegions,zoneCards={},{},{},{},{}
+local stoppingHUD
 local checks,shots,captures,metrics={},{},{},{};local phase='warm';local frameTimes,fieldTimes,drawTimes,hitTimes={},{},{},{};local drawTotal,fieldTotal=0,0;local evidenceType='synthetic_rendering_fixture'
 local function check(ok,label)assert(ok,label);checks[#checks+1]=label end
 local function write(name,value)local f=assert(io.open(out..'/'..name,'w'));f:write(json.encode(value));f:close()end
 local function wait(s)wake=clock+(s or .07);coroutine.yield()end
 local function bounds()local x,y,w,h=Cursor.GetItemBounds();local dx,dy=Region.Transform(nil,0,0);return{x=x+dx,y=y+dy,w=w,h=h}end
-local function move(box)local ox,oy=mouse.x,mouse.y;mouse.x=(box.x+box.w/2)*Layout.scale;mouse.y=(box.y+box.h/2)*Layout.scale;S.OnMouseMoved(mouse.x,mouse.y,mouse.x-ox,mouse.y-oy);r:mousemoved(mouse.x/Layout.scale,mouse.y/Layout.scale)end
+local function move(box)local ox,oy=mouse.x,mouse.y;mouse.x=(box.x+box.w/2)*Layout.scale;mouse.y=(box.y+box.h/2)*Layout.scale;pointer.move(mouse.x,mouse.y,mouse.x-ox,mouse.y-oy,false)end
 local function click(box,button)
- button=button or 1;assert(box,'Actual UI target absent');move(box);wait(.05);down[button]=true;S.OnMousePressed(mouse.x,mouse.y,button,false,1)
- if S.IsVoidHovered()then r:mousepressed(mouse.x/Layout.scale,mouse.y/Layout.scale,button,1)end
- wait(.05);down[button]=false;S.OnMouseReleased(mouse.x,mouse.y,button,false,1);r:mousereleased(mouse.x/Layout.scale,mouse.y/Layout.scale,button);wait(.14)
+ button=button or 1;assert(box,'Actual UI target absent');move(box);wait(.05);down[button]=true;pointer.press(mouse.x,mouse.y,button,false,1)
+ wait(.05);down[button]=nil;pointer.release(mouse.x,mouse.y,button,false,1);wait(.14)
 end
 local function scrollSelectable(label)
  for _=1,40 do
@@ -80,12 +85,12 @@ local function scenario()
     local selected=zoneCards[last.id]
     check(selected~=nil,'Actual UUID search reaches the final captured native instance')
     snapshot('native-last-instance-'..playerIndex)
-    local before=#calls;local offered=m:canSelect(last.id);click(selected)
+    local before=#calls;local offered=m:canSelect(last.id);click(selected,offered and 1 or 3)
     if offered then
      check(#calls==before+1 and calls[#calls].body.type=='uuid'and calls[#calls].body.value==last.id,'Captured native offered instance forwards only its exact UUID')
      m.actionBusy=false;m.answeredPrompt=nil
     else
-     check(m.inspectCard and m.inspectCard.id==last.id and#calls==before,'Without an offered native target, selecting the final instance only inspects that exact object')
+     check(m.inspectCard and m.inspectCard.id==last.id and#calls==before,'Middle-clicking the unoffered final instance inspects its exact object without a native action')
      snapshot('native-last-inspection-'..playerIndex);click(buttons['Close details'])
     end
     metrics.nativeInstanceSelections[#metrics.nativeInstanceSelections+1]={playerId=player.id,objectId=last.id,battlefieldCount=#field}
@@ -144,15 +149,13 @@ local function scenario()
   m.actionBusy=false;m.answeredPrompt=nil;m.game.prompt={id=sequence+1,type='uncovered_fixture',message='Unknown native-shaped prompt stays unanswered',choices={}}
   before=#calls;wait(.15);check(#calls==before,'Unknown prompt is never answered by choosing a guessed fallback')
   m.api.status=function()return{oldestSeconds=3,pending=1,controlPending=true}end;m.concedePending=true
-  wait(.15);snapshot('waiting-diagnostic');click(buttons.Settings);check(m.settingsOpen,'Settings input remains responsive while a synthetic engine response is pending')
+  wait(.15);snapshot('waiting-diagnostic');click(buttons['Table options']);click(buttons['Presentation settings']);check(m.settingsOpen,'Settings input remains responsive while a synthetic engine response is pending')
   snapshot('waiting-settings');click(buttons.Close);check(not m.settingsOpen and m.game.running,'Closing Settings does not fabricate a native game outcome')
   m.concedePending=false;m.api.status=function()return{oldestSeconds=0,pending=0}end
   m.game.execution={stopRequested=true,terminationConfirmed=false,threadAlive=true,status='stop_requested'};wait(.2)
-  local stopping=false;for _,name in ipairs(Window.GetStackDebug())do if name:find('engine-transport-status',1,true)then stopping=true end end
-  check(stopping and not m:prompt(),'Unconfirmed native stop remains visible and suppresses obsolete input after HTTP completion')
+  check(stoppingHUD and not m:prompt(),'Unconfirmed native stop remains visible and suppresses obsolete input after HTTP completion')
   snapshot('native-stop-unconfirmed');m.game.execution.terminationConfirmed=true;m.game.execution.threadAlive=false;wait(.2)
-  stopping=false;for _,name in ipairs(Window.GetStackDebug())do if name:find('engine-transport-status',1,true)then stopping=true end end
-  check(not stopping and m.game.running,'Thread termination metadata retires waiting UI without inventing a game result')
+  check(not stoppingHUD and m.game.running,'Thread termination metadata retires waiting UI without inventing a game result')
  end
  local mutateHosts={}
  for _,player in ipairs(m.game and m.game.players or{})do for _,card in ipairs(player.battlefield or{})do if card.mutate and#(card.mutate.components or{})>0 then mutateHosts[#mutateHosts+1]=card end end end
@@ -160,7 +163,7 @@ local function scenario()
   if evidenceType=='synthetic_rendering_fixture'then m.game.execution=nil;m.game.prompt=nil end
   m.actionBusy=false;m.zoneView=nil;m.settingsOpen=false;m.inspectCard=nil;wait(.15)
   local hit;for _,entry in ipairs(r.hits)do if entry.card and entry.card.id==mutateHost.id and entry.kind=='permanent'then hit=entry;break end end
-  click(hit,2);check(m.inspectCard and m.inspectCard.id==mutateHost.id,'Merged permanent opens its actual host inspector')
+  click(hit,3);check(m.inspectCard and m.inspectCard.id==mutateHost.id,'Merged permanent opens its actual host inspector')
   local top;for _,component in ipairs(mutateHost.mutate.components)do if component.id==mutateHost.mutate.topId then top=component end end;top=top or mutateHost.mutate.components[1]
   local label=(top.id==mutateHost.mutate.topId and'Top · 'or'Component · ')..top.name;local control=scrollSelectable(label);local before=#calls;click(control)
   check(v.inspectMutateComponentId==top.id and m.inspectCard.id==mutateHost.id and#calls==before,'Inspecting a mutate component keeps one host object and sends no independent target action')
@@ -175,24 +178,36 @@ local function scenario()
  print('MECHANICS CLIENT UI COMPLETE '..#checks..' checks');love.event.quit(0)
 end
 function love.load()
- S.SetINIStatePath(nil);S.Initialize({},true);Cursor=require('lib.Slab.Internal.Core.Cursor');Window=require('lib.Slab.Internal.UI.Window');Region=require('lib.Slab.Internal.UI.Region')
+ S.SetINIStatePath(nil);S.Initialize({},true);Cursor=require('lib.Slab.Internal.Core.Cursor');Region=require('lib.Slab.Internal.UI.Region')
  love.mouse.getPosition=function()return mouse.x,mouse.y end;love.mouse.isDown=function(b)return down[b]==true end;love.keyboard.isDown=function(k)return keys[k]==true end
  m=Model.new();m.loaded=true;m.settingsLoaded=true;m.catalogHealth={ready=false};m.settings.showCardArt=false;m.settings.skybox='Off';m.settings.sfxEnabled=false;m.settings.particles=false;m.settings.animations=false;m.settings.showTooltips=true;m.settings.windowMode='Windowed';m.settings.resolution='1440x900';m.settings.uiScale=1;m.settings.renderScale=1;m.settings.vsync=false;m.settings.frameLimit=0
  r=Renderer.new(m);v=View.new(S,m,r);p=Preferences.new(m,S,r);v.preferences=p;p.appliedLoaded=true;p:apply(true)
+ -- Bind the actual main input callbacks to the instrumented benchmark scene.
+ for _,handler in pairs(pointer)do
+  for i=1,30 do
+   local name=debug.getupvalue(handler,i);if not name then break end
+   if name=='renderer' then debug.setupvalue(handler,i,r) elseif name=='view' then debug.setupvalue(handler,i,v) end
+  end
+ end
  local scopes={};local push,pop=S.PushID,S.PopID
  S.PushID=function(id)scopes[#scopes+1]=id;return push(id)end;S.PopID=function()scopes[#scopes]=nil;return pop()end
  for _,name in ipairs({'Button','Input','TextSelectable'})do local old=S[name];S[name]=function(label,options)local result=old(label,options);(name=='Input'and inputs or name=='TextSelectable'and choices or buttons)[label]=bounds();if name=='TextSelectable'then local x,y,w,h=Region.GetBounds();choiceRegions[label]={x=x,y=y,w=w,h=h}end;if name=='Button'then local id=tostring(scopes[#scopes]or''):match('^zone%-card%-(.*)$');if id then zoneCards[id]=bounds()end end;return result end end
  local oldField=Table.field;Table.field=function(...)local began=love.timer.getTime();oldField(...);fieldTotal=fieldTotal+love.timer.getTime()-began end
  local oldDraw=r.drawPermanent;r.drawPermanent=function(self,...)local began=love.timer.getTime();local value=oldDraw(self,...);drawTotal=drawTotal+love.timer.getTime()-began;return value end
+ local strong=r.strong
+ function r:strong(label,...)
+  if label=='Stopping game · waiting for engine confirmation' then stoppingHUD=true end
+  return strong(self,label,...)
+ end
  runner=coroutine.create(scenario)
 end
 function love.update(dt)
  clock=clock+dt;frame=frame+1;assert(clock<50,'UI fixture deadline exceeded');p:update();S.Update(dt);r:update(dt)
- if clock>=wake and coroutine.status(runner)~='dead'then local ok,err=coroutine.resume(runner);assert(ok,err)end
+ if clock>=wake and coroutine.status(runner)~='dead'then local ok,err=coroutine.resume(runner);if not ok then error(debug.traceback(runner,tostring(err))) end end
  buttons={};inputs={};choices={};choiceRegions={};zoneCards={};v:build();r.uiHovered=not S.IsVoidHovered()
 end
 function love.draw()
- drawTotal=0;fieldTotal=0;local began=love.timer.getTime();p:beginFrame();r:draw();p:endScene();S.Draw({DeferOverlays=true})
+ drawTotal=0;fieldTotal=0;stoppingHUD=false;local began=love.timer.getTime();p:beginFrame();r:draw();p:endScene();S.Draw({DeferOverlays=true})
  love.graphics.push();love.graphics.scale(Layout.scale);r:drawForeground();love.graphics.pop();S.DrawOverlays();p:endFrame();love.graphics.flushBatch()
  if phase=='measure'then
   frameTimes[#frameTimes+1]=love.timer.getTime()-began;fieldTimes[#fieldTimes+1]=fieldTotal;drawTimes[#drawTimes+1]=drawTotal

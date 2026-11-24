@@ -50,6 +50,28 @@ host:refreshRoom();host.calls[#host.calls].callback(snapshot(host,2));check(host
 host:selectRoomDeck('mine');local selected=host.calls[#host.calls]
 check(selected.body.deck.main[1].count==99 and host.decks[1].main[1].count==99,'Seat deck submission preserves the saved deck composition')
 selected.callback(snapshot(host,4))
+do
+    local organiser=client('Host')
+    organiser.roomGeneration=1
+    local lobby=snapshot(organiser,1)
+    lobby.room.config={kind='constructed',format='Commander',maxPlayers=4}
+    lobby.room.members[3]={id='bot-3',name='XMage Bot 1',bot=true}
+    organiser:applyRoomSnapshot(lobby,1,1)
+    organiser.roomDeckId='human-choice'
+    check(organiser:selectRoomDeck('mine','bot-3'),'Host can choose a saved Commander deck for one bot')
+    local submitted=organiser.calls[#organiser.calls]
+    check(submitted.body.botSeatId=='bot-3' and submitted.body.deck.commander[1].name=='Commander'
+        and organiser.roomDeckId=='human-choice','Bot deck request carries its own commander and preserves the human selection')
+    submitted.callback(lobby)
+    local before=#organiser.calls
+    check(not organiser:selectRoomDeck('mine','Guest') and not organiser:selectRoomDeck('mine','removed'),'Human and removed seats cannot receive a bot choice')
+    organiser.decks[1].format='Modern'
+    check(not organiser:selectRoomDeck('mine','bot-3'),'Bot picker rejects a deck from a different format')
+    organiser.decks[1].format='Commander';organiser.roomParticipantId='Guest'
+    check(not organiser:selectRoomDeck('mine','bot-3'),'Guest cannot replace a bot deck')
+    organiser.roomParticipantId='Host';organiser.room.phase='starting'
+    check(not organiser:selectRoomDeck('mine','bot-3') and #organiser.calls==before,'Picker opened in an older lobby cannot change a starting match')
+end
 local draft={id='native-draft',revision=2,status='drafting',packNumber=1,pickNumber=2,packCount=3,pickToken='native-pick-token',pack={{id='host-card',name='Host pack card'}},pool={{id='taken',name='Taken card'}}}
 host:refreshRoom();host.calls[#host.calls].callback(snapshot(host,5,'drafting',clone(draft)))
 local other=clone(draft);other.pack={{id='guest-card',name='Guest pack card'}};other.pickToken='guest-token'

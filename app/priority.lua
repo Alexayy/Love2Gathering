@@ -9,6 +9,16 @@ Priority.combatSteps={{label='Beginning of combat',steps={'BEGIN_COMBAT'}},{labe
     {label='After combat damage',steps={'COMBAT_DAMAGE'}},{label='End of combat',steps={'END_COMBAT'}}}
 local function copy(value) return json.decode(json.encode(value)) end
 local function contains(items,value) for _,item in ipairs(items or {}) do if item==value then return true end end;return false end
+function Priority.passChoice(prompt)
+    if not prompt or prompt.type~='select' then return nil end
+    local role=prompt.combat and prompt.combat.role
+    if not (prompt.priority==true or role=='attackers' or role=='blockers') then return nil end
+    for _,choice in ipairs(prompt.choices or {}) do
+        if choice.id=='done' and choice.responseType=='boolean' and choice.value==true and choice.selectable~=false then
+            return choice
+        end
+    end
+end
 function Priority.stopPresentation(model,group,side)
     local state=(model.game or{}).priority or{}
     local configured=type(state.stops)=='table'and type(state.stops[side])=='table'

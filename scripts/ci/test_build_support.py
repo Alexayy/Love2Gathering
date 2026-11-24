@@ -243,7 +243,7 @@ class PayloadTests(unittest.TestCase):
                          'decks/preconstructed/LICENSE-MTGJSON.txt', 'decks/preconstructed/manifest.json',
                          'bridge/target/xmage-bridge-1.0.0.jar', 'bridge/card-map.json',
                          'scripts/download-card-images.py', 'scripts/starter-image-pack.py', 'service/image_packs.py', 'assets/card-art/full-art-basics.json',
-                         'assets/icons/thb.png', 'engine/mage/LICENSE.txt', 'README.md',
+                         'assets/icons/thb.png', 'assets/battlefield/courtyard.jpg', 'engine/mage/LICENSE.txt', 'README.md',
                          'LICENSE', 'CREDITS.md', 'THIRD_PARTY_NOTICES.md',
                          'licenses/Roboto-Apache-2.0.txt',
                          'assets/fonts/Beleren2016-Bold.ttf', 'assets/fonts/LICENSE-DejaVu.txt',
@@ -253,7 +253,7 @@ class PayloadTests(unittest.TestCase):
             catalog = root / 'decks/preconstructed/catalog.jsonl.gz'
             catalog.write_bytes(gzip.compress(b'{"_meta":{"version":1}}\n{"id":"precon:fixture"}\n'))
             for name in ('decks/preconstructed/unrelated.jsonl.gz', 'decks/backup.tar.gz',
-                         'decks/app.sqlite', 'decks/user.log', 'decks/build_library.py'):
+                         'decks/app.sqlite', 'decks/user.log', 'decks/build_library.py', 'assets/battlefield/source.png'):
                 (root / name).write_bytes(b'must not ship')
             source = root / 'cards.jsonl'; source.write_text(json.dumps(CARD) + '\n')
             with zipfile.ZipFile(root / 'bridge/target/xmage-bridge-1.0.0.jar', 'w') as archive:
@@ -266,7 +266,7 @@ class PayloadTests(unittest.TestCase):
                 archive.writestr('META-INF/maven/org.xerial/sqlite-jdbc/LICENSE.zentus','native dependency fixture')
             selected=[root/name for name in ('assets/fonts/Beleren2016-Bold.ttf','assets/fonts/LICENSE-DejaVu.txt','assets/card-backs/classic-magic.jpg','assets/card-backs/mystic-eye.png')]
             from contextlib import redirect_stdout
-            with patch.object(packager, 'ROOT', root), patch.object(packager, 'asset_paths', return_value=selected), \
+            with patch.object(packager, 'ROOT', root), \
                     patch.object(packager.subprocess, 'check_output', return_value='a' * 40), redirect_stdout(io.StringIO()):
                 payload = packager.common_payload(Path(tmp) / 'dist', source,channel='stable',branch='master',tag='v'+packager.VERSION)
             self.assertTrue((payload / 'scripts/starter-image-pack.py').is_file())
@@ -284,6 +284,8 @@ class PayloadTests(unittest.TestCase):
             for name in ('preconstructed/unrelated.jsonl.gz', 'backup.tar.gz', 'app.sqlite', 'user.log', 'build_library.py'):
                 self.assertFalse((payload / 'decks' / name).exists())
             with zipfile.ZipFile(payload/'app.love')as archive:
+                self.assertEqual(archive.read('assets/battlefield/courtyard.jpg'),b'fixture')
+                self.assertNotIn('assets/battlefield/source.png',archive.namelist())
                 info=json.loads(archive.read('build-info.json'))
                 self.assertEqual(info['version'],packager.VERSION);self.assertEqual(info['channel'],'stable')
                 self.assertEqual(info['revision'],'a'*40);self.assertEqual(info['tag'],'v'+packager.VERSION)

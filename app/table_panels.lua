@@ -2,6 +2,7 @@ local Layout=require('app.layout')
 local Window=require('lib.Slab.Internal.UI.Window')
 local Rich=require('app.richtext')
 local Log=require('app.log')
+local TablePresentation=require('app.table_presentation')
 local Panels={}
 local function layout(v,w,h)return v.r.tableLayout or Layout.table(w,h,v.m)end
 function Panels.toolbar(v,w,h)
@@ -12,9 +13,14 @@ function Panels.toolbar(v,w,h)
     if S.Button('Table options',{W=170,H=36,Active=v.tableOptionsOpen==true})then v.tableOptionsOpen=not v.tableOptionsOpen end
     S.EndWindow()
     local prompt=m.prompt and m:prompt();local undo=not m.replay and prompt and prompt.undoChoice
-    if undo then
-        v:window('native-mana-undo',w-472,15,162,43,nil,{AllowFocus=false,Border=0,BgColor={0,0,0,0}})
-        if S.Button(undo.label or'Undo last mana action',{W=154,H=36,Disabled=m.actionBusy or m.priorityBusy or m.roomDisconnected})then m:answerChoice(undo)end
+    if type(undo)=='table' and undo.id then
+        v:window('native-mana-undo',w-176,53,160,24,nil,{AllowFocus=false,Border=0,BgColor={0,0,0,0}})
+        local label=undo.label or 'Undo last mana action'
+        local disabled=m.actionBusy or m.priorityBusy or m.roomDisconnected or undo.selectable==false
+        local image=v.r.assets:buttonImage('undo','Undo mana',154,24,{font=v.r.fonts[14],iconSize=17,color=disabled and v.r.colors.muted or nil})
+        S.PushID(require('app.card_choices').promptKey(m,prompt)..':'..tostring(undo.id))
+        if S.Button(label,{Image={Image=image},W=154,H=24,Tooltip=label,Disabled=disabled}) then m:answerChoice(undo) end
+        S.PopID()
         S.EndWindow()
     end
     if not v.tableOptionsOpen then return end
@@ -32,7 +38,12 @@ function Panels.toolbar(v,w,h)
     end
     if v.r.tableCamera then
         button('Fit Table',function()v.r.tableCamera:overview();v.tableOptionsOpen=false end)
-        button('My Battlefield',function()for i,p in ipairs(v.r.multiplayerSeats or{})do if p.human then v.r.tableCamera:focus(i);break end end;v.tableOptionsOpen=false end)
+        button('My Battlefield',function()
+            for i,p in ipairs(v.r.multiplayerSeats or{})do
+                if TablePresentation.isLocalSeat(m.game,p) then v.r.tableCamera:focus(i);break end
+            end
+            v.tableOptionsOpen=false
+        end)
     end
     button(m.logOpen==true and'Close history drawer'or'Open history drawer',function()m.logOpen=m.logOpen~=true;m:setUIOption('logOpen',m.logOpen)end)
     local prefs=(m.uiLayout or{}).matchPrefs or{}
@@ -48,17 +59,23 @@ function Panels.stack(v,w,h)
     local m,S,r=v.m,v.S,v.r;local stack=m.game and m.game.stack or{}
     r.stackRows={};r.hoverStackId=nil;m.stackHits={};m.stackHover=nil
     local rail=layout(v,w,h).rail;if not rail or m.stackOpen==false then return end
-    v:window('docked-stack',rail.x,rail.y,rail.w-14,rail.h-14,nil,{AllowMove=false,AllowResize=false,ResetPosition=true,ResetSize=true,BgColor={.019,.032,.046,.98}})
+    v:window('docked-stack',rail.x,rail.y,rail.w-14,rail.h-14,nil,{AllowFocus=false,AllowMove=false,AllowResize=false,ResetPosition=true,ResetSize=true,BgColor={.019,.032,.046,.98}})
     local width=rail.w-42
     S.PushFont(r.fonts[20]);S.Text('STACK · '..#stack,{Color=r.colors.text});S.PopFont();S.NewLine()
     if #stack==0 then S.Textf('The stack is empty. Casts and abilities appear here; hovering shows their exact targets.',{W=width,Color=r.colors.muted});S.EndWindow();return end
     S.Textf('Hover an object for its connections. First resolves next.',{W=width,Color=r.colors.muted});S.NewLine()
-    S.BeginListBox('stack-rail-scroll',{W=width,H=math.max(120,rail.h-118),AlwaysShowScrollBarY=true})
+    local listX,listY=S.GetCursorPos({Absolute=true})
+    listX,listY=Window.TransformPoint(listX,listY)
+    local clip={x=listX,y=listY,w=width,h=math.max(56,rail.y+rail.h-listY-14)}
+    S.BeginListBox('stack-rail-scroll',{W=width,H=clip.h,ScrollStep=76,AlwaysShowScrollBarY=true})
     for i,object in ipairs(stack)do
         S.PushID('native-stack-'..tostring(object.id or i))
-        local x,y=S.GetCursorPos({Absolute=true});local source=type(object.sourceCard)=='table'and object.sourceCard or{name=object.sourceName or object.name or'Ability'}
+        local x,y=S.GetCursorPos({Absolute=true})
+        local source=type(object.sourceCard)=='table' and object.sourceCard.id and object.sourceCard or object
         local cardW,cardH=58,81;local art=require('app.card_choices').cardImage(v,source,cardW,cardH)
-        if S.Button('Inspect '..tostring(object.sourceName or object.name or'object'),{W=cardW,H=cardH,Image=art and{Image=art}or nil,Tooltip=source.name})then m.inspectCard=source;m.commanderDetails=nil end
+        local context={stackId=object.id}
+        if S.Button('Preview '..tostring(object.sourceName or object.name or'object'),{W=cardW,H=cardH,Image=art and{Image=art}or nil,
+                Tooltip='Right-click to pin · Middle-click for details',Disabled=v.cardChoiceModal~=nil})then m:pinTableCard(source,context)end
         S.Indent(cardW+10);S.SetCursorPos(x+cardW+10,y,{Absolute=true})
         S.Text(i==1 and'NEXT TO RESOLVE'or('STACK '..i),{Color=i==1 and r.colors.gold or r.colors.muted})
         S.Textf(object.sourceName or object.name or'Ability',{W=width-cardW-18,Color=r.colors.text})
@@ -74,12 +91,14 @@ function Panels.stack(v,w,h)
         if type(object.paidOptions)=='table'and#object.paidOptions>0 then S.Textf('Paid options · '..table.concat(object.paidOptions,', '),{W=width-12,Color=r.colors.gold})end
         local _,by=S.GetCursorPos({Absolute=true});local sx,sy=Window.TransformPoint(x,y)
         local hit={id=object.id,stackId=object.id,x=sx,y=sy,w=width-10,h=math.max(82,by-y),
-            visible=true,clip={x=rail.x+8,y=rail.y+76,w=rail.w-22,h=rail.h-92},sourceId=object.sourceId,sourceCard=source,targets=object.targets or{}}
+            visible=true,clip=clip,sourceId=object.sourceId,sourceCard=source,targets=object.targets or{},context=context}
         hit.visible=hit.y+hit.h>=hit.clip.y and hit.y<=hit.clip.y+hit.clip.h
         r.stackRows[object.id or tostring(i)]=hit;m.stackHits[#m.stackHits+1]=hit
         local mx,my=Layout.mouse()
         if hit.visible and not Window.IsObstructedAtMouse()and mx>=hit.x and mx<=hit.x+hit.w and my>=math.max(hit.y,hit.clip.y)and my<=math.min(hit.y+hit.h,hit.clip.y+hit.clip.h)then
             m.stackHover=hit;r.hoverStackId=object.id
+            if S.IsMouseClicked(2)then m:pinTableCard(source,context)
+            elseif S.IsMouseClicked(3)then m:inspectTableCard(source,context)end
         end
         S.Separator();S.NewLine();S.PopID()
     end
@@ -98,7 +117,12 @@ function Panels.log(v,w,h)
         if source then
             local art=require('app.card_choices').cardImage(v,source,36,50)
             S.Image('history-source',{Image=art or v.r.assets:iconImage(entry.icon,20),W=art and 15 or 20,H=20,Tooltip=source.name})
-            if S.IsControlHovered()then m.logHover={card=source}end
+            if S.IsControlHovered()then
+                local context={history=true,entry=entry.raw}
+                m.logHover={card=source,context=context}
+                if S.IsMouseClicked(2)then m:pinTableCard(source,context)
+                elseif S.IsMouseClicked(3)then m:inspectTableCard(source,context)end
+            end
         end
         Rich.slab(v,'history-entry',entry.text,box.w-45,{size=14,color=entry.color,maxLines=3})
         S.PopID();S.NewLine()
@@ -124,7 +148,7 @@ function Panels.commander(v,w,h)
             Rich.slab(v,'cmd-offer-'..tostring(offer.id),tostring(offer.label or'Cast')..' '..tostring(offer.manaCost or''),width-42,{size=16,color=v.r.colors.accent})
         end
         local source=cmd.sourceCard or{id=cmd.id,name=cmd.name}
-        if S.Button('Inspect commander',{W=210,H=32})then m.inspectCard=source;m.commanderDetails=nil end
+        if S.Button('Inspect commander',{W=210,H=32})and m:inspectTableCard(source,{commanderPlayerId=player.id})then m.commanderDetails=nil end
         S.Separator();S.NewLine();S.PopID()
     end
     S.Text('Commander combat damage received',{Color=v.r.colors.gold});S.NewLine()

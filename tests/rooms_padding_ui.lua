@@ -6,6 +6,7 @@ end
 package.preload['app.api']=function()return{escape=function(s)return s end,new=function()return{catalogPort=17490,request=function()end,update=function()end,quit=function()end}end}end
 local S=require('lib.Slab');local Model=require('app.model');local Renderer=require('app.renderer');local View=require('app.view');local Preferences=require('app.preferences');local Layout=require('app.layout');local Region=require('lib.Slab.Internal.UI.Region');local json=require('lib.json')
 local m,r,v,prefs,runner,Cursor;local checks,shots={},{};local fields,boxes,buttons={}, {},{};local frames=0
+local botSubmission
 local mouse={x=1,y=1};local down=false
 local function check(ok,label)assert(ok,label);checks[#checks+1]=label;print('ROOM PADDING PASS '..label)end
 local function wait(n)for _=1,n or 4 do coroutine.yield()end end
@@ -20,7 +21,7 @@ local function shot(name)
  end);wait(4)
 end
 local function connected()
- m.roomParticipantId='fixture-host';m.roomDeckId='fixture-deck'
+ m.roomParticipantId='fixture-host';m.roomConnectionId='ui-fixture';m.roomDeckId='fixture-deck'
  m.room={name='Friends table',hostId='fixture-host',phase='lobby',canStart=true,inviteCode='L2G1-FIXTURE-INVALID-NOT-A-CREDENTIAL',config={kind='constructed',format='Commander',maxPlayers=4,commanderDamage=false},members={{id='fixture-host',name='Aleksa',connected=true,ready=false},{id='fixture-bot',name='XMage Bot 1',bot=true,ready=true}}}
 end
 local function mode(w,h,scale)
@@ -41,6 +42,14 @@ local function scenario()
  local close=buttons['Close room'];check(close and close.y+close.h<select(2,Layout.dimensions())-12,'Host actions remain above the bottom window edge')
  check(buttons['Copy code'].h>=34 and fields['invite-code'].h>=34,'Invitation code and copy action have matching readable heights')
  shot('connected-1440')
+ click(assert(buttons['Choose deck']))
+ check(v.deckSelection and v.deckSelection.id=='room-bot-deck-fixture-bot','Host opens the deck picker for the highlighted bot seat')
+ click(assert(buttons['Krenko practice']))
+ check(not v.deckSelection and botSubmission and botSubmission.botSeatId=='fixture-bot' and
+     botSubmission.deck.commander[1].name=='Krenko, Mob Boss' and m.roomDeckId=='fixture-deck','Selecting a deck sends its commander to the right bot and preserves the host deck')
+ m.roomParticipantId='fixture-guest';wait(5)
+ check(not buttons['Choose deck'],'Guests can read the seat list without a bot deck editor')
+ m.roomParticipantId='fixture-host';wait(5)
  mode(1440,900,1.25);shot('connected-scaled')
  check(Layout.scale==1.25,'The room rendering check uses actual UI scale 1.25')
  mode(1120,720,1.25);wait(5)
@@ -55,6 +64,16 @@ function love.load()
  love.mouse.getPosition=function()return mouse.x,mouse.y end;love.mouse.isDown=function(button)return button==1 and down end
  m=Model.new();m.page='rooms';m.catalogHealth={ready=false};m.roomCapabilities={game={formats={{id='Commander',minPlayers=2,maxPlayers=6}},minPlayers=2,maxPlayers=6},draft={}}
  m.decks={{id='fixture-deck',name='Ayara practice',format='Commander',main={},commander={},sideboard={}}}
+ m.decks[2]={id='krenko-test',name='Krenko practice',format='Commander',main={},commander={{name='Krenko, Mob Boss',count=1}},sideboard={}}
+ local original=m.request
+ function m:request(service,method,path,body,callback,...)
+  if service=='room' and method=='POST' and path=='/client/rooms/ui-fixture/deck' then
+   botSubmission=body
+   callback({room=self.room,connectionId=self.roomConnectionId,participantId=self.roomParticipantId})
+   return true
+  end
+  return original(self,service,method,path,body,callback,...)
+ end
  r=Renderer.new(m);v=View.new(S,m,r);prefs=Preferences.new(m,S,r);v.preferences=prefs
  local begin=S.BeginListBox;S.BeginListBox=function(id,options)
   local x,y=S.GetCursorPos({Absolute=true});local dx,dy=Region.Transform(nil,0,0);boxes[id]={x=x+dx,y=y+dy,w=options.W,h=options.H};return begin(id,options)

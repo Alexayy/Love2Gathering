@@ -18,10 +18,11 @@ local function fixture(crowded,exile,count)
  count=count or 4;local players={};local offered={}
  for i=1,count do
   local player={id='p'..i,name=i==1 and'Local Planeswalker'or'Synthetic opponent '..i,human=i==1,isHuman=true,seat=i,life=40,hand={},handCount=7,libraryCount=82,mana={U=3},battlefield={},graveyard={},exile={},command={},commanders={}}
-  for j=1,(crowded and 20 or 6)do player.battlefield[#player.battlefield+1]={id='p'..i..'-land-'..j,name='Plains',type='Basic Land — Plains',type_line='Basic Land — Plains',ownerId=player.id,controllerId=player.id,tapped=j%3==0,colors={},keywords={}}end
-  for j=1,(crowded and 5 or 3)do
+  for j=1,(crowded and 20 or 6)do player.battlefield[#player.battlefield+1]={id='p'..i..'-land-'..j,name='Plains',type='[Land]',supertypes={'Basic'},subtypes='[Plains]',ownerId=player.id,controllerId=player.id,tapped=j%3==0,colors={},keywords={}}end
+  for j=1,(crowded and(i==1 and 13 or 4)or 3)do
    local keywords=({'flying','haste','trample','reach','lifelink'})
-   player.battlefield[#player.battlefield+1]={id='p'..i..'-creature-'..j,name='Presentation fixture '..j,type='Creature',power=tostring(j+1),toughness='4',controllerId=player.id,ownerId=player.id,colors=j==2 and{'R'}or{'G'},currentKeywords={{id=keywords[j],name=keywords[j]}},mechanicCapabilities={},tapped=j==2}
+   local keyword=keywords[(j-1)%#keywords+1]
+   player.battlefield[#player.battlefield+1]={id='p'..i..'-creature-'..j,name='Presentation fixture '..j,type='Creature',power=tostring(j+1),toughness='4',controllerId=player.id,ownerId=player.id,colors=j==2 and{'R'}or{'G'},currentKeywords={{id=keyword,name=keyword}},mechanicCapabilities={},tapped=j==2}
   end
   local cmd={id='commander-'..i,name='Commander fixture '..i,zoneName='Command',commandZonePlays=2,additionalTax={manaCost='{4}'},deaths=1,sourceCard={id='commander-'..i,name='Commander fixture '..i,type='Legendary Creature',power='4',toughness='4'}}
   player.commanders={cmd};player.command={cmd.sourceCard};player.commanderDamageReceived={{commanderId='foe-commander',name='Other commander',amount=7}}
@@ -36,7 +37,7 @@ local function fixture(crowded,exile,count)
  offered[#offered+1]='grave-flashback'
  return{gameId='SYNTHETIC-PRESENTATION-'..tostring(crowded)..'-'..tostring(exile)..'-'..count,revision=1,turn=19,phase='Precombat Main',step='Precombat Main',activePlayerId='p2',priorityPlayerId='p1',players=players,running=true,commanderDamageEnabled=true,
   priority={autoPass=false,passWithOnlyMana=false,manaOnlyPolicySupported=true,canEndTurn=true,stops={own={},opponent={}}},
-  prompt={id=19,type='select',priority=true,actionable=offered,choices={{id='pass',label='Pass / Done',responseType='boolean',value=true}},cardActions={{objectId='grave-flashback',sourceZone='GRAVEYARD',options={{id='native-flashback',label='Flashback',manaCost='{5}{U}{U}',kind='spell'}}},{objectId='exile-spell',sourceZone='EXILED',options={{id='native-exile-spell',label='Cast',manaCost='{R}',kind='spell'}}}}},
+  prompt={id=19,type='select',priority=true,actionable=offered,choices={{id='done',label='Pass / Done',responseType='boolean',value=true}},cardActions={{objectId='grave-flashback',sourceZone='GRAVEYARD',options={{id='native-flashback',label='Flashback',manaCost='{5}{U}{U}',kind='spell'}}},{objectId='exile-spell',sourceZone='EXILED',options={{id='native-exile-spell',label='Cast',manaCost='{R}',kind='spell'}}}}},
   stack={{id='stack-top',sourceId='p2-creature-1',sourceName='Targeted ability',controllerId='p2',kind='ability',sourceCard={name='Source fixture',type='Creature'},targets={{id='p1-creature-1',name='Presentation fixture 1'}},rules='A synthetic targeted ability.'}},log={}}
 end
 local function shot(name)capture=name;wait(.12);shots[#shots+1]=name end
@@ -82,16 +83,44 @@ local function scenario()
  m:openZone('p1','graveyard','Graveyard');wait(.18)
  check(v.zoneCardHits and#v.zoneCardHits>0,'Graveyard grid exposes current native card hit regions')
  shot('graveyard-actions');m.zoneView=nil;wait(.12)
- m:setGame(fixture(true,false));r.cameraIdentity=nil;m.settings.groupEquivalent=false;wait(.15)
+ local normalWidth=r.tableCamera.cellW
+ m:setGame(fixture(true,false));r.cameraIdentity=nil;m.settings.groupEquivalent=true;wait(.15)
+ local camera=r.tableCamera;local view=r.multiplayerView
+ check(camera.cellW>normalWidth and camera.mode=='overview','A 13-permanent row widens the playmats while keeping the overview')
+ local _,bottom=camera:project(camera.width,camera.height)
+ check(bottom<=view.y+view.h+.01,'Fit Table still contains expanded terrain')
+ local edge
+ for j=1,13 do
+  local box=assert(hit('p1-creature-'..j,'permanent'))
+  local rotated=Layout.rotatedSize(box.w,box.h,box.angle or 0)
+  local left=box.x+(box.w-rotated)/2
+  check(not edge or left>edge+1,'Crowded permanent '..j..' has its own visible footprint including tapped width')
+  edge=left+rotated
+ end
+ local hand=assert(hit('hand-7'))
+ camera:focus(3,true);wait(.12)
+ local focusedHand=assert(hit('hand-7'))
+ check(hand.x==focusedHand.x and hand.y==focusedHand.y,'Focusing the wider playmat keeps fixed hand coordinates')
+ shot('wide-permanent-row')
+ local vx,vy=view.x+view.w*.54,view.y+view.h*.24
+ move(vx,vy);r.uiHovered=false;local zoom=camera.zoom;r:wheelmoved(0,1);wait(.1)
+ check(camera.zoom>zoom,'Wheel zoom remains available on the widened playmats')
+ local panX=camera.x;r:mousepressed(vx,vy,2,1);move(vx-120,vy+16);r:mousereleased(vx-120,vy+16,2);wait(.1)
+ check(camera.mode=='free' and camera.x>panX and not m.inspectCard,'Right-drag pans across the widened terrain')
+ camera:overview(true);m.settings.groupEquivalent=false;wait(.15)
  local large=0;for _,player in ipairs(m.game.players)do large=large+#player.battlefield end
- check(large==100,'Crowded fixture contains one hundred distinct native-style permanent IDs')
+ check(large==105,'Crowded fixture contains 105 distinct native-style permanent IDs')
  check(r.handScrollMax>0,'Large hand uses scrolling instead of slivers')
- move(r.handBounds.x+80,r.handBounds.y+40);r.uiHovered=false;r:wheelmoved(0,-2);wait(.1)
- check(r.handScroll>0,'Large hand scroll changes visible native card range')
+ move(r.handBounds.x+80,r.handBounds.y+40);r.uiHovered=false;r:wheelmoved(0,-.25);wait(.1)
+ check(r.handScroll==.75 and hit('hand-1'),'Fractional trackpad scroll preserves the first native card until the next whole position')
+ r:wheelmoved(0,-.25);wait(.1)
+ check(r.handScroll==1.5 and not hit('hand-1') and hit('hand-2'),'Accumulated trackpad deltas shift the hand by one whole card')
  measuring=true;wait(1.5);measuring=false
  shot('crowded-100')
+ local expandedWidth=camera.cellW
  m.settings.groupEquivalent=true;wait(.15);local groups=0;for _,box in ipairs(r.hits)do if box.kind=='group'then groups=groups+1 end end
- check(groups>0,'Equivalent basics can group without grouping unequal tap states');shot('grouped-basics')
+ check(groups>0,'Equivalent basics can group without grouping unequal tap states')
+ check(camera.cellW==expandedWidth,'Regrouping the cards does not move the wide playmats');shot('grouped-basics')
  m.settings.reducedMotion=true;m.settings.ambientKeywordFX=false;m.settings.vfxIntensity=0;wait(.2)
  check(hit('hand-7')or#r.hits>0,'Reduced motion retains card and action hit identities');shot('reduced-motion')
  local sorted={};for i,t in ipairs(timings)do sorted[i]=t end;table.sort(sorted)

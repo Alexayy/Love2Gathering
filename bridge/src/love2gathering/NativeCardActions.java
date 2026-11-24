@@ -18,19 +18,20 @@ final class NativeCardActions {
         }
         return cost.getClass().getSimpleName().replaceAll("([a-z])([A-Z])","$1 $2");
     }
-    static List<Map<String,Object>> offered(EngineBridge.Session session,Collection<String> offered,boolean payment){
+    static List<Map<String,Object>> offered(EngineBridge.Session session,List<Map<String,Object>> choices,NativeManaPayment.Sources payment){
         // getPlayableObjects already ran XMage's full native computation for
         // this exact query. BridgeHuman retains that detached result; do not
         // repeat the expensive simulation for presentation metadata.
-        List<ActivatedAbility> abilities=payment||session.human.nativeOfferedAbilities==null?Collections.emptyList():session.human.nativeOfferedAbilities;
+        List<ActivatedAbility> abilities=payment!=null||session.human.nativeOfferedAbilities==null?Collections.emptyList():session.human.nativeOfferedAbilities;
         List<Map<String,Object>> result=new ArrayList<>();
-        for(String key:offered){
-            UUID id;try{id=UUID.fromString(key);}catch(IllegalArgumentException invalid){continue;}
-            MageObject object=session.knownObject(id);if(object==null)continue;
-            Map<String,Object> card=session.card(object);
-            if(Boolean.TRUE.equals(card.get("hidden")))continue;
+        for(Map<String,Object> choice:choices){
+            if(!"uuid".equals(choice.get("responseType")) || Boolean.FALSE.equals(choice.get("selectable"))
+                    || !(choice.get("card") instanceof Map<?,?> card)
+                    || Boolean.TRUE.equals(card.get("hidden")))continue;
+            String key=choice.get("id").toString();
+            UUID id=UUID.fromString(key);
             Zone zone=session.game.getState().getZone(id);
-            List<ActivatedAbility> nativeOptions=payment?new ArrayList<>(session.human.usableManaAbilities(object,session.game).values()):abilities.stream().filter(a->belongs(session,a,id)).collect(Collectors.toList());
+            Collection<? extends ActivatedAbility> nativeOptions=payment!=null?payment.abilities(id):abilities.stream().filter(a->belongs(session,a,id)).collect(Collectors.toList());
             List<Map<String,Object>> options=new ArrayList<>();
             for(ActivatedAbility ability:nativeOptions){
                 String kind=ability.isManaAbility()?"mana":ability instanceof PlayLandAbility?"land":ability instanceof SpellAbility?"spell":ability instanceof SpecialAction?"special_action":"activated";

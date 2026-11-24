@@ -12,6 +12,20 @@ Modern Magic no longer uses the old damage-assignment ordering procedure. See th
 
 The popup stages changes locally until explicit confirmation. Prompt/game identity and modal guards reject stale releases, background board clicks and answers from a previous opening. Modal transitions clear hidden Slab focus and hot scrolling state. Zone grids consume the complete opening gesture before accepting their first card click, so a library-count press cannot accidentally play the newly overlaid image. Escape dismisses a retained look view; it does not invent cancellation for a required native choice. Native offered Cancel controls remain available.
 
+## Battlefield layout and manual payment
+
+Duel and multiplayer share the same illustration renderer. It uses the exact face’s cached art crop first, then the illustration area of its full scan. A missing image falls back to the card’s title and type icon. Hidden faces keep their card backs. Titles and native P/T stay in screen-readable orientation when the tile tilts. The layout and pointer hit tests use the same rotation. Hands, stack entries and inspection keep their full card format.
+
+Each seat places creatures at the front, with a separate strip for planeswalkers when present. Support permanents and lands occupy the rear left and right. The renderer classifies the current XMage object after continuous effects. A tapped creature land retains normal artwork and a tap symbol, while a tapped noncreature land also has muted artwork.
+
+The duel centers its two life portraits across the combat rows. Multiplayer fits the seats above the screen-space hand. During payment, individual XMage offers keep equivalent lands separately clickable. The right-side panel binds each source, mana ability and floating-mana button to its current prompt choice. The primary pass button also requires an explicit pass choice. The integrated interaction and render fixture runs with `tests/battlefield_style_ui.sh`.
+
+## Table card preview and details
+
+Hover draws a full card in the left part of the screen, independently of camera zoom, and releases it when the pointer leaves. A stationary right-click pins a card. The preview stays available while playing or selecting targets. Exposed stack entries also show their own rules during a card choice. A battlefield preview can show the current type, P/T, counters and granted keywords alongside the printed face. Middle-click opens scrollable details. Closing details returns to the underlying choice or zone with its selection intact.
+
+The model resolves a pin or an open inspector against the viewer’s current XMage projection, including its zone, prompt, stack row or revealed library top. Playback repeats that check on each frame. The renderer uses the full printing scan when available and falls back to text. The preview has no left-button hit region. The integration fixture `tests/table_preview_ui.sh` runs the production mouse callbacks with Starter scans at two UI and render scales.
+
 ## Public zones and face-down inspection
 
 Graveyard/exile and entitled library cards use paged image grids with text search. A select panel sorts basic lands first without changing engine indices or zone ordering. Cards are selectable only when native offered IDs allow them; unavailable visible candidates remain grey. These views never request an unentitled card's name or artwork.

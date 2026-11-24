@@ -1,11 +1,13 @@
 -- Presentation of authoritative projections only. No legality or combat rules.
 local Board={}
 local Dice=require('app.dice')
+local Layout=require('app.layout')
 local Mechanics=require('app.mechanic_fx')
-Board.mechanicBadges=true
 function Board.mechanicTooltip(card)return Mechanics.tooltip(card)end
 function Board.cardUnderlay(r,card,x,y,w,h,options)return Mechanics.cardUnderlay(r,card,x,y,w,h,options)end
-function Board.cardOverlay(r,card,x,y,w,h,options)return Mechanics.cardOverlay(r,card,x,y,w,h,options)end
+function Board.cardOverlay(r,card,x,y,w,h,options,badgeRight,badgeBottom,headerH)
+    return Mechanics.cardOverlay(r,card,x,y,w,h,options,badgeRight,badgeBottom,headerH)
+end
 local palette={{.70,.53,1},{.34,.69,1},{1,.64,.30},{1,.43,.64},{.67,.83,.34},{.45,.82,.88},{.88,.65,.91},{.84,.76,.48},{.55,.73,.98}}
 local function list(value)return type(value)=='table'and value or{}end
 local function id(value)return type(value)=='table'and(value.id or value.targetId or value.playerId)or value end
@@ -134,9 +136,12 @@ function Board.layers(r,card,x,y,w,h,options)
     end
     r:drawCard(card,x,y,w,h,options)
 end
-function Board.playerAuras(r,player,x,y)
-    for i,card in ipairs((r.boardCurses or{})[player.id]or{})do
-        r:drawCard(card,x+(i-1)*32,y,66,92,{kind='attachment'})
+function Board.playerAuras(r,player,x,y,height,lane)
+    local cards=(r.boardCurses or{})[player.id]or{}
+    local h=height or 92;local w=h*66/92
+    local step=lane and math.min(w*.65,(lane-w)/math.max(1,#cards-1))or 32
+    for i,card in ipairs(cards)do
+        r:drawCard(card,x+(i-1)*step,y,w,h,{kind='attachment'})
     end
 end
 function Board.anchor(r,key)
@@ -331,6 +336,17 @@ function Board.links(r)
                 end
             end
         end
+    end
+    local hover=r.model.choiceHover
+    local focus=hover and hover.combatId and (r.cardRects or {})[hover.combatId]
+    if focus and (focus.kind=='permanent' or focus.kind=='attachment') then
+        love.graphics.push('all')
+        if focus.clip then Layout.clip(focus.clip.x,focus.clip.y,focus.clip.w,focus.clip.h) end
+        love.graphics.translate(focus.x+focus.w/2,focus.y+focus.h/2)
+        love.graphics.rotate(focus.angle or 0)
+        tint(r.colors.accent);love.graphics.setLineWidth(3)
+        love.graphics.rectangle('line',-focus.w/2-5,-focus.h/2-5,focus.w+10,focus.h+10,5,5)
+        love.graphics.pop()
     end
     local stackHits={};for _,hit in ipairs(r.model.stackHits or{})do stackHits[hit.id]=hit end
     for key,row in pairs(r.stackRows or{})do stackHits[type(key)=='string'and key or row.id or row.stackId]=row end
