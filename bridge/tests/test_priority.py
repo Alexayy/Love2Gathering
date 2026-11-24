@@ -60,7 +60,7 @@ def main():
     for worker in readers: worker.start()
     try:
         deck={'name':'Priority production test','format':'Modern','main':[{'name':'Plains','count':60}], 'sideboard':[], 'commander':[]}
-        call('/session/start',{'format':'Modern','recordingPort':args.recording_port,'playerName':'Priority Human','botName':'Priority Bot','deck':deck,'botDeck':deck,
+        call('/session/start',{'format':'Modern','recordingPort':args.recording_port,'startingSeatId':'local','playerName':'Priority Human','botName':'Priority Bot','deck':deck,'botDeck':deck,
                                'priority':{'autoPass':True,'stops':{'own':['PRECOMBAT_MAIN'],'opponent':['END_TURN']}}})
         state=wait(lambda s: s.get('prompt'), 'No native pregame prompt')
         human=next(p for p in state['players'] if p['human'])
@@ -75,6 +75,13 @@ def main():
         checks['persistedStopsAppliedBeforeStart']=policy['stops']=={'own':['PRECOMBAT_MAIN'],'opponent':['END_TURN']} and policy['stopStep']=='PRECOMBAT_MAIN'
         checks['emptyInitialUpkeepAutoPassed']=policy['autoPassCount']>=1  # Native duel first player skips the first draw step.
         checks['visibleOwnMainStop']=policy['paused'] and policy['reason']=='stop' and policy['stopPlayerId']==human['id']
+        checks['manaOnlyPolicyExposed']=policy.get('manaOnlyPolicySupported') is True and policy.get('passWithOnlyMana') is False
+        old=state['prompt']['id'];call('/session/priority',{'command':'configure','passWithOnlyMana':True})
+        state=wait(lambda s:s.get('prompt') and s['prompt']['id']!=old,'Mana-only policy did not wake native priority')
+        checks['manaOnlyPreferenceAcknowledged']=state['priority'].get('passWithOnlyMana') is True and state['priority']['reason']=='stop'
+        old=state['prompt']['id'];call('/session/priority',{'command':'configure','passWithOnlyMana':False})
+        state=wait(lambda s:s.get('prompt') and s['prompt']['id']!=old,'Restoring mana-only policy did not wake native priority')
+        checks['manaOnlyDoesNotBypassStops']=state['priority'].get('passWithOnlyMana') is False and state['priority']['stopStep']=='PRECOMBAT_MAIN'
         checks['staleEndTurnRejected']=reject('/session/priority',{'command':'end_turn','promptId':state['prompt']['id']-1})
         checks['staleActionRejected']=reject('/session/action',{'type':'boolean','value':True,'promptId':-999999})
         checks['malformedActionRejected']=reject('/session/action',{'type':'uuid','value':'not-a-uuid','promptId':state['prompt']['id']})

@@ -82,7 +82,13 @@ final class NativeProjection {
                 card.commanderCost(game,null,probe);
                 tax=map("manaCost",probe.getManaCostsToPay().getText(),"otherCosts",probe.getCosts().stream().map(cost->EngineBridge.clean(cost.getText())).collect(Collectors.toList()));
             }
-            rows.add(map("id",id(commanderId),"name",card.getName(),"card",session.card(card,true),"commandZonePlays",plays==null?0:plays.getPlaysCount(commanderId),"deaths",history==null?0:history.count(commanderId),"additionalTax",tax));
+            Zone zone=game.getState().getZone(commanderId);List<Map<String,Object>> available=new ArrayList<>();
+            if(session.prompt!=null&&session.prompt.get("cardActions")instanceof Collection<?>)for(Object raw:(Collection<?>)session.prompt.get("cardActions"))if(raw instanceof Map<?,?>&&id(commanderId).equals(((Map<?,?>)raw).get("objectId"))) {
+                Object options=((Map<?,?>)raw).get("options");if(options instanceof Collection<?>)for(Object option:(Collection<?>)options)if(option instanceof Map<?,?>){@SuppressWarnings("unchecked")Map<String,Object> value=(Map<String,Object>)option;available.add(value);}
+            }
+            Map<String,Object> identity=session.card(card,true);
+            rows.add(map("id",id(commanderId),"name",card.getName(),"card",identity,"sourceCard",identity,"zone",zone==null?null:zone.name(),"zoneName",zone==null?"Unknown":zone.toString(),
+                "availableCastingOptions",available,"commandZonePlays",plays==null?0:plays.getPlaysCount(commanderId),"deaths",history==null?0:history.count(commanderId),"additionalTax",tax));
         }
         return rows;
     }

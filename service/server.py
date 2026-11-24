@@ -32,6 +32,7 @@ from image_packs import ImagePacks
 from engine_support import EngineSupport
 from deck_covers import cover as deck_cover
 from formats import PROFILES
+from updates import UpdateManager
 
 PROJECT = Path(__file__).resolve().parent.parent
 
@@ -45,6 +46,7 @@ def make_handler(catalog, storage, location_manager=None):
     locations = location_manager or StorageLocations(storage)
     image_packs = ImagePacks(catalog, storage)
     engine_support = EngineSupport(storage)
+    updates = UpdateManager()
     storage_health = storage.health()
     @contextmanager
     def image_lock(key):
@@ -148,6 +150,21 @@ def make_handler(catalog, storage, location_manager=None):
             path = unquote(url.path).rstrip("/") or "/"
             query = parse_qs(url.query)
             param = lambda key, default="": query.get(key, [default])[0]
+            if path=='/updates/status'and method=='GET':
+                self.respond(200,updates.status());return
+            if path in('/updates/check','/updates/download','/updates/apply','/updates/auth')and method=='POST':
+                if not self.local_storage_control():return
+                body=self.read_json()
+                if path=='/updates/auth':
+                    if not isinstance(body,dict)or set(body)!={'token'}:raise ValueError('Choose only GitHub update access')
+                    result=updates.auth(body['token'])
+                elif path=='/updates/check':
+                    if body!={}:raise ValueError('Checking for updates takes no paths or extra options')
+                    result=updates.check()
+                else:
+                    if not isinstance(body,dict)or set(body)!={'candidateId'}:raise ValueError('Choose the current update candidate')
+                    result=updates.download(body['candidateId'])if path=='/updates/download'else updates.apply(body['candidateId'])
+                self.respond(202,result);return
             if path == '/formats' and method == 'GET':
                 self.respond(200,{'formats':list(PROFILES.values()),'nativeValidationRequired':True});return
             if path == '/engine-support/registry' and method == 'POST':

@@ -31,6 +31,7 @@ local floor = math.floor
 local DrawCommands = require(SLAB_PATH .. ".Internal.Core.DrawCommands")
 local MenuState = require(SLAB_PATH .. ".Internal.UI.MenuState")
 local Mouse = require(SLAB_PATH .. ".Internal.Input.Mouse")
+local Stats = require(SLAB_PATH .. ".Internal.Core.Stats")
 local Style = require(SLAB_PATH .. ".Style")
 local Utility = require(SLAB_PATH .. ".Internal.Core.Utility")
 
@@ -287,6 +288,7 @@ function Region.Begin(id, options)
 	options = options or EMPTY
 
 	local instance = GetInstance(id)
+	instance.FrameNumber = Stats.GetFrameNumber()
 	instance.X = options.X or 0
 	instance.Y = options.Y or 0
 	instance.W = options.W or 0
@@ -570,6 +572,15 @@ function Region.GetWheelDelta()
 end
 
 function Region.EndFrame()
+	-- A window or list can disappear under the pointer. Only regions built
+	-- this frame may keep hover, a scrollbar drag, or unconsumed wheel input.
+	local frame = Stats.GetFrameNumber()
+	if HotInstance and HotInstance.FrameNumber ~= frame then HotInstance = nil end
+	if ScrollInstance and ScrollInstance.FrameNumber ~= frame then
+		ScrollInstance.IsScrollingX, ScrollInstance.IsScrollingY = false, false
+		ScrollInstance = nil
+	end
+	if WheelInstance and WheelInstance.FrameNumber ~= frame then WheelInstance = nil end
 	-- Regions claim wheel input during UI construction and consume it next
 	-- frame. An event outside every region must not wait for a later hover.
 	if WheelInstance == nil then WheelX, WheelY = 0, 0 end

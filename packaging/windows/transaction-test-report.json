@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "failure": null,
+  "checks": [
+    "Actual NSIS installs the complete sealed fixture into the chosen folder",
+    "Windows Apps registers an explicit quiet uninstall command",
+    "An active installed runtime refuses upgrade without changing any payload/user file",
+    "A refused active uninstall retains the application and its Windows registration",
+    "An externally locked owned JAR refuses replacement without changing files or killing the locking process",
+    "A modified owned file is preserved by refusing its update",
+    "A post-publication integration failure restores the exact old file tree",
+    "A failed upgrade restores the prior Windows Apps registration",
+    "The deferred updater copies the real interpreter outside the installed tree while its parent is alive",
+    "The real copied helper waits for the exact active installed parent before invoking NSIS",
+    "After parent exit, the helper rehashes and installs the complete selected release through direct Win32 CreateProcess",
+    "A successful deferred update restarts the installed launcher without replaying its accepted request",
+    "A successful update replaces both client and compiled bridge components",
+    "A complete update removes obsolete owned runtime/JAR files and installs their replacements",
+    "Upgrade preserves genuine SQLite saves inside and outside the install folder",
+    "Successful upgrade publishes only the new registered version",
+    "Uninstall preserves untracked SQLite data and modified owned files",
+    "Successful uninstall removes its Windows Apps registration",
+    "Successful uninstall removes only its still-owned Start Menu shortcuts"
+  ],
+  "work": "/home/leka/Documents/Projects/Love2Gathering/.runtime/windows-transaction-ede34acccc",
+  "wineVersion": "wine-11.22 (Staging)",
+  "scope": "Actual NSIS install/update/uninstall, Win32 process/file checks, registry/shortcut rollback and real deferred helper with copied CPython, exact-parent wait, verified installer and installed-launcher restart under a fresh isolated Wine prefix. Client/Java/L\u00d6VE/bridge files are labeled small transaction fixtures; no native Windows VM, graphics or gameplay claim. Genuine SQLite saves are preserved. No arbitrary process kills or user stores.",
+  "ownedWinePrefixStopped": true,
+  "pythonArchiveSha256": "1ec066fb61ba5e8c73e29e048cd07c26850f74585e3a116005135b31b8004890",
+  "handoffSourceSha256": "7f89a90020872972c3a9f56c680dcb5526de7beedb95189cecf031853a0e783c",
+  "sourceHashes": {
+    "packaging/windows/installer.nsi": "6576da92dedadf3400c3c7d6e8b1b9e73e5e31d1ec4e59a81ddda717e0a0514c",
+    "packaging/windows/install_support.py": "42a56bdec84584f5f977ebef03d398a91441aacdf4f5d43024664d9c3c8b2168",
+    "packaging/windows/test_transaction.py": "7ef004bc8e4023c4ab446cb5186e66b795801fd366bb21fd117a5d4ec9d2ff79"
+  }
+}

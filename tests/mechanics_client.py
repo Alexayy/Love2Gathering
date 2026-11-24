@@ -66,6 +66,7 @@ def owned_child(command, cwd, env, output, *, seconds=60, rss_mb=768, cpu_second
 def prepare_work(work, output, source, *, graphical=False):
     shutil.copytree(ROOT/'app', work/'app');shutil.copytree(ROOT/'lib', work/'lib')
     if graphical:
+        shutil.copy2(ROOT/'main.lua', work/'application-main.lua')
         for folder in ['keyrune', 'icons']:
             shutil.copytree(ROOT/'assets'/folder, work/'assets'/folder)
         for folder in ['ui', 'particles', 'sounds', 'theme', 'runtime']:
@@ -158,7 +159,7 @@ def run(args):
                 if name=='tokens-1000'and process['status']!='pass': break
         finally: server.shutdown();server.server_close();thread.join(timeout=2)
     sources={}
-    for path in [ROOT/'app/api.lua',ROOT/'app/model.lua',ROOT/'app/library.lua',ROOT/'app/artwork.lua',ROOT/'app/card_printings.lua',ROOT/'app/table.lua',ROOT/'app/view.lua',ROOT/'app/match_ui.lua',ROOT/'app/renderer.lua',ROOT/'app/board_fx.lua',ROOT/'tests/mechanics_client_ui.lua',ROOT/'tests/mechanics_client_transport.lua',ROOT/'tests/mechanics_client_model.lua',ROOT/'tests/mechanics_client_artwork.lua',Path(__file__)]:
+    for path in [ROOT/'main.lua',ROOT/'app/api.lua',ROOT/'app/model.lua',ROOT/'app/library.lua',ROOT/'app/artwork.lua',ROOT/'app/card_printings.lua',ROOT/'app/table.lua',ROOT/'app/view.lua',ROOT/'app/card_details_ui.lua',ROOT/'app/table_inspection.lua',ROOT/'app/match_ui.lua',ROOT/'app/renderer.lua',ROOT/'app/board_fx.lua',ROOT/'tests/mechanics_client_ui.lua',ROOT/'tests/mechanics_client_transport.lua',ROOT/'tests/mechanics_client_model.lua',ROOT/'tests/mechanics_client_artwork.lua',Path(__file__)]:
         relative=str(path.relative_to(ROOT));data=subprocess.check_output(['git','show',args.baseline+':'+relative],cwd=ROOT)if args.baseline and relative in('app/api.lua','app/model.lua')else path.read_bytes();sources[relative]=hashlib.sha256(data).hexdigest()
     failures=[r['status']for r in results if r['status']!='pass']
     overall='pass'if not failures else'budget_exceeded'if all(s in('budget_exceeded','not_run')for s in failures)else'fail'

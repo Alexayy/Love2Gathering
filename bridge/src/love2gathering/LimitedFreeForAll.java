@@ -21,7 +21,7 @@ final class LimitedFreeForAll extends GameImpl {
         this.players = players;this.callback=callback;this.lifecycle=lifecycle;
     }
     LimitedFreeForAll(LimitedFreeForAll original) { super(original); players = original.players; callback=null;lifecycle=null; }
-    @Override protected void resolve(){PresentationGames.Resolution value=PresentationGames.before(this);super.resolve();PresentationGames.after(value,callback);}
+    @Override protected void resolve(){PresentationGames.resolve(this,callback,super::resolve);}
     @Override public void checkConcede(boolean gameThread){super.checkConcede(gameThread);if(lifecycle!=null)lifecycle.conceded(this);}
     @Override public synchronized void applyEffects(){if(lifecycle!=null)lifecycle.applying(this);super.applyEffects();}
     @Override public boolean replaceEvent(mage.game.events.GameEvent event){if(lifecycle!=null)lifecycle.replacing(this,event);return super.replaceEvent(event);}

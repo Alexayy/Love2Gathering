@@ -3,6 +3,7 @@
 -- damage-order instruction and submits nothing until confirmation.
 local json=require('lib.json')
 local Layout=require('app.layout')
+local Presentation=require('app.card_presentation')
 local UI={window='native-amount-distribution'}
 local function identity(m,p)return tostring(m.game and m.game.gameId)..':'..tostring(p and p.id)end
 function UI.supports(p)return p and p.type=='multi_amount'and type(p.amountMessages)=='table'and#p.amountMessages>0 end
@@ -48,8 +49,10 @@ function UI.build(v,w,h,p)
     if p and(not v.combatChoiceState or v.combatChoiceState.identity~=identity(m,p))then v.combatChoiceState=UI.state(m,p);v.combatChoiceDrag=nil end
     local state=v.combatChoiceState;p=p or state.prompt;state.prompt=p
     if not m.actionBusy and m.answeredPrompt~=p.id then state.submitting=false end
-    local pw,ph=math.min(1040,w-70),math.min(620,h-130)
-    v:window(UI.window,(w-pw)/2,math.max(76,(h-ph)/2),pw,ph,'Assign amounts',{BgColor={.025,.04,.06,.98}})
+    local Choices=require('app.card_choices')
+    local left,pw,docked=Choices.choicePlacement(v,w,h,1040)
+    local ph=math.min(620,h-130)
+    Choices.choiceWindow(v,UI.window,left,math.max(76,(h-ph)/2),pw,ph,'Assign amounts',docked)
     local Window=require('lib.Slab.Internal.UI.Window');local inner=select(1,S.GetWindowSize())-42
     local x,y=S.GetCursorPos({Absolute=true})
     S.Textf(v.r:fit(p.message or'Assign the offered amounts',inner,16,2),{W=inner,Color=v.r.colors.text})
@@ -66,10 +69,11 @@ function UI.build(v,w,h,p)
         local entry=p.amountMessages[row.nativeIndex];row.entry=entry
         local tx=bx+((position-1)%cols)*(cw+18);local ty=by+math.floor((position-1)/cols)*tileH
         S.PushID('native-amount-'..row.nativeIndex);S.SetCursorPos(tx,ty,{Absolute=true})
-        local card=type(entry.card)=='table'and entry.card~=json.null and not entry.card.hidden and not entry.card.faceDown and entry.card or nil
+        local card=type(entry.card)=='table'and entry.card~=json.null and Presentation.peek(entry.card) or nil
+        if card and (card.hidden or card.faceDown) then card=nil end
         if card then
-            S.Button(card.name or'Target',{W=cw,H=ch,Image={Image=require('app.card_choices').cardImage(v,card,cw,ch)},Tooltip=(card.name or'Target')..' · drag to arrange · right-click to inspect',Disabled=m.actionBusy})
-            if S.IsControlHovered()then m.choiceHover={card=card};if S.IsMouseClicked(2)then m.inspectCard=card end end
+            S.Button(card.name or'Target',{W=cw,H=ch,Image={Image=Choices.cardImage(v,card,cw,ch)},Tooltip=(card.name or'Target')..' · Drag to arrange · Right-click to pin preview · Middle-click for details',Disabled=m.actionBusy})
+            if S.IsControlHovered()and m:prompt()then Choices.hoverCard(v,entry.card,{choice=p}) end
         else S.Rectangle({W=cw,H=ch,Color={.055,.075,.11,1},Rounding=5});S.SetCursorPos(tx+8,ty+12,{Absolute=true});S.Textf(v.r:fit(entry.message or entry.label or('Target '..row.nativeIndex),cw-16,14,7),{W=cw-16,Color=v.r.colors.muted})end
         local hx,hy=Window.TransformPoint(tx,ty);local hit=rect(hx,hy,cw,ch,clip);hit.position=position;hit.nativeIndex=row.nativeIndex;hit.card=card;hit.identity=state.identity;v.combatChoiceHits[#v.combatChoiceHits+1]=hit
         local drop=rect(hx,hy,cw,tileH-8,clip);drop.position=position;v.combatChoiceDrops[#v.combatChoiceDrops+1]=drop

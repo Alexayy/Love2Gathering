@@ -17,8 +17,15 @@ def main():
         req=urllib.request.Request(base+path,data=None if body is None else json.dumps(body).encode(),headers={'Content-Type':'application/json'})
         with urllib.request.urlopen(req,timeout=30) as response:return json.load(response)
     game=json.loads(args.gameplay_report.read_text());assert game['passed'] and game['replayId']
-    identifier=game['replayId'];meta=call(args.catalog_url,'/replays/'+identifier)
-    assert meta['status']=='completed' and meta['actionCount']==game['actionCount']
+    identifier=game['replayId'];deadline=time.monotonic()+15
+    while True:
+        meta=call(args.catalog_url,'/replays/'+identifier)
+        if meta['status']=='completed':break
+        assert time.monotonic()<deadline, 'Completed native game was not delivered to the catalog'
+        time.sleep(.02)
+    # The engine also records automatic native priority passes. Submitted
+    # interactive answers are checked separately against the immutable events.
+    assert meta['actionCount']>=game['actionCount']
     assert meta['frameCount']>game['observedFrameCount'] and meta['eventCount']==meta['lastSequence']+1
     frames=[];offset=0
     while offset<meta['frameCount']:
@@ -46,6 +53,9 @@ def main():
     with sqlite3.connect(f'file:{args.data_dir / "app.sqlite"}?mode=ro',uri=True) as db:
         rows=db.execute('SELECT count(*),min(sequence),max(sequence) FROM replay_events WHERE replay_id=?',(identifier,)).fetchone()
         assert rows==(meta['eventCount'],0,meta['lastSequence'])
+        actions=[json.loads(row[0]) for row in db.execute('SELECT payload FROM replay_events WHERE replay_id=? AND type=?',(identifier,'action'))]
+        interactive=sum(action.get('input',{}).get('type')!='auto_priority' for action in actions)
+        assert len(actions)==meta['actionCount'] and interactive==game['actionCount'], 'Every submitted answer and automatic native pass must be recorded exactly once'
     deck=json.loads((ROOT/'decks/modern-boros-burn.json').read_text());port=int(args.catalog_url.rsplit(':',1)[1])
     state=call(args.engine_url,'/session/start',{'format':'Modern','recordingPort':port,'deck':deck,'botDeck':deck})
     deadline=time.monotonic()+10

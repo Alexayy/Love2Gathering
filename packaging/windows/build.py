@@ -48,6 +48,16 @@ def build(payload, output, cache, makensis, version):
             raise ValueError('Runtime checksum mismatch: ' + str(archive))
         destination = stage / 'runtime' / name
         destination.mkdir(parents=True)
+        if name == 'mesa':
+            extractor = shutil.which('7z') or shutil.which('7zz') or shutil.which('7za')
+            if not extractor:
+                raise RuntimeError('7-Zip is required to bundle the Windows software OpenGL runtime')
+            subprocess.run([extractor, 'e', '-y', '-o' + str(destination), str(archive), *spec['files']],
+                           check=True, stdout=subprocess.DEVNULL)
+            if not all((destination / member).is_file() for member in spec['files']):
+                raise RuntimeError('The Mesa archive lacks its pinned OpenGL runtime')
+            shutil.copytree(HERE / 'licenses', destination / 'licenses')
+            continue
         with zipfile.ZipFile(archive) as zipped:
             names = [name for name in zipped.namelist() if name and not name.endswith('/')]
             top = names[0].split('/')[0] + '/' if name != 'python' else ''
@@ -71,6 +81,9 @@ def build(payload, output, cache, makensis, version):
     pth.write_text(text + '\nLib/site-packages\n../..\n../../service\n', encoding='utf-8')
     lock['pillow'] = pillow
     shutil.copy2(PROJECT / 'packaging/runtime/launcher.py', stage / 'launcher.py')
+    shutil.copy2(PROJECT / 'packaging/runtime/windows_graphics.py', stage / 'windows_graphics.py')
+    shutil.copy2(PROJECT / 'packaging/runtime/update_handoff.py', stage / 'update_handoff.py')
+    shutil.copy2(PROJECT / 'packaging/windows/install_support.py', stage / 'install_support.py')
     icon = output / 'love2gathering.ico'
     image = stage / 'share/icons/love2gathering.png'
     if image.exists():
@@ -80,7 +93,7 @@ def build(payload, output, cache, makensis, version):
         raise ValueError('Packaged icon is missing')
     launcher = stage / 'Love2Gathering.exe'
     compile_nsis(makensis, ['-DOUTPUT=' + str(launcher), '-DICON=' + str(icon), str(HERE / 'launcher.nsi')])
-    manifest={'version':1,'files':{str(path.relative_to(stage)):hashlib.sha256(path.read_bytes()).hexdigest()for path in sorted(stage.rglob('*'))if path.is_file()and path.name!='payload-manifest.json'}}
+    manifest={'version':1,'files':{path.relative_to(stage).as_posix():hashlib.sha256(path.read_bytes()).hexdigest()for path in sorted(stage.rglob('*'))if path.is_file()and path.name!='payload-manifest.json'}}
     (stage/'payload-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     remove = output / 'windows-remove-files.nsh'
     files = sorted(path for path in stage.rglob('*') if path.is_file())

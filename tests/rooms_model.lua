@@ -12,7 +12,7 @@ local function client(name)
     function m:request(service,method,path,body,callback)self.calls[#self.calls+1]={service=service,method=method,path=path,body=body and clone(body),callback=callback}end
     function m:findDeck(id)for _,deck in ipairs(self.decks)do if deck.id==id then return deck end end end
     function m:toast(message)self.toasts[#self.toasts+1]=message end
-    function m:priorityOptions()return{autoPass=true,stops={own=json.array({'PRECOMBAT_MAIN'}),opponent=json.array()}}end
+    function m:priorityOptions()return{autoPass=true,passWithOnlyMana=true,stops={own=json.array({'PRECOMBAT_MAIN'}),opponent=json.array()}}end
     function m:closeReplay()local live=self.liveGame;self.replay=nil;self.liveGame=nil;self.game=live;self.replayCloseCount=(self.replayCloseCount or 0)+1 end
     function m:setGame(game)if self.replay then self.liveGame=game;return end;if not self.game or self.game.gameId~=game.gameId or(game.revision or 0)>=(self.game.revision or 0)then self.game=game end end
     return m
@@ -38,7 +38,7 @@ random.roomBusy=false;check(Rooms.setRandomSet(random,'two',false)and Rooms.setR
 random:hostRoom();check(json.encode(random.calls[#random.calls].body.draft.randomSets)=='[]','All-supported random pool remains an empty JSON array in the create payload')
 host:hostRoom();local create=host.calls[#host.calls]
 check(create.path=='/client/rooms'and create.body.kind=='draft'and create.body.draft.mode=='booster','Host creation uses only the local room gateway contract')
-check(create.body.settings.manualTriggers and create.body.settings.autoMana==false and create.body.priority.stops.own[1]=='PRECOMBAT_MAIN','Room membership receives the participant’s actual engine preferences and priority stops')
+check(create.body.settings.manualTriggers and create.body.settings.autoMana==false and create.body.priority.passWithOnlyMana and create.body.priority.stops.own[1]=='PRECOMBAT_MAIN','Room membership receives the participant’s actual engine preferences, mana-only policy and priority stops')
 create.callback(snapshot(host,1));check(host.roomParticipantId=='Host'and host.roomConnectionId=='Host-connection','Host receives its authenticated connection and public room')
 guest:showRooms();guest.calls[1].callback(clone(caps));guest.roomInviteInput='  L2G-only-this-code  ';guest:joinRoom()
 local join=guest.calls[#guest.calls];check(join.path=='/client/join'and join.body.code=='L2G-only-this-code'and join.body.name=='Guest'and not join.body.address,'Guests join with one invitation code and their name')
@@ -50,6 +50,28 @@ host:refreshRoom();host.calls[#host.calls].callback(snapshot(host,2));check(host
 host:selectRoomDeck('mine');local selected=host.calls[#host.calls]
 check(selected.body.deck.main[1].count==99 and host.decks[1].main[1].count==99,'Seat deck submission preserves the saved deck composition')
 selected.callback(snapshot(host,4))
+do
+    local organiser=client('Host')
+    organiser.roomGeneration=1
+    local lobby=snapshot(organiser,1)
+    lobby.room.config={kind='constructed',format='Commander',maxPlayers=4}
+    lobby.room.members[3]={id='bot-3',name='XMage Bot 1',bot=true}
+    organiser:applyRoomSnapshot(lobby,1,1)
+    organiser.roomDeckId='human-choice'
+    check(organiser:selectRoomDeck('mine','bot-3'),'Host can choose a saved Commander deck for one bot')
+    local submitted=organiser.calls[#organiser.calls]
+    check(submitted.body.botSeatId=='bot-3' and submitted.body.deck.commander[1].name=='Commander'
+        and organiser.roomDeckId=='human-choice','Bot deck request carries its own commander and preserves the human selection')
+    submitted.callback(lobby)
+    local before=#organiser.calls
+    check(not organiser:selectRoomDeck('mine','Guest') and not organiser:selectRoomDeck('mine','removed'),'Human and removed seats cannot receive a bot choice')
+    organiser.decks[1].format='Modern'
+    check(not organiser:selectRoomDeck('mine','bot-3'),'Bot picker rejects a deck from a different format')
+    organiser.decks[1].format='Commander';organiser.roomParticipantId='Guest'
+    check(not organiser:selectRoomDeck('mine','bot-3'),'Guest cannot replace a bot deck')
+    organiser.roomParticipantId='Host';organiser.room.phase='starting'
+    check(not organiser:selectRoomDeck('mine','bot-3') and #organiser.calls==before,'Picker opened in an older lobby cannot change a starting match')
+end
 local draft={id='native-draft',revision=2,status='drafting',packNumber=1,pickNumber=2,packCount=3,pickToken='native-pick-token',pack={{id='host-card',name='Host pack card'}},pool={{id='taken',name='Taken card'}}}
 host:refreshRoom();host.calls[#host.calls].callback(snapshot(host,5,'drafting',clone(draft)))
 local other=clone(draft);other.pack={{id='guest-card',name='Guest pack card'}};other.pickToken='guest-token'
@@ -105,4 +127,34 @@ check(leave.path:find('/leave',1,true)and host.roomLastCode=='L2G-only-this-code
 for _,call in ipairs(host.calls)do assert(not call.path:find('/session/stop',1,true),'Room departure must not stop an engine match')end
 check(true,'Room departure never sends a global engine stop command')
 guest:quit();check(guest.calls[#guest.calls].path:find('/leave',1,true),'Application quit queues an explicit authenticated room departure')
+local retry=client('Retry');retry.roomGeneration=1
+local connecting=client('ConnectRetry');connecting.roomCapabilities=clone(caps);Rooms.fitSetup(connecting)
+connecting:hostRoom();local firstConnect=connecting.calls[#connecting.calls]
+firstConnect.callback(nil,'Reply lost')
+connecting:hostRoom();local sameConnect=connecting.calls[#connecting.calls]
+check(firstConnect.body.connectionRequestId==sameConnect.body.connectionRequestId,'A lost create acknowledgement keeps the same local operation identity for an explicit retry')
+sameConnect.callback(nil,'Still waiting');connecting.roomSetup.playerName='Changed name';connecting:hostRoom()
+check(connecting.calls[#connecting.calls].body.connectionRequestId~=firstConnect.body.connectionRequestId,'Changed connection payloads receive a new operation identity')
+local pendingGame={gameId='retry-game',revision=20,running=true,prompt={id=91,type='pick_target',choices={{id='offered-target'}}},players={}}
+retry:applyRoomSnapshot(snapshot(retry,1,'playing',nil,pendingGame),1,1)
+retry:refreshRoom();local delayed=retry.calls[#retry.calls]
+retry:updateRooms(3)
+check(retry.roomTransport.state=='waiting'and retry.game.prompt.id==91,'A slow read is visible while the current native choice remains intact')
+delayed.callback(nil,'Timed out',{retryable=true,kind='transport'})
+check(retry.roomDisconnected and retry.roomTransport.state=='reconnecting'and retry.game.prompt.id==91 and retry.roomConnectionId=='Retry-connection','Transient transport errors preserve the same seat and unanswered choice')
+local requests=#retry.calls;retry:updateRooms(.1)
+check(#retry.calls==requests and retry.roomPollTimer>0,'Repeated room reads use bounded backoff instead of a timeout storm')
+check(not retry:setRoomReady(true),'Mutations wait for a fresh room acknowledgement after transport loss')
+retry:updateRooms(2);local refreshed=retry.calls[#retry.calls]
+refreshed.callback(snapshot(retry,2,'playing',nil,pendingGame))
+check(not retry.roomDisconnected and retry.roomTransport.state=='connected'and retry.roomPollFailures==0 and retry.game.prompt.id==91,'Automatic recovery retains the native prompt and resets read backoff')
+retry:roomMutation('/game/action',{promptId=91,type='uuid',value='offered-target'});local lost=retry.calls[#retry.calls]
+lost.callback(nil,'Connection closed',{kind='outcome_unknown',retryable=false})
+requests=#retry.calls;retry:updateRooms(.01)
+check(#retry.calls==requests+1 and retry.calls[#retry.calls].method=='GET'and retry.roomTransport.state=='reconciling','Lost mutation acknowledgement refreshes state and never replays the action')
+retry.calls[#retry.calls].callback(snapshot(retry,3,'playing',nil,pendingGame))
+retry:roomMutation('/deck',{});retry.calls[#retry.calls].callback(nil,'Invalid deck',{error='Invalid deck',retryable=false})
+check(not retry.roomDisconnected and retry.roomError=='Invalid deck','A definite native validation rejection is not mislabeled as a room timeout')
+retry:rejoinRoom();check(retry.roomDisconnected and retry.game.prompt.id==91,'An explicit reconnect temporarily fences new input while retaining the same native choice')
+retry.calls[#retry.calls].callback(snapshot(retry,4,'playing',nil,pendingGame))
 print('Rooms model checks: '..passed..' passed')

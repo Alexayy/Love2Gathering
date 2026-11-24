@@ -44,17 +44,23 @@ local function drag(x,y,dx,dy)
     down=false;S.OnMouseReleased(mouse.x,mouse.y,1,false,1);wait(.12)
 end
 local function inspectLayout(n,name)
-    local w,h=Layout.dimensions();local pw,ph=love.graphics.getDimensions();local L=Layout.table(w,h)
+    local w,h=Layout.dimensions();local pw,ph=love.graphics.getDimensions();local L=r.tableLayout
     check(not navCalled and L.board.x==16 and L.board.y==16 and L.board.w==w-32,'Full-width table and hidden navigation: '..name)
     local first,last=r.cardRects['human-land-1'],r.cardRects['human-land-'..n];local creature=assert(r.cardRects['human-creature-1'])
     check(first and last and first.y>=creature.y+creature.h+10,'Lands occupy a distinct lower row: '..name)
     local center=(first.x+last.x+last.w)/2;local target=L.fieldX+L.fieldW/2
-    if n<=3 then check(math.abs(center-target)<1,'Short mana row centered: '..name)else check(center<target-1,'Crowded mana row shifts left: '..name)end
+    check(last.x+last.w>=L.fieldX+L.fieldW-8,'Short and crowded mana rows occupy the back-right edge: '..name)
     local handTop=h;local handCount=0
     for _,hit in ipairs(r.hits)do if hit.kind=='hand'then handTop=math.min(handTop,hit.y);handCount=handCount+1 end end
     check(handCount==7 and last.y+last.h<handTop-8,'Seven-card fan clear of lower mana row: '..name)
     check(first.x>=L.fieldX and last.x+last.w<=L.fieldX+L.fieldW,'Mana row remains inside full-width field: '..name)
-    check(buttons.Settings and buttons.Lobby and buttons['Replay library'],'Context toolbar remains accessible: '..name)
+    check(buttons['Table options'] and buttons['Stack 0'],'Table tools remain accessible: '..name)
+    if n==1 then
+        click('Table options')
+        check(buttons['Presentation settings'] and buttons['Return to lobby'] and buttons['Replay library'],
+            'Table options exposes settings, lobby and replay library: '..name)
+        click('Close options')
+    end
     reports[#reports+1]={name=name,physical={pw,ph},logical={w,h},scale=Layout.scale,render=m.settings.renderScale,lands=n,landRowCenter=center,fieldCenter=target,landCardHeight=first.h,handTop=handTop,landBottom=last.y+last.h}
 end
 local function inspectStack(name)

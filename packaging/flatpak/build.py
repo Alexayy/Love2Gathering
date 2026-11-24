@@ -97,6 +97,8 @@ def build(payload,output,work,version):
     write_metainfo(HERE/(APP_ID+'.metainfo.xml'),meta/(APP_ID+'.metainfo.xml'),version)
     icons=files/'share/icons/hicolor/256x256/apps';icons.mkdir(parents=True,exist_ok=True)
     shutil.copy2(installed/'share/icons/love2gathering.png',icons/(APP_ID+'.png'))
+    (installed/'host-tools').mkdir(exist_ok=True)
+    for name in('install-flatpak.py','update-host.py'):shutil.copy2(HERE/name,installed/'host-tools'/name)
     manifest={'version':1,'files':{str(path.relative_to(installed)):hashlib.sha256(path.read_bytes()).hexdigest()for path in sorted(installed.rglob('*'))if path.is_file()and path.name!='payload-manifest.json'}}
     (installed/'payload-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     provenance['runtime']=runtime_preflight(work)
@@ -107,6 +109,7 @@ def build(payload,output,work,version):
     run('flatpak','build-bundle','--arch=x86_64','--runtime-repo=https://flathub.org/repo/flathub.flatpakrepo',repo,artifact,APP_ID,'stable')
     (output/'flatpak-native-provenance.json').write_text(json.dumps(provenance,indent=2)+'\n')
     shutil.copy2(HERE/'install-flatpak.py',output/'install-flatpak.py')
+    shutil.copy2(HERE/'update-host.py',output/'update-host.py')
     print(artifact)
     return artifact
 

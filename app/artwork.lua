@@ -98,7 +98,8 @@ function Artwork.image(m,field,pendingField,key,path,limit,cacheLimit,localOnly,
         -- A local-only startup miss must not delay an explicitly enabled online
         -- view. Ready/pending images keep the same exact identity and cache.
         local retryOnline=localOnly==false and entry.localOnly and not entry.image and(not entry.pending or selected)
-        local newSelection=selected and entry.selectionToken~=options.selectionToken and not entry.image
+        -- A passive preview or inspector shares the pending hand scan.
+        local newSelection=selected and options.selectionToken~=nil and entry.selectionToken~=options.selectionToken and not entry.image
         local refreshThumb=thumbnail and entry.thumbPending and not entry.pending and time>=(entry.retryAt or 0)
         if not retryOnline and not newSelection and not refreshThumb and(entry.image or entry.pending or(entry.retryAt or 0)>time)then
             local fallback=thumbnail and cache[originalKey];return entry.image or fallback and fallback.image,entry.state

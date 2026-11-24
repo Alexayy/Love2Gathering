@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import gzip
+import io
 import filelocks
 import os
 from pathlib import Path
@@ -10,12 +11,18 @@ import re
 import sqlite3
 import threading
 import time
-from gallery_catalog import GalleryCatalog
-from tokens import TokenCatalog
+from gallery_catalog import GalleryCatalog, GALLERY_INDEXES
+from tokens import TokenCatalog, TOKEN_INDEXES
 from query_cache import QueryCache, cached_query
 from formats import FORMATS, INDEXED_FORMATS, profile as format_profile, clause as format_clause
 
 SCHEMA_VERSION = "7"
+INDEX_PROGRESS_INTERVAL = .5
+CARD_INDEXES = (
+    "CREATE INDEX cards_name ON cards(name COLLATE NOCASE)",
+    "CREATE INDEX card_sets_card ON card_sets(card_id)",
+    "CREATE INDEX card_sets_set ON card_sets(set_code, card_id)",
+)
 
 
 class CatalogConnection(sqlite3.Connection):
@@ -35,12 +42,16 @@ class Catalog(GalleryCatalog,TokenCatalog):
         self.source = Path(source)
         self.database = Path(database)
         self.lock = threading.Lock()
-        self.progress = {"state": "pending", "lines": 0, "cards": 0, "error": None}
+        self.progress = {"state": "pending", "phase": "pending", "lines": 0,
+                         "cards": 0, "bytesRead": 0, "totalBytes": 0, "seconds": 0, "error": None}
         self.query_cache = QueryCache(self.database)
 
     def status(self):
         with self.lock:
-            return dict(self.progress)
+            value = dict(self.progress)
+            if value['phase'] == 'waiting':
+                value['seconds'] = round(time.monotonic() - self._waiting_since, 1)
+            return value
 
     def _status(self, **fields):
         with self.lock:
@@ -71,16 +82,21 @@ class Catalog(GalleryCatalog,TokenCatalog):
             # separate services. Serialize its temporary build across processes,
             # then recheck the complete index before doing expensive work.
             with (self.database.parent / (self.database.name + '.build.lock')).open('a+b') as lock:
-                self._status(state='waiting', error=None)
+                self._waiting_since = time.monotonic()
+                self._status(state='waiting', phase='waiting', error=None,
+                             message='Waiting for another local card index to finish')
                 filelocks.flock(lock, filelocks.LOCK_EX)
+                self._status(phase='checking', message='Checking the existing local card index')
                 if self.current():
                     with self.connect() as connection:
                         count = connection.execute("SELECT count(*) FROM cards").fetchone()[0]
-                    self._status(state="ready", cards=count)
+                    size = self.source.stat().st_size
+                    self._status(state="ready", phase="ready", cards=count, bytesRead=size,
+                                 totalBytes=size, message='Local card metadata is ready')
                     return
                 self.build()
         except Exception as exc:
-            self._status(state="error", error=str(exc))
+            self._status(state="error", phase="error", error=str(exc))
 
     @staticmethod
     def normalize(raw):
@@ -110,27 +126,31 @@ class Catalog(GalleryCatalog,TokenCatalog):
         self.database.parent.mkdir(parents=True, exist_ok=True)
         temporary = self.database.with_suffix(".building.sqlite")
         temporary.unlink(missing_ok=True)
-        self._status(state="indexing", lines=0, cards=0, error=None)
+        source_stat = self.source.stat()
+        self._status(state="indexing", phase="reading", lines=0, cards=0, error=None,
+                     bytesRead=0, totalBytes=source_stat.st_size, seconds=0,
+                     message='Reading local card metadata')
         started = time.monotonic()
         connection = sqlite3.connect(temporary)
         try:
             connection.execute("PRAGMA journal_mode=OFF")
             connection.execute("PRAGMA synchronous=OFF")
+            # This disposable database is replaced only when complete. A bounded
+            # cache and bulk-built secondary indexes avoid per-printing random
+            # disk writes on VM disks without changing the published schema.
+            connection.execute("PRAGMA cache_size=-32768")
             connection.executescript("""
                 CREATE TABLE metadata(key TEXT PRIMARY KEY, value TEXT NOT NULL);
                 CREATE TABLE cards(id TEXT PRIMARY KEY, name TEXT UNIQUE COLLATE NOCASE,
                     search TEXT NOT NULL, type_line TEXT NOT NULL, colors TEXT NOT NULL,
                     modern TEXT, standard TEXT, pioneer TEXT, commander TEXT,
                     rank INTEGER NOT NULL, payload TEXT NOT NULL);
-                CREATE INDEX cards_name ON cards(name COLLATE NOCASE);
                 CREATE TABLE card_sets(card_id TEXT, set_code TEXT, set_name TEXT,
                     printing_id TEXT PRIMARY KEY, collector_number TEXT, image_url TEXT, face_images TEXT,payload TEXT);
-                CREATE INDEX card_sets_card ON card_sets(card_id);
-                CREATE INDEX card_sets_set ON card_sets(set_code, card_id);
                 CREATE TABLE aliases(name TEXT PRIMARY KEY COLLATE NOCASE, card_id TEXT, face INTEGER);
             """)
-            self.create_gallery(connection)
-            self.create_tokens(connection)
+            self.create_gallery(connection, indexes=False)
+            self.create_tokens(connection, indexes=False)
             statement = """INSERT INTO cards VALUES (?,?,?,?,?,?,?,?,?,?,?)
                 ON CONFLICT(name) DO UPDATE SET
                     id=excluded.id, search=excluded.search, type_line=excluded.type_line,
@@ -138,8 +158,23 @@ class Catalog(GalleryCatalog,TokenCatalog):
                     pioneer=excluded.pioneer, commander=excluded.commander,
                     rank=excluded.rank, payload=excluded.payload WHERE excluded.rank > cards.rank"""
             lines = 0
-            with (gzip.open(self.source, "rt", encoding="utf-8") if self.source.suffix == ".gz" else self.source.open("r", encoding="utf-8")) as stream:
+            next_progress = started
+            with self.source.open("rb") as source_stream, io.TextIOWrapper(
+                    gzip.GzipFile(fileobj=source_stream) if self.source.suffix == ".gz" else source_stream,
+                    encoding="utf-8") as stream:
                 for lines, line in enumerate(stream, 1):
+                    now = time.monotonic()
+                    # Report every input record, including translations, blank
+                    # lines and non-card objects. Filtering must never suppress
+                    # progress for an arbitrary stretch of the bulk source.
+                    if now >= next_progress:
+                        count = connection.execute("SELECT count(*) FROM cards").fetchone()[0]
+                        self._status(lines=lines, cards=count,
+                                     bytesRead=min(source_stat.st_size, source_stream.tell()),
+                                     seconds=round(now - started, 1))
+                        next_progress = now + INDEX_PROGRESS_INTERVAL
+                    if lines % 10000 == 0:
+                        connection.commit()
                     if not line.strip():
                         continue
                     try:
@@ -159,37 +194,65 @@ class Catalog(GalleryCatalog,TokenCatalog):
                     rank += 1 if raw.get("highres_image") else 0
                     legalities = card["legalities"]
                     search = " ".join((card["name"], card["type_line"] or "", card["oracle_text"] or "")).casefold()
+                    payload = json.dumps(card, ensure_ascii=False, separators=(",", ":"))
                     connection.execute(statement, (card["id"], card["name"], search,
                         (card["type_line"] or "").casefold(), "".join(card["color_identity"]),
                         *(legalities.get(fmt, "not_legal") for fmt in ("modern", "standard", "pioneer", "commander")),
-                        rank, json.dumps(card, ensure_ascii=False, separators=(",", ":"))))
+                        rank, payload))
                     connection.execute("INSERT OR IGNORE INTO card_sets VALUES (?,?,?,?,?,?,?,?)", (
                         card["id"], card["set"], raw.get("set_name", card["set"]), card["printing_id"],
                         card["collector_number"], json.dumps({key: value for key, value in card["image_uris"].items() if key in ("normal", "large", "art_crop")}),
                         json.dumps([{key: value for key, value in f.get("image_uris", {}).items() if key in ("normal", "large", "art_crop")} for f in card["card_faces"]]),
-                        json.dumps(card, ensure_ascii=False, separators=(",", ":"))))
+                        payload))
                     for face, data in enumerate(card["card_faces"]):
                         if data.get("name"):
                             connection.execute("INSERT OR IGNORE INTO aliases VALUES (?,?,?)", (data["name"], card["id"], face))
-                    if lines % 10000 == 0:
-                        connection.commit()
-                        count = connection.execute("SELECT count(*) FROM cards").fetchone()[0]
-                        self._status(lines=lines, cards=count, seconds=round(time.monotonic() - started, 1))
             stat = self.source.stat()
+            if (stat.st_size, stat.st_mtime_ns, stat.st_dev, stat.st_ino) != (
+                    source_stat.st_size, source_stat.st_mtime_ns, source_stat.st_dev, source_stat.st_ino):
+                raise ValueError('Card metadata source changed while indexing; restart to rebuild it safely')
             metadata = {"schema": SCHEMA_VERSION, "source_size": str(stat.st_size),
                         "source_mtime": str(stat.st_mtime_ns), "source_name": self.source.name}
             connection.executemany("INSERT INTO metadata VALUES (?,?)", metadata.items())
-            for fmt in INDEXED_FORMATS:
-                connection.execute(f"CREATE INDEX cards_{fmt} ON cards({fmt})")
-            connection.commit()
             count = connection.execute("SELECT count(*) FROM cards").fetchone()[0]
+            self._status(lines=lines, cards=count, bytesRead=stat.st_size)
+            self._build_indexes(connection, started)
+            connection.commit()
+            final_stat = self.source.stat()
+            if (final_stat.st_size, final_stat.st_mtime_ns, final_stat.st_dev, final_stat.st_ino) != (
+                    source_stat.st_size, source_stat.st_mtime_ns, source_stat.st_dev, source_stat.st_ino):
+                raise ValueError('Card metadata source changed while indexing; restart to rebuild it safely')
             connection.close()
             os.replace(temporary, self.database)
-            self._status(state="ready", lines=lines, cards=count, seconds=round(time.monotonic() - started, 1))
+            self._status(state="ready", phase="ready", lines=lines, cards=count,
+                         seconds=round(time.monotonic() - started, 1), message='Local card metadata is ready')
         except Exception:
             connection.close()
             temporary.unlink(missing_ok=True)
             raise
+
+    def _build_indexes(self, connection, started):
+        statements = (CARD_INDEXES + GALLERY_INDEXES + TOKEN_INDEXES
+                      + tuple(f"CREATE INDEX cards_{fmt} ON cards({fmt})" for fmt in INDEXED_FORMATS))
+        self._status(phase='indexes', indexesDone=0, indexesTotal=len(statements),
+                     message='Preparing local card and artwork search')
+        next_progress = time.monotonic()
+
+        def heartbeat():
+            nonlocal next_progress
+            now = time.monotonic()
+            if now >= next_progress:
+                self._status(seconds=round(now - started, 1))
+                next_progress = now + INDEX_PROGRESS_INTERVAL
+            return 0
+
+        connection.set_progress_handler(heartbeat, 100000)
+        try:
+            for number, statement in enumerate(statements, 1):
+                connection.execute(statement)
+                self._status(indexesDone=number, seconds=round(time.monotonic() - started, 1))
+        finally:
+            connection.set_progress_handler(None, 0)
 
     @cached_query
     def search(self, query="", format_name="", color="", type_name="", limit=50, offset=0, sort="name", set_code="", color_mode="legacy"):

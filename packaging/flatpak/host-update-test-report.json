@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "output": "/tmp/love2gathering-flatpak-native-host-ra9aefg6",
+  "scope": "Offline native Flatpak host-update acceptance using two tiny owned bundles.\n\nRequires the already installed Freedesktop 25.08 SDK/runtime. No runtime, metadata,\ncard images or release assets are acquired. GitHub metadata is a deterministic\nfixture; the package bytes, sandbox, installed prefix, update and restart are real.",
+  "userStoreModified": false,
+  "acquisition": false,
+  "fromCommit": "00fc9b26e68d1765d050b470f7f44381b9ab54165f831d8ad52be010d0047a1b",
+  "toCommit": "11b39681f5ae23681d0c603aec15525da4367e53a102b6131ba333b8a9c98a49",
+  "launches": [
+    {
+      "version": "2026.11.17.10",
+      "contextVersion": "2026.11.17.10",
+      "sandbox": "io.github.Alexayy.Love2Gathering"
+    },
+    {
+      "version": "2026.11.18.11",
+      "contextVersion": "2026.11.18.11",
+      "sandbox": "io.github.Alexayy.Love2Gathering"
+    }
+  ],
+  "savesPreserved": true,
+  "exactCustomPrefix": true,
+  "sourceSha256": {
+    "packaging/flatpak/install-flatpak.py": "f552d9ee5e545c85c3fe1a1b87c8c497b2cdc539554e42a0f4f7455ee4db73d0",
+    "packaging/flatpak/update-host.py": "070e5099eabc68ddf152752250f161981646c18c1fe968efeca3d71d3ffc974f",
+    "service/updates.py": "2bbfe4c34a29ce7a304a41de314be891a0de2d18f77f09cc35ada4bcd86ccd83"
+  }
+}

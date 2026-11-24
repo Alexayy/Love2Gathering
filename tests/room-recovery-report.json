@@ -1,0 +1,135 @@
+{
+  "passed": true,
+  "date": "2026-11-18",
+  "engineRevision": "c5a5215fa086f487c793627446d5d27e81dfbc97",
+  "scope": "Isolated current priority-controller classes over a frozen compiled bridge/native dependency baseline; real native priority prompts/actions and separate HTTP production-game controls. Room fault tests use real HTTP gateways with synthetic native payloads. Actual Love HTTP workers use controlled held/delayed endpoints. No active user session/storage or engine-source edits. Actual table-options UI additionally uses controlled native-contract states and replies. No WAN packet-loss, VM or native gameplay UI acceptance claim.",
+  "nativePriority": {
+    "passed": true,
+    "groups": [
+      "emptyAndMana",
+      "manualAndManaPreference",
+      "unknownLegality",
+      "instantAndFlash",
+      "stop",
+      "fullControl",
+      "cancelYield",
+      "coherentSnapshots",
+      "endTurn",
+      "combatChoice",
+      "mandatoryPrompts"
+    ],
+    "manualDefault": {
+      "passed": true,
+      "manualDefault": true,
+      "manaOnlyOptIn": true,
+      "nativeManaCount": 1,
+      "stopPreserved": true,
+      "manaNotActivated": true
+    },
+    "failedLegality": {
+      "passed": true,
+      "unavailableNativeLegalityDoesNotPass": true,
+      "yieldCancelled": true
+    },
+    "build": {
+      "sources": {
+        "bridge/src/love2gathering/PriorityController.java": "02032f7c51699b1d247542afe7614fbb2360a58afa0c09eebc14f2148488a2b6",
+        "bridge/tests/love2gathering/PriorityFixture.java": "460a2e1524f27fac824150bd362e340be75f63500d5bf5c34a6375acb195f22c",
+        "bridge/tests/love2gathering/TriggerFixture.java": "07d5e8a38cfda36a146d4e033fa9f1204327b346c5dd4f77cb21b94ccc61a051",
+        "bridge/tests/love2gathering/ActionabilityFixture.java": "cabc5014a0d6006d923e8e307c51416afe3911d1d783e1fdfa14e71baa621ba4"
+      },
+      "baselineBridgeSha256": "736d04746a50e29a50aac9245271df3c2511db9ef38445eec29c0419377d23fc"
+    },
+    "completedProductionGame": false
+  },
+  "nativePriorityHttp": {
+    "passed": true,
+    "checks": {
+      "endTurnRejectedDuringPregame": true,
+      "persistedStopsAppliedBeforeStart": true,
+      "emptyInitialUpkeepAutoPassed": true,
+      "visibleOwnMainStop": true,
+      "manaOnlyPolicyExposed": true,
+      "manaOnlyPreferenceAcknowledged": true,
+      "manaOnlyDoesNotBypassStops": true,
+      "staleEndTurnRejected": true,
+      "staleActionRejected": true,
+      "malformedActionRejected": true,
+      "endTurnCancelledAtNewTurnWithoutEmptyQuestion": true,
+      "endTurnDidNotPlayLand": true,
+      "emptyOpponentEndStepBluffStop": true,
+      "fullControlHoldsEmptyPriority": true,
+      "invalidStopRejected": true,
+      "nativeLandActionHeld": true,
+      "cancelPreservesAvailableAction": true,
+      "coherentPrioritySnapshots": true
+    },
+    "checkCount": 18,
+    "coherentSnapshotReads": 3657,
+    "ownedBridgeStopped": true,
+    "baselineBridgeSha256": "736d04746a50e29a50aac9245271df3c2511db9ef38445eec29c0419377d23fc"
+  },
+  "transport": {
+    "existingGatewayTests": 26,
+    "newFaultTests": 9,
+    "sameSeatAfterDelayedRead": true,
+    "createAndJoinReplyLossDoNotDuplicateMembership": true,
+    "legacyIncomplete200And500AfterAllocationFenced": true,
+    "operationAndPayloadFences": true,
+    "memoMaxEntries": 1024,
+    "memoTtlSeconds": 3600,
+    "nativeReadSeconds": 2.5,
+    "envelopeBudgetSeconds": 5,
+    "publicHopSeconds": 6,
+    "desktopSocketSeconds": 8,
+    "gameplayMutationsNeverRetried": true,
+    "perSeatManaOnlyPreferenceRetainedInConfirmedRematch": true
+  },
+  "loveWorkers": {
+    "passed": true,
+    "checks": 27,
+    "heldRoomMetadataActionSeconds": 0.066603271,
+    "readOnlyRetry": {
+      "actions": 1,
+      "capabilities": 2,
+      "lobby": 1
+    },
+    "allWorkerThreadsTerminated": true,
+    "report": "tests/api-read-lanes-report.json"
+  },
+  "models": {
+    "roomChecks": 51,
+    "priorityChecks": 30,
+    "apiLaneChecks": 20,
+    "roomRoutingChecks": 11,
+    "stackPresentationChecks": 11
+  },
+  "sourceSha256": {
+    "service/rooms.py": "68fc02d9323f8467d1df96f551dfa2a1247ec8a9625cc4439cf1c39367658407",
+    "service/tests/test_rooms.py": "88024f14e5ab64a1a81b37fbf4c557b58d52fd1df1a1b4752b7e8a656ac8e08f",
+    "service/tests/test_room_transport.py": "78360455e8ecca121f3e155712d3378df4b287c4b7d16645f4a3df6de2f95210",
+    "app/rooms.lua": "34de3d748a5d91dea0f01a4368020f7d35c89288019e436c79fca951ec6d928f",
+    "app/api.lua": "243644aa4e4422fa610e84a11c1124d5de993b87be8b8a2ba50dec807cd75cef",
+    "app/http_worker.lua": "78e03d989a6797561db1cdd4a9ac24e2d024698c5e4b60f77392d6d192761120",
+    "app/priority.lua": "2ce115f36bc82e3bdab90999e5403b07d8f3ef8daf7082f8214dcb251984d5ef",
+    "bridge/src/love2gathering/PriorityController.java": "02032f7c51699b1d247542afe7614fbb2360a58afa0c09eebc14f2148488a2b6",
+    "bridge/tests/love2gathering/PriorityFixture.java": "460a2e1524f27fac824150bd362e340be75f63500d5bf5c34a6375acb195f22c",
+    "bridge/tests/test_priority.py": "dd1e57f60df15ecc3f43ba775ba32a03030af65cd6115e1b5412bc864530b32d",
+    "tests/rooms_model.lua": "28a4154bb6460930e04556884200e3865f8bbb0c5e955ebdaeb25ccb190144c9",
+    "tests/priority_model.lua": "c2528a8f7426a1433341f73b750f2dfe60bf2ee7c31290bd7ba7ef9af3c6d136",
+    "tests/api_lanes.lua": "04e11a5c7e7114105c09b5c99c70a953120fc96e3edcbc72df99c3c086171aeb",
+    "tests/api_rooms.lua": "266cdcc12adc41600ea847e2d6a35b15d131c88ed77db5096233cc8c14c4ade5",
+    "tests/api_read_lanes.lua": "2e815b348dcb5c4eb126449d51bf97fe18eedac01a241ad9aafbe95269d419dd",
+    "tests/api_read_lanes.py": "e82e9feb0d9244e28192f336a21e3485aac9c83579489a670a3595e03679d390",
+    "tests/stack_presentation.lua": "eea79db713500f686ab14d09961dc57dadb1a7a00f18c65277723dfef527e8e5",
+    "tests/table_options_ui.lua": "34a907d875073c9e8398fd33ca567f144a98f0c8eef482c7f9ab1fe0ff7ebfb6",
+    "tests/table_options_ui.sh": "666bc099ac30a8bdb749c292ac711524d328ba41ba716dbfaee17e480be0f0a3"
+  },
+  "tableOptionsUI": {
+    "passed": true,
+    "checks": 30,
+    "report": "tests/table-options-ui-report.json",
+    "sourceStillMatches": true,
+    "scope": "Actual LÖVE11.5/Slab Table options and checkbox mouse input with controlled delayed native transport acknowledgements, real model/persistence requests and isolated VFS. Synthetic native-contract duel; no native game, network or user store writes."
+  }
+}

@@ -19,7 +19,7 @@ import tempfile
 import zipfile
 
 REPOSITORY = 'Alexayy/Love2Gathering'
-ENGINE_REVISION = 'd9b266fc981024873ac7ec5f90ee7121a060725e'
+ENGINE_REVISION = '2a96b0ac129dfd77946eaad536184d3b35fb5e64'
 APP_ID = 'io.github.Alexayy.Love2Gathering'
 MARKER = b'__LOVE2GATHERING_ARCHIVE__\n'
 
@@ -161,7 +161,7 @@ DEB/RPM packages use their distribution's managed installation location. Use the
 
 ## Flatpak: choose an installation location
 
-Install Flatpak and Python 3, keep `install-flatpak.py` beside the bundle, then:
+Install Flatpak and Python 3, keep `install-flatpak.py` and `update-host.py` beside the bundle, then:
 
 ```sh
 python3 install-flatpak.py {prefix}-x86_64.flatpak --prefix /mnt/Games/Love2Gathering-flatpak
@@ -175,7 +175,9 @@ Flatpak still uses sandbox-managed paths for saves and cache.
 ## Windows x64
 
 Run `{prefix}-windows-x64-setup.exe` and choose the installation folder. It bundles
-LÖVE, Python and Java, and adds Start menu shortcuts. Windows builds are unsigned;
+LÖVE, Python, Java and a private Mesa software OpenGL fallback, and adds Start menu shortcuts.
+The launcher uses the Windows driver when compatible and otherwise renders on
+the CPU; no dedicated GPU or system driver installation is required. Windows builds are unsigned;
 Windows may display its normal publisher prompt. A native Windows gameplay test
 is separate from Linux cross-build and package validation.
 
@@ -225,9 +227,12 @@ def prepare(dist: Path, version: str, tag: str, commit: str, metadata_report: Pa
     helper = checked_file(dist / 'install-flatpak.py')
     if b'argparse' not in helper.read_bytes() or APP_ID.encode() not in helper.read_bytes():
         raise ReleaseError('Unexpected Flatpak installation helper')
+    updater = checked_file(dist / 'update-host.py')
+    if b'argparse'not in updater.read_bytes()or APP_ID.encode()not in updater.read_bytes():
+        raise ReleaseError('Unexpected Flatpak update coordinator')
     runtime_paths = [dist / 'windows-runtime-provenance.json', dist / 'flatpak-native-provenance.json']
     windows, flatpak = (read_json(path) for path in runtime_paths)
-    for component in ('love', 'python', 'java'):
+    for component in ('love', 'python', 'java', 'mesa'):
         value = windows.get(component, {})
         if not isinstance(value, dict) or not re.fullmatch(r'[a-f0-9]{64}', str(value.get('sha256', ''))):
             raise ReleaseError('Incomplete Windows runtime provenance')
@@ -249,7 +254,7 @@ def prepare(dist: Path, version: str, tag: str, commit: str, metadata_report: Pa
     write_atomic(metadata_target, json.dumps(metadata, indent=2) + '\n')
     guide = dist / 'INSTALL.md'
     write_atomic(guide, instructions(version, tag, channel))
-    primary = packages + [helper] + runtime_paths + [metadata_target, guide]
+    primary = packages + [helper, updater] + runtime_paths + [metadata_target, guide]
     entries = [{'name': path.name, 'bytes': path.stat().st_size, 'sha256': digest(path)} for path in primary]
     manifest = dist / 'release-manifest.json'
     write_atomic(manifest, json.dumps({'version': version, 'tag': tag, 'repository': REPOSITORY,
@@ -375,7 +380,7 @@ def check_published(gh, version, tag, commit, channel='development', branch=None
         return False
     verify_release(release, tag, commit, channel, draft=False);verify_tag(gh, tag, commit, required=True)
     values = remote_assets(gh, release['id'])
-    primary = set(package_names(version) + ['install-flatpak.py', 'windows-runtime-provenance.json',
+    primary = set(package_names(version) + ['install-flatpak.py', 'update-host.py', 'windows-runtime-provenance.json',
                   'flatpak-native-provenance.json', 'metadata-provenance.json', 'INSTALL.md'])
     assets = {}
     for value in values:

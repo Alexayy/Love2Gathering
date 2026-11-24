@@ -47,6 +47,7 @@ local Window = {}
 local Instances = {}
 local Stack = {}
 local StackLockId = nil
+local StackCompanionId = nil
 local PendingStack = {}
 local ActiveInstance = nil
 local MovingInstance = nil
@@ -481,8 +482,13 @@ function Window.IsObstructed(x, y, skipScrollCheck)
 		for i, v in ipairs(Stack) do
 			-- Stack locks prevents other windows to be considered.
 			if v.Id == StackLockId then
-				insert(list, v)
-				break
+				if ActiveInstance.Id ~= StackCompanionId then
+					insert(list, v)
+					break
+				end
+				-- A companion may inspect or scroll its own exposed content.
+				-- The locked window still owns every point inside its bounds.
+				if Contains(v, x, y) then return true end
 			end
 
 			if Contains(v, x, y) and v.CanObstruct then
@@ -1132,8 +1138,9 @@ function Window.HasResized()
 	return false
 end
 
-function Window.SetStackLock(id)
+function Window.SetStackLock(id, companionId)
 	StackLockId = id
+	StackCompanionId = companionId
 end
 
 function Window.PushToTop(id)

@@ -5,6 +5,7 @@ function love.errorhandler(message)
     return function()return 1 end
 end
 local S=require('lib.Slab');local Model=require('app.model');local Renderer=require('app.renderer');local View=require('app.view');local Layout=require('app.layout');local Preferences=require('app.preferences');local json=require('lib.json')
+local Priority=require('app.priority')
 local m,r,v,prefs,runner,Cursor,Region
 local mouse={x=0,y=0};local down={};local buttons={};local checks={};local cases={}
 local elapsed,wake=0,0;local shots={};local seen={}
@@ -47,9 +48,8 @@ local function settleOpening(count)
                 label=m.playerName;starting=true
                 check(#prompt.choices==count,'Every native player appears in starting-player choices: '..count)
             else
-                for _,choice in ipairs(prompt.choices or {})do
-                    if choice.id=='done' or tostring(choice.label):lower():find('pass',1,true)then label=choice.label;break end
-                end
+                local choice=Priority.passChoice(prompt)
+                if choice then label=prompt.priority and 'Pass Priority' or choice.label end
             end
             assert(label,'Unexpected native opening prompt: '..json.encode(prompt))
             local box=buttons[label]

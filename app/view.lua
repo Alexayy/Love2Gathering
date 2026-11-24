@@ -1,13 +1,7 @@
 local C=require('app.renderer').colors
-local Model=require('app.model')
 local Layout=require('app.layout')
-local RichText=require('app.richtext')
 local View={};View.__index=View
 local formats={'Modern','Standard','Pioneer','Commander'}
-local function plain(value)
-    if type(value)=='table' then return tostring(value.message or value.text or value.label or '') end
-    return tostring(value or ''):gsub('<[^>]*>',''):gsub('&nbsp;',' '):gsub('&amp;','&'):gsub('&gt;','>'):gsub('&lt;','<')
-end
 function View.new(S,model,renderer)
     local self=setmetatable({S=S,m=model,r=renderer},View)
     renderer.view=self
@@ -50,6 +44,10 @@ function View:window(id,x,y,w,h,title,options)
     local windowOptions={X=x,Y=y,W=w,H=h,Title=title,AutoSizeWindow=false,AllowMove=movable,AllowResize=resizable,ResetPosition=not movable or first or self.floatReset[id],ResetSize=not resizable or first or self.floatReset[id],NoSavedSettings=true,Border=border,ShowMinimize=false,ConstrainPosition=true}
     for key,value in pairs(options)do windowOptions[key]=value end
     self.S.BeginWindow(id,windowOptions)
+    if id==self.inputLock then
+        local bx,by,bw,bh=require('lib.Slab.Internal.UI.Window').GetBounds()
+        self.inputLockBounds={x=bx,y=by,w=bw,h=bh}
+    end
     self.floatReset[id]=nil
     if movable and not love.mouse.isDown(1) then
         local ax,ay=self.S.GetWindowPosition();local aw,ah=self.S.GetWindowSize()
@@ -81,6 +79,7 @@ function View:rooms(w,h) require('app.room_ui').build(self,w,h) end
 function View:draft(w,h) require('app.draft_ui').build(self,w,h) end
 function View:settings(w,h,options) require('app.settings').build(self,w,h,options) end
 function View:modals(w,h)
+    require('app.updates').pending(self,w,h)
     local S,m=self.S,self.m
     require('app.deck_picker').popup(self,w,h)
     require('app.collection_ui').modals(self,w,h)
@@ -92,59 +91,9 @@ function View:modals(w,h)
         S.EndWindow()
     end
     if m.zoneView then require('app.zone_ui').build(self,w,h)else self.zoneUiOpening=nil end
-    if m.inspectCard then
-        self:window('inspect-card',w/2-185,110,370,h-180,'Card details')
-        if S.Button('Close details',{W=340,H=27}) then m.inspectCard=nil
-        else
-            local card=m:cardData(m.inspectCard) or m.inspectCard;local art=m:getArt(card)
-            local traits=require('app.card_traits').entries(m.inspectCard)
-            if#traits>0 then
-                S.Text('Current abilities',{Color=C.gold})
-                for _,entry in ipairs(traits)do
-                    if entry.icon then S.Image('native-trait-'..entry.name,{Image=self.r.assets:iconImage(entry.icon,20,entry.gained and C.gold or C.text),W=20,H=20});S.SameLine({CenterY=true})end
-                    S.Text(entry.label..(entry.gained and' · granted'or''),{Color=entry.gained and C.gold or C.text})
-                end
-                S.Separator()
-            end
-            if art then S.Image('inspected-art',{Image=art,W=285,H=399}) end
-            S.PushFont(self.r.assets:titleFont(22,m.settings));S.Textf(plain(card.name),{W=340,Color=C.accent});S.PopFont()
-            RichText.slab(self,'inspected-cost',card.mana_cost or card.manaCost or '',340,{size=20,color=C.gold})
-            S.Textf(plain(card.type_line or card.type),{W=340,Color=C.muted});S.Separator()
-            RichText.slab(self,'inspected-rules',require('app.keywords').annotate(card.oracle_text or card.rules or'',m.settings.keywordReminders),340,{size=16,color=C.text})
-            if card.currentRules and card.currentRules~=''then
-                if S.Button('Show current rules',{W=340,H=32})then self.inspectCurrentRules=not self.inspectCurrentRules end
-                if self.inspectCurrentRules then RichText.slab(self,'inspected-current-rules',card.currentRules,340,{size=16,color=C.gold})end
-            end
-            local context=m.inspectCard.faceDownContext
-            if context then S.Textf('Face-down on the battlefield'..(context.nativePT and' · native P/T '..context.nativePT or'')..' · '..tostring(context.damage or 0)..' damage marked',{W=340,Color=C.gold})
-            else local stats=require('app.card_presentation').stats(m.inspectCard);if stats then S.Textf(stats.label,{W=340,Color=C.gold})end end
-            local merged=m.inspectCard.mutate
-            if type(merged)=='table'and type(merged.components)=='table'and#merged.components>0 then
-                if self.inspectMutateHostId~=m.inspectCard.id then self.inspectMutateHostId=m.inspectCard.id;self.inspectMutateComponentId=nil end
-                S.Separator();S.Text('Mutate components · '..#merged.components,{Color=C.gold})
-                local selected
-                for index,component in ipairs(merged.components)do
-                    local identity=tostring(component.id or index);local label=(component.id==merged.topId and'Top · 'or'Component · ')..plain(component.name or'Card')
-                    S.PushID('mutate-component-'..identity)
-                    if S.TextSelectable(label,{Tooltip='Inspect this component’s original printing. It is part of the merged permanent.'})then self.inspectMutateComponentId=identity end
-                    S.PopID()
-                    if self.inspectMutateComponentId==identity then selected=component end
-                end
-                if selected then
-                    S.Textf('Component printing · '..plain(selected.name or'Card'),{W=340,Color=C.accent})
-                    local printed=selected.printing or selected
-                    if printed.power~=nil and printed.toughness~=nil then S.Text('Printed '..tostring(printed.power)..'/'..tostring(printed.toughness),{Color=C.muted})end
-                    local componentArt=m:getArt(m:cardData(selected)or selected,true)
-                    if componentArt then S.Image('mutate-component-art',{Image=componentArt,W=180,H=252})end
-                end
-            else self.inspectMutateHostId=nil;self.inspectMutateComponentId=nil end
-            local attached=(self.r.boardAttached or{})[m.inspectCard.id]or{}
-            if #attached>0 then S.Separator();S.Text('Attached cards',{Color=C.gold})end
-            for _,entry in ipairs(attached)do if S.TextSelectable(entry.name)then m.inspectCard=entry end end
-            for _,entry in ipairs(m.inspectCard.linkedExile or{})do if S.TextSelectable('Exiled here · '..(entry.name or'Face down'))and not entry.hidden then m.inspectCard=entry end end
-        end
-        S.EndWindow()
-    end
+    require('app.table_panels').commander(self,w,h)
+    require('app.card_actions').build(self,w,h)
+    if m.inspectCard then require('app.card_details_ui').build(self,w,h) else self.inspectKey=nil end
     if m.settingsOpen and not m.storageFolderDialog and not m.imagePackFileDialog and not m.storageLocationConfirm then self:settings(w,h) end
     require('app.storage').modal(self,w,h)
     require('app.storage_locations').modal(self,w,h)
@@ -154,6 +103,10 @@ function View:modals(w,h)
 end
 function View:build()
     if self.inputPage~=self.m.page then
+        if self.inputPage=='table' then
+            self.m:clearTablePreview()
+            if self.m.tableDetailSource then self.m:closeTableInspection() end
+        end
         require('lib.Slab.Internal.UI.Region').ClearHotInstance();self.S.SetInputFocus(nil)
         self.inputPage=self.m.page
     end
@@ -171,10 +124,15 @@ function View:build()
     local outcome=self.m.page=='table'and require('app.outcome').state(self.m)
     local completedDuel=outcome and outcome.mode=='duel'
     local endedGame=self.m.page=='table'and self.m.game and self.m.game.running==false and not self.m.replay
+    local tableIdentity=self.m.replay or self.m.game and self.m.game.gameId
+    if self.m.page~='table'or self.tableGameIdentity~=tableIdentity then
+        self.tableOptionsOpen=false;self.combatStopsOpen=false
+    end
+    self.tableGameIdentity=tableIdentity
     if endedGame then
         -- These gameplay windows are no longer built after completion. Retire
         -- their locks even if the opponent finished while they were open.
-        self.m.confirmConcede=false;self.combatStopsOpen=false
+        self.m.confirmConcede=false;self.combatStopsOpen=false;self.tableOptionsOpen=false
     end
     local Choices=require('app.card_choices');local choicePrompt=self.m.prompt and self.m:prompt()or nil
     self.cardChoiceModal=not endedGame and Choices.currentModal(self,choicePrompt)or nil
@@ -185,10 +143,10 @@ function View:build()
         require('lib.Slab.Internal.UI.Region').ClearHotInstance();self.S.SetInputFocus(nil)
         self.cardChoiceModalKey=choiceKey
     end
-    local lock=self.setPicker and'set-picker'or self.m.storageLocationConfirm and'storage-location-confirm'or self.themeColorEdit and'ColorPicker'or self.m.storagePurgePreview and'storage-purge-confirm'or self.m.cardPrintingPicker and'card-printing-picker'or self.m.tokenPicker and'token-art-picker'or self.brandMenu and'app-brand-menu'or self.deckSelection and'choose-deck-tiles'
-        or self.m.settingsOpen and'settings'or self.m.inspectCard and'inspect-card'or self.m.zoneView and'zone-view'
+    local lock=self.m.updateApplying and'update-install-pending'or self.setPicker and'set-picker'or self.m.storageLocationConfirm and'storage-location-confirm'or self.themeColorEdit and'ColorPicker'or self.m.storagePurgePreview and'storage-purge-confirm'or self.m.cardPrintingPicker and'card-printing-picker'or self.m.tokenPicker and'token-art-picker'or self.brandMenu and'app-brand-menu'or self.deckSelection and'choose-deck-tiles'
+        or self.m.settingsOpen and'settings'or self.m.inspectCard and'inspect-card'or self.m.cardActionSheet and'native-card-actions'or self.m.commanderDetails and'commander-details'or self.m.zoneView and'zone-view'
         or self.m.galleryInspect and'gallery-inspect'or self.m.deleteConfirm and'delete-deck'or self.m.archiveCopy and'archive-copy'
-        or self.m.confirmConcede and'concede-confirm'or self.combatStopsOpen and'combat-step-stops'
+        or self.m.confirmConcede and'concede-confirm'or self.combatStopsOpen and'combat-step-stops'or self.tableOptionsOpen and'table-options'
         or completedDuel and'match-complete'
         or self.cardChoiceModal
         or self.m.page=='builder'and(self.builderPopup and'builder-choice-popup'or self.builderFiltersOpen and'simplified-more-filters')
@@ -196,7 +154,8 @@ function View:build()
     if self.inputLock~=(lock or nil)then
         require('lib.Slab.Internal.UI.Region').ClearHotInstance();self.S.SetInputFocus(nil)
     end
-    if lock then Window.SetStackLock(lock);self.inputLock=lock
+    self.inputLockBounds=nil
+    if lock then Window.SetStackLock(lock,lock==self.cardChoiceModal and 'docked-stack' or nil);self.inputLock=lock
     elseif self.inputLock then Window.SetStackLock(nil);self.inputLock=nil end
     self.S.PushFont(self.r.fonts[16])
     if self.m.page=='decks' then self:decks(w,h)

@@ -2,6 +2,16 @@
 
 Run `python3 service/server.py --port 17370 --data-dir PATH`. The launcher and standalone catalog use the same resolver in `paths.py`: explicit application override, XDG override, an existing store on the project's mounted drive, then the home fallback. The service listens on loopback by default and reports **API version 8** at `/health`. Version 8 adds guarded storage maintenance, streamed image-download planning and persistent background progress. Exact artwork cache status, normalized gallery search and explicit selected-image downloads remain available. Starter/preconstructed browsing, owned copies, profiles, imports, token preferences and history remain available. The generated card index stays at schema 7, so this API change needs no metadata rebuild.
 
+## Local card indexing
+
+The first launch streams the bundled JSONL or JSONL.GZ into a separate generated SQLite index. Installed packages keep this index under the configured data directory's `catalog/` folder; later launches reuse a complete index when the source size, modification time and schema still match. Metadata and user saves remain untouched.
+
+`GET /health` reports `index.phase`: `waiting` for another instance's build lock, `checking` for an existing index, `reading` for source import, `indexes` for search preparation, then `ready` or `error`. Reading reports source `lines`, deduplicated English `cards`, `bytesRead`, `totalBytes` and elapsed `seconds` at approximately half-second intervals, including translations and non-card records. Byte counts refer to the compressed file for gzip sources, so the displayed read percentage is separate from final search preparation. That phase reports `indexesDone` / `indexesTotal` and continues its elapsed-time heartbeat. A zero English-card count therefore does not hide input progress.
+
+Search indexes are bulk-built after import using a bounded 32 MiB SQLite cache. Uniqueness constraints remain active throughout import, and the completed schema remains version 7, preserving existing indexes without a forced rebuild. Failed imports, changed sources and failed search preparation leave the previous complete catalog in place; only a fully prepared replacement is published.
+
+The startup screen shows elapsed seconds while waiting for another instance or preparing search, so a slow single-index operation remains visibly active. [The indexing report](../tests/catalog-indexing-report.json) records a full local compressed-source HTTP run, previous-code comparison, source preservation and all 34 added XMage names resolving through the ready catalog, including a front-face alias. Its host timings are separate from Fedora VM or Flatpak runtime acceptance.
+
 ## SQLite storage and migration
 
 The user database is **`PATH/app.sqlite`**. It contains decks, bundled-deck seeds, deletion tombstones, settings, UI layout, token artwork preferences, artwork JPEG blobs and metadata, replay metadata, and immutable replay events. WAL mode, a 30-second busy timeout and `synchronous=FULL` support concurrent local services. Writes use transactions. The generated card index remains separate in `service/data/catalog.sqlite`; the configured source JSONL remains unchanged.

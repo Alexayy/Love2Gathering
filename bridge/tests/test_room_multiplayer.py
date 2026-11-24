@@ -83,13 +83,18 @@ def main():
                         assert all(p['human'] or p['hand']==[] for p in players)
                         assert next(p for p in players if p['human'])['id']==viewer
                         serialized=json.dumps(current)
+                        # Perspectives are fetched sequentially while native
+                        # queued answers may finish. A foreign hand's earlier
+                        # card can already be public in this later frame.
+                        public_ids={card['id'] for participant in players
+                                    for zone in ('battlefield','graveyard','exile','command','revealed')
+                                    for card in participant.get(zone,[]) if card.get('id')}
                         for other in states:
                             for player in other.get('players',[]):
                                 if player['human'] and player['id']!=viewer:
-                                    for card in player.get('hand',[]):assert card['id'] not in serialized,'Another human hand ID leaked'
+                                    for card in player.get('hand',[]):
+                                        if card['id'] not in public_ids:assert card['id'] not in serialized,'Another human hand ID leaked'
                         privacy_frames+=1
-                if states[0].get('turn',0)>=count+1 and len({p for p,t in land_turns})==humans:
-                    break
                 acted=False
                 for player,current in zip(ids,states):
                     p=current.get('prompt')
@@ -113,6 +118,8 @@ def main():
                     chosen=chosen or index.get('done') or (choices[0] if choices else None)
                     assert chosen,'Unhandled native prompt '+str(p)
                     last[player]=p['id'];answer(game,player,p,chosen);actions+=1;acted=True
+                if states[0].get('turn',0)>=count+1 and len({p for p,t in land_turns})==humans and {'END_TURN','DRAW'}<={step for _,step in stops}:
+                    break
                 if not acted:time.sleep(.01)
             else:raise AssertionError('Native room turn cycle timed out')
             assert len(asked)==humans and cross

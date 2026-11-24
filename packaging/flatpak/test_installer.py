@@ -166,7 +166,7 @@ if action=='run':pathlib.Path(os.environ['FLATPAK_TEST_PROBE']).write_text(json.
         self.assertEqual(before,{path:installer.snapshot(path)for path in paths.values()})
     def test_legacy_owned_files_upgrade_only_with_known_checksums(self):
         self.prefix.mkdir();paths=installer.resources(self.prefix)
-        paths['wrapper'].write_text(installer.wrapper_text(self.prefix));paths['helper'].write_bytes(b'known legacy helper')
+        paths['wrapper'].write_text(installer.legacy_wrapper_text(self.prefix));paths['helper'].write_bytes(b'known legacy helper')
         state={'appId':installer.APP_ID,'prefix':str(self.prefix),'desktopText':'old desktop'};paths['marker'].write_text(json.dumps(state))
         with patch.object(installer,'LEGACY_HELPER_SHA256',installer.digest(b'known legacy helper')):
             self.assertEqual(self.call(),0)

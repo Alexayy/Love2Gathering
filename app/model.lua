@@ -1,7 +1,7 @@
 local API=require('app.api')
 local json=require('lib.json')
 local Model={};Model.__index=Model
-local defaults={manualTriggers=false,autoMana=true,showCardArt=true,localArtworkOnly=true,artworkMemoryMiB=256,resolution='Desktop',windowMode='Borderless',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,titleFontFamily='Beleren',skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='Kenney',keywordReminders=true,fontFamily='Beleren',panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=true,builderLayout='Classic',presentationVersion=2,fontQuality='High',cursorScale=.55,boardImpactIntensity=.55,cardBackStyle='Arcane'}
+local defaults={manualTriggers=false,autoMana=true,showCardArt=true,localArtworkOnly=true,artworkMemoryMiB=256,resolution='Desktop',windowMode='Borderless',vsync=true,msaa=0,renderScale=1,textureFilter='linear',frameLimit=0,uiScale=1,animations=true,particles=true,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,titleFontFamily='Beleren',skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='Kenney',keywordReminders=true,fontFamily='Beleren',panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=false,builderLayout='Classic',presentationVersion=2,fontQuality='High',cursorScale=.55,boardImpactIntensity=.55,cardBackStyle='Arcane',vfxIntensity=.65,ambientKeywordFX=true,presentationPacing='Standard',cameraShake=true,parallax=true,distortion=true,cardScale=1,groupEquivalent=true}
 local function copy(t) return json.decode(json.encode(t)) end
 local function errorText(body,err,code)
     if err then return err end
@@ -75,14 +75,16 @@ function Model:update(dt)
     end
 end
 function Model:searchChanged() self.offset=0;self.searchTimer=.23 end
-function Model:rememberCard(card)
+function Model:rememberCard(card,requestedName)
     if not card or not card.name then return end
+    -- A face-name lookup returns the canonical card name with requested_face.
+    local name=requestedName or card.name
     self.nameCacheAge=self.nameCacheAge or{};self.nameCacheTick=(self.nameCacheTick or 0)+1
-    self.byName[card.name]=card;self.nameCacheAge[card.name]=self.nameCacheTick
+    self.byName[name]=card;self.nameCacheAge[name]=self.nameCacheTick
     local count=0;for _ in pairs(self.byName)do count=count+1 end
     while count>512 do
         local oldest,age
-        for name in pairs(self.byName)do local used=self.nameCacheAge[name]or 0;if name~=card.name and(not age or used<age)then oldest,age=name,used end end
+        for key in pairs(self.byName)do local used=self.nameCacheAge[key]or 0;if key~=name and(not age or used<age)then oldest,age=key,used end end
         if not oldest then break end
         self.byName[oldest]=nil;self.nameCacheAge[oldest]=nil;count=count-1
     end
@@ -129,9 +131,10 @@ function Model:cardData(card)
     if self.byName[name] then
         self.nameCacheAge=self.nameCacheAge or{};self.nameCacheTick=(self.nameCacheTick or 0)+1;self.nameCacheAge[name]=self.nameCacheTick
         local data=copy(self.byName[name])
+        data.requested_face=card.requested_face or data.requested_face
         -- Catalog IDs select images; native IDs select game objects. Keep both.
         data.objectId=card.id
-        for _,key in ipairs({'power','toughness','damage','counters','printing','currentRules','keywords','abilityIcons','permanent','ownerId','controllerId','token','isToken','colors','subtypes','supertypes','tokenSourceId','tokenSourceName','tokenTemplate','copySourceCard','mutate','attachedToId','attachedToPlayerId','attachmentIds','linkedExile','attacking','blocking'})do
+        for _,key in ipairs({'power','toughness','damage','counters','printing','currentRules','currentKeywords','mechanicCapabilities','zone','zoneName','keywords','abilityIcons','permanent','ownerId','controllerId','token','isToken','colors','subtypes','supertypes','tokenSourceId','tokenSourceName','tokenTemplate','copySourceCard','mutate','attachedToId','attachedToPlayerId','attachmentIds','linkedExile','attacking','blocking'})do
             if card[key]~=nil then data[key]=card[key]end
         end
         return data
@@ -139,7 +142,7 @@ function Model:cardData(card)
     if (not self.lookupPending[name] or self.lookupPending[name]<love.timer.getTime()) and self.catalogHealth.ready then
         self.lookupPending[name]=love.timer.getTime()+30
         self:request('catalog','GET','/cards/by-name?name='..API.escape(name),nil,function(data)
-            if data then self:rememberCard(data.card or data);self.lookupPending[name]=nil end
+            if data then self:rememberCard(data.card or data,name);self.lookupPending[name]=nil end
         end,true)
     end
     return card
@@ -181,7 +184,7 @@ function Model:getBuilderPreviewArt(card)
                 if code==499 then if cache then cache[printing]=nil end;return end
                 entry.pending=false;entry.retryAt=love.timer.getTime()+30;entry.error=err or(code~=200 and'Card metadata unavailable'or nil)
                 if not err and code==200 and data then
-                    if cache then entry.card=data else self:rememberCard(data.card or data)end
+                    if cache then entry.card=data else self:rememberCard(data.card or data,card.name)end
                 end
             end,false,{priority='selectedMetadata',selectionToken=selection.token..':'..(printing or card.name),isCurrent=active})
         end
@@ -416,13 +419,15 @@ function Model:setGame(data)
     if self.game and data.gameId==self.game.gameId and data.revision and self.game.revision and data.revision<self.game.revision then return end
     if not self.game or data.gameId and self.game.gameId and data.gameId~=self.game.gameId then
         self.answeredPrompt=nil;self.orderPrompt=nil;self.promptOrder={};self.actionBusy=false;self.concedePending=false
-        self.zoneView=nil;self.inspectCard=nil;self.confirmConcede=false
+        self.zoneView=nil;self.inspectCard=nil;self.cardActionSheet=nil;self.commanderDetails=nil;self.confirmConcede=false
         self.pollRequest=(self.pollRequest or 0)+1;self.polling=false
         self.priorityBusy=false;self.priorityRequest=(self.priorityRequest or 0)+1
     end
     if self.api.setNativeSession then self.api:setNativeSession(data.gameId)end
     self.game=data;self.gameConnectionError=nil
     self:refreshLibraryViews()
+    self:refreshZoneView()
+    self:refreshTableInspection()
     local prompt=data.prompt
     if type(prompt)=='table' and prompt~=json.null and self.orderPrompt~=prompt.id then
         self.orderPrompt=prompt.id;self.promptOrder={}
@@ -456,6 +461,79 @@ function Model:inspectLibraryTop(playerId,cardId,gameId)
     local card=self:libraryTop(playerId)
     self.inspectCard=card;self.libraryTopInspect={playerId=playerId,cardId=cardId,gameId=gameId,card=card}
     return true
+end
+function Model:openZone(playerId,zoneName,label,members)
+    if not self.game then return false end
+    for _,player in ipairs(self.game.players or{})do if player.id==playerId then
+        local zone={label=label or((player.name or'Player')..' · '..zoneName),playerId=playerId,zoneName=zoneName,gameId=self.game.gameId,cards=player[zoneName]or{}}
+        if members then
+            zone.memberIds={}
+            for _,card in ipairs(members)do zone.memberIds[card.id]=true end
+        end
+        self.zoneView=zone
+        if members then self:refreshZoneView()end
+        return true
+    end end
+    return false
+end
+function Model:revealedCards()
+    local cards,seen={},{}
+    for _,key in ipairs({'revealed','lookedAt'})do
+        for _,group in ipairs(self.game and self.game[key] or{})do
+            for _,card in ipairs(group.cards or{})do
+                if card.id and not seen[card.id] then
+                    seen[card.id]=true
+                    cards[#cards+1]=card
+                end
+            end
+        end
+    end
+    return cards
+end
+local function currentZoneCards(model,zone)
+    if zone.gameId and(not model.game or model.game.gameId~=zone.gameId)then return nil end
+    if zone.playableExile then return require('app.card_actions').extension(model)end
+    if zone.revealed then return model:revealedCards()end
+    if zone.playerId and zone.zoneName then
+        for _,player in ipairs(model.game and model.game.players or{})do
+            if player.id==zone.playerId then
+                local cards=player[zone.zoneName]or{}
+                if not zone.memberIds then return cards end
+                local members={}
+                for _,card in ipairs(cards)do
+                    if zone.memberIds[card.id] then members[#members+1]=card end
+                end
+                return members
+            end
+        end
+        return nil
+    end
+    -- Legacy/group openings retain only exact current entitled object IDs.
+    local ids={};for _,card in ipairs(zone.cards or{})do if card.id then ids[card.id]=true end end
+    local current={}
+    for _,player in ipairs(model.game and model.game.players or{})do
+        for _,name in ipairs({'battlefield','hand','graveyard','exile','command'})do
+            for _,card in ipairs(player[name]or{})do if ids[card.id]then current[#current+1]=card end end
+        end
+    end
+    return current
+end
+function Model:refreshZoneView()
+    local zone=self.zoneView;if not zone or zone.libraryPlayerId then return end
+    local cards=currentZoneCards(self,zone)
+    if zone.inspectedCard and zone.inspectedCard==self.inspectCard then
+        local current
+        for _,card in ipairs(cards or{})do
+            if card.id==zone.inspectedCard.id then
+                local display=require('app.card_presentation').peek(card)
+                if not display.hidden and not display.faceDown then current=display end
+                break
+            end
+        end
+        zone.inspectedCard=current
+        self.inspectCard=current
+    else zone.inspectedCard=nil end
+    if cards then zone.cards=cards else self.zoneView=nil end
 end
 function Model:refreshLibraryViews()
     local zone=self.zoneView
@@ -491,6 +569,7 @@ function Model:prompt()
     return type(p)=='table' and p~=json.null and p.id and p.id~=self.answeredPrompt and p or nil
 end
 function Model:answer(kind,value)
+    if self.roomGameActive and self.roomDisconnected then return false end
     local p=self:prompt();if not p or self.actionBusy or self.priorityBusy then return end
     self.actionBusy=true;self.answeredPrompt=p.id
     local gameId=self.game and self.game.gameId;local generation=self.api.routeGeneration
@@ -498,12 +577,14 @@ function Model:answer(kind,value)
         if not self.game or self.game.gameId~=gameId or generation~=self.api.routeGeneration then return end
         self.actionBusy=false;if data then self:setGame(data) else self.answeredPrompt=nil end;self.pollTimer=0
     end)
+    return true
 end
 function Model:answerChoice(choice)
     local value=choice.value;if value==nil then value=choice.id end
     self:answer(choice.responseType or 'string',value)
 end
 function Model:canSelect(id)
+    if self.roomGameActive and self.roomDisconnected then return false end
     local p=self:prompt();if not p then return false end
     if type(p.actionable)=='table' then
         for _,candidate in ipairs(p.actionable) do if tostring(candidate)==tostring(id) then return true end end
@@ -514,7 +595,7 @@ function Model:canSelect(id)
     return false
 end
 function Model:selectCard(card)
-    if self:canSelect(card.id) then self:answer('uuid',card.id);return true end
+    if self:canSelect(card.id) then return self:answer('uuid',card.id)==true end
     local p=self:prompt()
     if p and p.combat then
         self:toast('Choose a highlighted legal blocker or attacker. '..(p.combat.message or''),true)
@@ -533,6 +614,7 @@ function Model:quit()
     if self.uiLayoutTimer then self.api:request('catalog','PUT','/ui-layout',self.uiLayout,function() end) end
     self.api:quit()
 end
+require('app.table_inspection').install(Model)
 require('app.replays').install(Model)
 require('app.priority').install(Model)
 require('app.gallery').install(Model)

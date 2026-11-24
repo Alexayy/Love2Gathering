@@ -1,0 +1,117 @@
+{
+  "passed": true,
+  "gates": {
+    "luaModelSuites": {
+      "passed": true,
+      "count": 53
+    },
+    "serviceTests": {
+      "passed": true,
+      "count": 294
+    },
+    "fullTableUI": {
+      "passed": true,
+      "checks": 85,
+      "performance": {
+        "drawSubmissionMedianMs": 4.363734,
+        "drawSubmissionP95Ms": 11.126109,
+        "renderer": [
+          "OpenGL",
+          "4.6 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4",
+          "AMD",
+          "AMD Ryzen 7 6800HS Creator Edition (radeonsi, rembrandt, LLVM 20.1.2, DRM 3.64, 7.0.0-43-generic)"
+        ],
+        "samples": 220
+      },
+      "dimensions": [
+        {
+          "actual": [
+            1366,
+            768
+          ],
+          "requested": [
+            1366,
+            768
+          ]
+        },
+        {
+          "actual": [
+            1920,
+            1008
+          ],
+          "requested": [
+            1920,
+            1080
+          ]
+        },
+        {
+          "actual": [
+            2560,
+            1008
+          ],
+          "requested": [
+            2560,
+            1440
+          ]
+        },
+        {
+          "actual": [
+            2560,
+            1008
+          ],
+          "requested": [
+            2560,
+            1080
+          ]
+        }
+      ]
+    },
+    "tableOptionsUI": {
+      "passed": true
+    },
+    "zoneActionsUI": {
+      "passed": true
+    },
+    "nativeZones": {
+      "passed": true,
+      "engineUnchanged": true
+    },
+    "productionGames": {
+      "passed": true,
+      "engineUnchanged": true,
+      "bridgeSourcesStillMatch": true,
+      "duelRecording": {
+        "actionCount": 109,
+        "completed": true,
+        "eventCount": 1037,
+        "frameCount": 568,
+        "outcome": "win",
+        "status": "completed"
+      }
+    }
+  },
+  "sourceHashes": {
+    "app/table.lua": "b46e7c8d0b11b2177c1e76a4ff9276ed4df6ee67fb95ce2f26a0fec22d5ca11c",
+    "app/table_camera.lua": "06d54bedafd8daa769ee990e6dac1d42be595076a58fed816ff290513d6d1338",
+    "app/table_presentation.lua": "ba49df73113e7ff741b37fe9accad21b278166da3df732a6a7c3dd0f2de7deeb",
+    "app/table_panels.lua": "d9580339db3935ccfa39a23d5495e21d6b94dc9eea60d422fcb23e9fede69be7",
+    "app/table_hud.lua": "b5c1b30b53c3d26094f352eed51d944c7196728ef304dcabff07c9018ba95b4a",
+    "app/renderer.lua": "3df326b0229d81d09b18c64910ba735eb4991d027dcb7165cc54a7bc6ca639ae",
+    "app/card_actions.lua": "90609a8405379721cbaeaa15c59c5ada4e1bb13d4d9be2e459ab906769724097",
+    "app/card_choices.lua": "1814f57e2205cdeef63d775273789ecb6828cae455f473c4773d091108ceb159",
+    "app/zone_ui.lua": "d12c4ba9d281b4d027c3f66c4c40ad5fecedba21f8c8dab27cff38493cabd30b",
+    "app/model.lua": "908d659b4e5592b876d4a91446d472dca338ceec01d0be7e6e715a845b91c078",
+    "app/priority.lua": "2ce115f36bc82e3bdab90999e5403b07d8f3ef8daf7082f8214dcb251984d5ef",
+    "app/rooms.lua": "34de3d748a5d91dea0f01a4368020f7d35c89288019e436c79fca951ec6d928f",
+    "app/api.lua": "243644aa4e4422fa610e84a11c1124d5de993b87be8b8a2ba50dec807cd75cef",
+    "app/http_worker.lua": "78e03d989a6797561db1cdd4a9ac24e2d024698c5e4b60f77392d6d192761120",
+    "app/mechanic_fx.lua": "3329664211861ce3b9f1ba378fcf93310b9650fa0bf40f6d64f25ccd993dd36d",
+    "app/board_fx.lua": "d823631744af522aa5963e9b1191e7ee29ac0ab1e8ef8c95a5d159b3b08062e8",
+    "main.lua": "1c3a59e069b9bdcac698c199b0cf0b729a44023ff890f565672e4a596202f337",
+    "service/rooms.py": "68fc02d9323f8467d1df96f551dfa2a1247ec8a9625cc4439cf1c39367658407",
+    "service/storage_schema.py": "e796dff834c8a13f8a62ddd7a5acd90ce1a40a4a9be88ef301df7b48243d7b69"
+  },
+  "scope": "Current native zone/choice/priority/room and table-layout integration. Real exported-frame and synthetic full-table graphics are distinct from native focused/normal-start game acceptance. VFX causal extensions and installer/updater work have separate follow-up gates. No user services/storage or engine source/pin changed.",
+  "enginePin": "c5a5215fa086f487c793627446d5d27e81dfbc97",
+  "userStoreModified": false
+}

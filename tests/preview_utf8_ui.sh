@@ -22,6 +22,7 @@ python3 - "$test_dir" "$project_dir" <<'PY'
 import hashlib,json,pathlib,sys
 run,root=map(pathlib.Path,sys.argv[1:]);path=run/'report.json';report=json.loads(path.read_text())
 files=['app/utf8_text.lua','app/richtext.lua','app/renderer.lua','app/card_choices.lua']
+if (run/'app/table_preview.lua').exists():files.append('app/table_preview.lua')
 report['sourceSha256']={name:hashlib.sha256((run/name).read_bytes()).hexdigest()for name in files};report['sourceSha256']['tests/preview_utf8_ui.lua']=hashlib.sha256((run/'main.lua').read_bytes()).hexdigest()
 path.write_text(json.dumps(report,indent=2)+'\n');(root/'tests/preview-utf8-ui-report.json').write_text(path.read_text());print('Report:',path)
 PY

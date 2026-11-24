@@ -42,6 +42,24 @@ local countHints=Choices.combatCounts(countsGame,{role='block_target',legalAttac
 check(#countHints==2 and countHints[1]=='Native menace attacker needs at least 2 blockers'and countHints[2]=='Native limited attacker allows at most 1 blocker','Combat count hints render only native offered attackers and treat maximum zero as unlimited')
 local previewHints=Choices.combatCounts(countsGame,{role='blockers',blockers={{legalAttackerIds={'menace'}}}})
 check(#previewHints==1 and previewHints[1]:find('at least 2',1,true),'Blocker preview bubbles carry native formation requirements separately from pairwise eligibility')
+local twinA,twinB={id='blocker-a',name='Spirit Token'},{id='blocker-b',name='Spirit Token'}
+local attackerA,attackerB={id='attacker-a',name='Wolf Token'},{id='attacker-b',name='Wolf Token'}
+local masked={id='attacker-c',name='Hidden identity',faceDown=true}
+local fight={players={{battlefield={twinA,twinB}},{battlefield={attackerA,attackerB,masked}}},combat={groups={
+    {attackerId=attackerA.id,blockerIds={twinA.id}},
+    {attackerId=attackerB.id,blockerIds={twinA.id}},
+    {attackerId=masked.id,blockerIds={twinA.id}},
+}}}
+local blocking={combat={role='blockers'},choices={{id='second-option',responseType='uuid',value=twinB.id},
+    {id='first-option',responseType='uuid',value=twinA.id},{id='done',responseType='boolean',value=true}}}
+local blockers=Choices.combatCards(fight,blocking)
+check(#blockers==2 and blockers[1].name=='Spirit Token #2' and blockers[2].name=='Spirit Token #1','Duplicate blockers are labeled by native battlefield instances independently of choice order')
+check(blockers[1].status=='Unassigned' and not blockers[1].selected and blockers[2].selected and table.concat(blockers[2].targets,',')=='Wolf Token #1,Wolf Token #2,Face-down creature','Existing blockers show exact native assignments without revealing a face-down target')
+local targets,source=Choices.combatCards(fight,{combat={role='block_target',blockerId=twinA.id},choices={
+    {id='target',responseType='uuid',value=attackerB.id},{id='hidden',responseType='uuid',value=masked.id},
+}})
+check(source=='Spirit Token #1' and targets[1].selected and targets[1].choice.id=='target' and targets[1].value==attackerB.id,'Target selection retains the exact blocker and native response ID')
+check(targets[2].name=='Face-down creature' and targets[2].card.faceDown and targets[2].card.name~='Hidden identity','An offered face-down attacker keeps a masked selectable image')
 local log={{text='Cast',category='cast',stackEvent=true},{text='Trigger detail',category='trigger'},{text='Land',category='land'},{text='Resolve detail',category='resolve'}}
 local compact=Log.entries(log,{},false);local verbose=Log.entries(log,{},true)
 check(#compact==2 and compact[1].text=='Land'and compact[2].text=='Cast'and#verbose==4,'Compact log keeps ordinary casts/actions while Verbose restores stack details')

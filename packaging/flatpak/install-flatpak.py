@@ -19,6 +19,7 @@ import uuid
 APP_ID = 'io.github.Alexayy.Love2Gathering'
 MARKER = '.love2gathering-flatpak.json'
 HELPER = 'install-flatpak.py'
+UPDATE_HELPER = 'update-host.py'
 # Recognize the exact pre-release helper used by the first native acceptance.
 LEGACY_HELPER_SHA256 = 'd8228689d8ff1d83765519bae485c3dcc2f6e48384872dea59b75d81e74f6727'
 
@@ -44,8 +45,12 @@ def desktop_escape(value):
     return desktop_string('"' + value + '"')
 
 
-def wrapper_text(prefix):
+def legacy_wrapper_text(prefix):
     return '#!/bin/sh\nexport FLATPAK_USER_DIR=' + shlex.quote(str(prefix)) + '\nexec flatpak --user run ' + APP_ID + ' "$@"\n'
+
+
+def wrapper_text(prefix):
+    return '#!/bin/sh\nexec python3 ' + shlex.quote(str(prefix / UPDATE_HELPER)) + ' --prefix ' + shlex.quote(str(prefix)) + ' -- "$@"\n'
 
 
 def desktop_text(prefix):
@@ -100,7 +105,7 @@ def read_state(prefix):
     if state.get('schema', 1) not in (1, 2) or not isinstance(state.get('desktopText'), str):
         raise ValueError('Invalid Flatpak installer ownership metadata')
     files = state.get('files', {})
-    if not isinstance(files, dict) or set(files) - {'love2gathering', HELPER}:
+    if not isinstance(files, dict) or set(files) - {'love2gathering', HELPER, UPDATE_HELPER}:
         raise ValueError('Invalid installer-owned file list')
     if any(not isinstance(value, str) or len(value) != 64 for value in files.values()):
         raise ValueError('Invalid installer-owned file checksum')
@@ -117,7 +122,7 @@ def owned_file(prefix, name, state, value):
         return digest(value[1]) == expected
     if state.get('schema', 1) == 1:
         if name == 'love2gathering':
-            return value[1] == wrapper_text(prefix).encode('utf-8')
+            return value[1] == legacy_wrapper_text(prefix).encode('utf-8')
         return digest(value[1]) == LEGACY_HELPER_SHA256
     return False
 
@@ -125,6 +130,7 @@ def owned_file(prefix, name, state, value):
 def resources(prefix):
     return {
         'wrapper': prefix / 'love2gathering', 'helper': prefix / HELPER,
+        'updater': prefix / UPDATE_HELPER,
         'marker': prefix / MARKER,
         'desktop': data_home() / 'applications' / (APP_ID + '-local.desktop'),
         'link': Path.home() / '.local/bin/love2gathering-flatpak',
@@ -132,7 +138,7 @@ def resources(prefix):
 
 
 def validate_registration(prefix, paths, state, before):
-    for key, name in (('wrapper', 'love2gathering'), ('helper', HELPER)):
+    for key, name in (('wrapper', 'love2gathering'), ('helper', HELPER), ('updater', UPDATE_HELPER)):
         if not owned_file(prefix, name, state, before[paths[key]]):
             raise ValueError('Refusing to replace an unrelated or modified file: ' + str(paths[key]))
     value = before[paths['link']]
@@ -170,15 +176,17 @@ def atomic_link(path, target, previous):
         temporary.unlink(missing_ok=True)
 
 
-def register(prefix, paths, before):
+def register(prefix, paths, before, source_dir=None):
+    source_dir=Path(source_dir)if source_dir is not None else Path(__file__).resolve().parent
     wrapper = wrapper_text(prefix).encode('utf-8')
-    helper = Path(__file__).resolve().read_bytes()
+    helper = (source_dir/HELPER).read_bytes()
+    updater = (source_dir/UPDATE_HELPER).read_bytes()
     text = desktop_text(prefix)
     state = {'schema': 2, 'appId': APP_ID, 'prefix': str(prefix), 'desktopText': text,
-             'files': {'love2gathering': digest(wrapper), HELPER: digest(helper)}}
+             'files': {'love2gathering': digest(wrapper), HELPER: digest(helper), UPDATE_HELPER: digest(updater)}}
     writes = []
     try:
-        for key, value, mode in [('wrapper', wrapper, 0o755), ('helper', helper, 0o755), ('desktop', text.encode('utf-8'), 0o644)]:
+        for key, value, mode in [('wrapper', wrapper, 0o755), ('helper', helper, 0o755), ('updater', updater, 0o755), ('desktop', text.encode('utf-8'), 0o644)]:
             path = paths[key]
             atomic_file(path, value, mode, before[path]);writes.append((path, snapshot(path)))
         path = paths['link'];atomic_link(path, str(paths['wrapper']), before[path]);writes.append((path, snapshot(path)))
@@ -300,7 +308,7 @@ def main(argv=None):
                 raise ValueError('This is not a recognized installer-owned Flatpak folder')
             run('uninstall', '--assumeyes', APP_ID)
             preserved = []
-            for key, name in [('wrapper', 'love2gathering'), ('helper', HELPER)]:
+            for key, name in [('wrapper', 'love2gathering'), ('helper', HELPER), ('updater', UPDATE_HELPER)]:
                 path = paths[key];value = snapshot(path)
                 if value is not None:
                     if owned_file(prefix, name, state, value):path.unlink()
@@ -337,7 +345,17 @@ def main(argv=None):
             raise ValueError('The deployed application does not match the verified bundle commit; shortcuts were not changed')
         if any(snapshot(path) != previous for path, previous in before.items()):
             raise ValueError('Installer helper files changed during Flatpak installation; they were preserved. Run this helper again to register shortcuts.')
-        register(prefix, paths, before)
+        # A complete new bundle can refresh the host coordinator as well. The
+        # native deployment/commit has already been checked above; no external
+        # helper URL or user file is trusted as an executable source.
+        source_dir=None
+        location=Path(run('info','--show-location',ref,capture=True).stdout.strip())
+        if location.is_absolute()and location.is_dir():
+            location=location.resolve();owned=(prefix/'app'/APP_ID).resolve()
+            tools=location/'files/share/Love2Gathering/host-tools'
+            if owned in location.parents and tools.resolve()==tools and all((tools/name).is_file()and not(tools/name).is_symlink()for name in(HELPER,UPDATE_HELPER)):
+                source_dir=tools
+        register(prefix, paths, before, source_dir)
         print('Installed in ' + str(prefix) + '. Open Love: 2 Gathering (Flatpak) from the application menu.')
         return 0
 

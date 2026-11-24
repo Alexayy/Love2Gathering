@@ -5,7 +5,7 @@ local defaults={resolution='Desktop',windowMode='Borderless',vsync=true,msaa=0,r
     animations=true,particles=true,localArtworkOnly=true,artworkMemoryMiB=256,musicEnabled=false,musicVolume=.25,sfxEnabled=true,sfxVolume=.45,masterVolume=.7,
     reducedMotion=false,highContrast=false,colorblindMode='Off',showTooltips=true,fontFamily=Fonts.default,titleFontFamily='Beleren',
     skybox='Galaxy',skyboxBrightness=.32,playmatOpacity=.88,counterStyle='Dice',cursorStyle='Kenney',keywordReminders=true,
-    panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=true,builderLayout='Classic',presentationVersion=2,fontQuality='High',cursorScale=.55,boardImpactIntensity=.55,cardBackStyle='Arcane'}
+    panelOpacity=.65,theme='Midnight',accentColor='',opponentColor='',autoFollowTurn=false,builderLayout='Classic',presentationVersion=2,fontQuality='High',cursorScale=.55,boardImpactIntensity=.55,cardBackStyle='Arcane',vfxIntensity=.65,ambientKeywordFX=true,presentationPacing='Standard',cameraShake=true,parallax=true,distortion=true,cardScale=1,groupEquivalent=true}
 Preferences.defaults=defaults
 function Preferences.new(model,S,renderer)
     for k,v in pairs(defaults) do if model.settings[k]==nil then model.settings[k]=v end end

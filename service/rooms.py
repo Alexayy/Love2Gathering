@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import base64
 import copy
+import hashlib
 from profiles import normalize_profile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import ipaddress
@@ -29,12 +30,77 @@ import uuid
 MAX_BODY = 8 * 1024 * 1024
 MAX_RESPONSE = 16 * 1024 * 1024
 API_VERSION = 1
+PUBLIC_REQUEST_TIMEOUT = 6
+NATIVE_READ_TIMEOUT = 2.5
+ENVELOPE_READ_BUDGET = 5
+MEMBERSHIP_REQUEST_LIMIT = 1024
+MEMBERSHIP_REQUEST_TTL = 3600
 
 
 class RoomError(ValueError):
-    def __init__(self, message, status=400):
+    def __init__(self, message, status=400, *, retryable=False, kind=None):
         super().__init__(message)
         self.status = status
+        self.retryable = retryable
+        self.kind = kind
+
+
+class MembershipRequests:
+    """Bounded private identities for explicit retry of one create/join intent.
+
+    This does not replay gameplay mutations. Requests currently completing are
+    fenced, and a key may never be reused for another operation or payload.
+    """
+    def __init__(self):
+        self.lock = threading.RLock()
+        self.entries = {}
+
+    def run(self, scope, request_id, value, action):
+        if request_id is None:
+            return action(None)  # Existing clients remain usable without retry guarantees.
+        if not isinstance(request_id, str) or not 16 <= len(request_id) <= 160 or any(ord(c) < 33 or ord(c) > 126 for c in request_id):
+            raise RoomError('Invalid connection request identity')
+        fingerprint = hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False, allow_nan=False, separators=(',', ':')).encode()).hexdigest()
+        now = time.monotonic()
+        with self.lock:
+            for key, record in list(self.entries.items()):
+                if not record['busy'] and now - record['touched'] > MEMBERSHIP_REQUEST_TTL:
+                    self.entries.pop(key, None)
+            record = self.entries.get(request_id)
+            if record is not None and (record['scope'] != scope or record['fingerprint'] != fingerprint):
+                raise RoomError('Connection request identity conflicts with another operation or payload', 409)
+            if record is not None:
+                record['touched'] = now
+                if record.get('result') is not None:
+                    return copy.deepcopy(record['result'])
+                if record.get('error'):
+                    raise RoomError(record['error'], 503, kind='outcome_unknown')
+                if record['busy']:
+                    raise RoomError('This connection request is still completing. Retry the same request.', 503, kind='connection_pending')
+            else:
+                if len(self.entries) >= MEMBERSHIP_REQUEST_LIMIT:
+                    raise RoomError('Too many pending connection requests; retry later', 503)
+                record = {'scope': scope, 'fingerprint': fingerprint, 'busy': False, 'touched': now}
+                self.entries[request_id] = record
+            record['busy'] = True
+            # A remote create/join key stays stable even when its reply is lost.
+            record.setdefault('upstreamId', secrets.token_urlsafe(32))
+        try:
+            result = action(record['upstreamId'])
+        except RoomError as exc:
+            with self.lock:
+                record['busy'] = False;record['touched'] = time.monotonic()
+                if exc.kind == 'legacy_outcome_unknown':
+                    record['error'] = 'The room host did not confirm this connection and does not support safe membership retries. Check the existing seat with the host before a new connection.'
+            raise
+        except Exception:
+            with self.lock:
+                record['busy'] = False
+                record['error'] = 'Connection outcome is unknown. The same request cannot safely create another seat.'
+            raise
+        with self.lock:
+            record['result'] = copy.deepcopy(result);record['busy'] = False;record['touched'] = time.monotonic()
+        return result
 
 
 def origin(value):
@@ -97,13 +163,14 @@ class NoRedirects(HTTPRedirectHandler):
 
 
 class JSONClient:
-    def __init__(self, server, token=None, timeout=30):
+    def __init__(self, server, token=None, timeout=PUBLIC_REQUEST_TIMEOUT, read_timeout=PUBLIC_REQUEST_TIMEOUT):
         self.server = origin(server)
         self.token = token
         self.timeout = timeout
+        self.read_timeout = read_timeout
         self.opener = build_opener(NoRedirects())
 
-    def call(self, method, path, body=None, token=None):
+    def call(self, method, path, body=None, token=None, timeout=None):
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json', 'User-Agent': 'Love2Gathering-Rooms/1.0'}
         credential = self.token if token is None else token
         if credential:
@@ -113,22 +180,28 @@ class JSONClient:
             raise RoomError('Room request exceeds 8 MiB')
         request = Request(self.server + path, data=payload, headers=headers, method=method)
         try:
-            with self.opener.open(request, timeout=self.timeout) as response:
+            budget = min(self.timeout, self.read_timeout) if method == 'GET' else self.timeout
+            with self.opener.open(request, timeout=budget if timeout is None else min(budget, timeout)) as response:
                 raw = response.read(MAX_RESPONSE + 1)
                 if len(raw) > MAX_RESPONSE:
                     raise RoomError('Room response exceeds its resource limit', 502)
                 return json.loads(raw)
         except HTTPError as exc:
+            problem = {}
             try:
                 problem = json.loads(exc.read(MAX_BODY))
                 message = str(problem.get('error', 'Room request failed'))
             except (ValueError, AttributeError):
                 message = 'Room request failed: HTTP ' + str(exc.code)
-            raise RoomError(message, exc.code) from exc
+            raise RoomError(message, exc.code, retryable=bool(problem.get('retryable')) if isinstance(problem, dict) else False,
+                            kind=problem.get('kind') if isinstance(problem, dict) else None) from exc
         except (URLError, TimeoutError, OSError, ValueError) as exc:
             if isinstance(exc, RoomError):
                 raise
-            raise RoomError('Could not reach the room server: ' + str(exc), 503) from exc
+            # Reads are safe to retry. A timed-out mutation may already have
+            # reached XMage, so it must be reconciled by reading the same seat.
+            raise RoomError('Room response is unavailable: ' + str(exc), 503,
+                            retryable=method == 'GET', kind='transport' if method == 'GET' else 'outcome_unknown') from exc
 
 
 class Member:
@@ -152,6 +225,21 @@ class Member:
         if not isinstance(priority, dict) or len(json.dumps(priority)) > 65536:
             raise RoomError('Invalid priority preferences')
         self.priority = copy.deepcopy(priority)
+
+
+def default_bot_deck(fmt, seats):
+    """Prefer a bundled list that the fewest seats at this table already use."""
+    directory = Path(__file__).resolve().parents[1] / 'decks'
+    catalog = json.loads((directory / 'library.json').read_text(encoding='utf-8'))
+    candidates = [item for item in catalog if item['format'] == fmt]
+    if not candidates:
+        return None
+    used = [seat.deck.get('name') for seat in seats if seat.deck]
+    selected = min(candidates, key=lambda item: used.count(item['name']))
+    deck = json.loads((directory / (selected['id'] + '.json')).read_text(encoding='utf-8'))
+    # This is the immutable Starter entry, even if a host has an edited original.
+    deck['id'] = 'starter-' + selected['id']
+    return deck
 
 
 class Room:
@@ -186,7 +274,7 @@ class Room:
         self.revision += 1
         self.touched = time.monotonic()
 
-    def public(self):
+    def public(self, viewer):
         now = time.monotonic()
         if self.rematch_request and self.rematch_request['deadline'] <= now:
             self.rematch_request = None
@@ -199,7 +287,9 @@ class Room:
                 'members': [{'id': p.id, 'name': p.name, 'bot': p.bot, 'ready': p.ready,
                              'profile': copy.deepcopy(p.profile),
                              'connected': p.bot or (not p.left and now - p.last_seen < 20),
-                             'deckName': p.deck.get('name') if p.deck else None}
+                             'deckName': p.deck.get('name') if p.deck else None,
+                             **({'deckId': p.deck['id']} if viewer.id == self.host_id and p.bot and p.deck
+                                and isinstance(p.deck.get('id'), str) else {})}
                             for p in self.members.values()],
                 'draft': self.draft_public,
                 'matches': [{key: value for key, value in match.items() if key in ('id', 'seatIds', 'finished', 'winnerSeatId', 'error')}
@@ -216,6 +306,7 @@ class Registry:
         self.lock = threading.RLock()
         self.cap_cache = None
         self.cap_stamp = 0
+        self.membership_requests = MembershipRequests()
 
     def capabilities(self):
         now = time.monotonic()
@@ -309,6 +400,11 @@ class Registry:
         return config
 
     def create(self, value):
+        identity = self.membership_requests.run('create', value.get('membershipRequestId'), value,
+                                               lambda _key=None: self._create(value))
+        return self.membership_result(identity)
+
+    def _create(self, value):
         config = self.validate_config(value)
         owner = Member(value.get('playerName', 'Host'), options=value)
         with self.lock:
@@ -317,7 +413,16 @@ class Registry:
                 raise RoomError('This room server is full', 503)
             room = Room(config, owner, self.public_origin)
             self.rooms[room.id] = room
-        return self.envelope(room, owner, private=False) | {'memberToken': owner.token}
+        return {'roomId': room.id, 'memberId': owner.id}
+
+    def membership_result(self, identity):
+        room = self.get(identity['roomId'])
+        with room.lock:
+            member = room.members.get(identity['memberId'])
+            if room.closed or member is None or member.left:
+                raise RoomError('This connection request belongs to a closed or departed seat', 410)
+            member.last_seen = time.monotonic()
+            return self.envelope(room, member, private=False) | {'memberToken': member.token}
 
     def get(self, room_id):
         with self.lock:
@@ -336,6 +441,11 @@ class Registry:
         return room, member
 
     def join(self, room_id, value):
+        identity = self.membership_requests.run('join:' + room_id, value.get('membershipRequestId'), value,
+                                               lambda _key=None: self._join(room_id, value))
+        return self.membership_result(identity)
+
+    def _join(self, room_id, value):
         room = self.get(room_id)
         with room.lock:
             if not isinstance(value.get('key'), str) or not secrets.compare_digest(room.secret, value['key']):
@@ -347,7 +457,7 @@ class Registry:
             member = Member(value.get('name', 'Player'), options=value)
             room.members[member.id] = member
             room.changed()
-            return self.envelope(room, member, private=False) | {'memberToken': member.token}
+            return {'roomId': room.id, 'memberId': member.id}
 
     @staticmethod
     def owner(room, member):
@@ -356,9 +466,16 @@ class Registry:
 
     def envelope(self, room, member, private=True):
         draft, game = None, None
+        deadline = time.monotonic() + ENVELOPE_READ_BUDGET
+        def read(path):
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise RoomError('The native room update is still pending. Your seat is retained.', 503,
+                                retryable=True, kind='engine_wait')
+            return self.engine.call('GET', path, timeout=min(NATIVE_READ_TIMEOUT, remaining))
         if room.closed: private = False
         if private and room.draft_id:
-            draft = self.engine.call('GET', '/draft/state?draftId=' + quote(room.draft_id) + '&seatId=' + quote(member.id))
+            draft = read('/draft/state?draftId=' + quote(room.draft_id) + '&seatId=' + quote(member.id))
             phase = draft.get('phase') or draft.get('status')
             with room.lock:
                 if phase in ('building', 'ready') and room.phase == 'drafting':
@@ -376,11 +493,11 @@ class Registry:
                 room.draft_public = {key: draft[key] for key in ('round', 'pick', 'packNumber', 'pickNumber', 'waiting', 'status') if key in draft}
         assignment = room.assignments.get(member.id)
         if private and assignment and room.phase == 'playing':
-            game = self.engine.call('GET', '/multiplayer/state?gameId=' + quote(assignment['gameId']) + '&playerId=' + quote(assignment['playerId']))
+            game = read('/multiplayer/state?gameId=' + quote(assignment['gameId']) + '&playerId=' + quote(assignment['playerId']))
         if draft is not None and room.phase in ('building', 'playing', 'completed'):
-            draft['tournament'] = self.engine.call('GET', '/draft/pairings?draftId=' + quote(room.draft_id))
+            draft['tournament'] = read('/draft/pairings?draftId=' + quote(room.draft_id))
         with room.lock:
-            public = room.public()
+            public = room.public(member)
             public['canStart'] = member.id == room.host_id and room.phase in ('lobby', 'building') and len(room.members) == room.config['maxPlayers'] and all(p.ready for p in room.members.values())
             public['canNextRound'] = member.id == room.host_id and room.phase == 'playing' and room.config['kind'] == 'draft' and bool(room.games) and all(p.get('finished') for p in room.games.values())
             public['canRematch'] = room.phase == 'playing' and room.config['kind'] == 'constructed' and bool(game) and game.get('running') is False and not game.get('error') and all(not p.left and p.ready for p in room.members.values())
@@ -450,10 +567,10 @@ class Registry:
                 elif room.phase == 'lobby':
                     if len(room.members) != room.config['maxPlayers']:
                         raise RoomError('Fill the empty seats or choose fewer seats before creating the room', 409)
+                    if room.config['kind'] == 'constructed' and any(not p.deck for p in room.members.values()):
+                        raise RoomError('Choose a deck for every constructed seat before starting', 409)
                     if any(not p.ready for p in room.members.values()):
                         raise RoomError('Every player must be ready', 409)
-                    if room.config['kind'] == 'constructed' and any(not p.deck for p in room.members.values() if not p.bot):
-                        raise RoomError('Every human player must choose a deck', 409)
                     room.phase = 'starting'
                     task = self.start_room
                 else:
@@ -507,19 +624,34 @@ class Registry:
                         raise RoomError('Choose your deck before becoming ready')
                     member.ready = value['ready']
                 elif command == 'deck':
+                    target = member
+                    if 'botSeatId' in value:
+                        self.owner(room, member)
+                        seat_id = value['botSeatId']
+                        target = room.members.get(seat_id) if isinstance(seat_id, str) else None
+                        if room.config['kind'] != 'constructed' or not target or not target.bot:
+                            raise RoomError('Choose an existing constructed bot seat')
                     deck = value.get('deck')
                     if not isinstance(deck, dict) or str(deck.get('format', '')).casefold() != room.config['format'].casefold():
                         raise RoomError('Choose a deck in the room format')
                     # Native validation still happens when XMage starts the match.
-                    member.deck = copy.deepcopy(deck);member.ready = False
+                    target.deck = copy.deepcopy(deck)
+                    target.ready = target.bot
                 else:
                     self.owner(room, member)
                     humans = sum(not p.bot for p in room.members.values())
                     count = integer(value.get('count'), 0, room.config['maxPlayers'] - humans, 'Bot seats')
-                    room.members = {key: p for key, p in room.members.items() if not p.bot}
-                    for index in range(count):
+                    existing = [p for p in room.members.values() if p.bot]
+                    seats = dict(room.members)
+                    for bot in existing[count:]:
+                        del seats[bot.id]
+                    for index in range(len(existing), count):
                         bot = Member('XMage Bot ' + str(index + 1), bot=True)
-                        room.members[bot.id] = bot
+                        if room.config['kind'] == 'constructed':
+                            bot.deck = default_bot_deck(room.config['format'], seats.values())
+                            bot.ready = bot.deck is not None
+                        seats[bot.id] = bot
+                    room.members = seats
                 room.changed()
             return self.envelope(room, member, private=False)
         if command == 'draft/pick':
@@ -554,7 +686,7 @@ class Registry:
             result = self.engine.call('POST', '/multiplayer/' + operation, forwarded)
             if operation == 'priority' and isinstance(result.get('priority'), dict):
                 priority = result['priority']
-                member.priority = copy.deepcopy({key: priority[key] for key in ('autoPass', 'stops') if key in priority})
+                member.priority = copy.deepcopy({key: priority[key] for key in ('autoPass', 'passWithOnlyMana', 'stops') if key in priority})
             if operation == 'replay/save':
                 return result
             return result
@@ -572,7 +704,7 @@ class Registry:
 
     def start_room(self, room):
         seats = [{'seatId': p.id, 'name': p.name, 'profile': copy.deepcopy(p.profile), 'type': 'bot' if p.bot else 'human',
-                  'deck': p.deck or room.members[room.host_id].deck, 'settings': p.settings, 'priority': p.priority}
+                  'deck': p.deck, 'settings': p.settings, 'priority': p.priority}
                  for p in room.members.values()]
         if room.config['kind'] == 'draft':
             draft = copy.deepcopy(room.config['draft'])
@@ -775,19 +907,77 @@ class Gateway:
         self.connections = {}
         self.lock = threading.RLock()
         self.client_api = client_api
+        self.membership_requests = MembershipRequests()
+        self.membership_hosts = {}
 
     def connect(self, method, value):
+        value = copy.deepcopy(value)
+        request_id = value.pop('connectionRequestId', None)
+        snapshot = {}
+        supported = [False]
+        def connect_once(upstream_id=None):
+            result = self._connect(method, value, upstream_id, supported)
+            snapshot.update(result)
+            return {'connectionId': result['connectionId']}
+        # Unknown replies from legacy hosts cannot be replayed safely. New
+        # hosts advertise membership idempotency before the first mutation.
+        def operation(upstream_id=None):
+            try: return connect_once(upstream_id)
+            except RoomError as exc:
+                if not supported[0] and exc.kind == 'outcome_unknown':
+                    # Cache this terminal uncertainty instead of sending a
+                    # second blind join to a server lacking the new contract.
+                    raise RoomError('The host did not confirm the connection. A legacy host cannot safely retry this membership.',
+                                    503, kind='legacy_outcome_unknown') from exc
+                raise
+        identity = self.membership_requests.run(method, request_id, value, operation)
+        if snapshot:
+            return snapshot
+        # A locally lost reply already has a credential-bearing connection.
+        # Refresh that exact seat instead of creating a second membership.
+        return self.call(identity['connectionId'], 'GET') | identity
+
+    def _connect(self, method, value, request_id=None, supported=None):
         if method == 'create':
             server = self.upstream
-            result = JSONClient(server).call('POST', '/rooms', value)
+            path = '/rooms';body = copy.deepcopy(value)
         else:
             code = decode_invite(value.get('code'))
             server = self.local_origin if code['server'] == self.registry.public_origin else code['server']
-            result = JSONClient(server).call('POST', '/rooms/' + quote(code['room']) + '/join',
-                {'key': code['key'], 'name': value.get('name'), 'profile': value.get('profile'), 'settings': value.get('settings', {}), 'priority': value.get('priority', {})})
+            path = '/rooms/' + quote(code['room']) + '/join'
+            body = {'key': code['key'], 'name': value.get('name'), 'profile': value.get('profile'), 'settings': value.get('settings', {}), 'priority': value.get('priority', {})}
+        client = JSONClient(server)
+        deadline = time.monotonic() + PUBLIC_REQUEST_TIMEOUT
+        if request_id:
+            with self.lock: feature = self.membership_hosts.get(server)
+            if feature is None:
+                health = client.call('GET', '/health')
+                if not isinstance(health, dict): raise RoomError('The room host returned invalid health information', 502)
+                feature = health.get('membershipIdempotency') is True
+                with self.lock:
+                    if len(self.membership_hosts) >= 128: self.membership_hosts.pop(next(iter(self.membership_hosts)))
+                    self.membership_hosts[server] = feature
+            if supported is not None: supported[0] = feature
+            if feature: body['membershipRequestId'] = request_id
+        remaining = deadline - time.monotonic()
+        if remaining <= 0: raise RoomError('Room connection is waiting for the host. Retry the same request.', 503, retryable=True, kind='transport')
+        try:
+            result = client.call('POST', path, body, timeout=remaining)
+        except RoomError as exc:
+            if exc.status >= 500:
+                # A server may fail while serializing an already accepted
+                # membership. Only an advertised idempotency key makes a
+                # repeated POST safe, even for malformed/oversized replies.
+                raise RoomError(str(exc), exc.status, kind='outcome_unknown') from exc
+            raise
+        if not isinstance(result, dict):
+            raise RoomError('Room server returned an invalid connection', 502, kind='outcome_unknown')
         token = result.pop('memberToken', None)
-        if not token or not result.get('room', {}).get('id'):
-            raise RoomError('Room server returned an incomplete connection', 502)
+        room = result.get('room')
+        room_id = room.get('id') if isinstance(room, dict) else None
+        if (not isinstance(token, str) or not 8 <= len(token) <= 512 or any(ord(c) < 33 or ord(c) > 126 for c in token)
+                or not isinstance(room_id, str) or not 1 <= len(room_id) <= 128):
+            raise RoomError('Room server returned an incomplete connection', 502, kind='outcome_unknown')
         connection = secrets.token_urlsafe(24)
         with self.lock:
             self.connections[connection] = {'client': JSONClient(server, token), 'roomId': result['room']['id']}
@@ -847,7 +1037,7 @@ def handler(gateway):
             method = self.command
             value = self.body() if method == 'POST' else {}
             if path == '/health' and method == 'GET':
-                return {'status': 'ok', 'apiVersion': API_VERSION, 'service': 'love2gathering-rooms'}
+                return {'status': 'ok', 'apiVersion': API_VERSION, 'service': 'love2gathering-rooms', 'membershipIdempotency': True}
             if path.startswith('/client/'):
                 if not gateway.client_api:
                     raise RoomError('Desktop-client endpoints are disabled on this room host', 403)
@@ -887,7 +1077,7 @@ def handler(gateway):
 
         def handle_request(self):
             try: self.respond(200, self.route())
-            except RoomError as exc: self.respond(exc.status, {'error': str(exc)})
+            except RoomError as exc: self.respond(exc.status, {'error': str(exc), 'status': exc.status, 'retryable': exc.retryable, 'kind': exc.kind})
             except Exception:
                 self.respond(500, {'error': 'Room server could not complete the request'})
 
@@ -925,7 +1115,7 @@ def main():
     if not token:
         parser.error('Set LOVE2GATHERING_COORDINATOR_TOKEN for the local XMage coordinator')
     advertised = args.public_url or f'http://{lan_host()}:{args.port}'
-    engine = JSONClient(f'http://127.0.0.1:{args.engine_port}', token, timeout=180)
+    engine = JSONClient(f'http://127.0.0.1:{args.engine_port}', token, timeout=180, read_timeout=NATIVE_READ_TIMEOUT)
     registry = Registry(engine, advertised, args.catalog_port, args.max_rooms)
     gateway = Gateway(registry, args.upstream, f'http://127.0.0.1:{args.port}', not args.no_client_api)
     server = ThreadingHTTPServer((args.bind, args.port), handler(gateway))

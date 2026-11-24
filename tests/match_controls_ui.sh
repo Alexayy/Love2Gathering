@@ -21,7 +21,7 @@ L2G_MATCH_CONTROLS_OUTPUT="$test_dir" love "$test_dir"
 python3 - "$test_dir" <<'PYREPORT'
 import hashlib,json,pathlib,sys
 run=pathlib.Path(sys.argv[1]);path=run/'report.json';report=json.loads(path.read_text())
-sources=['application-main.lua','app/drag_cancel.lua','app/outcome.lua','app/match_ui.lua','app/renderer.lua','app/model.lua','app/rooms.lua','app/view.lua','app/assets.lua','lib/Slab/Internal/UI/Region.lua']
+sources=['application-main.lua','app/drag_cancel.lua','app/outcome.lua','app/match_ui.lua','app/priority.lua','app/table_panels.lua','app/card_details_ui.lua','app/renderer.lua','app/model.lua','app/rooms.lua','app/view.lua','app/assets.lua','lib/Slab/Internal/UI/Region.lua']
 sources.extend(str(path.relative_to(run))for path in sorted((run/'assets/kenney/runtime').glob('*.lua')))
 icon=run/'assets/kenney/runtime/icons/arrow_counterclockwise.png'
 if icon.exists():sources.append(str(icon.relative_to(run)))

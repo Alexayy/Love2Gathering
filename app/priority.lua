@@ -9,6 +9,16 @@ Priority.combatSteps={{label='Beginning of combat',steps={'BEGIN_COMBAT'}},{labe
     {label='After combat damage',steps={'COMBAT_DAMAGE'}},{label='End of combat',steps={'END_COMBAT'}}}
 local function copy(value) return json.decode(json.encode(value)) end
 local function contains(items,value) for _,item in ipairs(items or {}) do if item==value then return true end end;return false end
+function Priority.passChoice(prompt)
+    if not prompt or prompt.type~='select' then return nil end
+    local role=prompt.combat and prompt.combat.role
+    if not (prompt.priority==true or role=='attackers' or role=='blockers') then return nil end
+    for _,choice in ipairs(prompt.choices or {}) do
+        if choice.id=='done' and choice.responseType=='boolean' and choice.value==true and choice.selectable~=false then
+            return choice
+        end
+    end
+end
 function Priority.stopPresentation(model,group,side)
     local state=(model.game or{}).priority or{}
     local configured=type(state.stops)=='table'and type(state.stops[side])=='table'
@@ -25,7 +35,7 @@ function Priority.install(Model)
         local prefs=(self.uiLayout or {}).matchPrefs or {}
         local options=prefs.priority
         if not options then
-            options={autoPass=true,stops={own=json.array(),opponent=json.array()}}
+            options={autoPass=false,passWithOnlyMana=false,stops={own=json.array(),opponent=json.array()}}
             -- Migrate only the previous explicit WAIT intention, never SKIP.
             for _,group in ipairs(Priority.groups) do
                 if (prefs.phaseMarkers or {})[group.key]=='WAIT' then
@@ -34,7 +44,8 @@ function Priority.install(Model)
             end
         end
         local result=copy(options);result.stops=result.stops or {}
-        result.autoPass=result.autoPass~=false
+        result.autoPass=result.autoPass==true
+        result.passWithOnlyMana=result.passWithOnlyMana==true
         for _,side in ipairs({'own','opponent'}) do result.stops[side]=json.array(result.stops[side] or {}) end
         return result
     end
@@ -45,7 +56,8 @@ function Priority.install(Model)
         return false
     end
     function Model:priorityCommand(command,extra)
-        if self.replay or not self.game or self.game.running==false or self.priorityBusy then return false end
+        if self.replay or not self.game or self.game.running==false or self.priorityBusy
+            or self.roomGameActive and self.roomDisconnected then return false end
         local gameId=self.game.gameId;local body=extra or {};body.command=command
         local request=(self.priorityRequest or 0)+1;self.priorityRequest=request
         self.priorityBusy=true
@@ -58,7 +70,7 @@ function Priority.install(Model)
         return true
     end
     function Model:configurePriority(options)
-        if self.replay then return false end
+        if self.replay or self.roomGameActive and self.roomDisconnected then return false end
         self:setUIOption('priority',options)
         if self.game and self.game.running~=false then return self:priorityCommand('configure',copy(options)) end
         return true
@@ -81,6 +93,11 @@ function Priority.install(Model)
     function Model:toggleAutoPass()
         if self.priorityBusy or self.replay then return false end
         local options=self:priorityOptions();options.autoPass=not options.autoPass
+        return self:configurePriority(options)
+    end
+    function Model:toggleManaOnlyPass()
+        if self.priorityBusy or self.replay then return false end
+        local options=self:priorityOptions();options.passWithOnlyMana=not options.passWithOnlyMana
         return self:configurePriority(options)
     end
 end

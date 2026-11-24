@@ -35,6 +35,32 @@ check(#calls==before+2 and calls[#calls].path:find('network=1',1,true),'A local 
 calls[#calls].callback('cached',nil,200)
 local reused=Artwork.get(m,warm,true,'art_crop',true)
 check(reused and #calls==before+2,'A ready image is reused across startup and ordinary view policies')
+
+m.settings.localArtworkOnly=true
+local handCard={id='hand-oracle',printing_id='hand-print',printingExact=true,image_uris={}}
+local handOptions={priority='hand',selectionToken='hand:game:hand-print',network=true}
+before=#calls
+Artwork.get(m,handCard,true,'normal',nil,handOptions)
+local handRequest=calls[#calls]
+for _,priority in ipairs({'hand','selected'})do
+    Artwork.get(m,handCard,false,'normal',nil,{priority=priority})
+end
+check(#calls==before+1,'A preview or inspector shares the pending exact hand scan')
+handRequest.callback('hand-scan',nil,200)
+local handScan=Artwork.get(m,handCard,false,'normal',nil,{priority='selected'})
+check(handScan and handScan.bytes=='hand-scan' and #calls==before+1,'The warmed scan is ready for inspection after the shared request finishes')
+
+local inspected={id='second-oracle',printing_id='second-print',image_uris={}}
+before=#calls
+Artwork.get(m,inspected,false,'normal',nil,{priority='selected'})
+local oldRequest=calls[#calls]
+Artwork.get(m,inspected,true,'normal',nil,{priority='selected',selectionToken='edition:second-print'})
+check(#calls==before+2,'A new explicit selection can take over an unscoped lookup with the same network policy')
+calls[#calls].callback('selected-scan',nil,200)
+oldRequest.callback(nil,nil,404)
+local selectedScan=Artwork.get(m,inspected,false)
+check(selectedScan and selectedScan.bytes=='selected-scan','A late miss from the old lookup leaves the selected scan ready')
+
 local busy={id='busy',printing_id='busy',image_uris={}}
 Artwork.get(m,busy,true);local request=calls[#calls];request.callback(nil,nil,503);before=#calls
 now=now+.5;Artwork.get(m,busy,true);check(#calls==before,'A busy image response has a bounded retry delay')

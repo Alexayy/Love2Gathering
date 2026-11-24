@@ -30,7 +30,7 @@ jobs:
           submodules: false
           persist-credentials: false
 
-      - name: Reject any outgoing XMage pin or source-URL change
+      - name: Verify the reviewed XMage pin and source URL
         env:
           BEFORE: ${{ github.event.before }}
         run: |
@@ -64,7 +64,7 @@ jobs:
         if: steps.published.outputs.already_published != 'true'
         run: |
           git -c fetch.recurseSubmodules=false submodule update --init --recursive --depth 1
-          test "$(git -C engine/mage rev-parse HEAD)" = d9b266fc981024873ac7ec5f90ee7121a060725e
+          test "$(git -C engine/mage rev-parse HEAD)" = 2a96b0ac129dfd77946eaad536184d3b35fb5e64
 
       - name: Set up Java 21
         if: steps.published.outputs.already_published != 'true'
@@ -78,13 +78,13 @@ jobs:
         uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: .tools/m2
-          key: maven-${{ runner.os }}-java21-d9b266fc98-${{ hashFiles('bridge/pom.xml', 'engine/mage/**/pom.xml') }}
+          key: maven-${{ runner.os }}-java21-2a96b0ac12-${{ hashFiles('bridge/pom.xml', 'engine/mage/**/pom.xml') }}
 
       - name: Install native build tools
         if: steps.published.outputs.already_published != 'true'
         run: |
           sudo apt-get update
-          sudo apt-get install --yes --no-install-recommends python3 python3-pil python3-yaml rpm nsis love desktop-file-utils dbus-daemon libglib2.0-bin xz-utils
+          sudo apt-get install --yes --no-install-recommends python3 python3-pil python3-yaml rpm nsis love desktop-file-utils dbus-daemon libglib2.0-bin xz-utils p7zip-full
           mkdir -p build/ci/reports
 
       - name: Check services, publish guards and installer helpers
@@ -97,6 +97,9 @@ jobs:
           python3 scripts/ci/test_promote_latest.py -v 2>&1 | tee build/ci/reports/latest-promotion.log
           python3 scripts/ci/test_workflow.py -v 2>&1 | tee build/ci/reports/workflow-tests.log
           python3 packaging/test_python_dependencies.py -v 2>&1 | tee build/ci/reports/python-dependencies.log
+          python3 packaging/test_payload.py -v 2>&1 | tee build/ci/reports/payload-permissions.log
+          python3 packaging/runtime/test_update_handoff.py -v 2>&1 | tee build/ci/reports/update-handoff.log
+          python3 packaging/windows/test_graphics.py -v 2>&1 | tee build/ci/reports/windows-graphics.log
           python3 packaging/flatpak/test_build.py -v 2>&1 | tee build/ci/reports/flatpak-builder.log
           dbus-run-session -- python3 packaging/linux/test_installer.py -v 2>&1 | tee build/ci/reports/linux-installer.log
           dbus-run-session -- python3 packaging/flatpak/test_installer.py -v 2>&1 | tee build/ci/reports/flatpak-installer.log
@@ -108,6 +111,10 @@ jobs:
       - name: Build the pinned XMage engine and bridge
         if: steps.published.outputs.already_published != 'true'
         run: bash scripts/build-engine.sh 2>&1 | tee build/ci/reports/engine-build.log
+
+      - name: Verify native bridge and upstream compatibility
+        if: steps.published.outputs.already_published != 'true'
+        run: bash scripts/test-engine-fixtures.sh 2>&1 | tee build/ci/reports/native-fixtures.log
 
       - name: Build common payload and Linux DEB, RPM and folder installer
         if: steps.published.outputs.already_published != 'true'

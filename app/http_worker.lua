@@ -29,7 +29,7 @@ while true do
         })
         ok,code,responseHeaders=called and value,called and status or value,response
         data=table.concat(chunks)
-        if ok and tonumber(code)==503 and request.retryRead and attempt==1 then
+        if request.retryRead and attempt==1 and(not ok or tonumber(code)==502 or tonumber(code)==503 or tonumber(code)==504)then
             socket.sleep(math.min(1,math.max(.1,tonumber(responseHeaders and responseHeaders['retry-after'])or 1)))
         else break end
     end

@@ -14,12 +14,14 @@ import subprocess
 import sys
 import tempfile
 import time
+import zipfile
 from urllib.request import Request, urlopen
 
 sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parent
 WINDOWS = os.name == 'nt'
+sys.path.insert(0, str(ROOT))  # The embeddable Windows interpreter omits the script directory.
 
 
 def image_dependency(required=False):
@@ -47,6 +49,20 @@ def runtime(name):
     if not found:
         raise RuntimeError('Missing runtime: ' + name + '. Reinstall the complete package.')
     return found
+
+
+def check_bridge(jar):
+    try:
+        with zipfile.ZipFile(jar) as archive:
+            archive.getinfo('love2gathering/EngineBridge.class')
+        dependencies = list((jar.parent / 'lib').glob('*.jar'))
+        if not dependencies:
+            raise OSError('The Java dependency directory is empty')
+        for dependency in dependencies:
+            with dependency.open('rb') as stream:
+                stream.read(1)
+    except (OSError, KeyError, zipfile.BadZipFile) as exc:
+        raise RuntimeError('The installed XMage bridge is incomplete or unreadable. Reinstall the corrected package. ' + str(exc)) from exc
 
 
 def health(port):
@@ -106,6 +122,9 @@ def main(argv=None):
     parser.add_argument('--services-only', action='store_true', help='Run the owned local services without a desktop')
     parser.add_argument('--check', action='store_true', help='Check packaged files and runtime versions, without opening storage')
     parser.add_argument('--checkhealth', action='store_true', help='Start owned local services, verify readiness, then stop them')
+    parser.add_argument('--graphics', choices=('auto', 'native', 'software'), default=os.environ.get('LOVE2GATHERING_GRAPHICS', 'auto'),
+                        help='Windows graphics driver selection; auto includes a bundled software fallback')
+    parser.add_argument('--check-graphics', action='store_true', help='Check the selected Windows OpenGL renderer without opening user storage')
     parser.add_argument('--startup-timeout', type=int, default=180, help=argparse.SUPPRESS)
     args, desktop_args = parser.parse_known_args(argv)
     image_support=image_dependency(required=args.check)
@@ -123,7 +142,18 @@ def main(argv=None):
     missing = [str(path) for path in required if not path.is_file()]
     if missing:
         raise RuntimeError('The installed package is incomplete: ' + ', '.join(missing))
+    check_bridge(jar)
     flags = subprocess.CREATE_NO_WINDOW if WINDOWS else 0
+    graphics = None
+    graphics_env = os.environ.copy()
+    if WINDOWS and (args.check_graphics or not (args.check or args.services_only or args.checkhealth)):
+        from windows_graphics import select_renderer
+        graphics_env, graphics = select_renderer(ROOT, graphics_env, args.graphics)
+    if args.check_graphics:
+        if not WINDOWS:
+            raise RuntimeError('The bundled renderer check is available in the Windows package')
+        print(json.dumps(dict(graphics, passed=True)))
+        return 0
     if args.check:
         java_version = subprocess.run([java, '-version'], capture_output=True, text=True, creationflags=flags)
         love_console = str(Path(love).with_name('lovec.exe')) if WINDOWS else love
@@ -139,7 +169,7 @@ def main(argv=None):
     session = base / 'runtime' / ('session-' + str(os.getpid()) + '-' + secrets.token_hex(4))
     session.mkdir(parents=True, exist_ok=False)
     progress_file = session / 'startup.json'
-    env = os.environ.copy()
+    env = graphics_env
     env['PYTHONDONTWRITEBYTECODE'] = '1'
     ports = {}
     for key, default in [('CATALOG', 17370), ('ENGINE', 17371), ('ROOM', 17380)]:
@@ -148,11 +178,17 @@ def main(argv=None):
     env['LOVE2GATHERING_STARTUP_STATUS'] = str(progress_file)
     env['LOVE2GATHERING_CATALOG_SOURCE'] = str(source)
     env['LOVE2GATHERING_COORDINATOR_TOKEN'] = secrets.token_urlsafe(32)
+    from update_handoff import create_context,prepare_handoff
+    update_context=create_context(ROOT,session,env)
+    if update_context is not None:env['LOVE2GATHERING_UPDATE_CONTEXT']=str(update_context)
+    else:env.pop('LOVE2GATHERING_UPDATE_CONTEXT',None)
     children = []
     logs = []
     desktop = None
     engine = None
     status(progress_file, 'dependencies', .03, 'Checking installed runtimes')
+    if graphics is not None:
+        (session / 'graphics.json').write_text(json.dumps(graphics, indent=2) + '\n', encoding='utf-8')
 
     def start(command, name, cwd=ROOT):
         stream = (session / (name + '.log')).open('w', encoding='utf-8')
@@ -169,7 +205,7 @@ def main(argv=None):
             if child.poll() is not None:
                 raise RuntimeError(key.title() + ' stopped. See ' + str(session / (key.lower() + '.log')))
             result = health(ports[key])
-            if result and key=='CATALOG'and result.get('apiVersion',0)<14:
+            if result and key=='CATALOG'and result.get('apiVersion',0)<15:
                 raise RuntimeError('The catalog runtime is outdated. Reinstall the complete matching client package.')
             if result and (not ready or result.get('ready')):
                 return result
@@ -246,6 +282,13 @@ def main(argv=None):
                     child.wait(timeout=5)
         for stream in logs:
             stream.close()
+        if update_context is not None and desktop is not None and desktop.returncode==0:
+            # Every owned child has terminated before an updater is allowed to
+            # start. The independent helper also waits for this exact parent.
+            try:prepare_handoff(update_context)
+            except Exception as error:
+                (session/'update-error.txt').write_text(str(error),encoding='utf-8')
+                print('Update was not started: '+str(error),file=sys.stderr,flush=True)
 
 
 if __name__ == '__main__':

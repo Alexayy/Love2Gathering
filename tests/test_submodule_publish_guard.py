@@ -7,7 +7,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 CHECK = ROOT / 'scripts/check-submodule-pin.py'
 PUSH = ROOT / 'scripts/push-development.sh'
-PIN = 'd9b266fc981024873ac7ec5f90ee7121a060725e'
+PIN = '2a96b0ac129dfd77946eaad536184d3b35fb5e64'
 OTHER = '1234567890abcdef1234567890abcdef12345678'
 MODULES = '[submodule "engine/mage"]\n\tpath = engine/mage\n\turl = https://github.com/magefree/mage.git\n'
 
@@ -72,6 +72,49 @@ class SubmodulePublishGuardTests(unittest.TestCase):
         self.git('commit', '-qm', 'bad baseline')
         self.base = self.git('rev-parse', 'HEAD').stdout.strip()
         self.assertNotEqual(self.guard().returncode, 0)
+
+    def upgrade_guard(self, *args):
+        # Substitute only the exact allowlisted base SHA with this fixture's
+        # independently created old base; production has no override switch.
+        check = self.root / 'upgrade-check.py'
+        check.write_text(CHECK.read_text().replace('0c797b1db53540c99a8739230818646f195544c5', self.base))
+        return subprocess.run(['python3', str(check), '--base', self.base, '--index', *args],
+                              cwd=self.repo, capture_output=True, text=True)
+
+    def old_upgrade_base(self):
+        old = 'd9b266fc981024873ac7ec5f90ee7121a060725e'
+        self.git('update-index', '--cacheinfo', '160000,' + old + ',engine/mage')
+        self.git('commit', '-qm', 'exact published old snapshot fixture')
+        self.base = self.git('rev-parse', 'HEAD').stdout.strip()
+
+    def test_reviewed_upgrade_from_exact_published_base_is_allowed(self):
+        self.old_upgrade_base()
+        self.git('update-index', '--cacheinfo', '160000,' + PIN + ',engine/mage')
+        self.git('commit', '-qm', 'reviewed engine update')
+        self.commit('subsequent packaging changes\n')
+        result = self.upgrade_guard()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        # The same old pin at an unrecognized base remains rejected.
+        self.assertNotEqual(self.guard().returncode, 0)
+
+    def test_upgrade_allowlist_does_not_allow_an_old_or_intermediate_outgoing_pin(self):
+        self.old_upgrade_base()
+        self.commit('old-pin intermediate commit\n')
+        self.git('update-index', '--cacheinfo', '160000,' + PIN + ',engine/mage')
+        self.git('commit', '-qm', 'eventual reviewed pin')
+        self.assertNotEqual(self.upgrade_guard().returncode, 0)
+
+    def test_upgrade_allowlist_cannot_publish_old_head(self):
+        self.old_upgrade_base()
+        self.assertNotEqual(self.upgrade_guard().returncode, 0)
+
+    def test_upgrade_still_checks_official_url_and_index(self):
+        self.old_upgrade_base()
+        self.git('update-index', '--cacheinfo', '160000,' + PIN + ',engine/mage')
+        self.git('commit', '-qm', 'reviewed engine update')
+        (self.repo / '.gitmodules').write_text(MODULES.replace('magefree/mage', 'someone/other'))
+        self.git('add', '.gitmodules')
+        self.assertNotEqual(self.upgrade_guard().returncode, 0)
 
     def test_parent_publish_ignores_dirty_nested_repo_and_never_pushes_it(self):
         parent_remote = self.root / 'parent.git'; child_remote = self.root / 'engine.git'

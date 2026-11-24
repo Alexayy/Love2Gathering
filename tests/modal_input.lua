@@ -34,4 +34,17 @@ v.setPicker=nil
 local state={};v.deckSelection=state;m.lobbyDeckPicker=state;Picker.close(v)
 check(state.closed and not v.deckSelection and not m.lobbyDeckPicker,'Dismissal closes both picker identities before asynchronous callbacks')
 Picker.close(v);check(not r:inputBlocked(),'Repeated dismissal leaves no invisible input blocker')
+m.page='table';m.game={gameId='duel'};m.api={routeGeneration=1}
+local prompt={id=10,actionable={card.id}}
+function m:prompt()return prompt end
+function m:canSelect(id)return id==card.id end
+local answers=0
+function m:selectCard()answers=answers+1;return true end
+r.hover={kind='hand',card=card,x=100,y=600,w=80,h=112}
+r:mousepressed(110,610,1,1);prompt={id=11,actionable={card.id}};r:mousereleased(110,610,1)
+check(answers==0 and not r.drag,'A release cannot play the same card for a replacement question')
+r:mousepressed(110,610,1,1);m.api.routeGeneration=2;r:mousereleased(110,610,1)
+check(answers==0,'Reconnecting with a reused prompt ID invalidates a held table card')
+r:mousepressed(110,610,1,1);r:mousereleased(110,610,1)
+check(answers==1,'A new click on the current card still submits exactly once')
 print('Modal input checks: '..count..' passed')

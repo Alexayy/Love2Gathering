@@ -1,0 +1,124 @@
+{
+  "checks": [
+    {
+      "message": "Different hidden colors and mechanics produce identical neutral pixels",
+      "passed": true
+    },
+    {
+      "message": "Reduced-motion cards retain their labels/badges with no moving edge pixels",
+      "passed": true
+    },
+    {
+      "message": "Fifty synthetic confirmed outcomes use one batch flourish and bounded effects",
+      "passed": true
+    },
+    {
+      "message": "Actual native Wrath produces one 60-permanent destroy batch; spell departure is excluded",
+      "passed": true
+    },
+    {
+      "message": "Actual native indestructible survivor remains on the current battlefield",
+      "passed": true
+    },
+    {
+      "message": "Eight detailed mechanic scenes consume actual native outcomes and public current traits",
+      "passed": true
+    },
+    {
+      "message": "Simultaneous fracture primitive budget stays bounded at 256",
+      "passed": true
+    }
+  ],
+  "director": {
+    "active": 50,
+    "drawPrimitives": 256,
+    "maxEffects": 64,
+    "maxParticles": 256,
+    "maxTrails": 32
+  },
+  "nativeCauses": {
+    "scenes": 8,
+    "scope": "Actual accepted native Evoke/Convoke/Extort/Mutate/Morph-face-up/Haste/Reach and prepared Trample outcomes. Presentation geometry is synthetic and noninteractive; no full-table UX claim.",
+    "sources": {
+      "convoke-before": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/convoke-before.json",
+      "convoke-cast": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/convoke-cast.json",
+      "evoke-before": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/evoke-before.json",
+      "evoke-cast": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/evoke-cast.json",
+      "extort-complete": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/extort-complete.json",
+      "extort-trigger": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/extort-trigger.json",
+      "haste-attacking": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/haste-attacking.json",
+      "haste-before": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/haste-before.json",
+      "morph-face-down": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/morph-face-down.json",
+      "morph-face-up": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/morph-face-up.json",
+      "mutate-before": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/mutate-before.json",
+      "mutate-complete": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/mutate-complete.json",
+      "reach-blocking": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/reach-blocking.json",
+      "trample-before": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/trample-before.json",
+      "trample-complete": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx/native-mechanic-audit/trample-complete.json"
+    },
+    "sourceSha256": {
+      "convoke-before": "d30c351db4fb15b21205afef1e6afe4475dfd2bc32a546c59d78bf2926f4b051",
+      "convoke-cast": "9f103c8da8d00d9815e366c4586ad0f3e862a935534fcde8eb0d4a4988d603df",
+      "evoke-before": "a57ca5ceef4489497abfb98667e2f785cee9f1e96a0a585a91496fd6d82ab55a",
+      "evoke-cast": "975f42505d207e5ab08e7b12484261263ca7cf72afe494141062b760af429cf2",
+      "extort-complete": "58fa971f7857246aa02c8ccc5a417ba3ed014a2c2c7e2984d74428f075c3cc79",
+      "extort-trigger": "99f4e35a245f1e046bca352bb7500574719ba13120522c8d3d122862ae23f167",
+      "haste-attacking": "8767f7ea9c51c03112375552d1229d3ec385fc3bb04fd80ef772912c49ad2564",
+      "haste-before": "7f4c2d5f33ce76c6c48b617f2d4553e5b02b819c239fb53eab582d9a5e084b24",
+      "morph-face-down": "a433fca03622269d102779b1e3913898022c2d39aabcfbca66d2e98862d7fa4c",
+      "morph-face-up": "80f7abcc935a9d5678e5de04aec2d839e6e01b83d6a3ceb4fc5a1809dc576cea",
+      "mutate-before": "d5ea278f945cc16ab43e88226e4c0cc2baa44068a5214a4c750af21124789948",
+      "mutate-complete": "a24c68d94cf9fda1e2d7f5fecdfea7be9181f33d02f2599b9ed718d7fdc1b9c6",
+      "reach-blocking": "d1acf3aea39820de375e86282a51c20829cdc37456036826f007c707df148436",
+      "trample-before": "63afb6360f941ff6432424011632f0c773515b8167e6f681b3df4800a601e613",
+      "trample-complete": "9e25f6f77c6076f4d612bd77aa2d909c8e568e9b8cacb0fb8425bc1b9ab75570"
+    }
+  },
+  "nativeWipe": {
+    "affected": 60,
+    "operation": "destroy",
+    "scope": "Actual viewer-filtered XMage prepared native Wrath outcome. Layout geometry is synthetic; only current surviving cards are drawn as live objects. Departed rectangles are noninteractive material-effect anchors.",
+    "sourceAfter": "/home/leka/Documents/Projects/Love2Gathering/build/table-overhaul/zone-actions/wipe-after.json",
+    "sourceBefore": "/home/leka/Documents/Projects/Love2Gathering/build/table-overhaul/zone-actions/wipe-before.json",
+    "survivors": 1,
+    "sourceSha256": {
+      "sourceBefore": "0ebd83c9a3cf493472a715204351c8f74bffa1441fbfe2ab7418ce5b8d91533e",
+      "sourceAfter": "f912063b8f4e2bb5ae2f2dd5f2d4657361416795c2cbd661b4e5168d2f4c1f6b"
+    }
+  },
+  "passed": true,
+  "performance": {
+    "baseline": {
+      "frames": 90,
+      "maxMs": 14.643626,
+      "meanMs": 8.2299784333333,
+      "p95Ms": 12.928739
+    },
+    "effects": {
+      "frames": 131,
+      "maxMs": 20.50532,
+      "meanMs": 16.508137267176,
+      "p95Ms": 17.83446
+    },
+    "measurement": "CPU draw submission time around identical 100-card synthetic scene, after 20 warmup frames, vsync off. Effects include 50 simultaneous destroy outcomes. No full application or end-to-end GPU timing claim.",
+    "renderer": [
+      "OpenGL",
+      "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4",
+      "Mesa",
+      "llvmpipe (LLVM 20.1.2, 256 bits)"
+    ]
+  },
+  "scope": "Actual L\u00d6VE profile/effect rendering and synthetic crowded director benchmark; no native legality, Internet, full-table UX or physical GPU-independent guarantee.",
+  "sourceSha256": {
+    "app/mechanic_fx.lua": "a81eb593717043a31b0ac0fb7cc58d88c39dda268d243d6d85560bdb66432f03",
+    "app/board_fx.lua": "d823631744af522aa5963e9b1191e7ee29ac0ab1e8ef8c95a5d159b3b08062e8",
+    "tests/mechanic_fx_ui.lua": "ebef400a8f7a5acd47f914e2c55d7596d7b3cbf32d197b306c41a3231e4ec6d7"
+  },
+  "captures": {
+    "profiles": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx-software/profiles.png",
+    "events": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx-software/events.png",
+    "crowded": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx-software/crowded.png",
+    "native-wipe": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx-software/native-wipe.png",
+    "native-causes": "/home/leka/Documents/Projects/Love2Gathering/build/presentation-vfx-software/native-causes.png"
+  }
+}

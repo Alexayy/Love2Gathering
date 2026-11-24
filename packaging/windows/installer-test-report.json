@@ -1,17 +1,114 @@
 {
   "passed": true,
-  "scope": "Actual generated NSIS x64 installer/uninstaller under isolated Wine9; chosen path includes spaces, Start Menu target checked, unlisted real SQLite saves inside/outside installation preserved. Bundled runtime version checks are separate; not native Windows gameplay acceptance.",
+  "scope": "Actual generated NSIS x64 installer/uninstaller under isolated Wine; chosen path includes spaces, Start Menu and quiet uninstall registration checked, optional complete payload upgrade/runtime/service readiness, unlisted real SQLite saves inside/outside installation preserved. Not native Windows gameplay acceptance.",
+  "wineVersion": "wine-11.22 (Staging)",
   "checks": {
     "chosenFolder": true,
     "startMenuTarget": true,
+    "quietUninstallRegistered": true,
+    "completePayloadUpgrade": true,
     "applicationRemoved": true,
     "unlistedSQLitePreserved": true,
-    "outsideSQLitePreserved": true
+    "outsideSQLitePreserved": true,
+    "installedSoftwareGraphics": true,
+    "installedServiceReadiness": true
   },
-  "installerSha256": "30b64b50ac57ba3a25d3a5293153d9071661e9ed079b07221659217c9af111ed",
+  "serviceReadiness": {
+    "passed": true,
+    "ports": {
+      "CATALOG": 17370,
+      "ENGINE": 17371,
+      "ROOM": 17380
+    },
+    "catalog": {
+      "status": "ok",
+      "ready": true,
+      "index": {
+        "state": "ready",
+        "phase": "ready",
+        "lines": 542909,
+        "cards": 38452,
+        "bytesRead": 398806932,
+        "totalBytes": 398806932,
+        "seconds": 66.8,
+        "error": null,
+        "message": "Local card metadata is ready",
+        "indexesDone": 14,
+        "indexesTotal": 14
+      },
+      "source": "all-cards.jsonl.gz",
+      "catalogSource": "Z:\\home\\leka\\Documents\\Projects\\Love2Gathering\\.runtime\\windows-full-updater-check-20261118-1\\Chosen Game Folder\\assets\\all-cards.jsonl.gz",
+      "version": 3,
+      "apiVersion": 15,
+      "schemaVersion": 7,
+      "imageVariants": {
+        "generated": 0,
+        "reused": 0,
+        "failed": 0,
+        "dropped": 0,
+        "inputBytes": 0,
+        "outputBytes": 0,
+        "available": true,
+        "enabled": true,
+        "version": 1,
+        "width": 256,
+        "maxHeight": 512,
+        "pending": 0,
+        "queueLimit": 64,
+        "workerAlive": false
+      },
+      "deckSupport": {
+        "available": true,
+        "version": 1
+      },
+      "deckCovers": true,
+      "storage": {
+        "database": "app.sqlite",
+        "dataDirectory": "Z:\\home\\leka\\Documents\\Projects\\Love2Gathering\\.runtime\\windows-full-updater-check-20261118-1\\owned-data",
+        "cacheDirectory": "Z:\\home\\leka\\Documents\\Projects\\Love2Gathering\\.runtime\\windows-full-updater-check-20261118-1\\owned-cache",
+        "cacheDatabase": "Z:\\home\\leka\\Documents\\Projects\\Love2Gathering\\.runtime\\windows-full-updater-check-20261118-1\\owned-cache\\images.sqlite",
+        "separateCache": true,
+        "schemaVersion": 1,
+        "journalMode": "wal",
+        "legacyFilesPreserved": true,
+        "migrationIssues": []
+      },
+      "userStore": {
+        "database": "app.sqlite",
+        "dataDirectory": "Z:\\home\\leka\\Documents\\Projects\\Love2Gathering\\.runtime\\windows-full-updater-check-20261118-1\\owned-data",
+        "cacheDirectory": "Z:\\home\\leka\\Documents\\Projects\\Love2Gathering\\.runtime\\windows-full-updater-check-20261118-1\\owned-cache",
+        "cacheDatabase": "Z:\\home\\leka\\Documents\\Projects\\Love2Gathering\\.runtime\\windows-full-updater-check-20261118-1\\owned-cache\\images.sqlite",
+        "separateCache": true,
+        "schemaVersion": 1,
+        "journalMode": "wal",
+        "legacyFilesPreserved": true,
+        "migrationIssues": []
+      }
+    },
+    "engine": {
+      "ok": true,
+      "engine": "XMage",
+      "version": "1.4.63",
+      "implementedCards": 32983,
+      "recordingError": null,
+      "storageRelocationProtocol": 1,
+      "instanceId": "ee4a3c91-2d71-4b6c-a99a-1e410658cca2",
+      "engineRevision": "c5a5215fa086f487c793627446d5d27e81dfbc97"
+    },
+    "room": {
+      "status": "ok",
+      "apiVersion": 1,
+      "service": "love2gathering-rooms",
+      "membershipIdempotency": true
+    },
+    "logs": "C:\\users\\leka\\AppData\\Local\\love2gathering\\runtime\\session-572-0f903599"
+  },
+  "serviceReadinessError": null,
+  "installerSha256": "91b6523f07bf46817807f2475b3d5bfe99238c16c4cc3c441471b9e57379423d",
   "sourceSha256": {
-    "packaging/windows/test_installer.py": "9fa5ecf8a262e25c2c3e4bed65e34ece124bc6ce57244bc4ac42e001c01a91b5",
-    "packaging/windows/installer.nsi": "e7e64e89611621a693b4e687aec998eefed6e32fa82359ef81a313b0816264f5",
-    "packaging/runtime/launcher.py": "9d2563629d941377670cafaa134d21189ac1d2a541198acd1ff9d554cda7a06e"
+    "packaging/windows/test_installer.py": "e359f6743ee0116a29140a185929ee3d7d1c168e1a016c4296ced52505d612d8",
+    "packaging/windows/installer.nsi": "6576da92dedadf3400c3c7d6e8b1b9e73e5e31d1ec4e59a81ddda717e0a0514c",
+    "packaging/windows/install_support.py": "42a56bdec84584f5f977ebef03d398a91441aacdf4f5d43024664d9c3c8b2168",
+    "packaging/runtime/launcher.py": "d9e3835abd71c937d78eb913e8d631de0d695159feb3a192151623a692b0280c"
   }
 }

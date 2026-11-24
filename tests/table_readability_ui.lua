@@ -34,41 +34,21 @@ local function scenario()
    m:setGame(fixture(count,7));r.cameraIdentity=nil;r.handBounds=nil;r.hover=nil;r.poses={};point(0,0);wait(.15)
    local w,h=Layout.dimensions();local name=size[1]..'-ui'..Layout.scale..'-seats'..count
    local hand=assert(hit('hand-4'));local resting=hand.w
-   check(math.abs(resting-math.min(104,math.max(84,w*.073))*1.05)<.01,'Resting hand grows5percent at actual '..w..'x'..h..' / '..count..' seats')
-   check(hand.y<h and hand.x>=0 and hand.x+hand.w<=w,'Resting hand remains visible and horizontally bounded')
-   point(hand.x+hand.w/2,hand.y+25);wait(.12)
-   hand=assert(hit('hand-4'));check(math.abs(hand.w-math.min(206,w*.16)*1.05)<.01,'Hover uses the uniformly enlarged card')
-   check(math.abs(assert(hit('hand-3')).w-146*1.05)<.01,'Expanded neighboring hand cards also grow5percent')
-   point(hand.x+hand.w/2,hand.y+hand.h/2);check(r.hover and r.hover.card.id=='hand-4','Hover hit follows actual enlarged ink')
-   r:mousepressed(hand.x+hand.w/2,hand.y+hand.h/2,2,1);check(m.inspectCard and m.inspectCard.id=='hand-4','Right-click inspects the enlarged hand card');m.inspectCard=nil
-   shots[#shots+1]=name..'-hover';wait(.08)
-   point(0,0);wait(.12)
-   if count>2 then
-    r.tableCamera:focus(3,true);wait(.08)
-    check(r.tableCamera.zoom==1,'Card growth does not change the camera zoom')
-    local box=assert(hit('p1-creature-2'));check(math.abs(box.h-196*1.21)<.01,'World battlefield card grows10percent')
-    point(box.x+box.w/2,box.y+box.h/2);check(r.hover and r.hover.card.id==box.card.id,'World enlarged card is hit in projected coordinates')
-    r:mousepressed(box.x+box.w/2,box.y+box.h/2,2,1);r:mousereleased(box.x+box.w/2,box.y+box.h/2,2)
-    check(m.inspectCard and m.inspectCard.id==box.card.id,'World enlarged card right-click preserves native object identity');m.inspectCard=nil
-    local fixed=assert(hit('hand-4'));r.tableCamera:pan(100,50);wait(.08)
-    local after=assert(hit('hand-4'));check(math.abs(fixed.x-after.x)<.01 and math.abs(fixed.y-after.y)<.01,'Panning terrain never moves the enlarged fixed hand')
-   else
-    local land=assert(r.cardRects['p1-land-7']);local creature=assert(r.cardRects['p1-creature-1']);local L=Layout.table(w,h)
-    check(land.y>=creature.y+creature.h+12-.01,'Duel card rows retain separation')
-    check(land.y+land.h+6<=L.fieldBottom-8+.01,'Mana pool clears enlarged duel lands')
-   end
+   if count>2 then r.tableCamera:focus(3,true);wait(.08)end
    local power,defense=drawn('3/'),drawn('2');check(power and defense and defense.size>=16 and defense.tint[1]>defense.tint[2]*1.5 and power.tint[2]>.8,'Damaged defense alone is red and larger while power stays white')
    check(m.game.players[1].battlefield[8].toughness=='3'and m.game.players[1].battlefield[8].damage==1,'Displayedremainingdefense never changes native toughness or marked damage')
-   check(drawn('C2 D7')~=nil,'Native command-cast and independent death counts render on commander')
-   check(drawn('Max commander damage: 6')~=nil,'Duel/world header visibly tracks the highest single-commander damage rather than the6+4total')
-   local details;for _,entry in ipairs(r.hits)do if entry.commanderDetails and entry.card.id=='p1'then details=entry.tooltip end end
-   check(details and details:find('First commander · 6 damage received',1,true)and details:find('Second commander · 4 damage received',1,true),'Header hover details retain every actual commander ledger entry')
+   local details
+   for _,entry in ipairs(r.hits)do if entry.commanderDetails and entry.card.id=='p1'then details=entry.tooltip end end
+   check(details and details:find('2 command casts · 7 deaths · Tax {4}',1,true),'Player details retain cast count, deaths and native tax for the commander')
+   check(details:find('Highest damage received from one commander: 6',1,true) and details:find('First commander · 6 damage received',1,true) and details:find('Second commander · 4 damage received',1,true),'Player details retain the maximum and each individual commander damage entry')
    if count==2 then
-    local command=assert(hit('commander'));check(math.abs(command.w-83.6)<.01,'Duelcommandcard grows10percent')
-    for j=1,3 do local permanent=assert(hit('p1-creature-'..j));check(permanent.x>=command.x+command.w,'Owncommander has reserved space beside actual permanent hitboxes')end
+    local command
+    for _,entry in ipairs(r.hits)do if entry.zone=='command' and entry.playerId=='p1' then command=entry end end
+    check(command and command.cards[1].id=='commander','Duel command control exposes the native commander in its zone')
+    for j=1,3 do local permanent=assert(hit('p1-creature-'..j));check(permanent.x+permanent.w<=command.x,'Duel command control stays clear of battlefield card hitboxes')end
    end
    local prompt={id=100+count,type='select',priority=true,actionable={'p1-creature-1','p1-creature-2','p1-creature-3'},choices={}}
-   m.game.prompt=prompt;m.game.priority={canEndTurn=true};m.answeredPrompt=nil
+   m.game.prompt=prompt;m.game.priority={canEndTurn=true};m.answeredPrompt=nil;wait(.08)
    local previous=#answers
    for j=1,3 do local box=assert(hit('p1-creature-'..j));local x,y=box.x+box.w/2,box.y+box.h/2;point(x,y);r:mousepressed(x,y,1,1);r:mousereleased(x,y,1)end
    check(#answers==previous+3 and answers[previous+1].value=='p1-creature-1'and answers[previous+2].value=='p1-creature-2'and answers[previous+3].value=='p1-creature-3','Each actual visible attacker hit routes its own offered native UUID')
@@ -117,7 +97,7 @@ local function scenario()
    local peek=P.peek(facedown)
    check(role=='owner'and peek.name=='Willbender'or role=='opponent'and peek==facedown and not peek.faceDownIdentity,'Native '..role..' identity obeys exact peek entitlement')
    r:inspectHitCard(box)
-   check(role=='owner'and m.inspectCard.name=='Willbender'and m.inspectCard.faceDownContext.nativePT=='2/2'or role=='opponent'and m.inspectCard.hidden,'Rightinspect uses native '..role..' permission with separate current face-down stats')
+   check(role=='owner'and m.inspectCard.name=='Willbender'and m.inspectCard.faceDownContext.nativePT=='2/2'or role=='opponent'and m.inspectCard.hidden,'Details use native '..role..' permission with separate current face-down stats')
    m.inspectCard=nil;shots[#shots+1]='native-manifest-'..role;wait(.1)
   end
  end

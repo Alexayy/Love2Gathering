@@ -107,6 +107,8 @@ function API:request(service,method,path,body,callback,binary,options)
     if service=='engine'and method=='GET'and path=='/session/state'then lane='engineState'
     elseif service=='engine'and method=='GET'and path=='/health'then lane='engineHealth'
     elseif service=='room'and method=='GET'and guarded and requestPath=='/session/state'then lane='roomState'
+    elseif service=='room'and method=='GET'and path=='/client/capabilities'then lane='roomCapabilities'
+    elseif service=='room'and method=='GET'and path:match('^/client/rooms/[^/]+$')then lane='roomLobby'
     elseif service=='engine'and method=='GET'and path:match('^/capabilities')then lane='engineMetadata'
     elseif service=='art'then lane=nil
     elseif service=='catalog'then
@@ -148,7 +150,7 @@ function API:request(service,method,path,body,callback,binary,options)
     self.routes[self.nextId]=guarded and self.routeGeneration or nil
     -- Channel tables do not preserve metatables, so serialize arrays here.
     local id=self.nextId
-    local item={id=id,method=method,path=path,bodyJson=body and json.encode(body),binary=binary,decodeImage=binary=='image',timeout=(lane=='catalogFetch'or service=='art'and path:find('network=1',1,true))and 20 or 8,retryRead=method=='GET'and(service=='catalog'or service=='art')}
+    local item={id=id,method=method,path=path,bodyJson=body and json.encode(body),binary=binary,decodeImage=binary=='image',timeout=(lane=='catalogFetch'or service=='art'and path:find('network=1',1,true))and 20 or 8,retryRead=method=='GET'and(service=='catalog'or service=='art'or service=='room')}
     if queued then
         if priority=='selected'or priority=='selectedMetadata'then
             for index=#self.artQueue,1,-1 do local queued=self.artQueue[index]

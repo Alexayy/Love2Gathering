@@ -15,6 +15,28 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def validate_opening_roll(roll, players):
+    """Check the actual native starting-order projection, not a removed prompt."""
+    assert roll.get('mode') == '2d6', 'Production practice must expose the native 2d6 opening roll'
+    participants = {player['id'] for player in players}
+    contenders = participants
+    rounds = roll.get('rounds', [])
+    assert rounds, 'Native opening roll has no rounds'
+    for index, current in enumerate(rounds):
+        rolls = current['rolls']
+        assert {item['playerId'] for item in rolls} == contenders and len(rolls) == len(contenders), 'Native opening round omitted/duplicated a contender'
+        for item in rolls:
+            assert len(item['dice']) == 2 and all(isinstance(die, int) and 1 <= die <= 6 for die in item['dice'])
+            assert item['total'] == sum(item['dice']), 'Native opening roll total differs from its two dice'
+        highest = max(item['total'] for item in rolls)
+        assert current['highest'] == highest
+        contenders = {item['playerId'] for item in rolls if item['total'] == highest}
+        if index < len(rounds) - 1:
+            assert len(contenders) > 1, 'Native opening rerolled a nontied highest result'
+    assert contenders == {roll['winnerId']}, 'Native starting winner differs from the final unique highest roll'
+    return len(participants)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--url', default='http://127.0.0.1:17402')
@@ -71,7 +93,9 @@ def main():
             log_seen = {}
             last_id = None
             free_mulligan = False
-            starting_targets = set()
+            starting_participants = 0
+            opening_roll = None
+            first_active_validated = False
             opening = None
             players = []
             target_turns = count + 1
@@ -86,19 +110,25 @@ def main():
                     assert state['playerCount'] == count and state['format'] == 'Commander'
                     for player in players:
                         assert player['human'] or player['hand'] == [], 'Bot hand leaked'
+                    if state.get('openingRoll') and opening_roll is None:
+                        opening_roll = state['openingRoll']
+                        starting_participants = validate_opening_roll(opening_roll, players)
                     if all(len(p.get('command', [])) == 1 and p['handCount'] >= 7 for p in players) and opening is None:
                         opening = [{'name': p['name'], 'life': p['life'], 'handCount': p['handCount'], 'libraryCount': p['libraryCount'], 'commander': p['command'][0]['name']} for p in players]
                         assert all(p['life'] == 40 for p in players)
                         assert all(p['libraryCount'] + p['handCount'] == 99 for p in players)
                 if state.get('activePlayerId'):
                     active.add(state['activePlayerId'])
+                    if opening_roll and state.get('turn') == 1 and state.get('phase'):
+                        assert state['activePlayerId'] == opening_roll['winnerId'], 'Native first active player differs from the server-owned opening roll'
+                        first_active_validated = True
                 for entry in state.get('log', []):
                     if isinstance(entry, dict):
                         log_seen[entry['id']] = entry
                         assert 'critical error' not in entry['text'].lower()
                         if entry.get('category') == 'turn' and entry.get('actorId'):
                             active.add(entry['actorId'])
-                if opening and free_mulligan and len(starting_targets) == count and state.get('turn', 0) >= target_turns and len(active) == count:
+                if opening and free_mulligan and starting_participants == count and first_active_validated and state.get('turn', 0) >= target_turns and len(active) == count:
                     break
                 assert state.get('running') is not False, 'Game stopped unexpectedly'
                 prompt = state.get('prompt')
@@ -111,10 +141,6 @@ def main():
                 if 'mulligan' in prompt:
                     free_mulligan |= prompt['mulligan']['free'] and prompt['mulligan']['downTo'] == 7
                     chosen = prompt['mulligan']['keepChoice']
-                elif 'starting player' in prompt.get('message', '').lower():
-                    starting_targets = set(indexed)
-                    assert {p['id'] for p in players}.issubset(starting_targets), 'Missing player target choices'
-                    chosen = next(c for c in choices if c['id'] == next(p['id'] for p in players if p['human']))
                 elif prompt['type'] in ('select', 'play_mana') and 'done' in indexed:
                     chosen = indexed['done']
                 elif prompt['type'] == 'ask':
@@ -128,7 +154,7 @@ def main():
                 state = call('/session/action', answer)
             else:
                 raise AssertionError(f'{count}-player match timed out')
-            assert opening and free_mulligan and len(starting_targets) == count
+            assert opening and free_mulligan and starting_participants == count and first_active_validated
             assert len(active) == count
             bot_lands = {e['actorId'] for e in log_seen.values() if e.get('category') == 'land' and e.get('actor') == 'bot'}
             assert len(bot_lands) == count - 1, 'Every bot must actually take a turn and play a land'
@@ -137,12 +163,20 @@ def main():
                 saved = call('/session/replay/save', {})
                 assert saved.get('saved') and state.get('running'), saved
             current = state
-            result = {'playerCount': count, 'passed': True, 'opening': opening, 'freeMulligan': free_mulligan, 'allStartingPlayerTargets': len(starting_targets), 'activePlayersObserved': len(active), 'turn': state.get('turn'), 'actionCount': len(actions), 'replayId': state.get('replayId'), 'actions': actions}
+            result = {'playerCount': count, 'passed': True, 'opening': opening, 'freeMulligan': free_mulligan,
+                      'nativeStartingOrderParticipants': starting_participants, 'nativeFirstActiveValidated': first_active_validated,
+                      'openingRollMode': opening_roll['mode'], 'openingRollRounds': len(opening_roll['rounds']),
+                      'activePlayersObserved': len(active), 'turn': state.get('turn'), 'actionCount': len(actions), 'replayId': state.get('replayId'), 'actions': actions}
             call('/session/stop', {})
             if args.recording_port:
                 catalog = f'http://127.0.0.1:{args.recording_port}'
-                with urllib.request.urlopen(catalog + '/replays/' + state['replayId'], timeout=30) as response:
-                    metadata = json.load(response)
+                until = time.monotonic() + 20
+                while True:
+                    with urllib.request.urlopen(catalog + '/replays/' + state['replayId'], timeout=30) as response:
+                        metadata = json.load(response)
+                    if metadata['status'] == 'aborted' or time.monotonic() >= until:
+                        break
+                    time.sleep(.05)
                 assert metadata['status'] == 'aborted', 'Stopped game must finish recording instead of leaving bots running'
                 assert metadata['playerCount'] == count and len(metadata['bots']) == count - 1
                 assert len(metadata['metadata']['players']) == count

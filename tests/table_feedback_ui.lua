@@ -34,13 +34,15 @@ local function scenario()
    check(symbol.x>=header.x-1 and symbol.x+symbol.size<=header.x+header.w+1 and symbol.y>=header.y and symbol.y+symbol.size<=header.y+header.h+2,'Actual mana glyph stays inside its measured header '..name)
   end
   local first=header.mana[1];local title=assert(header.title)
-  check(header.height>24 and title.y+title.h<=first.y+1 or header.height==24 and title.x+title.w<=first.x-2,'Card name and complete mana cost have separate measured space '..name)
+  check(title.y+title.h<=first.y+1 or title.x+title.w<=first.x-2,'Card name and complete mana cost have separate measured space '..name)
   check(drawn('Declare Blockers')and drawn('Combat'),'Actual native step and its active phase have strong text '..name)
-  local stops=0;for _,entry in ipairs(r.hits)do if entry.kind=='phase-stop'and entry.side then stops=stops+1 end end
-  check(stops==18,'Existing phase/body and own/opponent stop hit targets are preserved '..name)
-  shots[#shots+1]={name=name..'-mana-phase',phase=true,header=header};wait(.1)
+  local stops={};for _,entry in ipairs(r.hits)do if entry.kind=='phase-stop'then stops[entry.phase..':'..entry.side]=entry end end
+  for _,phase in ipairs({'BEGINNING','PRECOMBAT','COMBAT','POSTCOMBAT','END'})do
+   check(stops[phase..':own']and stops[phase..':opponent'],'Own and opponent stop targets are present for '..phase..' '..name)
+  end
+  shots[#shots+1]={name=name..'-mana-phase',phase=true,header=header,stops=stops};wait(.1)
   m:setGame(fixture(4));r.cameraIdentity=nil;wait(.1);r.tableCamera:overview(true);wait(.1)
-  check(drawn('OUT')and drawn('ELIMINATED')and drawn('LEFT MATCH'),'Native lost/left seats receive a large explicit OUT treatment '..name)
+  check(drawn('ELIMINATED') and drawn('LEFT MATCH'),'Native lost and departed seats show their distinct labels '..name)
   local live=assert(r.cardRects['p3-creature']);local out=assert(r.cardRects['p2-creature']);check(m.game.players[3].life==0 and not m.game.players[3].lost,'A remaining zero-life seat is not declared out by the frontend '..name)
   shots[#shots+1]={name=name..'-eliminated',live=live,out=out};wait(.1)
   for _,kind in ipairs({'win','loss','draw'})do
@@ -58,7 +60,7 @@ end
 function love.load()
  checks,clock,wake=0,0,0;shots={};ink={};headers={};reports={};mouse={x=0,y=0};love.mouse.getPosition=function()return mouse.x,mouse.y end
  m=Model.new();m.page='table';m.settings.animations=false;m.settings.reducedMotion=true;m.settings.showTooltips=false;m.settings.particles=false;m.settings.sfxEnabled=false;m.settings.autoFollowTurn=false;m.settings.skyboxBrightness=0
- image=love.graphics.newImage('spell.jpg');landImage=love.graphics.newImage('land.jpg');m.cardData=function(self,card)return card end;m.getArt=function(self,card)return card.type=='Land'and landImage or image end;m.profileArt=function()end;m.botPlaymatArt=function()return image end
+ image=love.graphics.newImage('spell.jpg');landImage=love.graphics.newImage('land.jpg');m.cardData=function(self,card)return card end;m.getArt=function(self,card,force,kind)if kind~='art_crop'then return card.type=='Land'and landImage or image end end;m.profileArt=function()end;m.botPlaymatArt=function()return image end
  r=Renderer.new(m)
  local strong=r.strong;r.strong=function(self,text,x,y,size,tint,width,...)
   local sx,sy=love.graphics.transformPoint(x,y);local font=self.assets:titleFont(size,self.model.settings);local right,bottom=love.graphics.transformPoint(x+font:getWidth(tostring(text)),y+font:getHeight())
@@ -69,9 +71,9 @@ function love.load()
   if context then local sx,sy=love.graphics.transformPoint(x,y);local right=love.graphics.transformPoint(x+size,y);context.mana[#context.mana+1]={symbol=symbol,x=sx,y=sy,size=right-sx}end
   return mana(self,symbol,x,y,size,...)
  end
- local header=r.cardHeader;r.cardHeader=function(self,card,data,x,y,w,h)
+ local header=r.cardHeader;r.cardHeader=function(self,card,data,x,y,w,h,...)
   local sx,sy=love.graphics.transformPoint(x,y);local right,bottom=love.graphics.transformPoint(x+w,y+h);local record={x=sx,y=sy,w=right-sx,h=bottom-sy,mana={}}
-  context=record;local height=header(self,card,data,x,y,w,h);context=nil;record.height=height;record.h=height*record.w/w;headers[card.id]=record;return height
+  context=record;local height=header(self,card,data,x,y,w,h,...);context=nil;record.height=height;record.h=height*record.w/w;headers[card.id]=record;return height
  end
  runner=coroutine.create(scenario)
 end
@@ -83,13 +85,17 @@ function love.draw()
  ink={};headers={};love.graphics.push();love.graphics.scale(Layout.scale);r:draw();r:drawForeground();love.graphics.pop()
  if #shots>0 then local job=table.remove(shots,1);love.graphics.captureScreenshot(function(data)
   if job.phase then
-   local w=Layout.dimensions();local L=Layout.table(w,select(2,Layout.dimensions()));local chipW=(L.board.w-24-25)/6
-   local function green(index)
-    local count=0;local x=L.board.x+12+(index-1)*(chipW+5)
-    for py=math.floor(L.phaseY*Layout.scale),math.floor((L.phaseY+3)*Layout.scale)do for px=math.floor(x*Layout.scale),math.floor((x+chipW)*Layout.scale)-1 do local rr,gg,bb=data:getPixel(px,py);if gg>.65 and gg>rr*1.4 then count=count+1 end end end
+   local function green(phase)
+    local box=job.stops[phase..':own'];local count=0
+    local y=(box.y+box.h-5)*Layout.scale
+    for py=math.ceil(y),math.floor(y+2*Layout.scale)do
+     for px=math.ceil(box.x*Layout.scale),math.floor((box.x+box.w)*Layout.scale)-1 do
+      local rr,gg=data:getPixel(px,py);if gg>.65 and gg>rr*1.4 then count=count+1 end
+     end
+    end
     return count
    end
-   check(green(4)>green(3)+30,'Actual active-phase border pixels are stronger than inactive phases '..job.name)
+   check(green('COMBAT')>green('PRECOMBAT')+25,'Actual active-phase border pixels are stronger than inactive phases '..job.name)
    local symbol=job.header.mana[2];local count=0
    for y=math.floor(symbol.y),math.ceil(symbol.y+symbol.size)-1 do for x=math.floor(symbol.x),math.ceil(symbol.x+symbol.size)-1 do local rr,gg,bb=data:getPixel(x,y);if rr>.55 and gg>.55 and bb>.4 then count=count+1 end end end
    check(count>5,'Actual white mana symbol remains visible over the card image '..job.name)

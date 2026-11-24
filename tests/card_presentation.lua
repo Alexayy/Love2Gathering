@@ -9,8 +9,14 @@ check(json.encode(card)==before,'Display calculations preserve native card value
 card.damage=4;check(P.stats(card).shown=='3/-1','Overmarked defense never invents native toughness or clamps legality')
 card.toughness='*';check(P.stats(card).remaining==nil and P.stats(card).shown=='3/*','Unknown toughness is never guessed')
 check(P.stats({power='',toughness='',type='Land'})==nil,'Empty native noncreature stats have no badge')
+check(P.stats(json.decode('{"power":null,"toughness":null,"type_line":"Instant"}'))==nil,'A catalog card without printed P/T has no stats badge')
 check(P.stats({power='0',toughness='0',type='Artifact'})==nil,'Ordinary noncreatures do not gain a0/0badge')
 check(P.stats({power='0',toughness='0',type='Creature'})~=nil,'A real0/0creature retains its native stats')
+local animated={type='[Enchantment, Creature]',type_line='Enchantment',supertypes={},subtypes='[]',power='0',toughness='0'}
+check(P.currentTypeLine(animated)=='Enchantment Creature' and P.stats(animated).native=='0/0','Animated enchantment uses its current types even beside an unanimated scan')
+check(P.currentTypeLine({type={'Creature','Land'},supertypes={'Legendary'},subtypes='[Elemental, Forest]'})=='Legendary Creature Land · Elemental Forest','Live types support array and legacy list-string projections')
+check(P.currentTypeLine({faceDown=true,type='[Creature]',printing={type='Planeswalker'}})=='','Hidden identity never supplies the preview type line')
+check(P.counterSummary({counters={loyalty=3,charge=2,stun=0}})=='charge ×2, loyalty ×3','Active counters appear consistently in hover and details')
 local face={id='manifest',faceDown=true,power='2',toughness='2',damage=1,faceDownIdentity={id='manifest',name='Willbender',power='1',toughness='2'}}
 local original=json.encode(face);local peek=P.peek(face)
 check(peek.name=='Willbender'and peek.faceDownContext.nativePT=='2/2'and peek.faceDownContext.damage==1,'Only native supplied peek carries separate face-down board context')
@@ -19,7 +25,7 @@ face.hidden=true;check(P.peek(face)==face,'Hidden opponent cards cannot borrow a
 face.hidden=false;face.faceDownIdentity.id='foreign';check(P.peek(face)==face,'Peek UUID must match the actual permanent')
 face.faceDownIdentity=nil;check(P.peek(face)==face,'Ownership alone never fabricates a peek')
 local commander={commandZonePlays=2,deaths=7,additionalTax={manaCost='{4}',otherCosts={}}}
-check(P.commanderLabel(commander):find('extra {4}',1,true)and P.commanderLabel(commander):find('7 deaths',1,true),'Native tax and independent death history retain exact values')
+check(P.commanderLabel(commander):find('Tax {4}',1,true)and P.commanderLabel(commander):find('7 deaths',1,true),'Native tax and independent death history retain exact values')
 commander.additionalTax={manaCost='',otherCosts={'Pay 2 life'}}
 check(P.commanderLabel(commander):find('Pay 2 life',1,true)and not P.commanderLabel(commander):find('{14}',1,true),'Nonmana commander tax is never inferred from deaths')
 local r={model={game={combat={groups={{attackerId='a',blockerIds={'b'},declarationConfirmed=false}}}}}}

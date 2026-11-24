@@ -26,6 +26,17 @@ local function scenario()
   check(body.expectedGameId==nil,phase..' routing never mutates the caller action table')
   timings[phase]={stateSeconds=got.state.seconds,healthSeconds=got.health.seconds,heldMutationSeconds=got.A.seconds,secondMutationSeconds=got.B.seconds}
  end
+ local roomMetadata={};local beganMetadata=love.timer.getTime()
+ api:request('room','GET','/client/capabilities',nil,function(data,err,code)roomMetadata.capabilities={data=data,error=err,code=code}end)
+ api:request('room','GET','/client/rooms/owned-live',nil,function(data,err,code)roomMetadata.lobby={data=data,error=err,code=code}end)
+ wait(.06)
+ api:request('engine','POST','/session/action',{probe='room-metadata-action'},function(data,err,code)
+  roomMetadata.action={data=data,error=err,code=code,seconds=love.timer.getTime()-beganMetadata,readsPending=not roomMetadata.capabilities and not roomMetadata.lobby}
+ end)
+ ready(function()return roomMetadata.action and roomMetadata.lobby and roomMetadata.capabilities end,'Room metadata blocked the actual native action lane')
+ check(roomMetadata.action.code==200 and roomMetadata.action.data.metadataArrived and roomMetadata.action.seconds<.8 and roomMetadata.action.readsPending,'A real room action reaches HTTP while slow capability and room-envelope reads remain pending')
+ check(roomMetadata.capabilities.code==200 and roomMetadata.capabilities.data.ready and roomMetadata.lobby.code==200,'A transient busy capability read retries without disconnecting the room')
+ timings.roomMetadata={actionSeconds=roomMetadata.action.seconds,independentReads=true}
  api:setRoomSession(nil);api:setNativeSession('native-old');local staleNative,freshNative
  api:request('engine','GET','/session/state',nil,function(data,err,code)staleNative={data=data,error=err,code=code}end)
  wait(.06);api:setNativeSession('native-new')
@@ -44,6 +55,7 @@ local function scenario()
  check(table.concat(counters.mutationOrder,',')=='native-A,native-B,room-A,room-B','All four requested mutations reach HTTP once in the original per-service order')
  check(counters.nativeReads==3 and counters.roomReads==3 and counters.healthReads==2,'Exact read counts show no hidden mutation replay or polling storm')
  check(counters.orderViolations==0,'A second ordinary mutation never reaches the server before its predecessor finishes')
+ check(counters.roomMetadata.actions==1 and counters.roomMetadata.capabilities==2 and counters.roomMetadata.lobby==1,'Only the safe busy read retries; the native room action reaches HTTP exactly once')
  api:quit();closed=true
  ready(function()for _,worker in pairs(api.workers)do if worker.thread:isRunning()then return false end end;return true end,'HTTP worker threads did not terminate',2)
  check(true,'Every actual HTTP worker exits after its bounded queue is drained')

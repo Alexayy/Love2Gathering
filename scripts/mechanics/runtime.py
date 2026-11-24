@@ -16,7 +16,7 @@ import urllib.request
 import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
-PIN = 'd9b266fc981024873ac7ec5f90ee7121a060725e'
+PIN = '2a96b0ac129dfd77946eaad536184d3b35fb5e64'
 # The runner owns signal policy; worker watchdogs observe this shared fence.
 RUN_CANCELLED = threading.Event()
 
@@ -308,7 +308,9 @@ def build_bridge(directory):
     subprocess.run([str(tools['jar']),'--create','--file',str(jar),'-C',str(classes),'.'],check=True)
     result={'jar':str(jar),'jarSha256':sha(jar),'classpath':str(jar)+os.pathsep+cp,
             'sources':{str(p.relative_to(ROOT)):sha(p)for p in sources},
-            'dependencies':{p.name:sha(p)for p in libraries},'enginePin':git('rev-parse','HEAD:engine/mage'),
+            'dependencies':{p.name:sha(p)for p in libraries},'enginePin':git('-C','engine/mage','rev-parse','HEAD'),
+            'parentEnginePin':git('rev-parse','HEAD:engine/mage'),
+            'indexEnginePin':git('rev-parse',':engine/mage'),
             'kind':'bridge-only javac/jar; original engine and targets read-only'}
     write_json(directory/'build.json',result);return result
 

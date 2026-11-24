@@ -34,7 +34,7 @@ An invitation is `L2G1-` plus URL-safe base64 JSON containing a protocol version
 
 Joining creates a new random seat credential, distinct from the invitation. Each local gateway keeps that credential internally behind a random `connectionId`; the frontend receives the connection ID, public room, and only its seat's private projection. A seat cannot claim a game/player by supplying their IDs. The coordinator binds native identities from its assignment and rejects actions tagged with a previous game's `expectedGameId`.
 
-The host alone adds/removes bots, starts and advances rounds, or closes the entire room. Any human can request a constructed rematch, with consent from every other human before replacement. Humans submit only their own deck, readiness, offered pick IDs and pool instance IDs. Deck names/readiness and draft pick counts are public; opponent deck compositions, packs, pools and hidden game cards are not. Initial trigger/mana/priority preferences are private per-seat settings. The server derives winners from completed games bound to the native pairing; no public winner/result-submission route exists.
+The host alone adds/removes bots, starts and advances rounds, or closes the entire room. Any human can request a constructed rematch, with consent from every other human before replacement. Each human controls their own deck, readiness, offered picks and pool. The host can also select a separate constructed deck for each bot. Adding seats preserves existing bot selections. New bots use a bundled Starter in the room format when available, preferring lists used by the fewest current seats. Formats without a Starter require the host to choose each bot's deck before starting. Deck names/readiness and draft pick counts are public; opponent deck compositions, packs, pools and hidden game cards are not. Initial trigger/mana/priority preferences are private per-seat settings. The server derives winners from completed games bound to the native pairing; no public winner/result-submission route exists.
 
 All POST commands require JSON, requests are bounded to 8 MiB, and browser-origin requests are rejected. Client-only routes additionally require a direct loopback source and are disabled on the dedicated host. Invite codes/seat credentials are omitted from access logs. Room capacity is 32 by default (`--max-rooms`, at most 64), a hosting resource bound. Closed rooms expire after a minute; idle setup rooms expire after an hour.
 
@@ -47,7 +47,7 @@ All POST commands require JSON, requests are bounded to 8 MiB, and browser-origi
 | `POST /client/rooms` | `{name,playerName,kind,format,maxPlayers,draft?,settings?,priority?}` creates a room |
 | `POST /client/join` | `{code,name,settings?,priority?}` joins by invitation |
 | `GET /client/rooms/:connection` | Public room and own `draft`/`game` projections |
-| `POST .../deck` | `{deck}` selects own saved constructed deck |
+| `POST .../deck` | `{deck}` selects the caller's constructed deck. The host can include `botSeatId` to select an existing bot's deck. |
 | `POST .../ready` | `{ready:boolean}` |
 | `POST .../bots` | Host `{count}` |
 | `POST .../start` | Host starts setup, or first round after native-valid draft decks |
@@ -77,6 +77,55 @@ Draft procedure, card pool and tournament pairing are independent choices. Tradi
 The UI fences responses by connection opening, mutation sequence, room revision and native game ID. Entering a live room game closes read-only replay first. A bye/eliminated player receives no playable assignment; no stale prior-round game is polled. The existing local Lobby/game routes remain independent.
 
 ## Verification scope
+
+Room reads and native choices have separate transport lanes. Capability and
+room-envelope reads cannot queue an action behind a slow metadata scan. Native
+reads have a 2.5-second per-hop limit and a shared five-second envelope budget;
+the public hop is limited to six seconds, below the desktop worker's eight
+seconds. A failed read may retry once, then polls back off up to eight seconds.
+Waiting/reconnecting status retains the existing seat, game and unanswered
+choice. A lost mutation acknowledgement triggers a fresh read, never a replay
+of that action/pick. Definite validation failures remain validation failures.
+
+Create/join intents carry a stable desktop request identity. New room hosts
+advertise `membershipIdempotency` and receive a separate random private key.
+Only the exact same operation and canonical payload may reuse that key; a
+duplicate in flight is fenced. Both hops retain at most 1,024 small identity
+records for one hour. A retry resumes the same authenticated seat/room and does
+not allocate another member. Closed/departed memberships cannot be resurrected.
+When a legacy host gives an unknown, malformed or failed reply after a possible
+allocation, another POST is blocked because that host cannot confirm safe reuse.
+
+Table priority is a per-player policy. New players default to manual control;
+saved `autoPass` values remain intact. `passWithOnlyMana` is a separate opt-in
+and considers only XMage's native legal abilities across every zone and native
+special actions. Stops and Full Control take precedence. Targets, payments,
+combat and other mandatory decisions are never automatically answered. A
+failed or noncurrent native legality inventory holds priority conservatively.
+The policy never taps a source or generates mana on the player's behalf.
+
+- `service/tests/test_room_transport.py`: real delayed HTTP responses, bounded
+  composed reads, lost membership replies, same-seat recovery, operation/payload
+  conflicts, in-flight fencing, capacity/expiry and legacy uncertainty.
+- `tests/api_read_lanes.py`: actual LÖVE/LuaSocket workers prove that held room
+  metadata does not delay a native action, one busy read retries, and the action
+  reaches HTTP exactly once. Payloads are controlled transport fixtures.
+- `PriorityFixture`: native mana-only opt-in, manual defaults, explicit stops,
+  unavailable legality, legal instant/flash responses and mandatory choices.
+- `tests/table_options_ui.sh`: actual Slab checkbox clicks verify complete
+  native policy requests, per-player preference saves, delayed acknowledgements
+  and disabled controls during reconnect. Its synthetic duel also checks compact
+  exile/library targets, native-offered mana undo and completion while options
+  are open. It uses isolated VFS and controlled replies, not a native game.
+- `lua5.4 tests/stack_presentation.lua`: exact docked stack-row identities,
+  clipping, modal/scroll hover retirement and rematch/seat resets. Actual dock
+  rendering and hover are covered separately by `presentation_overhaul_ui.sh`.
+- `python3 tests/table_production.py`: a fresh bridge-only build and owned real
+  catalog run a complete native duel, then 4/5/6-player Commander openings and
+  full turn rounds with native MAD bots. It checks server-owned 2d6 starting
+  order, all seats and bot land plays, private hands, native deck validation and
+  actual recordings. `tests/table-production-report.json` records exact build
+  hashes and cleanup; these are HTTP games, separate from graphical fixtures.
 
 - `python3 -m unittest discover -s service/tests -p test_rooms.py -v`: real HTTP gateways with a synthetic native adapter. Checks authorization, private projections, native capability mapping, rejected decks, host/guest scope, stale-round actions, explicit forfeiture, start/close races, byes and draw-rematch orchestration. This is not rules evidence.
 - `lua tests/api_rooms.lua` and `lua tests/rooms_model.lua`: deterministic transport fencing and room/draft editing contracts.

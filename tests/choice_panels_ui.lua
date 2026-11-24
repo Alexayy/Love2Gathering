@@ -38,6 +38,9 @@ local function adopt(prompt)
  revision=revision+1;local game=scene(prompt);game.revision=revision;m.replay=nil;m.zoneView=nil;m.inspectCard=nil;m.answeredPrompt=nil;m.actionBusy=false;m:setGame(game);m.page='table';v.cardChoiceState=nil;v.combatChoiceState=nil;v.cardChoiceDrag=nil;v.combatChoiceDrag=nil;return game
 end
 local function inputKey(nativeIndex)return'native-amount-'..nativeIndex..'/amount-'..v.combatChoiceState.identity..'-'..nativeIndex end
+local function choiceControl(id)
+ return controls[Choices.promptKey(m,m:prompt())..':'..tostring(id)]
+end
 local function boundsCheck(label)
  local w,h=Layout.dimensions();for _,id in ipairs({'Confirm distribution'})do local b=assert(controls[id],id);check(b.x>=0 and b.y>=0 and b.x+b.w<=w and b.y+b.h<=h,label..' confirmation stays within the logical viewport')end
 end
@@ -53,6 +56,11 @@ local function scenario()
   move(second.x+second.w/2,second.y+40);wait(.05);release()
   check(v.combatChoiceState.rows[1].nativeIndex==2 and#actions==before,'Actual drag rearranges targets without answering or inventing damage order: '..suffix)
   typeAt(controls[inputKey(2)],'1');typeAt(controls[inputKey(1)],'4');check(v.combatChoiceState.values[1]=='4'and v.combatChoiceState.values[2]=='1','Actual amount text fields retain each native target index after dragging: '..suffix)
+  click(v.combatChoiceHits[1],3)
+  check(m.inspectCard and m.inspectCard.id==bear2.id and #actions==before,'Middle-click opens the reordered target without submitting amounts: '..suffix)
+  key('escape',true);key('escape',false);wait(.15)
+  check(not m.inspectCard and v.combatChoiceState.rows[1].nativeIndex==2 and v.combatChoiceState.values[2]=='1' and v.combatChoiceState.values[1]=='4',
+      'Escape restores the target order and both staged amounts: '..suffix)
   shot('amount-distribution-'..suffix);click(controls['Confirm distribution'])
   check(#actions==before+1 and actions[#actions].type=='multi_amount'and actions[#actions].value[1]==4 and actions[#actions].value[2]==1,'Actual confirmation submits the native index array once: '..suffix)
   adopt(amount(revision+1));wait(.14);typeAt(controls[inputKey(1)],'5');typeAt(controls[inputKey(2)],'5');check(controls['Confirm distribution'].disabled,'An invalid native total disables confirmation rather than silently changing amounts: '..suffix)
@@ -63,33 +71,65 @@ local function scenario()
   local legal=clone(forest);legal.selectable=true;local refused=clone(swamp);refused.selectable=false
   local select={id=revision+1,type='pick_target',message='Search the library for an offered basic land',actionable={forest.id},choices={{id=forest.id,responseType='uuid',value=forest.id}},cardPanel={interactionId='library-'..revision,kind='select',stage='select',zone='LIBRARY',cards={clone(spell),legal,refused,clone(hidden)},doneChoice={id='done',label='Done',responseType='boolean',value=false}}}
   adopt(select);wait(.18);check(v.cardChoiceHits[1].card.id==forest.id and v.cardChoiceHits[2].card.id==swamp.id,'The actual library image grid puts visible basic lands before other cards: '..suffix)
-  local grey=controls['native-card-'..swamp.id..'/Swamp'];check(grey and grey.disabled and grey.tint and grey.tint[1]<.5,'Unavailable visible library cards are grey and disabled from native permissions: '..suffix)
-  check(not controls['native-card-'..hidden.id..'/Unentitled secret'],'The library grid never creates controls for a concealed identity: '..suffix)
+  local grey=choiceControl(swamp.id);check(grey and grey.disabled and grey.tint and grey.tint[1]<.5,'Unavailable visible library cards are grey and disabled from native permissions: '..suffix)
+  check(not choiceControl(hidden.id),'The library grid never creates controls for a concealed identity: '..suffix)
   before=#actions;click(grey);check(#actions==before,'Clicking the grey library candidate cannot answer the native prompt: '..suffix)
-  click(grey,2);check(m.inspectCard and m.inspectCard.id==swamp.id and#actions==before,'An unavailable visible card remains inspectable by right-click without becoming actionable: '..suffix);click(controls['Close details'])
-  shot('library-grid-'..suffix);click(controls['native-card-'..forest.id..'/Forest']);check(#actions==before+1 and actions[#actions].value==forest.id,'The available basic-land image submits its original native UUID: '..suffix)
+  click(grey,2);check(m:pinnedTableCard() and m:pinnedTableCard().id==swamp.id and not m.inspectCard and #actions==before,
+      'Right-click pins a visible but unavailable library choice and keeps the native panel interactive: '..suffix)
+  click(grey,3);check(m.inspectCard and m.inspectCard.id==swamp.id and#actions==before,'An unavailable visible card remains inspectable by middle-click without becoming actionable: '..suffix);click(controls['Close details'])
+  shot('library-grid-'..suffix);click(choiceControl(forest.id));check(#actions==before+1 and actions[#actions].value==forest.id,'The available basic-land image submits its original native UUID: '..suffix)
 
   local zonePrompt={id=revision+1,type='pick_target',message='Choose a card in your graveyard',actionable={forest.id},choices={{id=forest.id,responseType='uuid'}}}
   adopt(zonePrompt);m.zoneView={label='Fixture player · Graveyard',cards=m.game.players[1].graveyard};wait(.18)
   local zoneCard=controls['zone-card-'..forest.id..'/Forest'];check(zoneCard and zoneCard.image,'Graveyard browsing uses a real card-image button grid: '..suffix)
-  before=#actions;shot('graveyard-grid-'..suffix);click(zoneCard);check(#actions==before+1 and actions[#actions].value==forest.id and not m.zoneView,'Actual graveyard image click forwards the offered UUID and closes the zone: '..suffix)
+  before=#actions;shot('graveyard-grid-'..suffix);click(zoneCard,2)
+  check(m:pinnedTableCard() and m:pinnedTableCard().id==forest.id and m.zoneView and not m.inspectCard and #actions==before,
+      'Right-click pins an actionable graveyard image without consuming its selection: '..suffix)
+  click(zoneCard);check(#actions==before+1 and actions[#actions].value==forest.id and not m.zoneView,'Actual graveyard image click forwards the offered UUID and closes the zone: '..suffix)
   m.zoneView={label='Fixture player · Exile',cards={clone(swamp),clone(hidden)}};wait(.16);local back=controls['zone-card-'..hidden.id..'/Face-down card'];check(back and back.disabled and not controls['zone-card-'..hidden.id..'/Unentitled secret'],'Exile displays an unentitled card only as a disabled generic back: '..suffix)
-  shot('exile-grid-'..suffix);click(controls['zone-card-'..swamp.id..'/Swamp'],2);check(m.inspectCard and m.inspectCard.id==swamp.id,'Actual right-click opens a visible exiled card without answering: '..suffix)
+  shot('exile-grid-'..suffix);click(controls['zone-card-'..swamp.id..'/Swamp'],3);check(m.inspectCard and m.inspectCard.id==swamp.id,'Actual middle-click opens details of a visible exiled card without answering: '..suffix)
   click(controls['Close details']);click(controls['Close zone'])
 
   local attack={id=revision+1,type='select',message='Choose attackers',actionable={bear1.id,bear2.id},combat={role='attackers',declarationConfirmed=false,selectedAttackerIds={bear1.id},message='Choose individual creatures, then Done.'},choices={{id=bear1.id,label=bear1.name,responseType='uuid',card=clone(bear1)},{id=bear2.id,label=bear2.name,responseType='uuid',card=clone(bear2)},{id='all',label='All attack',responseType='string',value='all'},{id='done',label='Done',responseType='boolean',value=true}}}
-  adopt(attack);wait(.18);local chosen=controls['individual-combat-'..bear1.id..'/First blocker'];local individual=controls['individual-combat-'..bear2.id..'/Second blocker']
+  adopt(attack);wait(.18);local chosen=choiceControl(bear1.id);local individual=choiceControl(bear2.id)
   check(chosen and chosen.active and individual and not individual.disabled,'Individual attacker images retain the native provisional selection separately from All attack: '..suffix)
+  check(choiceControl('all').fullyVisible and choiceControl('done').fullyVisible,'Combat declaration buttons fit fully inside the panel below the cards: '..suffix)
   before=#actions;shot('individual-attackers-'..suffix);click(individual);check(#actions==before+1 and actions[#actions].type=='uuid'and actions[#actions].value==bear2.id,'An individual attacker button sends only that offered UUID: '..suffix)
  end
+ adopt(nil);m.game.lookedAt={{id='retained-look',label='Look at cards',cards={clone(spell)}}};wait(.15)
+ local lookCount=#actions
+ click(v.cardChoiceHits[1],3);check(m.inspectCard and m.inspectCard.id==spell.id,'Middle-click opens the retained looked-at card')
+ key('escape',true);key('escape',false);wait(.15)
+ check(not m.inspectCard and v.cardChoiceModal=='looked-at-cards' and #v.cardChoiceHits==1 and #actions==lookCount,
+     'Escape returns to the same retained look group without dismissing it or answering')
+ local priority={id=revision+1,type='select',priority=true,message='Priority',actionable={},
+     choices={{id='done',label='Pass / Done',responseType='boolean',value=true}}}
+ local game=adopt(priority)
+ game.stack={{id='test-stack-ability',sourceId=spell.id,sourceCard=clone(spell),sourceName=spell.name,name='Ability',targets={}}}
+ game.log={{id='test-cast-entry',text='You cast Visible spell',actor='human',category='cast',sourceCard=clone(spell)}}
+ m.stackOpen=true;m.logOpen=true;wait(.2)
+ local function inspectSource(box,field,value,label)
+  assert(box,'Missing '..label);local before=#actions
+  click(box,2);local pinned,ref=m:pinnedTableCard()
+  check(pinned and pinned.id==spell.id and ref[field]==value and not m.inspectCard and #actions==before,
+      'Right-click pins the exact '..label..' source without answering priority')
+  click(box,3)
+  check(m.inspectCard and m.inspectCard.id==spell.id and m.tableDetailSource[field]==value,'Middle-click opens details of the same '..label..' source')
+  click(controls['Close details'])
+  check(not m.inspectCard and m:prompt()==priority and #actions==before,'Closing '..label..' details preserves the pending priority question')
+ end
+ local stack=assert(m.stackHits[1])
+ inspectSource({x=stack.x+70,y=stack.y+4,w=16,h=16},'stackId',game.stack[1].id,'stack row')
+ inspectSource(controls['1/history-source'],'entryId',game.log[1].id,'history thumbnail')
+ m.logOpen=false;m.stackOpen=false
  local nativeFrames=love.filesystem.getInfo('native-attackers.json')and love.filesystem.getInfo('native-damage.json')
  if nativeFrames then
   local native=json.decode(assert(love.filesystem.read('native-attackers.json')));m.zoneView=nil;m.inspectCard=nil;m.answeredPrompt=nil;m.actionBusy=false;m:setGame(native);v.cardChoiceState=nil;v.combatChoiceState=nil;wait(.2)
-  if require('app.dice').busy(r)then local before=#actions;click({x=50,y=250,w=80,h=140});check(#actions==before and not v.combatChoiceDrag and not controls['individual-combat-'..native.prompt.choices[1].id..'/'..native.prompt.choices[1].card.name],'The opening dice overlay hides native-choice controls and blocks their custom input')end
+  if require('app.dice').busy(r)then local before=#actions;click({x=50,y=250,w=80,h=140});check(#actions==before and not v.combatChoiceDrag and not choiceControl(native.prompt.choices[1].id),'The opening dice overlay hides native-choice controls and blocks their custom input')end
   diceFinished()
   local selected={};for _,id in ipairs(native.prompt.combat.selectedAttackerIds)do selected[id]=true end
   local candidate,active
-  for _,choice in ipairs(native.prompt.choices)do if choice.responseType=='uuid'then local b=controls['individual-combat-'..choice.id..'/'..choice.card.name];if selected[choice.id]then active=b else candidate={button=b,id=choice.id}end end end
+  for _,choice in ipairs(native.prompt.choices)do if choice.responseType=='uuid'then local b=choiceControl(choice.id);if selected[choice.id]then active=b else candidate={button=b,id=choice.id}end end end
   check(active and active.active and candidate and candidate.button,'The genuine native attacker frame shows its selected and still-offered individual creatures')
   local before=#actions;shot('genuine-native-attackers');click(candidate.button);check(#actions==before+1 and actions[#actions].value==candidate.id,'Actual click on the genuine native frame submits its exact offered attacker UUID')
   native=json.decode(assert(love.filesystem.read('native-damage.json')));m.answeredPrompt=nil;m.actionBusy=false;m:setGame(native);v.combatChoiceState=nil;wait(.2);diceFinished()
@@ -102,10 +142,10 @@ local function scenario()
    check(v.cardChoiceHits[1].card.name=='Forest'and v.cardChoiceHits[2].card.name=='Island','The genuine Evolving Wilds library search puts both explicitly native Basic lands first')
    local nonbasic,forestChoice
    for _,entry in ipairs(native.prompt.cardPanel.cards)do if entry.name=='Temple Garden'then nonbasic=entry elseif entry.name=='Forest'then forestChoice=entry end end
-   local refused=controls['native-card-'..tostring(nonbasic.choiceId or nonbasic.id)..'/Temple Garden'];check(refused and refused.disabled and refused.tint[1]<.5,'The genuine native-entitled nonbasic land is grey and cannot satisfy the Basic-land prompt')
+   local refused=choiceControl(nonbasic.choiceId or nonbasic.id);check(refused and refused.disabled and refused.tint[1]<.5,'The genuine native-entitled nonbasic land is grey and cannot satisfy the Basic-land prompt')
    before=#actions;shot('genuine-native-land-search');click(refused);check(#actions==before,'Actual click on the genuine grey nonbasic candidate sends no action')
    typeAt(controls['native-card-search'],'Forest');check(#v.cardChoiceHits==1 and v.cardChoiceHits[1].card.id==forestChoice.id,'Actual choice search filters only the entitled native candidate grid')
-   click(controls['native-card-'..tostring(forestChoice.choiceId or forestChoice.id)..'/Forest']);check(#actions==before+1 and actions[#actions].value==forestChoice.id,'The actual searched Forest button submits the same UUID accepted by the native Evolving Wilds fixture')
+   click(choiceControl(forestChoice.choiceId or forestChoice.id));check(#actions==before+1 and actions[#actions].value==forestChoice.id,'The actual searched Forest button submits the same UUID accepted by the native Evolving Wilds fixture')
   end
  end
  local optional=amount(revision+100);optional.choices={{id='offered-cancel',label='Cancel amount choice',responseType='boolean',value=false}};adopt(optional);wait(.18)
@@ -131,8 +171,21 @@ function love.load()
  for _,name in ipairs({'mousemoved','mousepressed','mousereleased','wheelmoved','keypressed','keyreleased','textinput'})do dispatch[name]=love[name];love[name]=function()end end
  local Cursor=require('lib.Slab.Internal.Core.Cursor');local Window=require('lib.Slab.Internal.UI.Window');local push,pop=S.PushID,S.PopID
  S.PushID=function(id)scopes[#scopes+1]=id;return push(id)end;S.PopID=function()scopes[#scopes]=nil;return pop()end
- local function bounds()local x,y,w,h=Cursor.GetItemBounds();x,y=Window.TransformPoint(x,y);return{x=x,y=y,w=w,h=h}end
- for _,name in ipairs({'Button','Input'})do local original=S[name];S[name]=function(label,options)local result=original(label,options);local b=bounds();b.disabled=options and options.Disabled;b.active=options and options.Active;b.image=options and options.Image~=nil;b.tint=options and options.Image and options.Image.Color;controls[(#scopes>0 and table.concat(scopes,'/')..'/'or'')..label]=b;return result end end
+ local Region=require('lib.Slab.Internal.UI.Region')
+ local function bounds()
+  local x,y,w,h=Cursor.GetItemBounds();x,y=Window.TransformPoint(x,y)
+  local owner=Window.Top().Id
+  return{x=x,y=y,w=w,h=h,fullyVisible=Region.IsPointVisibleInWindow(owner,x+1,y+1) and Region.IsPointVisibleInWindow(owner,x+w-1,y+h-1)}
+ end
+ for _,name in ipairs({'Button','Input','Image'})do local original=S[name];S[name]=function(label,options)
+  local result=original(label,options)
+  if name=='Image' and label~='history-source' then return result end
+  local b=bounds()
+  b.disabled=options and options.Disabled;b.active=options and options.Active;b.image=options and options.Image~=nil
+  b.tint=name=='Button' and options and options.Image and options.Image.Color
+  controls[(#scopes>0 and table.concat(scopes,'/')..'/'or'')..label]=b
+  if name=='Button' and scopes[#scopes] then controls[scopes[#scopes]]=b end
+  return result end end
  local text=S.Text;S.Text=function(label,options)local result=text(label,options);labels[label]=bounds();return result end
  runner=coroutine.create(scenario)
 end

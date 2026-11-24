@@ -1,0 +1,182 @@
+{
+  "passed": true,
+  "enginePin": "c5a5215fa086f487c793627446d5d27e81dfbc97",
+  "serviceTests": {
+    "ran": 347,
+    "passed": 346,
+    "skipped": 1,
+    "skipCoveredBy": "service/tests/update-credential-dpapi-report.json"
+  },
+  "luaModelSuites": 54,
+  "fullTableUI": {
+    "checks": 85,
+    "performance": {
+      "drawSubmissionMedianMs": 4.7291600000001,
+      "drawSubmissionP95Ms": 11.379874,
+      "renderer": [
+        "OpenGL",
+        "4.6 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4",
+        "AMD",
+        "AMD Ryzen 7 6800HS Creator Edition (radeonsi, rembrandt, LLVM 20.1.2, DRM 3.64, 7.0.0-43-generic)"
+      ],
+      "samples": 204
+    },
+    "dimensions": [
+      {
+        "actual": [
+          1366,
+          768
+        ],
+        "requested": [
+          1366,
+          768
+        ]
+      },
+      {
+        "actual": [
+          1920,
+          1008
+        ],
+        "requested": [
+          1920,
+          1080
+        ]
+      },
+      {
+        "actual": [
+          2560,
+          1008
+        ],
+        "requested": [
+          2560,
+          1440
+        ]
+      },
+      {
+        "actual": [
+          2560,
+          1008
+        ],
+        "requested": [
+          2560,
+          1080
+        ]
+      }
+    ]
+  },
+  "reportGates": {
+    "tests/table-production-report.json": {
+      "passed": true,
+      "sha256": "94c20572de5c171ec963f85e2e58f16afee263e30fef2719f1eac19e190e82a8",
+      "scope": "Fresh bridge-only Java21 compile, real pinned XMage production-deck HTTP games and native MAD bots, real isolated SQLite recording catalog with one metadata record. Full native duel result and 4/5/6-player Commander openings/turn rounds; no native zone injection, GUI, external acquisition or user data/services. Manual priority remains the product default; the drivers answer actual offered choices."
+    },
+    "bridge/tests/zone-actions-report.json": {
+      "passed": true,
+      "sha256": "e7ae93f786ca1b9f6c6855b44f3616cba06a9e2068ea7ae744031fc08365d4b3",
+      "scope": "Actual pinned XMage casts, costs, UUID target selection, viewer privacy, permission cleanup, effective gained/lost abilities, native object-incarnation targets and sixty-creature Wrath on GAME threads. Initial resources/zones and cleanup boundary are deterministic. No engine edits, acquisition, live GUI-to-engine, WAN or full shuffled-match claim."
+    },
+    "bridge/tests/mechanic-causes-report.json": {
+      "passed": true,
+      "sha256": "e21619a4a40ad739249a43ce88c1e5172ea101ddb9a0cc10790151778ca6c54e",
+      "scope": "Actual native accepted casts/costs and material/life outcomes with exact cause identities. Prepared initial zones/resources; no shuffled match or GUI claim."
+    },
+    "tests/updates-ui-report.json": {
+      "passed": true,
+      "sha256": "04dd0e7a5188a30d696db7813616ad94b16c7ead401ae7e0170235b8b8a566fa",
+      "scope": "Actual L\u00d6VE/Slab About controls at 1440\u00d7900 and minimum 1120\u00d7720, plus modal/background input using production model/view/renderer with delayed controlled loopback replies. Packaged manifest and game/room states are explicit fixtures. No remote release, real download, installer, process exit handoff or user store access."
+    },
+    "packaging/flatpak/host-update-test-report.json": {
+      "passed": true,
+      "sha256": "17567929bed26464893907fb141a0e3242db36714909646138adfc042be72789",
+      "scope": "Offline native Flatpak host-update acceptance using two tiny owned bundles.\n\nRequires the already installed Freedesktop 25.08 SDK/runtime. No runtime, metadata,\ncard images or release assets are acquired. GitHub metadata is a deterministic\nfixture; the package bytes, sandbox, installed prefix, update and restart are real."
+    },
+    "packaging/linux/updater-rpm-runtime-report.json": {
+      "passed": true,
+      "sha256": "a803e7cbf0d0390cbafb02b8929f1deacf1145eeced37cb480f677f551e4285f",
+      "scope": "Actual RPM installed root-owned in Fedora container; runtime version checks and real XMage/catalog/room readiness as uid65534. One-card packaged metadata; no desktop, VM or full-match claim."
+    },
+    "packaging/windows/transaction-test-report.json": {
+      "passed": true,
+      "sha256": "9209f86d9b88fda3d754cfbbe24b2849f9df052342d59a9e5a3798362e64cbba",
+      "scope": "Actual NSIS install/update/uninstall, Win32 process/file checks, registry/shortcut rollback and real deferred helper with copied CPython, exact-parent wait, verified installer and installed-launcher restart under a fresh isolated Wine prefix. Client/Java/L\u00d6VE/bridge files are labeled small transaction fixtures; no native Windows VM, graphics or gameplay claim. Genuine SQLite saves are preserved. No arbitrary process kills or user stores."
+    },
+    "packaging/windows/full-updater-test-report.json": {
+      "passed": true,
+      "sha256": "f0face9c6a22255b947e4ae6a4c684c95118a5e6f4f68ba7a6ee7fba218f94d6",
+      "scope": "Actual complete current Windows package assembled from an immutable hash-verified common snapshot, including full local card metadata, official pinned Windows Python/Java/L\u00d6VE, Mesa and compiled XMage bridge. Installed under fresh isolated Wine; real runtime/service/full metadata readiness and shader/Canvas fallback checks, complete same-version payload reinstall, then uninstall with SQLite preservation. The separate 19-check transaction report covers genuinely newer-release deferred upgrade. This sourceDirty acceptance build was not published and is not native Windows VM or gameplay evidence."
+    },
+    "service/tests/update-credential-dpapi-report.json": {
+      "passed": true,
+      "sha256": "9a63603569b564422ac14fba71492e24330da92b3e6e52fefe91baa00381c4da",
+      "scope": "Current-user CryptProtectData/CryptUnprotectData round-trip through cached official Windows CPython under an isolated Wine profile; no native Windows VM claim, real credentials, user settings or SQL access."
+    }
+  },
+  "additionalPythonGates": {
+    "build-support": {
+      "passed": true,
+      "tests": 17
+    },
+    "publish": {
+      "passed": true,
+      "tests": 23
+    },
+    "promote": {
+      "passed": true,
+      "tests": 7
+    },
+    "workflow": {
+      "passed": true,
+      "tests": 14
+    },
+    "python-deps": {
+      "passed": true,
+      "tests": 6
+    },
+    "payload": {
+      "passed": true,
+      "tests": 2
+    },
+    "linux-installer": {
+      "passed": true,
+      "tests": 12
+    },
+    "pin-guard": {
+      "passed": true,
+      "tests": 14
+    },
+    "mechanics-framework": {
+      "passed": true,
+      "tests": 43
+    }
+  },
+  "sourceHashes": {
+    "app/updates.lua": "99f1310879f2d7a4013710adf9bb6ead6d63736d30d06f844e5fb477d2bea998",
+    "app/about.lua": "7cd05aab0828ff802c04429b0408e12124dfe96ff3febd8b31049ba20d9edcef",
+    "app/view.lua": "90049c5576a4a71ece926950633eeab68c921d99a6dc025bfc457a7707311915",
+    "app/renderer.lua": "e1fbb305d7cec511c0cc4831e18486434ebf8b98fdd1a7d1ee5fd2e4957315bd",
+    "lib/Slab/Internal/UI/Input.lua": "3ec9e8ea20b8f7826414d795b4322cb050f056fac0eb5cd8b0e3dc25df1de792",
+    "service/server.py": "f65211164ca7e4fc5151a370de6dd9bd38b736238c8530e0bd22ee999837f833",
+    "service/updates.py": "2bbfe4c34a29ce7a304a41de314be891a0de2d18f77f09cc35ada4bcd86ccd83",
+    "service/update_credentials.py": "b92294013bfa3799d3a5e15108ed9001d1f8887bf37c8893fe1c0d9e774d3053",
+    "packaging/runtime/launcher.py": "d9e3835abd71c937d78eb913e8d631de0d695159feb3a192151623a692b0280c",
+    "packaging/runtime/update_handoff.py": "7f89a90020872972c3a9f56c680dcb5526de7beedb95189cecf031853a0e783c",
+    "packaging/build.py": "eb93c6b7d8325648ea7b4708a2994fada499f8d93460a07d7a429cf68d040cd0",
+    "packaging/windows/build.py": "bedd7c7428560c0a20cfa2dd1d717c7d0bfe85712246a673d69a0cb84a30dc7a",
+    "packaging/windows/installer.nsi": "6576da92dedadf3400c3c7d6e8b1b9e73e5e31d1ec4e59a81ddda717e0a0514c",
+    "packaging/windows/install_support.py": "42a56bdec84584f5f977ebef03d398a91441aacdf4f5d43024664d9c3c8b2168",
+    "packaging/flatpak/build.py": "ca2dbbba1c1c5c36b77d85a5a3bf16931a701e9bce5d7d412929b0fa3cadaec0",
+    "packaging/flatpak/install-flatpak.py": "f552d9ee5e545c85c3fe1a1b87c8c497b2cdc539554e42a0f4f7455ee4db73d0",
+    "packaging/flatpak/update-host.py": "070e5099eabc68ddf152752250f161981646c18c1fe968efeca3d71d3ffc974f",
+    "scripts/ci/prepare-metadata.py": "85cfde4afc0fd90a583c1b33983f3443dc906ca5a43ffd390974a176777e2e4e",
+    "scripts/ci/publish-release.py": "9b560c0db201da36b8cea4bf133c44764d58c6776d22c10d7d54102eaf1eec29",
+    ".github/workflows/development-release.yml": "540ebd9b41079c323158bb706ae3560507a9f806a89b868b0fc7a20955630b2f"
+  },
+  "userStoreModified": false,
+  "limits": [
+    "Windows runtime, installer, software OpenGL and DPAPI are actual Wine tests; no native Windows VM/gameplay claim.",
+    "Metadata and package fixtures, production games, native prepared scenes and graphical input establish separate scopes.",
+    "Full Windows/RPM artifacts retain their exact source/artifact hashes; later private-auth source behavior is additionally checked by current HTTP/UI/credential tests. CI rebuilds all packages from the pushed source.",
+    "No live personal GitHub token was read or used; private API authorization/redirect behavior is checked against controlled HTTP and request fixtures.",
+    "Desktop-clamped screen dimensions and scoped draw submission timing are recorded, not hardware-independent FPS guarantees."
+  ]
+}

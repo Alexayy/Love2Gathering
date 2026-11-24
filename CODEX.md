@@ -17,6 +17,47 @@ The work used shell commands for focused source discovery, builds and local runs
 
 ## Continuing work
 
+Complete installed-package updates are described in [UPDATING.md](docs/UPDATING.md).
+`service/updates.py` checks/downloads asynchronously and never launches a package.
+Only a supervisor-issued private context fixes the installation, channel, work
+folder and request file. The client sends candidate IDs only. The deferred helper
+rehashes the selected installer, fences the exact parent/current installed
+identity and delegates to platform installers after owned services stop. Flatpak
+uses its external, installation-aware host launcher for exact-prefix updates;
+direct old launchers retain an explicitly labeled system-installer handoff.
+
+The November 18 table revision keeps XMage authoritative for zone offers, costs,
+targets and current mechanics. `NativeCardActions` publishes detached native
+options; `app/card_actions.lua` exposes one action sheet and a labeled playable
+exile hand. A capability is not an available action. `app/card_choices.lua`
+stages reversible multi-card selections under a stable native interaction ID,
+then reconciles exact offered UUID responses only after confirmation.
+
+`table_presentation`, `table_hud` and `table_panels` share terrain/dock geometry.
+The canonical multiplayer overview uses compact rectangular playmats and rear
+land rows. The hand overlays terrain. Stack rows provide exact clipped anchors;
+only a hovered row draws its current target connections. `Renderer:font`
+normalizes dynamic badge sizes through the real bounded font cache, including
+small many-keyword stack thumbnails. Preserve this production raster path in
+graphical tests; a stub renderer can hide missing font sizes.
+
+Room reads have bounded deadlines and independent worker lanes. A reconnect
+fences input until the exact assigned native game/perspective is reconciled.
+Only idempotent reads retry automatically; ambiguous create/join operations use
+bounded intent keys to recover the original seat. Priority policy is per player:
+manual by default, optional empty-window passing, separate mana-only opt-in,
+native unknown-legality holds, and explicit stops always win.
+
+Current focused evidence: `tests/presentation_overhaul_ui.sh`,
+`tests/table_options_ui.sh`, `tests/zone_actions_ui.sh`,
+`bridge/tests/test_zone_actions.py`, `tests/table_production.py`, and
+`tests/table-production-report.json`. The latter completes a genuine native
+duel and rotates every seat in 4/5/6-player games with real SQLite recordings.
+Synthetic geometry/crowding, native focused fixtures, exported-frame UI and
+normal-start production games remain distinct acceptance scopes.
+See [zone contracts](docs/ZONE_ACTIONS.md) and
+[mechanic coverage/assets](docs/PRESENTATION_VFX.md).
+
 1. Read `AGENTS.md`, then inspect the files for the requested behavior. Use the architecture table there to assign ownership.
 2. Trace gameplay decisions into XMage before changing the frontend. Extend the existing prompt contract when information is missing; keep presentation separate from rules.
 3. For parallel work, agree on JSON fields and file ownership before writes. Send concise findings and dependencies back to the integration owner.
@@ -332,3 +373,23 @@ Lobby bot draft creates an ordinary private room through ordered create→bots�
 Authoritative duel results drive one fullscreen outcome and input lock; ended projections cannot expose their last prompt. Commander elimination dims native lost/left seats without guessing from life. Right-click/Escape cancels only local unsubmitted dragging. Constructed rematches require every human's consent, with bounded expiring request IDs, strict response booleans and assigned-game fences. Two actual human games verify consent, retained seats/decks and recorded win/loss history.
 
 Focused tests are `tests/client_features_model.lua`, `tests/bot_draft_ui.sh`, `tests/match_controls_ui.sh`, `tests/table_feedback_ui.sh`, `tests/deck_support_ui.sh`, `tests/bot_draft_live.py`, `tests/room_rematch_live.py`, `tests/api_read_lanes.py`, `bridge/tests/test_native_recovery.py` and `bridge/tests/test_gameplay_presentation.py`. Native state/health and proxied game-state workers are independent of mutation FIFO and retain generation fences; the socket acceptance holds real mutation responses until the actual LÖVE workers read state/health. Fresh private Maven payloads are verified before atomic runtime publication; no running engine is stopped or JAR overwritten in place. Reports retain actual source/JAR hashes and separate native/game/service/synthetic-presentation scopes. Final gates are consolidated in `tests/client-recovery-report.json`.
+
+
+## November 17, 2026 — reviewed XMage upgrade
+
+The user-authorized upgrade advances only the parent gitlink to upstream `c5a5215fa086f487c793627446d5d27e81dfbc97` (1.4.63V2). Engine sources remain unmodified. The exact comparison adds 65 commits, 34 implemented card classes and NAU/NAC/PW27 set definitions. Current Scryfall metadata resolves all 34 new names, including Soundwave through its front-face alias. See `docs/XMAGE_UPSTREAM_REVIEW.md` for the complete card list and integration responsibilities.
+
+A clean selected-reactor build is required: incremental Maven output left an unchanged card compiled against a removed target-filter constructor. The build now cleans before compiling, regenerates the card map and atomically publishes readable JARs. A 51-check native compatibility fixture includes that unchanged-card constructor, new inventory, mana activation without a stack object, Loot exhaust payment/color and Sanctum Lurker zero-loyalty behavior. No replacement rules were added to the frontend.
+
+The fresh payload passed the existing native fixture gate, 20 bundled deck startups, a completed eight-turn production game, replay/save/reopen/outage/crash recovery, native priority, human-seat privacy and draft HTTP checks, plus isolated library-top, recovery and gameplay-presentation gates. Full reports retain their fixture versus production scopes; this is not exhaustive acceptance of every upstream card interaction. `bridge/tests/upstream-integration-report.json` records the exact rebuilt payload and final results. The parent publication guard accepts only the exact previously published development/master base snapshots for this transition; every outgoing commit and the index still require the new pin and unchanged official URL. Recursive engine pushes remain disabled.
+
+
+## November 17, 2026 — VM installation and indexing fixes
+
+The Fedora RPM bridge failure was caused by private `mktemp` JAR permissions surviving packaging and becoming root-owned. Builds publish JARs as 0644; payload sealing now normalizes directories to 0755, data files to 0644 and executable files to 0755. Both packaging and the installed supervisor validate the EngineBridge entrypoint/dependency readability. Actual root-owned RPM installation and uid65534 service startup are recorded separately in `packaging/linux/rpm-runtime-report.json`; this uses one-card metadata and a Fedora container, not a graphical VM game.
+
+Windows packages now include checksum-pinned Mesa 26.3.0 with static LLVM 23.1.5, retained source notices and dependency licenses. A separate short-lived SDL2 probe selects the existing driver or private CPU OpenGL fallback without changing system drivers. Explicit native/software controls and a storage-free check remain available. The embedded interpreter explicitly includes the payload root when importing its graphics helper. `packaging/windows/graphics-runtime-report.json` records actual forced and automatic fallback plus LÖVE shader/Canvas pixel readback under Wine; native Windows VM/gameplay acceptance remains unverified. The installer acceptance separately exercises the chosen folder, installed graphics and uninstall/save preservation.
+
+Index progress now accounts for every source entry before language filtering and shows compressed-source reading, waiting for another build and search preparation, including elapsed time during long phases. Secondary indexes are built after ingestion with bounded cache; complete prior catalogs remain intact on failure or source replacement. On the same current gzip source, separate single local-host runs measured 69.647s before and 51.531s after, with identical table counts; ready-index reuse was 1.6ms. This is not a Fedora VM or cold-disk benchmark. All 34 added names resolve through the completed catalog. Details, timing limits and source hashes are in `tests/catalog-indexing-report.json`.
+
+Validation included the 283-test service suite plus the final six focused indexing regressions, 50 pure Lua model suites, actual startup UI, assets/input, rich text and quit/storage checks, install/update/uninstall helpers, package-permission and renderer policy tests, and release/workflow tests. The pipeline now runs native integration fixtures and requires the software renderer's provenance before publishing a complete immutable release. Existing user data, original metadata and engine sources remain preserved.

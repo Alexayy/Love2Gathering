@@ -1,0 +1,192 @@
+{
+  "captures": [
+    "/home/leka/Documents/Projects/Love2Gathering/build/updates-ui/update-auth-masked.png",
+    "/home/leka/Documents/Projects/Love2Gathering/build/updates-ui/update-available.png",
+    "/home/leka/Documents/Projects/Love2Gathering/build/updates-ui/update-progress.png",
+    "/home/leka/Documents/Projects/Love2Gathering/build/updates-ui/update-ready.png",
+    "/home/leka/Documents/Projects/Love2Gathering/build/updates-ui/update-ready-minimum.png",
+    "/home/leka/Documents/Projects/Love2Gathering/build/updates-ui/update-apply-pending.png",
+    "/home/leka/Documents/Projects/Love2Gathering/build/updates-ui/update-handoff-error.png",
+    "/home/leka/Documents/Projects/Love2Gathering/build/updates-ui/update-source-build.png"
+  ],
+  "checks": [
+    "Real About tab reads the isolated packaged build manifest",
+    "Opening About never checks online or installs automatically",
+    "GitHub access uses an actual masked Slab input with explicit disabled empty Save",
+    "An unfocused programmatic password replacement synchronizes its real and masked values",
+    "Actual typed access is masked and remains unsent until Save is clicked",
+    "Actual Save sends only token in the local POST body without URL/query/path fields",
+    "Saving immediately clears local credential entry and locks it during acknowledgement",
+    "Refocusing after Save cannot recover the old secret or stale selection from Slab",
+    "Auth state exposes only saved availability while settings remain secret-free",
+    "Actual Forget requests credential removal without returning or resending the old token",
+    "Forget acknowledgement removes saved-access availability from the actual About page",
+    "Saving access again after Forget does not revive cached plaintext",
+    "Actual Check for updates click starts one controlled update request",
+    "The checking acknowledgement displays disabled checking state",
+    "Disabled checking control cannot start duplicate requests",
+    "Available response exposes the complete-package Download control",
+    "Download click sends only the verified opaque candidate identity",
+    "Actual About displays polled byte progress while keeping the application open",
+    "Verified ready response exposes installation while idle",
+    "Real installation control remains reachable in the minimum 1120×720 window",
+    "Masked GitHub access remains reachable in the minimum About form",
+    "Explicit empty Save remains reachable and disabled in the minimum About form",
+    "Explicit Forget remains reachable for saved access in the minimum About form",
+    "A running local game disables the real installation button",
+    "Disabled in-game installation cannot send an apply request",
+    "A live match behind replay also disables the real installation button",
+    "A room membership keeps installation disabled between native games",
+    "Flatpak ready state clearly selects the system installer handoff",
+    "Delayed Apply acknowledgement opens the real modal and blocks background renderer input",
+    "An idle pending installation does not invent an active-game warning",
+    "Pending installer modal blocks the underlying Settings Close button",
+    "Pending installer modal blocks actual background navigation hits",
+    "An uncertain installer acknowledgement retains the real modal until one status reconciliation",
+    "A handoff error releases the modal and keeps the application open",
+    "The actual About form preserves the installer error for review",
+    "Retrying installation still waits for its own service acknowledgement",
+    "A lost Apply reply uses one read while retaining the modal and never resubmits installation",
+    "Only acknowledged apply_requested queues the production graceful quit event",
+    "Candidate and acknowledgement paths never reach browser, filesystem execution or a shell",
+    "Actual source-build fallback exposes no credential/check/download/install controls",
+    "The source-build explanation remains reachable in the actual minimum About form",
+    "Source-build About performs no automatic update request or additional execution"
+  ],
+  "externalActions": {},
+  "logicalSize": [
+    1120,
+    720
+  ],
+  "passed": true,
+  "physicalSize": [
+    1120,
+    720
+  ],
+  "quitRequests": [
+    {
+      "code": 0,
+      "phase": "apply_requested_ack"
+    }
+  ],
+  "renderer": [
+    "OpenGL",
+    "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4",
+    "Mesa",
+    "llvmpipe (LLVM 20.1.2, 256 bits)"
+  ],
+  "requests": [
+    {
+      "answered": true,
+      "body": {
+        "token": "[redacted fixture token]"
+      },
+      "method": "POST",
+      "path": "/updates/auth",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "body": {
+        "token": ""
+      },
+      "method": "POST",
+      "path": "/updates/auth",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "body": {
+        "token": "[redacted fixture token]"
+      },
+      "method": "POST",
+      "path": "/updates/auth",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "body": {},
+      "method": "POST",
+      "path": "/updates/check",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "method": "GET",
+      "path": "/updates/status",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "body": {
+        "candidateId": "verified-fixture-candidate"
+      },
+      "method": "POST",
+      "path": "/updates/download",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "method": "GET",
+      "path": "/updates/status",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "method": "GET",
+      "path": "/updates/status",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "body": {
+        "candidateId": "verified-fixture-candidate"
+      },
+      "method": "POST",
+      "path": "/updates/apply",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "method": "GET",
+      "path": "/updates/status",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "body": {},
+      "method": "POST",
+      "path": "/updates/check",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "body": {
+        "candidateId": "verified-fixture-candidate"
+      },
+      "method": "POST",
+      "path": "/updates/apply",
+      "service": "catalog"
+    },
+    {
+      "answered": true,
+      "method": "GET",
+      "path": "/updates/status",
+      "service": "catalog"
+    }
+  ],
+  "scope": "Actual LÖVE/Slab About controls at 1440×900 and minimum 1120×720, plus modal/background input using production model/view/renderer with delayed controlled loopback replies. Packaged manifest and game/room states are explicit fixtures. No remote release, real download, installer, process exit handoff or user store access.",
+  "sourceSha256": {
+    "app/updates.lua": "99f1310879f2d7a4013710adf9bb6ead6d63736d30d06f844e5fb477d2bea998",
+    "app/about.lua": "7cd05aab0828ff802c04429b0408e12124dfe96ff3febd8b31049ba20d9edcef",
+    "app/model.lua": "908d659b4e5592b876d4a91446d472dca338ceec01d0be7e6e715a845b91c078",
+    "app/renderer.lua": "e1fbb305d7cec511c0cc4831e18486434ebf8b98fdd1a7d1ee5fd2e4957315bd",
+    "app/view.lua": "90049c5576a4a71ece926950633eeab68c921d99a6dc025bfc457a7707311915",
+    "app/settings.lua": "8e50fa9f032232a285c4383251019e52c2144aa25705c56577247667a3c5d146",
+    "app/build_info.lua": "53f59788c94b7c6e5351a0ce17a7801ec901d284b65f5545df123361b52a9b56",
+    "lib/Slab/Internal/UI/Input.lua": "3ec9e8ea20b8f7826414d795b4322cb050f056fac0eb5cd8b0e3dc25df1de792",
+    "tests/updates_ui.lua": "62a2ea8b19e96fde9acd5f6f6b3461f15062a593c88e46eea4ce227c27668864"
+  },
+  "sourceStillMatches": true,
+  "fixtureDirectory": "/tmp/love2gathering-updates-ui-OI7XS7"
+}

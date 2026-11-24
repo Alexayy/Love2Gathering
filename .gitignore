@@ -4,6 +4,7 @@
 /data/
 /build/
 /dist/
+/generated_images/
 /*.love
 
 # Large card dump and generated catalog/card index

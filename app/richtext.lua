@@ -101,7 +101,7 @@ end
 local function keyFor(renderer,text,width,opts,scale,font)
     local color=opts.color or (renderer.colors and renderer.colors.text) or {.9,.94,.98,1}
     local mana=opts.manaColor or {}
-    return table.concat({Assets.rasterEpoch,text,tostring(font),string.format('%.4f',width),opts.size or 16,opts.lineHeight or '',opts.lineSpacing or '',opts.iconSize or '',opts.iconGap or '',opts.maxLines or '',string.format('%.5f',scale),table.concat(color,','),table.concat(mana,',')},'\31')
+    return table.concat({Assets.rasterEpoch,text,tostring(font),string.format('%.4f',width),opts.size or 16,opts.lineHeight or '',opts.lineSpacing or '',opts.iconSize or '',opts.iconGap or '',opts.maxLines or '',opts.paddingX or 0,opts.paddingY or 0,opts.minHeight or 0,string.format('%.5f',scale),table.concat(color,','),table.concat(mana,',')},'\31')
 end
 function RichText.canvas(renderer,value,width,opts)
     opts=opts or {};local text=clean(value);width=math.max(1,width or 300);Assets.rasterContext()
@@ -110,17 +110,20 @@ function RichText.canvas(renderer,value,width,opts)
     RichText.clock=RichText.clock+1
     local entry=RichText.cache[key]
     if entry then entry.used=RichText.clock;return entry.image,entry.height end
-    local layout=RichText.layout(renderer,text,width,opts)
+    local padX,padY=opts.paddingX or 0,opts.paddingY or 0
+    local contentWidth=math.max(1,width-padX*2)
+    local layout=RichText.layout(renderer,text,contentWidth,opts)
     local maxSize=(love.graphics.getSystemLimits and love.graphics.getSystemLimits().texturesize) or 8192
-    if layout.height*scale>maxSize then
-        local clipped={};for k,v in pairs(opts)do clipped[k]=v end;clipped.maxLines=math.max(1,math.floor(maxSize/scale/layout.lineHeight));layout=RichText.layout(renderer,text,width,clipped)
+    if (layout.height+padY*2)*scale>maxSize then
+        local clipped={};for k,v in pairs(opts)do clipped[k]=v end;clipped.maxLines=math.max(1,math.floor((maxSize/scale-padY*2)/layout.lineHeight));layout=RichText.layout(renderer,text,contentWidth,clipped)
     end
-    local canvas=Assets.rasterize(width*scale,layout.height*scale,function()
-        love.graphics.scale(scale);local drawOpts={};for k,v in pairs(opts)do drawOpts[k]=v end;drawOpts.layout=layout;RichText.draw(renderer,text,0,0,width,drawOpts)
+    local height=math.max(opts.minHeight or 0,layout.height+padY*2)
+    local canvas=Assets.rasterize(width*scale,height*scale,function()
+        love.graphics.scale(scale);local drawOpts={};for k,v in pairs(opts)do drawOpts[k]=v end;drawOpts.layout=layout;RichText.draw(renderer,text,padX,(height-layout.height)/2,contentWidth,drawOpts)
     end)
     local pixels=canvas:getWidth()*canvas:getHeight()
     if pixels<=RichText.pixelLimit then
-        RichText.cache[key]={image=canvas,height=layout.height,used=RichText.clock,pixels=pixels}
+        RichText.cache[key]={image=canvas,height=height,used=RichText.clock,pixels=pixels}
         local count,total=0,0;for _,item in pairs(RichText.cache)do count=count+1;total=total+item.pixels end
         while count>RichText.cacheLimit or total>RichText.pixelLimit do
             local oldest,oldestTime
@@ -128,13 +131,21 @@ function RichText.canvas(renderer,value,width,opts)
             total=total-RichText.cache[oldest].pixels;RichText.cache[oldest]=nil;count=count-1
         end
     end
-    return canvas,layout.height
+    return canvas,height
 end
 function RichText.slab(view,id,text,width,opts)
     if clean(text)=='' then return 0 end
     local canvas,height=RichText.canvas(view.r,text,width,opts)
     view.S.Image(id,{Image=canvas,W=width,H=height,Color={1,1,1,1}})
     return height
+end
+function RichText.button(view,label,value,width,opts)
+    opts=opts or {}
+    local canvas,height=RichText.canvas(view.r,value,width,{size=opts.size or 16,lineSpacing=1,
+        maxLines=opts.maxLines or 3,paddingX=12,paddingY=6,minHeight=opts.height or 38,
+        color=opts.disabled and view.r.colors.muted or opts.color})
+    return view.S.Button(label,{W=width,H=height,Image={Image=canvas},
+        Tooltip=opts.tooltip or value,Active=opts.active,Disabled=opts.disabled})
 end
 function RichText.clearCache()RichText.cache={};RichText.clock=0 end
 return RichText

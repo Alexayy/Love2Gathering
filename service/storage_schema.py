@@ -13,8 +13,8 @@ DEFAULT_SETTINGS = {"manualTriggers": False, "autoMana": True, "showCardArt": Tr
     "highContrast": False, "colorblindMode": "Off", "showTooltips": True,
     "fontFamily": "Beleren", "titleFontFamily":"Beleren", "skybox":"Galaxy", "skyboxBrightness":0.32,
     "playmatOpacity":0.88,"counterStyle":"Dice","cursorStyle":"Kenney","keywordReminders":True,
-    "panelOpacity":0.65,"theme":"Midnight","accentColor":"","opponentColor":"","autoFollowTurn":True,
-    "builderLayout":"Classic","presentationVersion":2,"fontQuality":"High","cursorScale":0.55,"boardImpactIntensity":0.55,"cardBackStyle":"Arcane"}
+    "panelOpacity":0.65,"theme":"Midnight","accentColor":"","opponentColor":"","autoFollowTurn":False,
+    "builderLayout":"Classic","presentationVersion":2,"fontQuality":"High","cursorScale":0.55,"boardImpactIntensity":0.55,"cardBackStyle":"Arcane","vfxIntensity":0.65,"ambientKeywordFX":True,"presentationPacing":"Standard","cameraShake":True,"parallax":True,"distortion":True,"cardScale":1.0,"groupEquivalent":True}
 
 class StorageSchema:
     @staticmethod
@@ -89,12 +89,12 @@ class StorageSchema:
     def validate_settings(value):
         if not isinstance(value, dict) or len(json.dumps(value)) > 20000:
             raise ValueError("Invalid settings object")
-        enums = {"artworkMemoryMiB":{128,256,512}, "windowMode": {"Windowed", "Borderless", "Fullscreen"}, "msaa": {0, 2, 4, 8},
+        enums = {"presentationPacing":{"Standard","Fast","Minimal"},"artworkMemoryMiB":{128,256,512}, "windowMode": {"Windowed", "Borderless", "Fullscreen"}, "msaa": {0, 2, 4, 8},
                  "textureFilter": {"linear", "nearest"}, "frameLimit": {0, 30, 60, 120, 144},
                  "colorblindMode": {"Off", "Deuteranopia", "Protanopia", "Tritanopia"}, "titleFontFamily":{"Beleren","Application font"},
                  "skybox":{"Galaxy","Nebula","Band","Dark","Day","Off"},"counterStyle":{"Dice","Text"},"cursorStyle":{"System","Kenney"},
                  "theme":{"Midnight","Amethyst","Ocean","Ember","Obsidian"},"builderLayout":{"Classic","Simplified"},"presentationVersion":{2},"fontQuality":{"Standard","High"},"cardBackStyle":{"Arcane","Azure","Verdant","Crimson","Classic Magic","Mystic Eye"}}
-        ranges = {"renderScale": (0.5, 1.5), "uiScale": (0.85, 1.75), "musicVolume": (0, 1), "sfxVolume": (0, 1), "masterVolume": (0, 1),"skyboxBrightness":(0,1),"playmatOpacity":(0,1),"panelOpacity":(0,1),"cursorScale":(.4,1),"boardImpactIntensity":(0,1)}
+        ranges = {"vfxIntensity":(0,1),"cardScale":(.8,1.3),"renderScale": (0.5, 1.5), "uiScale": (0.85, 1.75), "musicVolume": (0, 1), "sfxVolume": (0, 1), "masterVolume": (0, 1),"skyboxBrightness":(0,1),"playmatOpacity":(0,1),"panelOpacity":(0,1),"cursorScale":(.4,1),"boardImpactIntensity":(0,1)}
         for key, item in value.items():
             if key not in DEFAULT_SETTINGS:
                 raise ValueError("Unknown setting: " + key)

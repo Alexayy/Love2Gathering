@@ -37,12 +37,16 @@ local function close(v,state)
     state.closed=true;v.deckSelection=nil;if v.m.lobbyDeckPicker==state then v.m.lobbyDeckPicker=nil end
 end
 UI.close=close
+function UI.open(v,id,deckId,format,changed)
+    if v.deckSelection then close(v,v.deckSelection)end
+    local state={id=id,selected=deckId,format=format,changed=changed,search='',offset=0,precons={},collapsed={starter=true},timer=0,openPage=v.m.page,scrollReset=true}
+    v.deckSelection=state;v.m.lobbyDeckPicker=state
+    if v.m.loadLobbyStarters then v.m:loadLobbyStarters(state)end
+end
 function UI.button(v,id,deckId,format,width,changed,opts)
     opts=opts or{};local height=opts.height or 84;local deck=v.m:findDeck(deckId)
     if v.S.Button(id,{W=width,H=height,Image={Image=tile(v,deck,width,height)},Tooltip=deck and(deck.name..' · '..format..' · choose another deck')or('Choose '..format..' deck')})then
-        if v.deckSelection then close(v,v.deckSelection)end
-        local state={id=id,selected=deckId,format=format,changed=changed,search='',offset=0,precons={},collapsed={starter=true},timer=0,openPage=v.m.page,scrollReset=true}
-        v.deckSelection=state;v.m.lobbyDeckPicker=state;if v.m.loadLobbyStarters then v.m:loadLobbyStarters(state)end
+        UI.open(v,id,deckId,format,changed)
     end
 end
 local function normalized(value)return tostring(value or''):lower():gsub('&',' and '):gsub('[%p%s]+',' ')end

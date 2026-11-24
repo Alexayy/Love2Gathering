@@ -19,7 +19,7 @@ m.game.priority.pending=nil;m.replay={};check(not m:canSelect(top.id)and not m:s
 check(m:inspectLibraryTop('human',top.id,'native-game')and m.inspectCard==top,'Replay inspection accepts an entitled top card')
 m.replay=nil;m:openLibrary('human');local nextTop={id='native-next',name='Island'};m:setGame(state(nextTop,{nextTop.id}))
 check(m.zoneView.cards[1]==nextTop and not m.inspectCard and not m.libraryTopInspect,'A changed top updates the zone and closes its previous top-specific inspector')
-check(not m:libraryTopCurrent('human',top.id,'native-game')and not m:inspectLibraryTop('human',top.id,'native-game'),'Old top-card hits and right-clicks cannot retarget the new library top')
+check(not m:libraryTopCurrent('human',top.id,'native-game')and not m:inspectLibraryTop('human',top.id,'native-game'),'Old top-card hits and inspections cannot retarget the new library top')
 m:inspectLibraryTop('human',nextTop.id,'native-game');m:setGame(state(nil,{}));check(#m.zoneView.cards==0 and not m.inspectCard,'Removing visibility clears the top zone and inspector instead of retaining stale art')
 m.game.players[1].libraryTop={id='redacted',name='Hidden',hidden=true};check(not m:libraryTop('human'),'An explicitly redacted top card never becomes a visible face')
 m.game.players[1].libraryTop={id='face-down',name='Hidden',faceDown=true};check(not m:libraryTop('human'),'Face-down projection placeholders never become inspectable library cards')

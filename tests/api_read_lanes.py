@@ -11,16 +11,21 @@ from mechanics.runtime import OwnedProcess,isolated_env,write_json,sha
 def fixture():
  lock=threading.Lock();started=time.monotonic();events=[];order=[];finished=set();counts={'nativeReads':0,'roomReads':0,'healthReads':0,'orderViolations':0}
  starts={name:threading.Event()for name in('native','room')};reads={name:{kind:threading.Event()for kind in('state','health')}for name in starts}
+ metadata_started={key:threading.Event()for key in('capabilities','lobby')};metadata_action=threading.Event();metadata_counts={'capabilities':0,'lobby':0,'actions':0}
  def mark(name,**data):
   with lock:events.append(dict(event=name,seconds=round(time.monotonic()-started,6),**data))
  class Handler(BaseHTTPRequestHandler):
   def log_message(self,*args):pass
-  def respond(self,value):
-   data=json.dumps(value,separators=(',',':')).encode();self.send_response(200);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(data)));self.end_headers()
+  def respond(self,value,status=200):
+   data=json.dumps(value,separators=(',',':')).encode();self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(data)));self.send_header('Retry-After','.1');self.end_headers()
    try:self.wfile.write(data)
    except(BrokenPipeError,ConnectionResetError):pass
   def do_POST(self):
    body=json.loads(self.rfile.read(int(self.headers.get('Content-Length','0'))));probe=body['probe'];phase=probe.split('-')[0]
+   if probe=='room-metadata-action':
+    with lock:metadata_counts['actions']+=1
+    arrived=all(event.wait(1)for event in metadata_started.values());metadata_action.set();mark('room-action-before-metadata',metadataArrived=arrived)
+    self.respond({'accepted':True,'metadataArrived':arrived});return
    with lock:order.append(probe)
    mark('mutation-start',probe=probe,path=self.path)
    if probe.endswith('-A'):
@@ -36,8 +41,15 @@ def fixture():
   def do_GET(self):
    path=self.path
    if path=='/probe/summary':
-    with lock:value=dict(counts,mutationOrder=list(order),events=list(events))
+    with lock:value=dict(counts,mutationOrder=list(order),events=list(events),roomMetadata=dict(metadata_counts))
     self.respond(value);return
+   if path in('/client/capabilities','/client/rooms/owned-live'):
+    kind='capabilities'if path=='/client/capabilities'else'lobby'
+    with lock:metadata_counts[kind]+=1;number=metadata_counts[kind]
+    metadata_started[kind].set();received=metadata_action.wait(2);time.sleep(.3)
+    if kind=='capabilities'and number==1:self.respond({'error':'Native capability scan is still preparing','retryable':True},503)
+    else:self.respond({'ready':True,'actionArrivedBeforeReadFinished':received})
+    return
    if path=='/health':
     with lock:counts['healthReads']+=1;phase='native'if counts['healthReads']==1 else'room'
     starts[phase].wait(1)
@@ -85,6 +97,6 @@ def main():
  result=json.loads((out/'result.json').read_text())if(out/'result.json').is_file()else{'status':'fail','error':'No fresh LÖVE result'}
  hashes={source:sha(work/source)for source in sources};matches=all(sha(ROOT/source)==digest for source,digest in hashes.items())
  passed=result['status']=='pass'and watch['status']=='pass'and watch['ownedProcessTerminated']and matches
- report={'schema':1,'status':'pass'if passed else'fail','sourceHashes':hashes,'sourceStillMatches':matches,'fixtureSourceHashes':{name:sha(ROOT/name)for name in('tests/api_read_lanes.py','tests/api_read_lanes.lua')},'output':str(out),'serverTerminated':True,'scope':'Actual headless LÖVE app/api and unmodified http_worker threads over real LuaSocket connections to an owned threaded HTTP fault fixture. Ordinary native/room mutations are held until state+health requests arrive; FIFO and generation guards are tested. Synthetic HTTP payloads, no graphics/GPU, native game, external network or user data.','result':result,'watchdog':watch}
+ report={'schema':1,'status':'pass'if passed else'fail','sourceHashes':hashes,'sourceStillMatches':matches,'fixtureSourceHashes':{name:sha(ROOT/name)for name in('tests/api_read_lanes.py','tests/api_read_lanes.lua')},'output':str(out),'serverTerminated':True,'scope':'Actual headless LÖVE current app/api and http_worker threads over real LuaSocket connections to an owned threaded HTTP fault fixture. Native/room mutations are held until state+health reads arrive; slow room-envelope/capability reads remain independent of actions. Busy reads retry once; actions are delivered once in FIFO order. Generation guards are checked. Synthetic HTTP payloads, no graphics/GPU, native game, external network or user data.','result':result,'watchdog':watch}
  write_json(out/'report.json',report);write_json(a.report_file,report);print('Read lanes '+report['status']+'; report '+str(out/'report.json'));return 0 if passed else 1
 if __name__=='__main__':raise SystemExit(main())

@@ -1,0 +1,133 @@
+{
+  "passed": true,
+  "scope": "Actual complete current Windows package assembled from an immutable hash-verified common snapshot, including full local card metadata, official pinned Windows Python/Java/L\u00d6VE, Mesa and compiled XMage bridge. Installed under fresh isolated Wine; real runtime/service/full metadata readiness and shader/Canvas fallback checks, complete same-version payload reinstall, then uninstall with SQLite preservation. The separate 19-check transaction report covers genuinely newer-release deferred upgrade. This sourceDirty acceptance build was not published and is not native Windows VM or gameplay evidence.",
+  "release": {
+    "applicationId": "io.github.Alexayy.Love2Gathering",
+    "name": "Love: 2 Gathering",
+    "version": "2026.11.18.1",
+    "sourceRevision": "d003f49442a61bbbd686b4c07498338c09b84fd2",
+    "engineRevision": "c5a5215fa086f487c793627446d5d27e81dfbc97",
+    "channel": "development",
+    "branch": "development",
+    "tag": "DEV-2026.11.18.1-1-d003f49442a6",
+    "builtAtUTC": "2026-11-17T23:48:54Z",
+    "metadataSource": "all-cards-20260922091740.jsonl",
+    "includesUserData": false,
+    "catalogApi": 15,
+    "sourceDirty": true
+  },
+  "sourceInput": {
+    "source": "/home/leka/Documents/Projects/Love2Gathering/build/updater-packages/stage/common/Love2Gathering",
+    "snapshot": "/tmp/love2gathering-windows-fullbuild-6tvohz1m/common",
+    "manifestSha256": "ef7b7e2a905d849f14c51ddb964e67fbe4f297acef2dedc4ff193cf42eb25b55",
+    "files": 143,
+    "release": {
+      "applicationId": "io.github.Alexayy.Love2Gathering",
+      "name": "Love: 2 Gathering",
+      "version": "2026.11.18.1",
+      "sourceRevision": "d003f49442a61bbbd686b4c07498338c09b84fd2",
+      "engineRevision": "c5a5215fa086f487c793627446d5d27e81dfbc97",
+      "channel": "development",
+      "branch": "development",
+      "tag": "DEV-2026.11.18.1-1-d003f49442a6",
+      "builtAtUTC": "2026-11-17T23:48:54Z",
+      "metadataSource": "all-cards-20260922091740.jsonl",
+      "includesUserData": false,
+      "catalogApi": 15,
+      "sourceDirty": true
+    }
+  },
+  "manifestFiles": 642,
+  "manifestSha256": "4000b41c2fa96cc96141e6bcd7f2a301909247c037fec1f7d6a3c4c6cf259b5b",
+  "allManifestEntriesReadableAndVerified": true,
+  "sourceMismatches": [],
+  "setup": {
+    "path": "build/updater-packages/windows/Love2Gathering-2026.11.18.1-windows-x64-setup.exe",
+    "bytes": 692708776,
+    "sha256": "91b6523f07bf46817807f2475b3d5bfe99238c16c4cc3c441471b9e57379423d"
+  },
+  "runtimeVersions": {
+    "passed": true,
+    "root": "Z:\\home\\leka\\Documents\\Projects\\Love2Gathering\\.runtime\\windows-full-updater-check-20261118-1\\Chosen Game Folder",
+    "java": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "love": "LOVE 11.5 (Mysterious Mysteries)",
+    "python": "3.13.11",
+    "images": {
+      "available": true,
+      "pillow": "13.0.0",
+      "jpeg": true
+    }
+  },
+  "readiness": {
+    "passed": true,
+    "catalogReady": true,
+    "index": {
+      "state": "ready",
+      "phase": "ready",
+      "lines": 542909,
+      "cards": 38452,
+      "bytesRead": 398806932,
+      "totalBytes": 398806932,
+      "seconds": 66.8,
+      "error": null,
+      "message": "Local card metadata is ready",
+      "indexesDone": 14,
+      "indexesTotal": 14
+    },
+    "engine": {
+      "ok": true,
+      "engine": "XMage",
+      "version": "1.4.63",
+      "implementedCards": 32983,
+      "recordingError": null,
+      "storageRelocationProtocol": 1,
+      "instanceId": "ee4a3c91-2d71-4b6c-a99a-1e410658cca2",
+      "engineRevision": "c5a5215fa086f487c793627446d5d27e81dfbc97"
+    },
+    "room": {
+      "status": "ok",
+      "apiVersion": 1,
+      "service": "love2gathering-rooms",
+      "membershipIdempotency": true
+    }
+  },
+  "graphics": {
+    "passed": true,
+    "renderer": [
+      "OpenGL",
+      "4.6 (Core Profile) Mesa 26.3.0",
+      "Mesa",
+      "llvmpipe (LLVM 23.1.5, 256 bits)",
+      "0.25098039215686,0.74901960784314,0.50196078431373,1"
+    ],
+    "softwareDllSha256": "35cad2622a8e1e4bcdddf03ef91d87fe6fa35f2c166bb6a8c9c8fc67131629f2"
+  },
+  "installationChecks": {
+    "chosenFolder": true,
+    "startMenuTarget": true,
+    "quietUninstallRegistered": true,
+    "completePayloadUpgrade": true,
+    "applicationRemoved": true,
+    "unlistedSQLitePreserved": true,
+    "outsideSQLitePreserved": true,
+    "installedSoftwareGraphics": true,
+    "installedServiceReadiness": true
+  },
+  "dataPreserved": true,
+  "ownedServicesStopped": true,
+  "ownedWinePrefixStopped": true,
+  "engineBuildPerformed": false,
+  "reports": {
+    "installer": "packaging/windows/installer-test-report.json",
+    "graphics": "packaging/windows/graphics-runtime-report.json",
+    "deferredUpgrade": "packaging/windows/transaction-test-report.json"
+  },
+  "sourceSha256": {
+    "packaging/windows/build.py": "bedd7c7428560c0a20cfa2dd1d717c7d0bfe85712246a673d69a0cb84a30dc7a",
+    "packaging/windows/installer.nsi": "6576da92dedadf3400c3c7d6e8b1b9e73e5e31d1ec4e59a81ddda717e0a0514c",
+    "packaging/windows/install_support.py": "42a56bdec84584f5f977ebef03d398a91441aacdf4f5d43024664d9c3c8b2168",
+    "packaging/runtime/launcher.py": "d9e3835abd71c937d78eb913e8d631de0d695159feb3a192151623a692b0280c",
+    "packaging/runtime/update_handoff.py": "7f89a90020872972c3a9f56c680dcb5526de7beedb95189cecf031853a0e783c",
+    "packaging/windows/test_installer.py": "e359f6743ee0116a29140a185929ee3d7d1c168e1a016c4296ced52505d612d8"
+  }
+}
